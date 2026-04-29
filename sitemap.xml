@@ -22,7 +22,11 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/index.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-04-29T20:33:46.029Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/roadmap.html</loc>
+    <lastmod>2026-04-29T20:33:46.081Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/native-vscode.html</loc>

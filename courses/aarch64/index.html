@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Portada inicial de la ruta AArch64.">
+<meta name="description" content="Portada de estudio de la ruta AArch64.">
 
 <title>Ruta AArch64 – ARM RISC-V Lab</title>
 <style>
@@ -30,6 +30,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
+<link href="../../courses/aarch64/roadmap.html" rel="next">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -107,6 +108,10 @@ ul.task-list li input[type="checkbox"] {
   </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="../../courses/aarch64/roadmap.html" aria-current="page"> 
+<span class="menu-text">Roadmap</span></a>
+  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-guías" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Guías</span>
@@ -169,6 +174,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Inicio del curso</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../courses/aarch64/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -182,7 +193,10 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#estado-actual" id="toc-estado-actual" class="nav-link active" data-scroll-target="#estado-actual">Estado actual</a></li>
-  <li><a href="#primer-bloque-previsto" id="toc-primer-bloque-previsto" class="nav-link" data-scroll-target="#primer-bloque-previsto">Primer bloque previsto</a>
+  <li><a href="#cómo-se-organiza" id="toc-cómo-se-organiza" class="nav-link" data-scroll-target="#cómo-se-organiza">Cómo se organiza</a></li>
+  <li><a href="#niveles-de-avance" id="toc-niveles-de-avance" class="nav-link" data-scroll-target="#niveles-de-avance">Niveles de avance</a></li>
+  <li><a href="#bloques-de-la-ruta" id="toc-bloques-de-la-ruta" class="nav-link" data-scroll-target="#bloques-de-la-ruta">Bloques de la ruta</a></li>
+  <li><a href="#primer-bloque-recomendado" id="toc-primer-bloque-recomendado" class="nav-link" data-scroll-target="#primer-bloque-recomendado">Primer bloque recomendado</a>
   <ul class="collapse">
   <li><a href="#fundamentos-de-computación-y-arm64" id="toc-fundamentos-de-computación-y-arm64" class="nav-link" data-scroll-target="#fundamentos-de-computación-y-arm64">Fundamentos de computación y ARM64</a></li>
   </ul></li>
@@ -196,12 +210,12 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../courses/aarch64/index.html">Inicio del curso</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Ruta AArch64</h1>
-<p class="subtitle lead">ARM64 desde fundamentos hasta programación de bajo nivel.</p>
+<p class="subtitle lead">ARM64 de bajo nivel, desde Linux userland hasta sistemas avanzados.</p>
 </div>
 
 <div>
   <div class="description">
-    Portada inicial de la ruta AArch64.
+    Portada de estudio de la ruta AArch64.
   </div>
 </div>
 
@@ -222,21 +236,112 @@ ul.task-list li input[type="checkbox"] {
 <p>Cursos &gt; AArch64</p>
 </div>
 <div class="hero-lab">
-<p>Estudia ARM64 desde los fundamentos de computación hasta programación de bajo nivel en Linux y sistemas.</p>
-<p>Esta ruta empezará con representación de datos, registros, GNU Assembly, programas mínimos, memoria, syscalls y debugging. Después avanzará hacia ABI, ELF, SIMD, bare metal, kernel, seguridad y virtualización.</p>
+<p>Esta ruta estudia ARM64 como una ruta completa de bajo nivel, no solo como un curso de assembly. Empieza con programas pequeños en Linux y avanza hacia memoria, ABI, binarios, debugging, SIMD, hardware, kernel, seguridad y arquitectura avanzada.</p>
+<p>El objetivo es que puedas leer, escribir, ejecutar y depurar programas cerca del hardware, entendiendo qué ocurre entre el código, el sistema operativo y la arquitectura.</p>
+<div class="hero-actions">
+<p><a href="../../courses/aarch64/roadmap.html" class="lab-button">Ver roadmap completo</a> <a href="../../guides/setup/index.html" class="lab-button secondary">Ver guías de setup</a></p>
+</div>
 </div>
 <section id="estado-actual" class="level2">
 <h2 class="anchored" data-anchor-id="estado-actual">Estado actual</h2>
 <div class="course-meter">
 <p><strong>Base inicial del curso</strong></p>
-<p>El contenido se agregará por unidades conforme avance la ruta.</p>
+<p>La ruta ya tiene su estructura de estudio. El contenido se publicará por unidades conforme avance el laboratorio.</p>
 </div>
 </section>
-<section id="primer-bloque-previsto" class="level2">
-<h2 class="anchored" data-anchor-id="primer-bloque-previsto">Primer bloque previsto</h2>
+<section id="cómo-se-organiza" class="level2">
+<h2 class="anchored" data-anchor-id="cómo-se-organiza">Cómo se organiza</h2>
+<div class="lab-flow">
+<div class="lab-step">
+<p><strong>Ruta</strong> Todo el camino AArch64.</p>
+</div>
+<div class="lab-step">
+<p><strong>Bloques</strong> Grandes áreas de aprendizaje.</p>
+</div>
+<div class="lab-step">
+<p><strong>Unidades</strong> Páginas principales de estudio.</p>
+</div>
+<div class="lab-step">
+<p><strong>Temas internos</strong> Secciones dentro de cada unidad.</p>
+</div>
+</div>
+<p>La regla de navegación será simple: la portada explica la ruta, el roadmap muestra los bloques, cada bloque mostrará unidades, y cada unidad desarrollará sus temas internos.</p>
+</section>
+<section id="niveles-de-avance" class="level2">
+<h2 class="anchored" data-anchor-id="niveles-de-avance">Niveles de avance</h2>
+<div class="lab-roadmap">
+<div class="roadmap-item available">
+<p><strong>Nivel 1 — Base obligatoria</strong></p>
+<p>Programas ARM64 simples en Linux usando registros, memoria, saltos, aritmética, lógica y syscalls.</p>
+</div>
+<div class="roadmap-item">
+<p><strong>Nivel 2 — Programador ARM64 competente</strong></p>
+<p>Funciones, stack, ABI, structs, ELF, debugging, arrays, strings y algoritmos básicos.</p>
+</div>
+<div class="roadmap-item">
+<p><strong>Nivel 3 — ARM64 aplicado a Linux y rendimiento</strong></p>
+<p>Floating point, NEON básico, mmap, debugging serio, pruebas, optimización y proyectos reales.</p>
+</div>
+<div class="roadmap-item">
+<p><strong>Nivel 4 — Hardware y bare metal</strong></p>
+<p>GPIO, UART, timers, interrupciones, MMIO, MMU básica, caches y memoria de dispositivos.</p>
+</div>
+<div class="roadmap-item">
+<p><strong>Nivel 5 — Sistemas operativos y kernel</strong></p>
+<p>Sincronización multicore, RTOS mínimo, kernel internals y device drivers.</p>
+</div>
+<div class="roadmap-item">
+<p><strong>Nivel 6 — Performance, reversing y seguridad</strong></p>
+<p>Análisis de binarios, NEON/PMU, vulnerabilidades, mitigaciones y side channels desde una perspectiva defensiva.</p>
+</div>
+<div class="roadmap-item">
+<p><strong>Nivel 7 — Arquitectura avanzada</strong></p>
+<p>Virtualización, hipervisores, trusted execution, compiladores, intrinsics, inline assembly y proyectos avanzados.</p>
+</div>
+</div>
+</section>
+<section id="bloques-de-la-ruta" class="level2">
+<h2 class="anchored" data-anchor-id="bloques-de-la-ruta">Bloques de la ruta</h2>
+<div class="course-grid">
+<section id="a-fundamentos" class="level3 course-card active">
+<h3 class="anchored" data-anchor-id="a-fundamentos">A — Fundamentos</h3>
+<p>Contexto, laboratorio, bases binarias, modelo AArch64 y GNU Assembly.</p>
+</section>
+<section id="b-linux-userland" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="b-linux-userland">B — Linux userland</h3>
+<p>Programas mínimos, memoria, aritmética, control de flujo y syscalls.</p>
+</section>
+<section id="c-abi-y-binarios" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="c-abi-y-binarios">C — ABI y binarios</h3>
+<p>Stack, heap, mmap, structs, AAPCS64, ELF y debugging.</p>
+</section>
+<section id="d-algoritmos-y-rendimiento" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="d-algoritmos-y-rendimiento">D — Algoritmos y rendimiento</h3>
+<p>Strings, arrays, SIMD básico, profiling, concurrencia, seguridad y proyectos.</p>
+</section>
+<section id="e-hardware-y-bare-metal" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="e-hardware-y-bare-metal">E — Hardware y bare metal</h3>
+<p>GPIO, Raspberry Pi, interrupciones, MMU, caches y memoria de dispositivos.</p>
+</section>
+<section id="f-sistemas-avanzados" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="f-sistemas-avanzados">F — Sistemas avanzados</h3>
+<p>Sincronización SMP, RTOS mínimo, kernel internals y drivers.</p>
+</section>
+<section id="g-reversing-y-seguridad" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="g-reversing-y-seguridad">G — Reversing y seguridad</h3>
+<p>NEON avanzado, PMU, análisis binario, mitigaciones y side channels.</p>
+</section>
+<section id="h-arquitectura-avanzada-arm" class="level3 course-card">
+<h3 class="anchored" data-anchor-id="h-arquitectura-avanzada-arm">H — Arquitectura avanzada ARM</h3>
+<p>Virtualización, TrustZone, compiladores, intrinsics y proyectos integradores.</p>
+</section>
+</div>
+</section>
+<section id="primer-bloque-recomendado" class="level2">
+<h2 class="anchored" data-anchor-id="primer-bloque-recomendado">Primer bloque recomendado</h2>
 <section id="fundamentos-de-computación-y-arm64" class="level3">
 <h3 class="anchored" data-anchor-id="fundamentos-de-computación-y-arm64">Fundamentos de computación y ARM64</h3>
-<p>En este bloque se construye la base para entender cómo se ejecuta un programa AArch64.</p>
+<p>En este bloque se construye la base para entender cómo se ejecuta un programa AArch64 antes de entrar en programas más grandes.</p>
 <div class="planned-list">
 <ul>
 <li>Setup y herramientas</li>
@@ -250,7 +355,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
-<p>Crear la unidad “Setup y herramientas”.</p>
+<p>Crear la unidad “Setup y herramientas” y mantener el roadmap completo como referencia, no como lista obligatoria para empezar.</p>
 
 
 </section>
@@ -658,6 +763,15 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../courses/aarch64/roadmap.html" class="pagination-link" aria-label="Roadmap">
+        <span class="nav-page-text">Roadmap</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">

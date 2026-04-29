@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Depura un binario AArch64 en hardware ARM64 real con GDB local desde VS Code.">
+<meta name="description" content="Roadmap de bloques y unidades de la ruta AArch64.">
 
-<title>Depuración: ARM nativo y VS Code – ARM RISC-V Lab</title>
+<title>Roadmap AArch64 – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,41 +21,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -65,8 +30,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../guides/troubleshooting.html" rel="next">
-<link href="../../guides/debugging/qemu-vscode.html" rel="prev">
+<link href="../../courses/aarch64/index.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -145,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../../courses/aarch64/roadmap.html"> 
+    <a class="nav-link active" href="../../courses/aarch64/roadmap.html" aria-current="page"> 
 <span class="menu-text">Roadmap</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -183,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../guides/debugging/qemu-vscode.html">Debugging</a></li><li class="breadcrumb-item"><a href="../../guides/debugging/native-vscode.html">Depuración: ARM nativo y VS Code</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../courses/aarch64/roadmap.html">Roadmap</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -198,7 +162,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Entorno</span></a>
+ <span class="menu-text">AArch64</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -206,66 +170,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+  <a href="../../courses/aarch64/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio del curso</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/qemu-x86_64.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: x86_64 con QEMU</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/native-aarch64.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: ARM nativo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/docker.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: Docker</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Debugging</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/debugging/qemu-vscode.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Depuración: QEMU y VS Code</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/debugging/native-vscode.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Depuración: ARM nativo y VS Code</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Troubleshooting</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar sección">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/troubleshooting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Troubleshooting</span></a>
+  <a href="../../courses/aarch64/roadmap.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Roadmap</span></a>
   </div>
 </li>
       </ul>
@@ -280,23 +192,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#compila" id="toc-compila" class="nav-link active" data-scroll-target="#compila">Compila</a></li>
-  <li><a href="#lanza-gdb" id="toc-lanza-gdb" class="nav-link" data-scroll-target="#lanza-gdb">Lanza GDB</a></li>
-  <li><a href="#qué-cambia-frente-a-qemu" id="toc-qué-cambia-frente-a-qemu" class="nav-link" data-scroll-target="#qué-cambia-frente-a-qemu">Qué cambia frente a QEMU</a></li>
+  <li><a href="#lectura-rápida" id="toc-lectura-rápida" class="nav-link active" data-scroll-target="#lectura-rápida">Lectura rápida</a></li>
+  <li><a href="#bloques" id="toc-bloques" class="nav-link" data-scroll-target="#bloques">Bloques</a></li>
+  <li><a href="#regla-de-crecimiento" id="toc-regla-de-crecimiento" class="nav-link" data-scroll-target="#regla-de-crecimiento">Regla de crecimiento</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../guides/debugging/qemu-vscode.html">Debugging</a></li><li class="breadcrumb-item"><a href="../../guides/debugging/native-vscode.html">Depuración: ARM nativo y VS Code</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../courses/aarch64/roadmap.html">Roadmap</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Depuración: ARM nativo y VS Code</h1>
+<h1 class="title">Roadmap AArch64</h1>
+<p class="subtitle lead">Ruta completa ARM64 de bajo nivel.</p>
 </div>
 
 <div>
   <div class="description">
-    Depura un binario AArch64 en hardware ARM64 real con GDB local desde VS Code.
+    Roadmap de bloques y unidades de la ruta AArch64.
   </div>
 </div>
 
@@ -313,76 +226,358 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>En ARM nativo no se usa QEMU. VS Code lanza GDB directamente sobre el binario AArch64 porque el procesador anfitrión ya puede ejecutarlo.</p>
-<div class="callout callout-style-simple callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<div class="breadcrumb-lite">
+<p>Cursos &gt; AArch64 &gt; Roadmap</p>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Importante</span>Usa esta guía solo en ARM64 real
+<div class="hero-lab">
+<p>Este roadmap organiza la ruta AArch64 completa. No es una lista de páginas activas ni una obligación para estudiar todo de una vez: es el mapa de crecimiento del laboratorio.</p>
+<p>La publicación del contenido será progresiva. La portada del curso muestra el estado actual; esta página conserva la visión completa.</p>
+</div>
+<section id="lectura-rápida" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-rápida">Lectura rápida</h2>
+<div class="course-status">
+<div class="course-meter">
+<p><strong>Base obligatoria</strong></p>
+<p>Unidades 0-10. Programas ARM64 simples en Linux con registros, memoria, control de flujo y syscalls.</p>
+</div>
+<div class="course-meter">
+<p><strong>Ruta profesional</strong></p>
+<p>Unidades 11-44. ABI, ELF, debugging, SIMD, hardware, kernel, reversing, seguridad, virtualización y proyectos.</p>
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>Verifica con <code>uname -m</code>. Si reporta <code>x86_64</code>, vuelve a <a href="../../guides/debugging/qemu-vscode.html">Depuración: QEMU y VS Code</a>.</p>
-</div>
-</div>
-<section id="compila" class="level2">
-<h2 class="anchored" data-anchor-id="compila">Compila</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> lessons/aarch64/02-syscalls/00-hello-world</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> RUN_MODE=native</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="lanza-gdb" class="level2">
-<h2 class="anchored" data-anchor-id="lanza-gdb">Lanza GDB</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> RUN_MODE=native gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En VS Code usa la configuración <code>AArch64 native: launch</code>.</p>
+<section id="bloques" class="level2">
+<h2 class="anchored" data-anchor-id="bloques">Bloques</h2>
+<details class="roadmap-accordion" open="">
+<summary>
+Bloque A — Fundamentos de computación y ARM64
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>0. Contexto, historia y objetivos</strong>
+<p>
+Qué es assembly, ISA, ARMv8-A, AArch64, A64 y por qué aprender bajo nivel.
+</p>
+</div>
+<div class="unit-card">
+<strong>1. Laboratorio ARM64 reproducible</strong>
+<p>
+Linux, QEMU, toolchain, binutils, GDB, strace y flujo mínimo de trabajo.
+</p>
+</div>
+<div class="unit-card">
+<strong>2. Bases binarias y representación</strong>
+<p>
+Bits, bytes, bases numéricas, signed/unsigned, overflow, endianness y direcciones.
+</p>
+</div>
+<div class="unit-card">
+<strong>3. Modelo ARMv8-A / AArch64</strong>
+<p>
+Registros X/W, SP, PC, LR, PSTATE, NZCV, SIMD y niveles de excepción como mapa inicial.
+</p>
+</div>
+<div class="unit-card">
+<strong>4. GNU Assembly, directivas y pseudo-instrucciones</strong>
+<p>
+Archivo .s, secciones, símbolos, datos, macros básicas, literales y direccionamiento simbólico.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque B — Programación ARM64 userland en Linux
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>5. Primeros programas en Linux AArch64</strong>
+<p>
+_start, exit, write, hello world sin libc, ensamblado, linking y svc #0.
+</p>
+</div>
+<div class="unit-card">
+<strong>6. Memoria básica, secciones y direccionamiento</strong>
+<p>
+Load/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.
+</p>
+</div>
+<div class="unit-card">
+<strong>7. Aritmética, lógica, flags y bits</strong>
+<p>
+Operaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.
+</p>
+</div>
+<div class="unit-card">
+<strong>8. Control de flujo y programación estructurada</strong>
+<p>
+Branches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.
+</p>
+</div>
+<div class="unit-card">
+<strong>9. Syscalls esenciales</strong>
+<p>
+Contrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.
+</p>
+</div>
+<div class="unit-card">
+<strong>10. Linux como API del kernel</strong>
+<p>
+File descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque C — Funciones, memoria dinámica, ABI y binarios
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>11. Stack, funciones y stack frames</strong>
+<p>
+Caller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.
+</p>
+</div>
+<div class="unit-card">
+<strong>12. Heap y memoria dinámica</strong>
+<p>
+Stack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.
+</p>
+</div>
+<div class="unit-card">
+<strong>13. mmap, munmap, mprotect, páginas y permisos</strong>
+<p>
+Memoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.
+</p>
+</div>
+<div class="unit-card">
+<strong>14. Layout de datos, structs, ADTs y objetos manuales</strong>
+<p>
+Offsets, size, alignment, padding, invariantes, self pointer y descriptores propios.
+</p>
+</div>
+<div class="unit-card">
+<strong>15. ABI, AAPCS64 e interoperabilidad con C</strong>
+<p>
+Calling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.
+</p>
+</div>
+<div class="unit-card">
+<strong>16. ELF, linking, loading y binarios</strong>
+<p>
+Objetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT y GOT.
+</p>
+</div>
+<div class="unit-card">
+<strong>17. Debugging con GDB, QEMU y strace</strong>
+<p>
+Breakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque D — Algoritmos, SIMD, rendimiento y validación
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>18. Strings, arrays y algoritmos</strong>
+<p>
+Cadenas terminadas en cero, arrays, punteros, búsqueda, copia, comparación y conversiones.
+</p>
+</div>
+<div class="unit-card">
+<strong>19. Floating point y SIMD/NEON básico</strong>
+<p>
+Registros S/D/V, conversiones, comparaciones, lanes, cargas vectoriales y reducciones básicas.
+</p>
+</div>
+<div class="unit-card">
+<strong>20. Performance, profiling y optimización básica</strong>
+<p>
+Medición, localidad, branches, csel, loop unrolling conceptual, perf básico y comparación con C.
+</p>
+</div>
+<div class="unit-card">
+<strong>21. Concurrencia, atomics y barriers básico</strong>
+<p>
+Race conditions, exclusive monitor, ldxr/stxr, acquire/release y memory ordering inicial.
+</p>
+</div>
+<div class="unit-card">
+<strong>22. Excepciones, EL0-EL3, MMU y sistema conceptual</strong>
+<p>
+Exception levels, traps, SVC, vectores, registros de excepción, MMU, page tables y TLB.
+</p>
+</div>
+<div class="unit-card">
+<strong>23. Seguridad de memoria y errores comunes</strong>
+<p>
+Crashes, SIGSEGV, overflows, stack/heap corruption, ASLR, NX, canaries, W^X y bugs de memoria.
+</p>
+</div>
+<div class="unit-card">
+<strong>24. Testing, validación y documentación técnica</strong>
+<p>
+Pruebas por stdout, códigos de salida, errores, strace, GDB, supuestos y reportes de laboratorio.
+</p>
+</div>
+<div class="unit-card">
+<strong>25. Proyectos integradores base</strong>
+<p>
+Hello sin libc, echo, cat, conversores, buffers dinámicos, mini malloc, strings, matrices y ELF simple.
+</p>
+</div>
+<div class="unit-card">
+<strong>26. Apéndices y referencias</strong>
+<p>
+Tablas de registros, condiciones, syscalls, instrucciones, cheatsheets, glosario y bibliografía.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque E — Hardware y bare metal
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>27. Hardware real, GPIO y memoria mapeada desde Linux</strong>
+<p>
+MMIO, Raspberry Pi, GPIO, /dev/mem, mmap físico, permisos root, volatile y barreras.
+</p>
+</div>
+<div class="unit-card">
+<strong>28. Bare metal AArch64 en Raspberry Pi</strong>
+<p>
+Boot flow, kernel8.img, linker script, stack inicial, .bss, GPIO directo, UART y monitor mínimo.
+</p>
+</div>
+<div class="unit-card">
+<strong>29. Excepciones, interrupciones, timers y UART</strong>
+<p>
+Vector table, ESR/ELR/SPSR, eret, contexto, timer, interrupt controller, UART polling e interrupciones.
+</p>
+</div>
+<div class="unit-card">
+<strong>30. MMU práctica, páginas, atributos y permisos</strong>
+<p>
+Translation tables, descriptors, MAIR, TCR, TTBR, SCTLR, Device memory, Normal memory y TLB.
+</p>
+</div>
+<div class="unit-card">
+<strong>31. Caches, barriers, coherencia y memoria de dispositivos</strong>
+<p>
+Cache lines, maintenance, dsb/dmb/isb, coherencia, DMA conceptual y diferencias entre Device y Normal memory.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque F — Sistemas avanzados
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>32. Concurrencia avanzada, atomics y sincronización SMP</strong>
+<p>
+SMP, spinlocks, lock-free básico, LSE atomics, barriers, seqlock, ticket lock y producer-consumer.
+</p>
+</div>
+<div class="unit-card">
+<strong>33. RTOS mínimo</strong>
+<p>
+Determinismo, tick, scheduler cooperativo/preemptivo, TCB, stacks por tarea, prioridades y sincronización.
+</p>
+</div>
+<div class="unit-card">
+<strong>34. Kernel internals de Linux ARM64</strong>
+<p>
+Syscall path, exception entry, task_struct conceptual, VMAs, page tables, modules, procfs, sysfs y debugfs.
+</p>
+</div>
+<div class="unit-card">
+<strong>35. Device drivers en Linux ARM64</strong>
+<p>
+Device tree, platform drivers, ioremap, readl/writel, interrupts, GPIO subsystem, char devices y DMA conceptual.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque G — Optimización, reversing y seguridad
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>36. NEON / Advanced SIMD avanzado</strong>
+<p>
+Lanes, ld/st múltiples, zip/unzip, tbl, saturating, widening, narrowing, reductions e intrinsics.
+</p>
+</div>
+<div class="unit-card">
+<strong>37. Performance, profiling, PMU y microarquitectura</strong>
+<p>
+PMU counters, cycles, cache misses, IPC, pipeline, OoO, speculation, data layout y cache blocking.
+</p>
+</div>
+<div class="unit-card">
+<strong>38. Análisis binario e ingeniería inversa ARM64</strong>
+<p>
+objdump/readelf avanzados, símbolos, PLT/GOT, prologues, CFG, Ghidra, structs y patrones de compilador.
+</p>
+</div>
+<div class="unit-card">
+<strong>39. Seguridad de memoria, vulnerabilidades y mitigaciones</strong>
+<p>
+Overflows, use-after-free, NX, ASLR, canaries, RELRO, PIE, PAC, BTI, MTE y hardening defensivo.
+</p>
+</div>
+<div class="unit-card">
+<strong>40. Side channels, speculation y constant-time programming</strong>
+<p>
+Timing, cache side channels, speculation, Spectre, constant-time, DIT, SSBS, barriers y mitigaciones.
+</p>
+</div>
+</div>
+</details>
+<details class="roadmap-accordion">
+<summary>
+Bloque H — Arquitectura avanzada ARM
+</summary>
+<div class="unit-list">
+<div class="unit-card">
+<strong>41. Virtualización ARM, EL2 e hipervisores</strong>
+<p>
+EL2, guests, traps, HVC, Stage 1/2 translation, IPA, VMID, VCPU, virtual interrupts y KVM/ARM.
+</p>
+</div>
+<div class="unit-card">
+<strong>42. Trusted execution, TrustZone, secure boot y TEE</strong>
+<p>
+Secure world, normal world, EL3, SMC, TEE, OP-TEE, secure boot, chain of trust y límites de TrustZone.
+</p>
+</div>
+<div class="unit-card">
+<strong>43. Compiladores, inline assembly, intrinsics y código generado</strong>
+<p>
+GCC/Clang, optimización, register allocation, inlining, tail calls, vectorización, constraints y clobbers.
+</p>
+</div>
+<div class="unit-card">
+<strong>44. Proyectos integradores avanzados</strong>
+<p>
+Proyectos de hardware, kernel, MMU, SIMD, reversing y seguridad defensiva para cerrar la ruta.
+</p>
+</div>
+</div>
+</details>
 </section>
-<section id="qué-cambia-frente-a-qemu" class="level2">
-<h2 class="anchored" data-anchor-id="qué-cambia-frente-a-qemu">Qué cambia frente a QEMU</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Tema</th>
-<th>QEMU en x86_64</th>
-<th>ARM nativo</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Ejecución</td>
-<td><code>qemu-aarch64</code></td>
-<td>Directa</td>
-</tr>
-<tr class="even">
-<td>Debugger</td>
-<td><code>gdb-multiarch</code></td>
-<td><code>gdb</code></td>
-</tr>
-<tr class="odd">
-<td>Conexión</td>
-<td><code>localhost:1234</code></td>
-<td>Launch local</td>
-</tr>
-<tr class="even">
-<td><code>RUN_MODE</code></td>
-<td>Por defecto</td>
-<td><code>native</code></td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-simple callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Misma idea, menos capas
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Los registros, syscalls y flujo del programa son los mismos. Lo que cambia es la forma en que el proceso llega a ejecutarse.</p>
-</div>
-</div>
+<section id="regla-de-crecimiento" class="level2">
+<h2 class="anchored" data-anchor-id="regla-de-crecimiento">Regla de crecimiento</h2>
+<p>La ruta no enlazará páginas que no existan. Primero se publica una unidad, luego aparece en el sidebar y en la navegación del bloque correspondiente.</p>
 
 
 </section>
@@ -792,14 +987,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../guides/debugging/qemu-vscode.html" class="pagination-link" aria-label="Depuración: QEMU y VS Code">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Depuración: QEMU y VS Code</span>
+      <a href="../../courses/aarch64/index.html" class="pagination-link" aria-label="Inicio del curso">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Inicio del curso</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../guides/troubleshooting.html" class="pagination-link" aria-label="Troubleshooting">
-        <span class="nav-page-text">Troubleshooting</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

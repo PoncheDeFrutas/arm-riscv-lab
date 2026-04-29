@@ -239,6 +239,7 @@
     "section": "",
     "text": "Cursos &gt; AArch64",
     "crumbs": [
+      "Roadmap",
       "AArch64",
       "Inicio del curso"
     ]
@@ -248,19 +249,57 @@
     "href": "courses/aarch64/index.html#estado-actual",
     "title": "Ruta AArch64",
     "section": "Estado actual",
-    "text": "Estado actual\n\nBase inicial del curso\nEl contenido se agregará por unidades conforme avance la ruta.",
+    "text": "Estado actual\n\nBase inicial del curso\nLa ruta ya tiene su estructura de estudio. El contenido se publicará por unidades conforme avance el laboratorio.",
     "crumbs": [
+      "Roadmap",
       "AArch64",
       "Inicio del curso"
     ]
   },
   {
-    "objectID": "courses/aarch64/index.html#primer-bloque-previsto",
-    "href": "courses/aarch64/index.html#primer-bloque-previsto",
+    "objectID": "courses/aarch64/index.html#cómo-se-organiza",
+    "href": "courses/aarch64/index.html#cómo-se-organiza",
     "title": "Ruta AArch64",
-    "section": "Primer bloque previsto",
-    "text": "Primer bloque previsto\n\nFundamentos de computación y ARM64\nEn este bloque se construye la base para entender cómo se ejecuta un programa AArch64.\n\n\nSetup y herramientas\nBases binarias y representación de datos\nModelo ARMv8-A / AArch64\nGNU Assembly, directivas y pseudo-instrucciones\nPrimer programa mínimo",
+    "section": "Cómo se organiza",
+    "text": "Cómo se organiza\n\n\nRuta Todo el camino AArch64.\n\n\nBloques Grandes áreas de aprendizaje.\n\n\nUnidades Páginas principales de estudio.\n\n\nTemas internos Secciones dentro de cada unidad.\n\n\nLa regla de navegación será simple: la portada explica la ruta, el roadmap muestra los bloques, cada bloque mostrará unidades, y cada unidad desarrollará sus temas internos.",
     "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html#niveles-de-avance",
+    "href": "courses/aarch64/index.html#niveles-de-avance",
+    "title": "Ruta AArch64",
+    "section": "Niveles de avance",
+    "text": "Niveles de avance\n\n\nNivel 1 — Base obligatoria\nProgramas ARM64 simples en Linux usando registros, memoria, saltos, aritmética, lógica y syscalls.\n\n\nNivel 2 — Programador ARM64 competente\nFunciones, stack, ABI, structs, ELF, debugging, arrays, strings y algoritmos básicos.\n\n\nNivel 3 — ARM64 aplicado a Linux y rendimiento\nFloating point, NEON básico, mmap, debugging serio, pruebas, optimización y proyectos reales.\n\n\nNivel 4 — Hardware y bare metal\nGPIO, UART, timers, interrupciones, MMIO, MMU básica, caches y memoria de dispositivos.\n\n\nNivel 5 — Sistemas operativos y kernel\nSincronización multicore, RTOS mínimo, kernel internals y device drivers.\n\n\nNivel 6 — Performance, reversing y seguridad\nAnálisis de binarios, NEON/PMU, vulnerabilidades, mitigaciones y side channels desde una perspectiva defensiva.\n\n\nNivel 7 — Arquitectura avanzada\nVirtualización, hipervisores, trusted execution, compiladores, intrinsics, inline assembly y proyectos avanzados.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html#bloques-de-la-ruta",
+    "href": "courses/aarch64/index.html#bloques-de-la-ruta",
+    "title": "Ruta AArch64",
+    "section": "Bloques de la ruta",
+    "text": "Bloques de la ruta\n\n\nA — Fundamentos\nContexto, laboratorio, bases binarias, modelo AArch64 y GNU Assembly.\n\n\nB — Linux userland\nProgramas mínimos, memoria, aritmética, control de flujo y syscalls.\n\n\nC — ABI y binarios\nStack, heap, mmap, structs, AAPCS64, ELF y debugging.\n\n\nD — Algoritmos y rendimiento\nStrings, arrays, SIMD básico, profiling, concurrencia, seguridad y proyectos.\n\n\nE — Hardware y bare metal\nGPIO, Raspberry Pi, interrupciones, MMU, caches y memoria de dispositivos.\n\n\nF — Sistemas avanzados\nSincronización SMP, RTOS mínimo, kernel internals y drivers.\n\n\nG — Reversing y seguridad\nNEON avanzado, PMU, análisis binario, mitigaciones y side channels.\n\n\nH — Arquitectura avanzada ARM\nVirtualización, TrustZone, compiladores, intrinsics y proyectos integradores.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html#primer-bloque-recomendado",
+    "href": "courses/aarch64/index.html#primer-bloque-recomendado",
+    "title": "Ruta AArch64",
+    "section": "Primer bloque recomendado",
+    "text": "Primer bloque recomendado\n\nFundamentos de computación y ARM64\nEn este bloque se construye la base para entender cómo se ejecuta un programa AArch64 antes de entrar en programas más grandes.\n\n\nSetup y herramientas\nBases binarias y representación de datos\nModelo ARMv8-A / AArch64\nGNU Assembly, directivas y pseudo-instrucciones\nPrimer programa mínimo",
+    "crumbs": [
+      "Roadmap",
       "AArch64",
       "Inicio del curso"
     ]
@@ -270,10 +309,59 @@
     "href": "courses/aarch64/index.html#siguiente-paso",
     "title": "Ruta AArch64",
     "section": "Siguiente paso",
-    "text": "Siguiente paso\nCrear la unidad “Setup y herramientas”.",
+    "text": "Siguiente paso\nCrear la unidad “Setup y herramientas” y mantener el roadmap completo como referencia, no como lista obligatoria para empezar.",
     "crumbs": [
+      "Roadmap",
       "AArch64",
       "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/roadmap.html",
+    "href": "courses/aarch64/roadmap.html",
+    "title": "Roadmap AArch64",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Roadmap",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Roadmap"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/roadmap.html#lectura-rápida",
+    "href": "courses/aarch64/roadmap.html#lectura-rápida",
+    "title": "Roadmap AArch64",
+    "section": "Lectura rápida",
+    "text": "Lectura rápida\n\n\nBase obligatoria\nUnidades 0-10. Programas ARM64 simples en Linux con registros, memoria, control de flujo y syscalls.\n\n\nRuta profesional\nUnidades 11-44. ABI, ELF, debugging, SIMD, hardware, kernel, reversing, seguridad, virtualización y proyectos.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Roadmap"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/roadmap.html#bloques",
+    "href": "courses/aarch64/roadmap.html#bloques",
+    "title": "Roadmap AArch64",
+    "section": "Bloques",
+    "text": "Bloques\n\n\nBloque A — Fundamentos de computación y ARM64\n\n\n\n0. Contexto, historia y objetivos\n\nQué es assembly, ISA, ARMv8-A, AArch64, A64 y por qué aprender bajo nivel.\n\n\n\n1. Laboratorio ARM64 reproducible\n\nLinux, QEMU, toolchain, binutils, GDB, strace y flujo mínimo de trabajo.\n\n\n\n2. Bases binarias y representación\n\nBits, bytes, bases numéricas, signed/unsigned, overflow, endianness y direcciones.\n\n\n\n3. Modelo ARMv8-A / AArch64\n\nRegistros X/W, SP, PC, LR, PSTATE, NZCV, SIMD y niveles de excepción como mapa inicial.\n\n\n\n4. GNU Assembly, directivas y pseudo-instrucciones\n\nArchivo .s, secciones, símbolos, datos, macros básicas, literales y direccionamiento simbólico.\n\n\n\n\n\n\nBloque B — Programación ARM64 userland en Linux\n\n\n\n5. Primeros programas en Linux AArch64\n\n_start, exit, write, hello world sin libc, ensamblado, linking y svc #0.\n\n\n\n6. Memoria básica, secciones y direccionamiento\n\nLoad/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.\n\n\n\n7. Aritmética, lógica, flags y bits\n\nOperaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.\n\n\n\n8. Control de flujo y programación estructurada\n\nBranches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.\n\n\n\n9. Syscalls esenciales\n\nContrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.\n\n\n\n10. Linux como API del kernel\n\nFile descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.\n\n\n\n\n\n\nBloque C — Funciones, memoria dinámica, ABI y binarios\n\n\n\n11. Stack, funciones y stack frames\n\nCaller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.\n\n\n\n12. Heap y memoria dinámica\n\nStack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.\n\n\n\n13. mmap, munmap, mprotect, páginas y permisos\n\nMemoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.\n\n\n\n14. Layout de datos, structs, ADTs y objetos manuales\n\nOffsets, size, alignment, padding, invariantes, self pointer y descriptores propios.\n\n\n\n15. ABI, AAPCS64 e interoperabilidad con C\n\nCalling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.\n\n\n\n16. ELF, linking, loading y binarios\n\nObjetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT y GOT.\n\n\n\n17. Debugging con GDB, QEMU y strace\n\nBreakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.\n\n\n\n\n\n\nBloque D — Algoritmos, SIMD, rendimiento y validación\n\n\n\n18. Strings, arrays y algoritmos\n\nCadenas terminadas en cero, arrays, punteros, búsqueda, copia, comparación y conversiones.\n\n\n\n19. Floating point y SIMD/NEON básico\n\nRegistros S/D/V, conversiones, comparaciones, lanes, cargas vectoriales y reducciones básicas.\n\n\n\n20. Performance, profiling y optimización básica\n\nMedición, localidad, branches, csel, loop unrolling conceptual, perf básico y comparación con C.\n\n\n\n21. Concurrencia, atomics y barriers básico\n\nRace conditions, exclusive monitor, ldxr/stxr, acquire/release y memory ordering inicial.\n\n\n\n22. Excepciones, EL0-EL3, MMU y sistema conceptual\n\nException levels, traps, SVC, vectores, registros de excepción, MMU, page tables y TLB.\n\n\n\n23. Seguridad de memoria y errores comunes\n\nCrashes, SIGSEGV, overflows, stack/heap corruption, ASLR, NX, canaries, W^X y bugs de memoria.\n\n\n\n24. Testing, validación y documentación técnica\n\nPruebas por stdout, códigos de salida, errores, strace, GDB, supuestos y reportes de laboratorio.\n\n\n\n25. Proyectos integradores base\n\nHello sin libc, echo, cat, conversores, buffers dinámicos, mini malloc, strings, matrices y ELF simple.\n\n\n\n26. Apéndices y referencias\n\nTablas de registros, condiciones, syscalls, instrucciones, cheatsheets, glosario y bibliografía.\n\n\n\n\n\n\nBloque E — Hardware y bare metal\n\n\n\n27. Hardware real, GPIO y memoria mapeada desde Linux\n\nMMIO, Raspberry Pi, GPIO, /dev/mem, mmap físico, permisos root, volatile y barreras.\n\n\n\n28. Bare metal AArch64 en Raspberry Pi\n\nBoot flow, kernel8.img, linker script, stack inicial, .bss, GPIO directo, UART y monitor mínimo.\n\n\n\n29. Excepciones, interrupciones, timers y UART\n\nVector table, ESR/ELR/SPSR, eret, contexto, timer, interrupt controller, UART polling e interrupciones.\n\n\n\n30. MMU práctica, páginas, atributos y permisos\n\nTranslation tables, descriptors, MAIR, TCR, TTBR, SCTLR, Device memory, Normal memory y TLB.\n\n\n\n31. Caches, barriers, coherencia y memoria de dispositivos\n\nCache lines, maintenance, dsb/dmb/isb, coherencia, DMA conceptual y diferencias entre Device y Normal memory.\n\n\n\n\n\n\nBloque F — Sistemas avanzados\n\n\n\n32. Concurrencia avanzada, atomics y sincronización SMP\n\nSMP, spinlocks, lock-free básico, LSE atomics, barriers, seqlock, ticket lock y producer-consumer.\n\n\n\n33. RTOS mínimo\n\nDeterminismo, tick, scheduler cooperativo/preemptivo, TCB, stacks por tarea, prioridades y sincronización.\n\n\n\n34. Kernel internals de Linux ARM64\n\nSyscall path, exception entry, task_struct conceptual, VMAs, page tables, modules, procfs, sysfs y debugfs.\n\n\n\n35. Device drivers en Linux ARM64\n\nDevice tree, platform drivers, ioremap, readl/writel, interrupts, GPIO subsystem, char devices y DMA conceptual.\n\n\n\n\n\n\nBloque G — Optimización, reversing y seguridad\n\n\n\n36. NEON / Advanced SIMD avanzado\n\nLanes, ld/st múltiples, zip/unzip, tbl, saturating, widening, narrowing, reductions e intrinsics.\n\n\n\n37. Performance, profiling, PMU y microarquitectura\n\nPMU counters, cycles, cache misses, IPC, pipeline, OoO, speculation, data layout y cache blocking.\n\n\n\n38. Análisis binario e ingeniería inversa ARM64\n\nobjdump/readelf avanzados, símbolos, PLT/GOT, prologues, CFG, Ghidra, structs y patrones de compilador.\n\n\n\n39. Seguridad de memoria, vulnerabilidades y mitigaciones\n\nOverflows, use-after-free, NX, ASLR, canaries, RELRO, PIE, PAC, BTI, MTE y hardening defensivo.\n\n\n\n40. Side channels, speculation y constant-time programming\n\nTiming, cache side channels, speculation, Spectre, constant-time, DIT, SSBS, barriers y mitigaciones.\n\n\n\n\n\n\nBloque H — Arquitectura avanzada ARM\n\n\n\n41. Virtualización ARM, EL2 e hipervisores\n\nEL2, guests, traps, HVC, Stage 1/2 translation, IPA, VMID, VCPU, virtual interrupts y KVM/ARM.\n\n\n\n42. Trusted execution, TrustZone, secure boot y TEE\n\nSecure world, normal world, EL3, SMC, TEE, OP-TEE, secure boot, chain of trust y límites de TrustZone.\n\n\n\n43. Compiladores, inline assembly, intrinsics y código generado\n\nGCC/Clang, optimización, register allocation, inlining, tail calls, vectorización, constraints y clobbers.\n\n\n\n44. Proyectos integradores avanzados\n\nProyectos de hardware, kernel, MMU, SIMD, reversing y seguridad defensiva para cerrar la ruta.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Roadmap"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/roadmap.html#regla-de-crecimiento",
+    "href": "courses/aarch64/roadmap.html#regla-de-crecimiento",
+    "title": "Roadmap AArch64",
+    "section": "Regla de crecimiento",
+    "text": "Regla de crecimiento\nLa ruta no enlazará páginas que no existan. Primero se publica una unidad, luego aparece en el sidebar y en la navegación del bloque correspondiente.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Roadmap"
     ]
   },
   {
