@@ -1,0 +1,499 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "Aprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.\n\nEntrar a AArch64 Entrar a RISC-V\n\n\n\n\nRepresentación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware.\n\n\n\n\n\n\nRuta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V\n\n\n\n\n\nSi quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.\n\n\n\nFundamentos -&gt; Programas mínimos -&gt; Memoria y control de flujo -&gt;\nFunciones y ABI -&gt; Binarios y debugging -&gt; Sistemas avanzados\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+  },
+  {
+    "objectID": "index.html#qué-aprenderás",
+    "href": "index.html#qué-aprenderás",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "Representación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware."
+  },
+  {
+    "objectID": "index.html#rutas-disponibles",
+    "href": "index.html#rutas-disponibles",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "Ruta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V"
+  },
+  {
+    "objectID": "index.html#por-dónde-empezar",
+    "href": "index.html#por-dónde-empezar",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V."
+  },
+  {
+    "objectID": "index.html#cómo-se-organiza-el-aprendizaje",
+    "href": "index.html#cómo-se-organiza-el-aprendizaje",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "Fundamentos -&gt; Programas mínimos -&gt; Memoria y control de flujo -&gt;\nFunciones y ABI -&gt; Binarios y debugging -&gt; Sistemas avanzados\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+  },
+  {
+    "objectID": "guides/setup/qemu-x86_64.html",
+    "href": "guides/setup/qemu-x86_64.html",
+    "title": "Setup: x86_64 con QEMU",
+    "section": "",
+    "text": "Esta es la ruta principal. Permite compilar binarios AArch64 y ejecutarlos desde una máquina x86_64 sin Raspberry Pi, VM completa ni hardware ARM.",
+    "crumbs": [
+      "Entorno",
+      "Setup: x86_64 con QEMU"
+    ]
+  },
+  {
+    "objectID": "guides/setup/qemu-x86_64.html#paquetes",
+    "href": "guides/setup/qemu-x86_64.html#paquetes",
+    "title": "Setup: x86_64 con QEMU",
+    "section": "Paquetes",
+    "text": "Paquetes\nEn Ubuntu/Debian:\nsudo apt update\nsudo apt install -y make gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user gdb-multiarch",
+    "crumbs": [
+      "Entorno",
+      "Setup: x86_64 con QEMU"
+    ]
+  },
+  {
+    "objectID": "guides/setup/qemu-x86_64.html#verificación",
+    "href": "guides/setup/qemu-x86_64.html#verificación",
+    "title": "Setup: x86_64 con QEMU",
+    "section": "Verificación",
+    "text": "Verificación\naarch64-linux-gnu-gcc --version\nqemu-aarch64 --version\ngdb-multiarch --version\n\n\n\n\n\n\nTipSeñal correcta\n\n\n\nNo necesitas que uname -m diga aarch64. En esta ruta, tu máquina puede seguir reportando x86_64; QEMU ejecutará el binario ARM64.",
+    "crumbs": [
+      "Entorno",
+      "Setup: x86_64 con QEMU"
+    ]
+  },
+  {
+    "objectID": "guides/setup/qemu-x86_64.html#primer-programa",
+    "href": "guides/setup/qemu-x86_64.html#primer-programa",
+    "title": "Setup: x86_64 con QEMU",
+    "section": "Primer programa",
+    "text": "Primer programa\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake\nmake run\nSalida esperada:\nHello, AArch64 syscalls!",
+    "crumbs": [
+      "Entorno",
+      "Setup: x86_64 con QEMU"
+    ]
+  },
+  {
+    "objectID": "guides/setup/qemu-x86_64.html#depuración",
+    "href": "guides/setup/qemu-x86_64.html#depuración",
+    "title": "Setup: x86_64 con QEMU",
+    "section": "Depuración",
+    "text": "Depuración\nArranca QEMU con GDB server:\nmake gdb\nLuego conecta VS Code con la configuración AArch64 QEMU: attach.\n\n\n\n\n\n\nAdvertenciaTerminal bloqueada es normal\n\n\n\nmake gdb queda esperando conexión en localhost:1234. Deja esa terminal abierta y conecta el debugger desde VS Code en otra acción.",
+    "crumbs": [
+      "Entorno",
+      "Setup: x86_64 con QEMU"
+    ]
+  },
+  {
+    "objectID": "guides/setup/qemu-x86_64.html#si-algo-falla",
+    "href": "guides/setup/qemu-x86_64.html#si-algo-falla",
+    "title": "Setup: x86_64 con QEMU",
+    "section": "Si algo falla",
+    "text": "Si algo falla\n\nSi falta el compilador: revisa Troubleshooting.\nSi falta QEMU: revisa Troubleshooting.\nSi VS Code no conecta: revisa Depuración con QEMU.",
+    "crumbs": [
+      "Entorno",
+      "Setup: x86_64 con QEMU"
+    ]
+  },
+  {
+    "objectID": "guides/setup/index.html",
+    "href": "guides/setup/index.html",
+    "title": "Setup",
+    "section": "",
+    "text": "El setup del curso tiene una ruta principal y dos alternativas. La decisión depende de tu máquina, no de tu nivel.",
+    "crumbs": [
+      "Entorno",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "guides/setup/index.html#elige-una-ruta",
+    "href": "guides/setup/index.html#elige-una-ruta",
+    "title": "Setup",
+    "section": "Elige una ruta",
+    "text": "Elige una ruta\n\n\n\nRuta\nÚsala si…\nComandos principales\n\n\n\n\nQEMU en x86_64\nTu laptop o PC no es ARM64\nmake, make run, make gdb\n\n\nARM nativo\nEstás en Linux ARM64 real\nmake RUN_MODE=native run\n\n\nDocker\nNecesitas entorno reproducible\ndocker build, docker run\n\n\n\n\n\n\n\n\n\nTipRecomendación para empezar\n\n\n\nSi no sabes cuál elegir, usa QEMU en x86_64. Es la ruta que permite trabajar desde una computadora común sin hardware ARM.\n\n\n\n\n\n\n\n\nAdvertenciaQEMU no convierte tu máquina en ARM\n\n\n\nQEMU ejecuta el binario AArch64 en user mode. Tu sistema sigue siendo x86_64, por eso necesitas gdb-multiarch para depurar.",
+    "crumbs": [
+      "Entorno",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "guides/setup/index.html#resultado-esperado",
+    "href": "guides/setup/index.html#resultado-esperado",
+    "title": "Setup",
+    "section": "Resultado esperado",
+    "text": "Resultado esperado\nAl terminar esta sección debes poder ejecutar:\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake\nmake run\nY para depurar:\nmake gdb\nLuego sigue con Depuración: QEMU y VS Code o con Depuración: ARM nativo y VS Code, según tu ruta.",
+    "crumbs": [
+      "Entorno",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html",
+    "href": "guides/debugging/qemu-vscode.html",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "",
+    "text": "Esta guía conecta VS Code con un binario AArch64 ejecutándose bajo QEMU. Es la ruta correcta cuando tu máquina anfitriona es x86_64.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html#compila-el-ejemplo",
+    "href": "guides/debugging/qemu-vscode.html#compila-el-ejemplo",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "1. Compila el ejemplo",
+    "text": "1. Compila el ejemplo\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html#arranca-qemu-con-gdb-server",
+    "href": "guides/debugging/qemu-vscode.html#arranca-qemu-con-gdb-server",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "2. Arranca QEMU con GDB server",
+    "text": "2. Arranca QEMU con GDB server\nmake gdb\nDeja esa terminal abierta. El programa está esperando al debugger.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html#conecta-vs-code",
+    "href": "guides/debugging/qemu-vscode.html#conecta-vs-code",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "3. Conecta VS Code",
+    "text": "3. Conecta VS Code\nEn VS Code usa la configuración AArch64 QEMU: attach.\nParámetros importantes:\n{\n  \"miDebuggerPath\": \"/usr/bin/gdb-multiarch\",\n  \"miDebuggerServerAddress\": \"localhost:1234\",\n  \"MIMode\": \"gdb\"\n}\nComandos de setup:\nset architecture aarch64\nset disassemble-next-line on",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html#qué-observar-primero",
+    "href": "guides/debugging/qemu-vscode.html#qué-observar-primero",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "Qué observar primero",
+    "text": "Qué observar primero\n\n\npc\nDirección de la instrucción actual.\n\n\nx0 a x2\nArgumentos de write y exit.\n\n\nx8\nNúmero de syscall.\n\n\nMemoria\nDirección del mensaje apuntada por x1.\n\n\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nSi VS Code dice que no puede conectar, casi siempre make gdb no está corriendo o el puerto 1234 ya está ocupado.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "courses/riscv/index.html",
+    "href": "courses/riscv/index.html",
+    "title": "Ruta RISC-V",
+    "section": "",
+    "text": "Cursos &gt; RISC-V",
+    "crumbs": [
+      "RISC-V",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/riscv/index.html#estado-actual",
+    "href": "courses/riscv/index.html#estado-actual",
+    "title": "Ruta RISC-V",
+    "section": "Estado actual",
+    "text": "Estado actual\n\nBase inicial del curso\nEl contenido se agregará por unidades conforme avance la ruta.",
+    "crumbs": [
+      "RISC-V",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/riscv/index.html#primer-bloque-previsto",
+    "href": "courses/riscv/index.html#primer-bloque-previsto",
+    "title": "Ruta RISC-V",
+    "section": "Primer bloque previsto",
+    "text": "Primer bloque previsto\n\nFundamentos de RISC-V\n\n\nSetup y herramientas\nBases binarias y representación de datos\nModelo de registros RISC-V\nInstrucciones base RV64I\nPrimer programa mínimo",
+    "crumbs": [
+      "RISC-V",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/riscv/index.html#siguiente-paso",
+    "href": "courses/riscv/index.html#siguiente-paso",
+    "title": "Ruta RISC-V",
+    "section": "Siguiente paso",
+    "text": "Siguiente paso\nCrear la unidad “Setup y herramientas”.",
+    "crumbs": [
+      "RISC-V",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html",
+    "href": "courses/aarch64/index.html",
+    "title": "Ruta AArch64",
+    "section": "",
+    "text": "Cursos &gt; AArch64",
+    "crumbs": [
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html#estado-actual",
+    "href": "courses/aarch64/index.html#estado-actual",
+    "title": "Ruta AArch64",
+    "section": "Estado actual",
+    "text": "Estado actual\n\nBase inicial del curso\nEl contenido se agregará por unidades conforme avance la ruta.",
+    "crumbs": [
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html#primer-bloque-previsto",
+    "href": "courses/aarch64/index.html#primer-bloque-previsto",
+    "title": "Ruta AArch64",
+    "section": "Primer bloque previsto",
+    "text": "Primer bloque previsto\n\nFundamentos de computación y ARM64\nEn este bloque se construye la base para entender cómo se ejecuta un programa AArch64.\n\n\nSetup y herramientas\nBases binarias y representación de datos\nModelo ARMv8-A / AArch64\nGNU Assembly, directivas y pseudo-instrucciones\nPrimer programa mínimo",
+    "crumbs": [
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/index.html#siguiente-paso",
+    "href": "courses/aarch64/index.html#siguiente-paso",
+    "title": "Ruta AArch64",
+    "section": "Siguiente paso",
+    "text": "Siguiente paso\nCrear la unidad “Setup y herramientas”.",
+    "crumbs": [
+      "AArch64",
+      "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/native-vscode.html",
+    "href": "guides/debugging/native-vscode.html",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "",
+    "text": "En ARM nativo no se usa QEMU. VS Code lanza GDB directamente sobre el binario AArch64 porque el procesador anfitrión ya puede ejecutarlo.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/native-vscode.html#compila",
+    "href": "guides/debugging/native-vscode.html#compila",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Compila",
+    "text": "Compila\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake RUN_MODE=native",
+    "crumbs": [
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/native-vscode.html#lanza-gdb",
+    "href": "guides/debugging/native-vscode.html#lanza-gdb",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Lanza GDB",
+    "text": "Lanza GDB\nmake RUN_MODE=native gdb\nEn VS Code usa la configuración AArch64 native: launch.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/native-vscode.html#qué-cambia-frente-a-qemu",
+    "href": "guides/debugging/native-vscode.html#qué-cambia-frente-a-qemu",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Qué cambia frente a QEMU",
+    "text": "Qué cambia frente a QEMU\n\n\n\nTema\nQEMU en x86_64\nARM nativo\n\n\n\n\nEjecución\nqemu-aarch64\nDirecta\n\n\nDebugger\ngdb-multiarch\ngdb\n\n\nConexión\nlocalhost:1234\nLaunch local\n\n\nRUN_MODE\nPor defecto\nnative\n\n\n\n\n\n\n\n\n\nTipMisma idea, menos capas\n\n\n\nLos registros, syscalls y flujo del programa son los mismos. Lo que cambia es la forma en que el proceso llega a ejecutarse.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/setup/docker.html",
+    "href": "guides/setup/docker.html",
+    "title": "Setup: Docker",
+    "section": "",
+    "text": "Docker ofrece un entorno reproducible para laboratorios, máquinas prestadas o equipos donde instalar toolchains causa demasiada fricción.",
+    "crumbs": [
+      "Entorno",
+      "Setup: Docker"
+    ]
+  },
+  {
+    "objectID": "guides/setup/docker.html#construir-imagen",
+    "href": "guides/setup/docker.html#construir-imagen",
+    "title": "Setup: Docker",
+    "section": "Construir imagen",
+    "text": "Construir imagen\nDesde la raíz del repo:\ndocker build -t arm-riscv-lab -f tooling/docker/Dockerfile .",
+    "crumbs": [
+      "Entorno",
+      "Setup: Docker"
+    ]
+  },
+  {
+    "objectID": "guides/setup/docker.html#usar-contenedor",
+    "href": "guides/setup/docker.html#usar-contenedor",
+    "title": "Setup: Docker",
+    "section": "Usar contenedor",
+    "text": "Usar contenedor\ndocker run --rm -it -v \"$PWD\":/workspace -w /workspace arm-riscv-lab\nDentro del contenedor:\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake\nmake run",
+    "crumbs": [
+      "Entorno",
+      "Setup: Docker"
+    ]
+  },
+  {
+    "objectID": "guides/setup/docker.html#depurar-desde-vs-code",
+    "href": "guides/setup/docker.html#depurar-desde-vs-code",
+    "title": "Setup: Docker",
+    "section": "Depurar desde VS Code",
+    "text": "Depurar desde VS Code\nExpón el puerto del GDB server:\ndocker run --rm -it -p 1234:1234 -v \"$PWD\":/workspace -w /workspace arm-riscv-lab\nDentro del contenedor:\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake gdb\nEn el host, conecta VS Code a localhost:1234.\n\n\n\n\n\n\nAdvertenciaRutas dentro y fuera del contenedor\n\n\n\nEl proyecto vive como /workspace dentro del contenedor. Si una configuración de debugging no encuentra el binario, revisa que VS Code esté abierto en la raíz del repo en el host.",
+    "crumbs": [
+      "Entorno",
+      "Setup: Docker"
+    ]
+  },
+  {
+    "objectID": "guides/setup/native-aarch64.html",
+    "href": "guides/setup/native-aarch64.html",
+    "title": "Setup: ARM nativo",
+    "section": "",
+    "text": "Usa esta ruta si tu sistema operativo ya corre sobre AArch64. Ejemplos típicos: Raspberry Pi con Linux de 64 bits, servidor ARM64 o laptop ARM64 con Linux.",
+    "crumbs": [
+      "Entorno",
+      "Setup: ARM nativo"
+    ]
+  },
+  {
+    "objectID": "guides/setup/native-aarch64.html#paquetes",
+    "href": "guides/setup/native-aarch64.html#paquetes",
+    "title": "Setup: ARM nativo",
+    "section": "Paquetes",
+    "text": "Paquetes\nEn Ubuntu/Debian sobre ARM64:\nsudo apt update\nsudo apt install -y make gcc binutils gdb",
+    "crumbs": [
+      "Entorno",
+      "Setup: ARM nativo"
+    ]
+  },
+  {
+    "objectID": "guides/setup/native-aarch64.html#verificación",
+    "href": "guides/setup/native-aarch64.html#verificación",
+    "title": "Setup: ARM nativo",
+    "section": "Verificación",
+    "text": "Verificación\nuname -m\ngcc --version\ngdb --version\nuname -m debe reportar aarch64 o arm64.\n\n\n\n\n\n\nAdvertenciaSi uname -m reporta x86_64\n\n\n\nNo estás en ARM nativo. Vuelve a QEMU en x86_64.",
+    "crumbs": [
+      "Entorno",
+      "Setup: ARM nativo"
+    ]
+  },
+  {
+    "objectID": "guides/setup/native-aarch64.html#ejecución",
+    "href": "guides/setup/native-aarch64.html#ejecución",
+    "title": "Setup: ARM nativo",
+    "section": "Ejecución",
+    "text": "Ejecución\ncd lessons/aarch64/02-syscalls/00-hello-world\nmake RUN_MODE=native\nmake RUN_MODE=native run\nmake RUN_MODE=native gdb",
+    "crumbs": [
+      "Entorno",
+      "Setup: ARM nativo"
+    ]
+  },
+  {
+    "objectID": "guides/setup/native-aarch64.html#debugging",
+    "href": "guides/setup/native-aarch64.html#debugging",
+    "title": "Setup: ARM nativo",
+    "section": "Debugging",
+    "text": "Debugging\nPara VS Code usa AArch64 native: launch. Esa configuración lanza GDB local, sin conectar a un puerto QEMU.",
+    "crumbs": [
+      "Entorno",
+      "Setup: ARM nativo"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html",
+    "href": "guides/troubleshooting.html",
+    "title": "Troubleshooting",
+    "section": "",
+    "text": "Esta página recoge fallas comunes del setup inicial. Antes de cambiar comandos, identifica primero tu ruta: QEMU en x86_64, ARM nativo o Docker.",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#aarch64-linux-gnu-gcc-command-not-found",
+    "href": "guides/troubleshooting.html#aarch64-linux-gnu-gcc-command-not-found",
+    "title": "Troubleshooting",
+    "section": "aarch64-linux-gnu-gcc: command not found",
+    "text": "aarch64-linux-gnu-gcc: command not found\nFalta el compilador cruzado de AArch64.\nsudo apt update\nsudo apt install -y gcc-aarch64-linux-gnu\n\n\n\n\n\n\nTipRuta alternativa\n\n\n\nSi no puedes instalar paquetes en el sistema anfitrión, usa Docker.",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#qemu-aarch64-command-not-found",
+    "href": "guides/troubleshooting.html#qemu-aarch64-command-not-found",
+    "title": "Troubleshooting",
+    "section": "qemu-aarch64: command not found",
+    "text": "qemu-aarch64: command not found\nFalta QEMU user mode.\nsudo apt install -y qemu-user",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#vs-code-no-conecta-a-gdb",
+    "href": "guides/troubleshooting.html#vs-code-no-conecta-a-gdb",
+    "title": "Troubleshooting",
+    "section": "VS Code no conecta a GDB",
+    "text": "VS Code no conecta a GDB\nVerifica que make gdb siga corriendo y que el puerto sea 1234.\nss -ltn | grep 1234\n\n\n\n\n\n\nAdvertenciaNo cierres la terminal de QEMU\n\n\n\nEn la ruta x86_64, make gdb debe quedarse vivo mientras VS Code se conecta. Si esa terminal termina, el puerto desaparece.",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#el-binario-no-corre-fuera-de-qemu-en-x86_64",
+    "href": "guides/troubleshooting.html#el-binario-no-corre-fuera-de-qemu-en-x86_64",
+    "title": "Troubleshooting",
+    "section": "El binario no corre fuera de QEMU en x86_64",
+    "text": "El binario no corre fuera de QEMU en x86_64\nEs esperado. El binario es AArch64 y tu sistema anfitrión no lo ejecuta directamente. Usa:\nmake run\nNo uses:\n./build/main",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#uname--m-no-dice-aarch64",
+    "href": "guides/troubleshooting.html#uname--m-no-dice-aarch64",
+    "title": "Troubleshooting",
+    "section": "uname -m no dice aarch64",
+    "text": "uname -m no dice aarch64\nSi estás en la ruta QEMU, esto es normal. Tu host puede ser x86_64.\nSi querías usar ARM nativo, entonces no estás en una máquina ARM64 real. Cambia a QEMU en x86_64.",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  },
+  {
+    "objectID": "guides/troubleshooting.html#localhost1234-ya-está-ocupado",
+    "href": "guides/troubleshooting.html#localhost1234-ya-está-ocupado",
+    "title": "Troubleshooting",
+    "section": "localhost:1234 ya está ocupado",
+    "text": "localhost:1234 ya está ocupado\nOtro proceso está usando el puerto del GDB server.\nss -ltnp | grep 1234\nCierra la sesión anterior de QEMU/GDB o cambia el puerto en el Makefile de la lección si sabes lo que estás haciendo.\n\n\n\n\n\n\nPrecauciónMantén una sola sesión de debug\n\n\n\nPara la primera lección, usa una terminal con make gdb y una conexión desde VS Code. Varias sesiones simultáneas hacen más difícil entender el error.",
+    "crumbs": [
+      "Troubleshooting",
+      "Troubleshooting"
+    ]
+  }
+]
