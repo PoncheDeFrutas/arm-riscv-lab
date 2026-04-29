@@ -1,11 +1,13 @@
-.PHONY: help site quarto-site preview slides slides-build hello hello-run hello-gdb clean
+.PHONY: help site quarto-site preview slides slides-build nojekyll publish hello hello-run hello-gdb clean
 
 LESSON ?= lessons/aarch64/02-syscalls/00-hello-world
 SLIDES ?= slides/aarch64/02-syscalls/00-hello-world/slides.md
+SLIDES_OUT ?= _site/slides/aarch64/02-syscalls/00-hello-world
 
 help:
 	@echo "Targets:"
 	@echo "  make site       Render Quarto site and build Slidev decks"
+	@echo "  make publish    Render locally and publish to GitHub Pages"
 	@echo "  make quarto-site Render only Quarto pages"
 	@echo "  make preview    Preview Quarto site"
 	@echo "  make slides     Run Slidev for the first deck"
@@ -15,7 +17,7 @@ help:
 	@echo "  make hello-gdb  Start first AArch64 lesson under GDB server"
 	@echo "  make clean      Clean generated lesson artifacts"
 
-site: quarto-site slides-build
+site: quarto-site slides-build nojekyll
 
 quarto-site:
 	quarto render
@@ -24,10 +26,24 @@ preview:
 	quarto preview
 
 slides:
-	pnpm exec slidev $(SLIDES)
+	@if [ -f "$(SLIDES)" ]; then \
+		pnpm exec slidev "$(SLIDES)"; \
+	else \
+		echo "Slidev deck not found at $(SLIDES); skipping."; \
+	fi
 
 slides-build:
-	pnpm run slides:build
+	@if [ -f "$(SLIDES)" ]; then \
+		pnpm exec slidev build "$(SLIDES)" --out "$(SLIDES_OUT)" --base ./ --router-mode hash; \
+	else \
+		echo "Slidev deck not found at $(SLIDES); skipping."; \
+	fi
+
+nojekyll:
+	touch _site/.nojekyll
+
+publish: site
+	quarto publish gh-pages --no-render --no-browser
 
 hello:
 	$(MAKE) -C $(LESSON)
