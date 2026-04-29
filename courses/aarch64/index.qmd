@@ -1,7 +1,7 @@
 ---
 title: "Ruta AArch64"
-subtitle: "ARM64 desde fundamentos hasta programación de bajo nivel."
-description: "Portada inicial de la ruta AArch64."
+subtitle: "ARM64 de bajo nivel, desde Linux userland hasta sistemas avanzados."
+description: "Portada de estudio de la ruta AArch64."
 ---
 
 ::: {.breadcrumb-lite}
@@ -9,12 +9,19 @@ Cursos > AArch64
 :::
 
 ::: {.hero-lab}
-Estudia ARM64 desde los fundamentos de computación hasta programación de bajo
-nivel en Linux y sistemas.
+Esta ruta estudia ARM64 como una ruta completa de bajo nivel, no solo como un
+curso de assembly. Empieza con programas pequeños en Linux y avanza hacia
+memoria, ABI, binarios, debugging, SIMD, hardware, kernel, seguridad y
+arquitectura avanzada.
 
-Esta ruta empezará con representación de datos, registros, GNU Assembly,
-programas mínimos, memoria, syscalls y debugging. Después avanzará hacia ABI,
-ELF, SIMD, bare metal, kernel, seguridad y virtualización.
+El objetivo es que puedas leer, escribir, ejecutar y depurar programas cerca del
+hardware, entendiendo qué ocurre entre el código, el sistema operativo y la
+arquitectura.
+
+::: {.hero-actions}
+[Ver roadmap completo](roadmap.qmd){.lab-button}
+[Ver guías de setup](../../guides/setup/index.qmd){.lab-button .secondary}
+:::
 :::
 
 ## Estado actual
@@ -22,15 +29,148 @@ ELF, SIMD, bare metal, kernel, seguridad y virtualización.
 ::: {.course-meter}
 **Base inicial del curso**
 
-El contenido se agregará por unidades conforme avance la ruta.
+La ruta ya tiene su estructura de estudio. El contenido se publicará por
+unidades conforme avance el laboratorio.
 :::
 
-## Primer bloque previsto
+## Cómo se organiza
+
+::: {.lab-flow}
+::: {.lab-step}
+**Ruta**
+Todo el camino AArch64.
+:::
+
+::: {.lab-step}
+**Bloques**
+Grandes áreas de aprendizaje.
+:::
+
+::: {.lab-step}
+**Unidades**
+Páginas principales de estudio.
+:::
+
+::: {.lab-step}
+**Temas internos**
+Secciones dentro de cada unidad.
+:::
+:::
+
+La regla de navegación será simple: la portada explica la ruta, el roadmap
+muestra los bloques, cada bloque mostrará unidades, y cada unidad desarrollará
+sus temas internos.
+
+## Niveles de avance
+
+::: {.lab-roadmap}
+::: {.roadmap-item .available}
+**Nivel 1 — Base obligatoria**
+
+Programas ARM64 simples en Linux usando registros, memoria, saltos,
+aritmética, lógica y syscalls.
+:::
+
+::: {.roadmap-item}
+**Nivel 2 — Programador ARM64 competente**
+
+Funciones, stack, ABI, structs, ELF, debugging, arrays, strings y algoritmos
+básicos.
+:::
+
+::: {.roadmap-item}
+**Nivel 3 — ARM64 aplicado a Linux y rendimiento**
+
+Floating point, NEON básico, mmap, debugging serio, pruebas, optimización y
+proyectos reales.
+:::
+
+::: {.roadmap-item}
+**Nivel 4 — Hardware y bare metal**
+
+GPIO, UART, timers, interrupciones, MMIO, MMU básica, caches y memoria de
+dispositivos.
+:::
+
+::: {.roadmap-item}
+**Nivel 5 — Sistemas operativos y kernel**
+
+Sincronización multicore, RTOS mínimo, kernel internals y device drivers.
+:::
+
+::: {.roadmap-item}
+**Nivel 6 — Performance, reversing y seguridad**
+
+Análisis de binarios, NEON/PMU, vulnerabilidades, mitigaciones y side channels
+desde una perspectiva defensiva.
+:::
+
+::: {.roadmap-item}
+**Nivel 7 — Arquitectura avanzada**
+
+Virtualización, hipervisores, trusted execution, compiladores, intrinsics,
+inline assembly y proyectos avanzados.
+:::
+:::
+
+## Bloques de la ruta
+
+::: {.course-grid}
+::: {.course-card .active}
+### A — Fundamentos
+
+Contexto, laboratorio, bases binarias, modelo AArch64 y GNU Assembly.
+:::
+
+::: {.course-card}
+### B — Linux userland
+
+Programas mínimos, memoria, aritmética, control de flujo y syscalls.
+:::
+
+::: {.course-card}
+### C — ABI y binarios
+
+Stack, heap, mmap, structs, AAPCS64, ELF y debugging.
+:::
+
+::: {.course-card}
+### D — Algoritmos y rendimiento
+
+Strings, arrays, SIMD básico, profiling, concurrencia, seguridad y proyectos.
+:::
+
+::: {.course-card}
+### E — Hardware y bare metal
+
+GPIO, Raspberry Pi, interrupciones, MMU, caches y memoria de dispositivos.
+:::
+
+::: {.course-card}
+### F — Sistemas avanzados
+
+Sincronización SMP, RTOS mínimo, kernel internals y drivers.
+:::
+
+::: {.course-card}
+### G — Reversing y seguridad
+
+NEON avanzado, PMU, análisis binario, mitigaciones y side channels.
+:::
+
+::: {.course-card}
+### H — Arquitectura avanzada ARM
+
+Virtualización, TrustZone, compiladores, intrinsics y proyectos integradores.
+:::
+:::
+
+## Primer bloque recomendado
 
 ### Fundamentos de computación y ARM64
 
 En este bloque se construye la base para entender cómo se ejecuta un programa
-AArch64.
+AArch64 antes de entrar en programas más grandes.
 
 ::: {.planned-list}
 - Setup y herramientas
@@ -42,4 +182,5 @@ AArch64.
 
 ## Siguiente paso
 
-Crear la unidad "Setup y herramientas".
+Crear la unidad "Setup y herramientas" y mantener el roadmap completo como
+referencia, no como lista obligatoria para empezar.
