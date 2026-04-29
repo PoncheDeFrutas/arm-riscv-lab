@@ -1,0 +1,61 @@
+---
+title: "ARM RISC-V Lab"
+subtitle: "Laboratorio de arquitectura de computadores y programación de bajo nivel."
+description: "Portal educativo para estudiar arquitectura de computadores, ARM64, RISC-V y programación de bajo nivel."
+toc: false
+---
+
+::: {.home-portal}
+::: {.hero-lab .portal-hero}
+Aprende cómo funcionan los programas cerca del hardware: registros, memoria,
+instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o
+emulados.
+
+::: {.hero-actions}
+[Entrar a AArch64](courses/aarch64/index.qmd){.lab-button}
+[Entrar a RISC-V](courses/riscv/index.qmd){.lab-button .secondary}
+:::
+:::
+
+## Qué aprenderás
+
+Representación de datos, registros, memoria, instrucciones, llamadas al sistema,
+debugging y ejecución de programas cerca del hardware.
+
+## Rutas disponibles
+
+::: {.course-grid}
+::: {.course-card .active}
+### AArch64 / ARM64
+
+Ruta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware
+real, kernel y seguridad.
+
+[Entrar a AArch64](courses/aarch64/index.qmd)
+:::
+
+::: {.course-card}
+### RISC-V
+
+Ruta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación,
+toolchain y fundamentos de arquitectura abierta.
+
+[Entrar a RISC-V](courses/riscv/index.qmd)
+:::
+:::
+
+## Por dónde empezar
+
+Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con
+AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.
+
+## Cómo se organiza el aprendizaje
+
+```txt
+Fundamentos -> Programas mínimos -> Memoria y control de flujo ->
+Funciones y ABI -> Binarios y debugging -> Sistemas avanzados
+```
+
+Cada ruta crecerá por bloques y unidades. La home solo muestra las rutas para
+mantener una entrada clara al laboratorio.
+:::

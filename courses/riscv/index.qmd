@@ -1,0 +1,43 @@
+---
+title: "Ruta RISC-V"
+subtitle: "Arquitectura abierta y programación de bajo nivel."
+description: "Portada inicial de la ruta RISC-V."
+---
+
+::: {.breadcrumb-lite}
+Cursos > RISC-V
+:::
+
+::: {.hero-lab}
+Estudia RISC-V desde los fundamentos de arquitectura abierta hasta programación
+de bajo nivel con ensamblador, memoria y ejecución de programas simples.
+
+Esta ruta empezará con representación de datos, registros, formato de
+instrucciones, ensamblador RISC-V y ejecución en entorno emulado. Más adelante
+podrá avanzar hacia ABI, ELF, debugging, extensiones, bare metal e
+interrupciones.
+:::
+
+## Estado actual
+
+::: {.course-meter}
+**Base inicial del curso**
+
+El contenido se agregará por unidades conforme avance la ruta.
+:::
+
+## Primer bloque previsto
+
+### Fundamentos de RISC-V
+
+::: {.planned-list}
+- Setup y herramientas
+- Bases binarias y representación de datos
+- Modelo de registros RISC-V
+- Instrucciones base RV64I
+- Primer programa mínimo
+:::
+
+## Siguiente paso
+
+Crear la unidad "Setup y herramientas".

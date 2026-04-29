@@ -1,0 +1,109 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+    - "courses/**/*.qmd"
+    - "guides/**/*.qmd"
+
+website:
+  title: "ARM RISC-V Lab"
+  description: "Arquitectura de Computadores y Ensambladores con AArch64, QEMU, GDB y RISC-V."
+  repo-url: https://github.com/PoncheDeFrutas/arm-riscv-lab
+  page-navigation: true
+  back-to-top-navigation: true
+  search:
+    location: navbar
+    type: overlay
+  navbar:
+    title: "ARM RISC-V Lab"
+    background: "#0b0f14"
+    foreground: "#e5e7eb"
+    pinned: true
+    collapse: true
+    left:
+      - href: index.qmd
+        text: Inicio
+      - text: Cursos
+        menu:
+          - href: courses/aarch64/index.qmd
+            text: Ruta AArch64
+          - href: courses/riscv/index.qmd
+            text: Ruta RISC-V
+      - text: Guías
+        menu:
+          - href: guides/setup/index.qmd
+            text: Setup
+          - href: guides/debugging/qemu-vscode.qmd
+            text: Debugging con QEMU
+          - href: guides/debugging/native-vscode.qmd
+            text: Debugging nativo ARM
+          - href: guides/troubleshooting.qmd
+            text: Troubleshooting
+    tools:
+      - icon: github
+        href: https://github.com/PoncheDeFrutas/arm-riscv-lab
+        text: GitHub
+  sidebar:
+    - title: "Curso AArch64"
+      style: docked
+      background: "#0b0f14"
+      foreground: "#d1d5db"
+      collapse-level: 2
+      contents:
+        - section: "AArch64"
+          contents:
+            - text: "Inicio del curso"
+              href: courses/aarch64/index.qmd
+    - title: "Curso RISC-V"
+      style: docked
+      background: "#0b0f14"
+      foreground: "#d1d5db"
+      collapse-level: 2
+      contents:
+        - section: "RISC-V"
+          contents:
+            - text: "Inicio del curso"
+              href: courses/riscv/index.qmd
+    - title: "Guías"
+      style: docked
+      background: "#0b0f14"
+      foreground: "#d1d5db"
+      collapse-level: 2
+      contents:
+        - section: "Entorno"
+          contents:
+            - guides/setup/index.qmd
+            - guides/setup/qemu-x86_64.qmd
+            - guides/setup/native-aarch64.qmd
+            - guides/setup/docker.qmd
+        - section: "Debugging"
+          contents:
+            - guides/debugging/qemu-vscode.qmd
+            - guides/debugging/native-vscode.qmd
+        - section: "Troubleshooting"
+          contents:
+            - guides/troubleshooting.qmd
+  page-footer:
+    left: "ARM RISC-V Lab"
+    center: "Arquitectura de Computadores y Ensambladores"
+    right:
+      - text: "GitHub"
+        href: https://github.com/PoncheDeFrutas/arm-riscv-lab
+
+format:
+  html:
+    theme:
+      - default
+      - assets/styles/site.scss
+    highlight-style: breezedark
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-copy: true
+    code-tools: false
+    code-overflow: wrap
+    callout-appearance: simple
+    link-external-icon: true
+    anchor-sections: true
+    lang: es

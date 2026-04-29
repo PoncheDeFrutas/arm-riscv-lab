@@ -1,0 +1,49 @@
+---
+title: "Setup"
+description: "Elige y prepara tu entorno para ejecutar AArch64."
+---
+
+El setup del curso tiene una ruta principal y dos alternativas. La decisión
+depende de tu máquina, no de tu nivel.
+
+## Elige una ruta
+
+| Ruta | Úsala si... | Comandos principales |
+|---|---|---|
+| [QEMU en x86_64](qemu-x86_64.qmd) | Tu laptop o PC no es ARM64 | `make`, `make run`, `make gdb` |
+| [ARM nativo](native-aarch64.qmd) | Estás en Linux ARM64 real | `make RUN_MODE=native run` |
+| [Docker](docker.qmd) | Necesitas entorno reproducible | `docker build`, `docker run` |
+
+::: {.callout-tip}
+## Recomendación para empezar
+
+Si no sabes cuál elegir, usa [QEMU en x86_64](qemu-x86_64.qmd). Es la ruta que
+permite trabajar desde una computadora común sin hardware ARM.
+:::
+
+::: {.callout-warning}
+## QEMU no convierte tu máquina en ARM
+
+QEMU ejecuta el binario AArch64 en user mode. Tu sistema sigue siendo x86_64, por
+eso necesitas `gdb-multiarch` para depurar.
+:::
+
+## Resultado esperado
+
+Al terminar esta sección debes poder ejecutar:
+
+```bash
+cd lessons/aarch64/02-syscalls/00-hello-world
+make
+make run
+```
+
+Y para depurar:
+
+```bash
+make gdb
+```
+
+Luego sigue con [Depuración: QEMU y VS Code](../debugging/qemu-vscode.qmd) o con
+[Depuración: ARM nativo y VS Code](../debugging/native-vscode.qmd), según tu
+ruta.

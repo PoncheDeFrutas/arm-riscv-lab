@@ -1,0 +1,77 @@
+---
+title: "Setup: x86_64 con QEMU"
+description: "Instala toolchain cruzado, QEMU user mode y gdb-multiarch para ejecutar AArch64 desde x86_64."
+---
+
+Esta es la ruta principal. Permite compilar binarios AArch64 y ejecutarlos desde
+una máquina x86_64 sin Raspberry Pi, VM completa ni hardware ARM.
+
+::: {.callout-note}
+## Qué instala esta ruta
+
+- `gcc-aarch64-linux-gnu`: toolchain cruzado para generar binarios AArch64.
+- `binutils-aarch64-linux-gnu`: ensamblador, linker y utilidades.
+- `qemu-user`: ejecución de binarios ARM64 en user mode.
+- `gdb-multiarch`: depuración de arquitecturas distintas al host.
+:::
+
+## Paquetes
+
+En Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install -y make gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user gdb-multiarch
+```
+
+## Verificación
+
+```bash
+aarch64-linux-gnu-gcc --version
+qemu-aarch64 --version
+gdb-multiarch --version
+```
+
+::: {.callout-tip}
+## Señal correcta
+
+No necesitas que `uname -m` diga `aarch64`. En esta ruta, tu máquina puede seguir
+reportando `x86_64`; QEMU ejecutará el binario ARM64.
+:::
+
+## Primer programa
+
+```bash
+cd lessons/aarch64/02-syscalls/00-hello-world
+make
+make run
+```
+
+Salida esperada:
+
+```text
+Hello, AArch64 syscalls!
+```
+
+## Depuración
+
+Arranca QEMU con GDB server:
+
+```bash
+make gdb
+```
+
+Luego conecta VS Code con la configuración `AArch64 QEMU: attach`.
+
+::: {.callout-warning}
+## Terminal bloqueada es normal
+
+`make gdb` queda esperando conexión en `localhost:1234`. Deja esa terminal
+abierta y conecta el debugger desde VS Code en otra acción.
+:::
+
+## Si algo falla
+
+- Si falta el compilador: revisa [Troubleshooting](../troubleshooting.qmd#aarch64-linux-gnu-gcc-command-not-found).
+- Si falta QEMU: revisa [Troubleshooting](../troubleshooting.qmd#qemu-aarch64-command-not-found).
+- Si VS Code no conecta: revisa [Depuración con QEMU](../debugging/qemu-vscode.qmd).

@@ -1,0 +1,45 @@
+---
+title: "Depuración: ARM nativo y VS Code"
+description: "Depura un binario AArch64 en hardware ARM64 real con GDB local desde VS Code."
+---
+
+En ARM nativo no se usa QEMU. VS Code lanza GDB directamente sobre el binario
+AArch64 porque el procesador anfitrión ya puede ejecutarlo.
+
+::: {.callout-important}
+## Usa esta guía solo en ARM64 real
+
+Verifica con `uname -m`. Si reporta `x86_64`, vuelve a
+[Depuración: QEMU y VS Code](qemu-vscode.qmd).
+:::
+
+## Compila
+
+```bash
+cd lessons/aarch64/02-syscalls/00-hello-world
+make RUN_MODE=native
+```
+
+## Lanza GDB
+
+```bash
+make RUN_MODE=native gdb
+```
+
+En VS Code usa la configuración `AArch64 native: launch`.
+
+## Qué cambia frente a QEMU
+
+| Tema | QEMU en x86_64 | ARM nativo |
+|---|---|---|
+| Ejecución | `qemu-aarch64` | Directa |
+| Debugger | `gdb-multiarch` | `gdb` |
+| Conexión | `localhost:1234` | Launch local |
+| `RUN_MODE` | Por defecto | `native` |
+
+::: {.callout-tip}
+## Misma idea, menos capas
+
+Los registros, syscalls y flujo del programa son los mismos. Lo que cambia es la
+forma en que el proceso llega a ejecutarse.
+:::

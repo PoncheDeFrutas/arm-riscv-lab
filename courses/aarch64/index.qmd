@@ -1,0 +1,45 @@
+---
+title: "Ruta AArch64"
+subtitle: "ARM64 desde fundamentos hasta programación de bajo nivel."
+description: "Portada inicial de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64
+:::
+
+::: {.hero-lab}
+Estudia ARM64 desde los fundamentos de computación hasta programación de bajo
+nivel en Linux y sistemas.
+
+Esta ruta empezará con representación de datos, registros, GNU Assembly,
+programas mínimos, memoria, syscalls y debugging. Después avanzará hacia ABI,
+ELF, SIMD, bare metal, kernel, seguridad y virtualización.
+:::
+
+## Estado actual
+
+::: {.course-meter}
+**Base inicial del curso**
+
+El contenido se agregará por unidades conforme avance la ruta.
+:::
+
+## Primer bloque previsto
+
+### Fundamentos de computación y ARM64
+
+En este bloque se construye la base para entender cómo se ejecuta un programa
+AArch64.
+
+::: {.planned-list}
+- Setup y herramientas
+- Bases binarias y representación de datos
+- Modelo ARMv8-A / AArch64
+- GNU Assembly, directivas y pseudo-instrucciones
+- Primer programa mínimo
+:::
+
+## Siguiente paso
+
+Crear la unidad "Setup y herramientas".

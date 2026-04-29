@@ -1,0 +1,85 @@
+---
+title: "Depuración: QEMU y VS Code"
+description: "Conecta VS Code a un binario AArch64 ejecutado por QEMU con GDB server en localhost:1234."
+---
+
+Esta guía conecta VS Code con un binario AArch64 ejecutándose bajo QEMU. Es la
+ruta correcta cuando tu máquina anfitriona es x86_64.
+
+::: {.callout-important}
+## Modelo mental
+
+QEMU ejecuta el programa y abre un GDB server en `localhost:1234`. VS Code no
+lanza el programa directamente; se conecta a ese proceso.
+:::
+
+## 1. Compila el ejemplo
+
+```bash
+cd lessons/aarch64/02-syscalls/00-hello-world
+make
+```
+
+## 2. Arranca QEMU con GDB server
+
+```bash
+make gdb
+```
+
+Deja esa terminal abierta. El programa está esperando al debugger.
+
+## 3. Conecta VS Code
+
+En VS Code usa la configuración `AArch64 QEMU: attach`.
+
+Parámetros importantes:
+
+```json
+{
+  "miDebuggerPath": "/usr/bin/gdb-multiarch",
+  "miDebuggerServerAddress": "localhost:1234",
+  "MIMode": "gdb"
+}
+```
+
+Comandos de setup:
+
+```text
+set architecture aarch64
+set disassemble-next-line on
+```
+
+## Qué observar primero
+
+::: {.lab-flow}
+::: {.lab-step}
+**`pc`**
+
+Dirección de la instrucción actual.
+:::
+
+::: {.lab-step}
+**`x0` a `x2`**
+
+Argumentos de `write` y `exit`.
+:::
+
+::: {.lab-step}
+**`x8`**
+
+Número de syscall.
+:::
+
+::: {.lab-step}
+**Memoria**
+
+Dirección del mensaje apuntada por `x1`.
+:::
+:::
+
+::: {.callout-warning}
+## Error común
+
+Si VS Code dice que no puede conectar, casi siempre `make gdb` no está corriendo
+o el puerto `1234` ya está ocupado.
+:::

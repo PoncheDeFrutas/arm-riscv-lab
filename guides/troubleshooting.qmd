@@ -1,0 +1,86 @@
+---
+title: "Troubleshooting"
+description: "Errores comunes de gcc-aarch64-linux-gnu, qemu-aarch64, gdb-multiarch, VS Code y localhost:1234."
+---
+
+Esta página recoge fallas comunes del setup inicial. Antes de cambiar comandos,
+identifica primero tu ruta: QEMU en x86_64, ARM nativo o Docker.
+
+## `aarch64-linux-gnu-gcc: command not found`
+
+Falta el compilador cruzado de AArch64.
+
+```bash
+sudo apt update
+sudo apt install -y gcc-aarch64-linux-gnu
+```
+
+::: {.callout-tip}
+## Ruta alternativa
+
+Si no puedes instalar paquetes en el sistema anfitrión, usa
+[Docker](setup/docker.qmd).
+:::
+
+## `qemu-aarch64: command not found`
+
+Falta QEMU user mode.
+
+```bash
+sudo apt install -y qemu-user
+```
+
+## VS Code no conecta a GDB
+
+Verifica que `make gdb` siga corriendo y que el puerto sea `1234`.
+
+```bash
+ss -ltn | grep 1234
+```
+
+::: {.callout-warning}
+## No cierres la terminal de QEMU
+
+En la ruta x86_64, `make gdb` debe quedarse vivo mientras VS Code se conecta.
+Si esa terminal termina, el puerto desaparece.
+:::
+
+## El binario no corre fuera de QEMU en x86_64
+
+Es esperado. El binario es AArch64 y tu sistema anfitrión no lo ejecuta
+directamente. Usa:
+
+```bash
+make run
+```
+
+No uses:
+
+```bash
+./build/main
+```
+
+## `uname -m` no dice `aarch64`
+
+Si estás en la ruta QEMU, esto es normal. Tu host puede ser `x86_64`.
+
+Si querías usar ARM nativo, entonces no estás en una máquina ARM64 real. Cambia a
+[QEMU en x86_64](setup/qemu-x86_64.qmd).
+
+## `localhost:1234` ya está ocupado
+
+Otro proceso está usando el puerto del GDB server.
+
+```bash
+ss -ltnp | grep 1234
+```
+
+Cierra la sesión anterior de QEMU/GDB o cambia el puerto en el Makefile de la
+lección si sabes lo que estás haciendo.
+
+::: {.callout-caution}
+## Mantén una sola sesión de debug
+
+Para la primera lección, usa una terminal con `make gdb` y una conexión desde VS
+Code. Varias sesiones simultáneas hacen más difícil entender el error.
+:::

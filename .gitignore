@@ -1,0 +1,16 @@
+.quarto/
+_site/
+node_modules/
+dist/
+.slidev/
+
+build/
+*.o
+*.elf
+*.out
+
+.DS_Store
+Thumbs.db
+
+/.quarto/
+**/*.quarto_ipynb

@@ -1,0 +1,62 @@
+---
+title: "Setup: Docker"
+description: "Usa un contenedor reproducible para compilar, ejecutar y depurar las lecciones AArch64."
+---
+
+Docker ofrece un entorno reproducible para laboratorios, máquinas prestadas o
+equipos donde instalar toolchains causa demasiada fricción.
+
+::: {.callout-note}
+## Cuándo conviene Docker
+
+Úsalo si necesitas que todo el grupo tenga el mismo entorno. Si estás trabajando
+en tu máquina personal y puedes instalar paquetes, QEMU en x86_64 suele ser más
+directo.
+:::
+
+## Construir imagen
+
+Desde la raíz del repo:
+
+```bash
+docker build -t arm-riscv-lab -f tooling/docker/Dockerfile .
+```
+
+## Usar contenedor
+
+```bash
+docker run --rm -it -v "$PWD":/workspace -w /workspace arm-riscv-lab
+```
+
+Dentro del contenedor:
+
+```bash
+cd lessons/aarch64/02-syscalls/00-hello-world
+make
+make run
+```
+
+## Depurar desde VS Code
+
+Expón el puerto del GDB server:
+
+```bash
+docker run --rm -it -p 1234:1234 -v "$PWD":/workspace -w /workspace arm-riscv-lab
+```
+
+Dentro del contenedor:
+
+```bash
+cd lessons/aarch64/02-syscalls/00-hello-world
+make gdb
+```
+
+En el host, conecta VS Code a `localhost:1234`.
+
+::: {.callout-warning}
+## Rutas dentro y fuera del contenedor
+
+El proyecto vive como `/workspace` dentro del contenedor. Si una configuración de
+debugging no encuentra el binario, revisa que VS Code esté abierto en la raíz del
+repo en el host.
+:::

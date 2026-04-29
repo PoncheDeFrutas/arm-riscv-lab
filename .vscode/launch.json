@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "AArch64 QEMU: attach",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/lessons/aarch64/02-syscalls/00-hello-world/build/main",
+      "cwd": "${workspaceFolder}/lessons/aarch64/02-syscalls/00-hello-world",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb-multiarch",
+      "miDebuggerServerAddress": "localhost:1234",
+      "stopAtEntry": true,
+      "setupCommands": [
+        {
+          "text": "set architecture aarch64"
+        },
+        {
+          "text": "set disassemble-next-line on"
+        }
+      ]
+    },
+    {
+      "name": "AArch64 native: launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/lessons/aarch64/02-syscalls/00-hello-world/build/main",
+      "cwd": "${workspaceFolder}/lessons/aarch64/02-syscalls/00-hello-world",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "stopAtEntry": true,
+      "setupCommands": [
+        {
+          "text": "set disassemble-next-line on"
+        }
+      ]
+    }
+  ]
+}
