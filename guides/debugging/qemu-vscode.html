@@ -283,6 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#compila-el-ejemplo" id="toc-compila-el-ejemplo" class="nav-link active" data-scroll-target="#compila-el-ejemplo">1. Compila el ejemplo</a></li>
   <li><a href="#arranca-qemu-con-gdb-server" id="toc-arranca-qemu-con-gdb-server" class="nav-link" data-scroll-target="#arranca-qemu-con-gdb-server">2. Arranca QEMU con GDB server</a></li>
   <li><a href="#conecta-vs-code" id="toc-conecta-vs-code" class="nav-link" data-scroll-target="#conecta-vs-code">3. Conecta VS Code</a></li>
+  <li><a href="#debug-console" id="toc-debug-console" class="nav-link" data-scroll-target="#debug-console">4. Debug Console</a></li>
   <li><a href="#qué-observar-primero" id="toc-qué-observar-primero" class="nav-link" data-scroll-target="#qué-observar-primero">Qué observar primero</a></li>
   </ul>
 </nav>
@@ -330,26 +331,99 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="compila-el-ejemplo" class="level2">
 <h2 class="anchored" data-anchor-id="compila-el-ejemplo">1. Compila el ejemplo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> lessons/aarch64/02-syscalls/00-hello-world</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="arranca-qemu-con-gdb-server" class="level2">
 <h2 class="anchored" data-anchor-id="arranca-qemu-con-gdb-server">2. Arranca QEMU con GDB server</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Deja esa terminal abierta. El programa está esperando al debugger.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Deja esa terminal abierta. El programa está esperando al debugger. En el Makefile de QEMU, este target usa <code>-singlestep</code> para reducir saltos visuales:</p>
+<pre class="make"><code>gdb: $(TARGET)
+    $(QEMU) -g 1234 -singlestep $(TARGET)</code></pre>
 </section>
 <section id="conecta-vs-code" class="level2">
 <h2 class="anchored" data-anchor-id="conecta-vs-code">3. Conecta VS Code</h2>
-<p>En VS Code usa la configuración <code>AArch64 QEMU: attach</code>.</p>
-<p>Parámetros importantes:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"/usr/bin/gdb-multiarch"</span><span class="fu">,</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"miDebuggerServerAddress"</span><span class="fu">:</span> <span class="st">"localhost:1234"</span><span class="fu">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Comandos de setup:</p>
-<pre class="text"><code>set architecture aarch64
-set disassemble-next-line on</code></pre>
+<p>Instala estas extensiones:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Extensión</th>
+<th>ID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>C/C++</td>
+<td><code>ms-vscode.cpptools</code></td>
+</tr>
+<tr class="even">
+<td>Makefile Tools</td>
+<td><code>ms-vscode.makefile-tools</code></td>
+</tr>
+<tr class="odd">
+<td>ARM64 Assembly (GNU AS)</td>
+<td><code>Felipenguim.vscode-arm64-assembly</code></td>
+</tr>
+<tr class="even">
+<td>StackScope</td>
+<td><code>EightLayerStudio.StackScope</code></td>
+</tr>
+</tbody>
+</table>
+<p>En VS Code usa la configuración <code>Debug ARM64 (QEMU)</code>.</p>
+<p>Config completa para copiar en <code>.vscode/launch.json</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"0.2.0"</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"configurations"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 (QEMU)"</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"cppdbg"</span><span class="fu">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src/build/main"</span><span class="fu">,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src"</span><span class="fu">,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"/usr/bin/gdb-multiarch"</span><span class="fu">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerServerAddress"</span><span class="fu">:</span> <span class="st">"localhost:1234"</span><span class="fu">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"sourceFileMap"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">"${workspaceFolder}/src"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src"</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set breakpoint auto-hw on"</span> <span class="fu">}</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-note callout-titled" title="Si usas otra carpeta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Si usas otra carpeta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Abre <code>00-hello-minimo/</code> como workspace. Así VS Code encuentra <code>${workspaceFolder}/src/build/main</code>.</p>
+</div>
+</div>
+</section>
+<section id="debug-console" class="level2">
+<h2 class="anchored" data-anchor-id="debug-console">4. Debug Console</h2>
+<p>En la Debug Console de VS Code puedes forzar depuración por instrucción:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stepi</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">nexti</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">_start</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">printString</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">readIntFromConsole</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">info</span> registers x0 x1 x2 x8 pc</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x/6i</span> <span class="va">$pc</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>svc #0</code> entra al kernel. GDB no entra a depurar internamente esa llamada como si fuera una función de tu archivo <code>.s</code>; observa registros antes y después.</p>
 </section>
 <section id="qué-observar-primero" class="level2">
 <h2 class="anchored" data-anchor-id="qué-observar-primero">Qué observar primero</h2>
@@ -381,7 +455,20 @@ set disassemble-next-line on</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si VS Code dice que no puede conectar, casi siempre <code>make gdb</code> no está corriendo o el puerto <code>1234</code> ya está ocupado.</p>
+<p>Si VS Code dice que no puede conectar, casi siempre <code>make -C src gdb</code> no está corriendo o el puerto <code>1234</code> ya está ocupado.</p>
+</div>
+</div>
+<div class="callout callout-style-simple callout-tip callout-titled" title="Breakpoints por etiqueta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Breakpoints por etiqueta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>break nombreEtiqueta</code> funciona si el símbolo existe en el binario. Con <code>.include</code>, la etiqueta queda en el mismo ensamblado; con <code>.extern</code>, debe venir de otro objeto enlazado.</p>
 </div>
 </div>
 

@@ -2,46 +2,74 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/index.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-03T21:32:47.013Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/qemu-x86_64.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:14.075Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/index.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:49.727Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/qemu-vscode.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:14.359Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/riscv/index.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-03T21:32:47.013Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/index.html</loc>
+    <lastmod>2026-05-06T23:16:22.031Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/04-inspeccion-binario.html</loc>
+    <lastmod>2026-05-06T23:15:13.463Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/02-instalacion-toolchain.html</loc>
+    <lastmod>2026-05-06T23:28:00.107Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/index.html</loc>
-    <lastmod>2026-04-29T20:33:46.029Z</lastmod>
+    <lastmod>2026-05-06T22:11:06.676Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/fundamentos/contexto-historia-objetivos.html</loc>
+    <lastmod>2026-05-06T22:11:33.304Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/01-entorno-linux-arm64.html</loc>
+    <lastmod>2026-05-06T23:15:49.467Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/03-primer-programa.html</loc>
+    <lastmod>2026-05-06T23:15:49.551Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/05-debugging-minimo.html</loc>
+    <lastmod>2026-05-06T23:15:13.555Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/roadmap.html</loc>
-    <lastmod>2026-04-29T20:33:46.081Z</lastmod>
+    <lastmod>2026-05-06T22:11:06.588Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/native-vscode.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:14.451Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/docker.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:14.271Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/native-aarch64.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:14.175Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/troubleshooting.html</loc>
-    <lastmod>2026-04-29T20:17:27.073Z</lastmod>
+    <lastmod>2026-05-06T23:15:14.547Z</lastmod>
   </url>
 </urlset>

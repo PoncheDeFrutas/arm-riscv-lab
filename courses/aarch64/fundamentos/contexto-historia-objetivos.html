@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Usa un contenedor reproducible para compilar, ejecutar y depurar las lecciones AArch64.">
+<meta name="description" content="Unidad introductoria sobre assembly, ISA, ARM, ARMv8-A, AArch64 y A64.">
 
-<title>Setup: Docker – ARM RISC-V Lab</title>
+<title>00 · Contexto, historia y objetivos – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,63 +21,28 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<link href="../../guides/debugging/qemu-vscode.html" rel="next">
-<link href="../../guides/setup/native-aarch64.html" rel="prev">
-<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../courses/aarch64/laboratorio/index.html" rel="next">
+<link href="../../../courses/aarch64/roadmap.html" rel="prev">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -115,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../../index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">ARM RISC-V Lab</span>
     </a>
   </div>
@@ -126,7 +91,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Inicio</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -135,17 +100,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-cursos">    
         <li>
-    <a class="dropdown-item" href="../../courses/aarch64/index.html">
+    <a class="dropdown-item" href="../../../courses/aarch64/index.html">
  <span class="dropdown-text">Ruta AArch64</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../courses/riscv/index.html">
+    <a class="dropdown-item" href="../../../courses/riscv/index.html">
  <span class="dropdown-text">Ruta RISC-V</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../../courses/aarch64/roadmap.html"> 
+    <a class="nav-link active" href="../../../courses/aarch64/roadmap.html" aria-current="page"> 
 <span class="menu-text">Roadmap</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -154,19 +119,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-guías">    
         <li>
-    <a class="dropdown-item" href="../../guides/setup/index.html">
+    <a class="dropdown-item" href="../../../guides/setup/index.html">
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../guides/debugging/qemu-vscode.html">
+    <a class="dropdown-item" href="../../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../guides/debugging/native-vscode.html">
+    <a class="dropdown-item" href="../../../guides/debugging/native-vscode.html">
  <span class="dropdown-text">Debugging nativo ARM</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../guides/troubleshooting.html">
+    <a class="dropdown-item" href="../../../guides/troubleshooting.html">
  <span class="dropdown-text">Troubleshooting</span></a>
   </li>  
     </ul>
@@ -183,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../guides/setup/index.html">Entorno</a></li><li class="breadcrumb-item"><a href="../../guides/setup/docker.html">Setup: Docker</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html">00 · Contexto, historia y objetivos</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -198,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Entorno</span></a>
+ <span class="menu-text">AArch64</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -206,68 +171,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+  <a href="../../../courses/aarch64/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio del curso</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/qemu-x86_64.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: x86_64 con QEMU</span></a>
+  <a href="../../../courses/aarch64/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/native-aarch64.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: ARM nativo</span></a>
+  <a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">00 · Contexto, historia y objetivos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/docker.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Setup: Docker</span></a>
+  <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Entorno Linux ARM64</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Instalación toolchain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Primer programa</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inspección del binario</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Debugging mínimo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Debugging</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/debugging/qemu-vscode.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Depuración: QEMU y VS Code</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/debugging/native-vscode.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Depuración: ARM nativo y VS Code</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Troubleshooting</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar sección">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/troubleshooting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Troubleshooting</span></a>
-  </div>
-</li>
       </ul>
   </li>
     </ul>
@@ -280,23 +252,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#construir-imagen" id="toc-construir-imagen" class="nav-link active" data-scroll-target="#construir-imagen">Construir imagen</a></li>
-  <li><a href="#usar-contenedor" id="toc-usar-contenedor" class="nav-link" data-scroll-target="#usar-contenedor">Usar contenedor</a></li>
-  <li><a href="#depurar-desde-vs-code" id="toc-depurar-desde-vs-code" class="nav-link" data-scroll-target="#depurar-desde-vs-code">Depurar desde VS Code</a></li>
+  <li><a href="#qué-aprenderás-en-esta-unidad" id="toc-qué-aprenderás-en-esta-unidad" class="nav-link active" data-scroll-target="#qué-aprenderás-en-esta-unidad">Qué aprenderás en esta unidad</a></li>
+  <li><a href="#qué-es-assembly" id="toc-qué-es-assembly" class="nav-link" data-scroll-target="#qué-es-assembly">Qué es assembly</a></li>
+  <li><a href="#qué-es-una-isa" id="toc-qué-es-una-isa" class="nav-link" data-scroll-target="#qué-es-una-isa">Qué es una ISA</a></li>
+  <li><a href="#isa-vs-implementación-microarquitectura" id="toc-isa-vs-implementación-microarquitectura" class="nav-link" data-scroll-target="#isa-vs-implementación-microarquitectura">ISA vs implementación / microarquitectura</a></li>
+  <li><a href="#qué-es-arm" id="toc-qué-es-arm" class="nav-link" data-scroll-target="#qué-es-arm">Qué es ARM</a></li>
+  <li><a href="#qué-es-armv8-a" id="toc-qué-es-armv8-a" class="nav-link" data-scroll-target="#qué-es-armv8-a">Qué es ARMv8-A</a></li>
+  <li><a href="#qué-es-aarch64" id="toc-qué-es-aarch64" class="nav-link" data-scroll-target="#qué-es-aarch64">Qué es AArch64</a></li>
+  <li><a href="#qué-es-a64" id="toc-qué-es-a64" class="nav-link" data-scroll-target="#qué-es-a64">Qué es A64</a></li>
+  <li><a href="#arm32-vs-arm64" id="toc-arm32-vs-arm64" class="nav-link" data-scroll-target="#arm32-vs-arm64">ARM32 vs ARM64</a></li>
+  <li><a href="#aarch32-vs-aarch64" id="toc-aarch32-vs-aarch64" class="nav-link" data-scroll-target="#aarch32-vs-aarch64">AArch32 vs AArch64</a></li>
+  <li><a href="#a32-t32-a64" id="toc-a32-t32-a64" class="nav-link" data-scroll-target="#a32-t32-a64">A32 / T32 / A64</a></li>
+  <li><a href="#risc-vs-cisc" id="toc-risc-vs-cisc" class="nav-link" data-scroll-target="#risc-vs-cisc">RISC vs CISC</a></li>
+  <li><a href="#dónde-se-usa-arm64" id="toc-dónde-se-usa-arm64" class="nav-link" data-scroll-target="#dónde-se-usa-arm64">Dónde se usa ARM64</a></li>
+  <li><a href="#por-qué-aprender-assembly-hoy" id="toc-por-qué-aprender-assembly-hoy" class="nav-link" data-scroll-target="#por-qué-aprender-assembly-hoy">Por qué aprender assembly hoy</a></li>
+  <li><a href="#relación-con-c-linux-hardware-y-sistemas" id="toc-relación-con-c-linux-hardware-y-sistemas" class="nav-link" data-scroll-target="#relación-con-c-linux-hardware-y-sistemas">Relación con C, Linux, hardware y sistemas</a></li>
+  <li><a href="#qué-podrás-hacer-al-avanzar-en-la-ruta" id="toc-qué-podrás-hacer-al-avanzar-en-la-ruta" class="nav-link" data-scroll-target="#qué-podrás-hacer-al-avanzar-en-la-ruta">Qué podrás hacer al avanzar en la ruta</a></li>
+  <li><a href="#resumen-de-la-unidad" id="toc-resumen-de-la-unidad" class="nav-link" data-scroll-target="#resumen-de-la-unidad">Resumen de la unidad</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#siguiente-unidad" id="toc-siguiente-unidad" class="nav-link" data-scroll-target="#siguiente-unidad">Siguiente unidad</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../guides/setup/index.html">Entorno</a></li><li class="breadcrumb-item"><a href="../../guides/setup/docker.html">Setup: Docker</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html">00 · Contexto, historia y objetivos</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Setup: Docker</h1>
+<h1 class="title">00 · Contexto, historia y objetivos</h1>
+<p class="subtitle lead">Antes de escribir instrucciones, conviene entender qué es ARM64, qué papel cumple una ISA y por qué assembly ayuda a ver la relación entre software y hardware.</p>
 </div>
 
 <div>
   <div class="description">
-    Usa un contenedor reproducible para compilar, ejecutar y depurar las lecciones AArch64.
+    Unidad introductoria sobre assembly, ISA, ARM, ARMv8-A, AArch64 y A64.
   </div>
 </div>
 
@@ -313,54 +302,204 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Docker ofrece un entorno reproducible para laboratorios, máquinas prestadas o equipos donde instalar toolchains causa demasiada fricción.</p>
-<div class="callout callout-style-simple callout-note callout-titled">
+<div class="breadcrumb-lite">
+<p>Cursos &gt; AArch64 &gt; Fundamentos &gt; Contexto, historia y objetivos</p>
+</div>
+<div class="hero-lab">
+<p>Esta unidad ubica el mapa antes de escribir código. El objetivo no es memorizar instrucciones todavía, sino entender qué significa estudiar ARM64/AArch64 y por qué assembly sirve para observar lo que normalmente queda oculto detrás de un lenguaje de alto nivel.</p>
+</div>
+<div class="hero-actions">
+<p><a class="lab-button" href="../../../slides/aarch64/fundamentos/contexto-historia-objetivos/">Ver presentación</a></p>
+</div>
+<section id="qué-aprenderás-en-esta-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="qué-aprenderás-en-esta-unidad">Qué aprenderás en esta unidad</h2>
+<ul>
+<li>Qué es assembly.</li>
+<li>Qué es una ISA.</li>
+<li>Qué es ARM.</li>
+<li>Qué significan ARMv8-A, AArch64 y A64.</li>
+<li>Diferencia entre arquitectura e implementación.</li>
+<li>Diferencia entre ARM32 y ARM64.</li>
+<li>Por qué aprender assembly sigue siendo útil.</li>
+<li>Qué podrás hacer al avanzar en la ruta.</li>
+</ul>
+</section>
+<section id="qué-es-assembly" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-assembly">Qué es assembly</h2>
+<p>Assembly es una forma textual de escribir instrucciones cercanas a las que entiende el procesador. No es lenguaje de máquina puro: el procesador no lee directamente palabras como <code>mov</code>, <code>add</code> o <code>ldr</code>; esas instrucciones se ensamblan en valores binarios. Aun así, assembly está mucho más cerca del hardware que C, Python o JavaScript.</p>
+<p>Cada arquitectura tiene su propio assembly. El assembly de AArch64 no es igual al de x86-64, RISC-V o MIPS, porque cada familia define instrucciones, registros y reglas visibles distintas.</p>
+<p>Assembly permite observar registros, memoria, saltos e instrucciones con menos capas intermedias. Aprenderlo no significa escribir todo en assembly, sino entender mejor cómo se ejecutan los programas que escribimos en otros lenguajes.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Cuándo conviene Docker
+<span class="screen-reader-only">Nota</span>Idea clave
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Úsalo si necesitas que todo el grupo tenga el mismo entorno. Si estás trabajando en tu máquina personal y puedes instalar paquetes, QEMU en x86_64 suele ser más directo.</p>
+<p>Assembly es una herramienta de estudio: ayuda a ver la ejecución de un programa desde el punto de vista del procesador.</p>
 </div>
 </div>
-<section id="construir-imagen" class="level2">
-<h2 class="anchored" data-anchor-id="construir-imagen">Construir imagen</h2>
-<p>Desde la raíz del repo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> arm-riscv-lab <span class="at">-f</span> tooling/docker/Dockerfile .</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="usar-contenedor" class="level2">
-<h2 class="anchored" data-anchor-id="usar-contenedor">Usar contenedor</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/workspace <span class="at">-w</span> /workspace arm-riscv-lab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Dentro del contenedor:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="qué-es-una-isa" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-una-isa">Qué es una ISA</h2>
+<p>Una ISA, del inglés <em>Instruction Set Architecture</em>, es el contrato visible entre software y hardware. Define qué instrucciones existen, qué registros puede usar un programa y cómo el software controla el comportamiento observable del procesador.</p>
+<p>La ISA no describe necesariamente cómo está construido internamente un procesador real. Dos procesadores pueden ser compatibles con la misma ISA y aun así tener diseños internos distintos.</p>
 </section>
-<section id="depurar-desde-vs-code" class="level2">
-<h2 class="anchored" data-anchor-id="depurar-desde-vs-code">Depurar desde VS Code</h2>
-<p>Expón el puerto del GDB server:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">-p</span> 1234:1234 <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/workspace <span class="at">-w</span> /workspace arm-riscv-lab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Dentro del contenedor:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En el host, conecta VS Code a <code>localhost:1234</code>.</p>
-<div class="callout callout-style-simple callout-warning callout-titled">
+<section id="isa-vs-implementación-microarquitectura" class="level2">
+<h2 class="anchored" data-anchor-id="isa-vs-implementación-microarquitectura">ISA vs implementación / microarquitectura</h2>
+<p>La diferencia entre ISA e implementación evita una confusión común: no todo lo que pertenece al procesador pertenece a la arquitectura visible para el programador.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>ISA</th>
+<th>Implementación / microarquitectura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Define instrucciones.</td>
+<td>Define cómo un procesador real ejecuta internamente esas instrucciones.</td>
+</tr>
+<tr class="even">
+<td>Define registros.</td>
+<td>Puede incluir pipeline, cachés, predicción de saltos y ejecución fuera de orden.</td>
+</tr>
+<tr class="odd">
+<td>Define comportamiento visible para el programador.</td>
+<td>Puede variar entre procesadores compatibles con la misma ISA.</td>
+</tr>
+</tbody>
+</table>
+<p>En esta ruta estudiaremos primero el lado visible para el programador. Más adelante aparecerán detalles de rendimiento y hardware, pero no son necesarios para empezar.</p>
+</section>
+<section id="qué-es-arm" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-arm">Qué es ARM</h2>
+<p>ARM es una familia de arquitecturas RISC muy usada en teléfonos, sistemas embebidos, Raspberry Pi, servidores, dispositivos IoT y hardware de bajo consumo.</p>
+<p>Su origen histórico está ligado a Acorn y al diseño de procesadores RISC: procesadores con instrucciones relativamente regulares y un modelo pensado para ejecutarlas de manera eficiente. Con el tiempo, ARM pasó de equipos y sistemas embebidos a convertirse en una arquitectura dominante en dispositivos modernos.</p>
+<p>Para estudiar bajo nivel, ARM es útil porque permite conectar conceptos de arquitectura, memoria, compiladores, sistemas operativos y hardware sin empezar con una ISA innecesariamente irregular.</p>
+</section>
+<section id="qué-es-armv8-a" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-armv8-a">Qué es ARMv8-A</h2>
+<p>ARMv8-A es una versión y perfil de la arquitectura ARM orientado a sistemas capaces de ejecutar sistemas operativos ricos, como Linux. La letra <code>A</code> se asocia al perfil de aplicación.</p>
+<p>ARMv8-A puede describir software de 32 bits y de 64 bits. Por eso conviene separar la versión/perfil de arquitectura del estado de ejecución que se use en un momento concreto.</p>
+</section>
+<section id="qué-es-aarch64" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-aarch64">Qué es AArch64</h2>
+<p>AArch64 es el estado de ejecución de 64 bits introducido con ARMv8-A. Cuando un procesador ejecuta en ese estado, usa registros y reglas de ejecución de 64 bits.</p>
+<p>En este curso, AArch64 será el estado principal de estudio. Nos interesa porque es la base de ARM64 moderno en Linux, herramientas de desarrollo, servidores, Raspberry Pi recientes y muchos dispositivos actuales.</p>
+</section>
+<section id="qué-es-a64" class="level2">
+<h2 class="anchored" data-anchor-id="qué-es-a64">Qué es A64</h2>
+<p>A64 es el conjunto de instrucciones usado cuando el procesador ejecuta en AArch64.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Rutas dentro y fuera del contenedor
+<span class="screen-reader-only">Nota</span>Idea clave
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>El proyecto vive como <code>/workspace</code> dentro del contenedor. Si una configuración de debugging no encuentra el binario, revisa que VS Code esté abierto en la raíz del repo en el host.</p>
+<p>AArch64 no es exactamente lo mismo que A64. AArch64 es el estado de ejecución de 64 bits; A64 es el conjunto de instrucciones usado en ese estado.</p>
 </div>
 </div>
+</section>
+<section id="arm32-vs-arm64" class="level2">
+<h2 class="anchored" data-anchor-id="arm32-vs-arm64">ARM32 vs ARM64</h2>
+<p>ARM no es una sola cosa. En conversaciones prácticas, ARM32 suele asociarse con AArch32, el estado de ejecución de 32 bits, y puede usar conjuntos de instrucciones como A32 o T32.</p>
+<p>ARM64 suele asociarse con AArch64, el estado de ejecución de 64 bits, y usa el conjunto de instrucciones A64.</p>
+</section>
+<section id="aarch32-vs-aarch64" class="level2">
+<h2 class="anchored" data-anchor-id="aarch32-vs-aarch64">AArch32 vs AArch64</h2>
+<p>AArch32 es el estado de ejecución de 32 bits. AArch64 es el estado de ejecución de 64 bits. La diferencia no es solo el tamaño de algunos datos: también cambia el modelo visible para el programador y el conjunto de instrucciones disponible.</p>
+<p>Para esta ruta, la regla será simple: estudiaremos AArch64. AArch32 aparecerá solo cuando ayude a comparar ideas o entender material histórico.</p>
+</section>
+<section id="a32-t32-a64" class="level2">
+<h2 class="anchored" data-anchor-id="a32-t32-a64">A32 / T32 / A64</h2>
+<p>A32 y T32 son conjuntos de instrucciones asociados al mundo ARM de 32 bits. A32 se conoce tradicionalmente como ARM, mientras que T32 viene de Thumb/Thumb-2.</p>
+<p>A64 es el conjunto de instrucciones usado en AArch64. En otras palabras: ARM no es una sola sintaxis ni un solo modo de ejecución; hay estados de ejecución y conjuntos de instrucciones distintos.</p>
+</section>
+<section id="risc-vs-cisc" class="level2">
+<h2 class="anchored" data-anchor-id="risc-vs-cisc">RISC vs CISC</h2>
+<p>ARM se suele presentar como una arquitectura RISC. RISC no significa “automáticamente mejor”; significa que la arquitectura sigue ciertas decisiones de diseño.</p>
+<p>En una arquitectura RISC, las instrucciones tienden a ser más regulares. Muchas operaciones de datos trabajan principalmente sobre registros, y el acceso a memoria se concentra en instrucciones de carga y almacenamiento. A este enfoque se le llama arquitectura <em>load/store</em>.</p>
+<p>CISC, por contraste, describe arquitecturas con instrucciones históricamente más complejas y con más variedad de formatos y comportamientos.</p>
+<p>La diferencia importa como contexto, no como juicio absoluto. Los procesadores modernos mezclan muchas técnicas internas, y el rendimiento real depende de mucho más que una etiqueta RISC o CISC.</p>
+</section>
+<section id="dónde-se-usa-arm64" class="level2">
+<h2 class="anchored" data-anchor-id="dónde-se-usa-arm64">Dónde se usa ARM64</h2>
+<p>ARM64 aparece en teléfonos, tablets, computadoras personales, placas como Raspberry Pi, servidores, dispositivos IoT y sistemas embebidos modernos.</p>
+<p>Ese uso extendido hace que AArch64 sea una buena arquitectura educativa: permite aprender bajo nivel con una ISA actual, documentada y conectada con plataformas reales.</p>
+</section>
+<section id="por-qué-aprender-assembly-hoy" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-aprender-assembly-hoy">Por qué aprender assembly hoy</h2>
+<p>Assembly sigue siendo útil porque muestra el punto de encuentro entre el programa, el compilador, el sistema operativo y el hardware.</p>
+<p>Aprender assembly ayuda a:</p>
+<ul>
+<li>entender cómo el compilador traduce programas;</li>
+<li>depurar errores difíciles;</li>
+<li>comprender punteros, memoria y stack;</li>
+<li>estudiar sistemas operativos;</li>
+<li>entender ABI, llamadas a funciones y binarios;</li>
+<li>optimizar partes críticas;</li>
+<li>analizar código generado;</li>
+<li>prepararse para bare metal, drivers, reversing y seguridad.</li>
+</ul>
+<p>No todos los programadores escribirán sistemas completos en assembly, pero casi todos se benefician de entender qué ocurre debajo de sus abstracciones.</p>
+</section>
+<section id="relación-con-c-linux-hardware-y-sistemas" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-c-linux-hardware-y-sistemas">Relación con C, Linux, hardware y sistemas</h2>
+<p>Esta ruta no estudia assembly de forma aislada. Assembly será el lenguaje de observación para conectar C, compiladores, Linux, debugging, binarios ELF, memoria, hardware y sistemas.</p>
+<p>Primero trabajaremos con ideas pequeñas y controladas. Más adelante aparecerán programas, herramientas de inspección, llamadas al sistema, funciones, ABI, stack, binarios, bare metal y kernel. Esta unidad solo prepara el vocabulario para que esas piezas tengan sentido cuando lleguen.</p>
+</section>
+<section id="qué-podrás-hacer-al-avanzar-en-la-ruta" class="level2">
+<h2 class="anchored" data-anchor-id="qué-podrás-hacer-al-avanzar-en-la-ruta">Qué podrás hacer al avanzar en la ruta</h2>
+<p>Al avanzar en la ruta podrás:</p>
+<ul>
+<li>leer programas AArch64 simples;</li>
+<li>entender qué hacen los registros;</li>
+<li>escribir programas mínimos en Linux sin depender de libc al inicio;</li>
+<li>observar ejecución con GDB;</li>
+<li>inspeccionar binarios con objdump y readelf;</li>
+<li>entender stack, funciones y ABI;</li>
+<li>conectar software con hardware de forma progresiva.</li>
+</ul>
+</section>
+<section id="resumen-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="resumen-de-la-unidad">Resumen de la unidad</h2>
+<p>En esta unidad no se busca memorizar instrucciones. El objetivo es ubicar el mapa: ARM64 es una arquitectura moderna, AArch64 es su estado de ejecución de 64 bits, A64 es su conjunto de instrucciones, y assembly será la herramienta para estudiar cómo se conectan software, sistema operativo y hardware.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo explicar qué es assembly.</label></li>
+<li><label><input type="checkbox">Puedo explicar qué es una ISA.</label></li>
+<li><label><input type="checkbox">Puedo distinguir ISA de implementación.</label></li>
+<li><label><input type="checkbox">Puedo diferenciar ARMv8-A, AArch64 y A64.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué este curso empieza con fundamentos antes de escribir código.</label></li>
+<li><label><input type="checkbox">Puedo describir para qué sirve aprender assembly aunque programe en lenguajes de alto nivel.</label></li>
+</ul>
+</section>
+<section id="siguiente-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="siguiente-unidad">Siguiente unidad</h2>
+<p>La siguiente unidad es <a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a>, donde se prepara el entorno para ensamblar, ejecutar, inspeccionar y depurar programas AArch64.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Learn%20the%20Architecture/Armv8-A%20Instruction%20Set%20Architecture.pdf">Armv8-A Instruction Set Architecture</a>.</li>
+<li>Larry D. Pyeatt y William Ughetta, <a href="https://www.oreilly.com/library/view/arm-64-bit-assembly/9780128192221/">ARM 64-Bit Assembly Language</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0600/latest">Arm Architecture Reference Manual Supplement: Armv8, for R-profile AArch64 architecture</a>.</li>
+</ul>
 
 
 </section>
@@ -770,13 +909,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../guides/setup/native-aarch64.html" class="pagination-link" aria-label="Setup: ARM nativo">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Setup: ARM nativo</span>
+      <a href="../../../courses/aarch64/roadmap.html" class="pagination-link" aria-label="Roadmap">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Roadmap</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../guides/debugging/qemu-vscode.html" class="pagination-link" aria-label="Depuración: QEMU y VS Code">
-        <span class="nav-page-text">Depuración: QEMU y VS Code</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../../courses/aarch64/laboratorio/index.html" class="pagination-link" aria-label="Mapa de la unidad">
+        <span class="nav-page-text">Mapa de la unidad</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

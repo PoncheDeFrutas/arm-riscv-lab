@@ -326,12 +326,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td><a href="../../guides/setup/qemu-x86_64.html">QEMU en x86_64</a></td>
 <td>Tu laptop o PC no es ARM64</td>
-<td><code>make</code>, <code>make run</code>, <code>make gdb</code></td>
+<td><code>make -C src</code>, <code>make -C src run</code>, <code>make -C src gdb</code></td>
 </tr>
 <tr class="even">
 <td><a href="../../guides/setup/native-aarch64.html">ARM nativo</a></td>
 <td>Estás en Linux ARM64 real</td>
-<td><code>make RUN_MODE=native run</code></td>
+<td><code>make -C src -f Makefile.arm64 run</code></td>
 </tr>
 <tr class="odd">
 <td><a href="../../guides/setup/docker.html">Docker</a></td>
@@ -370,11 +370,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="resultado-esperado" class="level2">
 <h2 class="anchored" data-anchor-id="resultado-esperado">Resultado esperado</h2>
 <p>Al terminar esta sección debes poder ejecutar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> lessons/aarch64/02-syscalls/00-hello-world</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Y para depurar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Luego sigue con <a href="../../guides/debugging/qemu-vscode.html">Depuración: QEMU y VS Code</a> o con <a href="../../guides/debugging/native-vscode.html">Depuración: ARM nativo y VS Code</a>, según tu ruta.</p>
 
 

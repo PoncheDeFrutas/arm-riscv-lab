@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Usa un contenedor reproducible para compilar, ejecutar y depurar las lecciones AArch64.">
+<meta name="description" content="Página principal de la Unidad 01 de la ruta AArch64.">
 
-<title>Setup: Docker – ARM RISC-V Lab</title>
+<title>01 · Laboratorio ARM64 reproducible – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -59,25 +59,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../../">
-<link href="../../guides/debugging/qemu-vscode.html" rel="next">
-<link href="../../guides/setup/native-aarch64.html" rel="prev">
-<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="../../site_libs/quarto-html/popper.min.js"></script>
-<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" rel="next">
+<link href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" rel="prev">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -115,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../../index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">ARM RISC-V Lab</span>
     </a>
   </div>
@@ -126,7 +126,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Inicio</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -135,17 +135,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-cursos">    
         <li>
-    <a class="dropdown-item" href="../../courses/aarch64/index.html">
+    <a class="dropdown-item" href="../../../courses/aarch64/index.html">
  <span class="dropdown-text">Ruta AArch64</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../courses/riscv/index.html">
+    <a class="dropdown-item" href="../../../courses/riscv/index.html">
  <span class="dropdown-text">Ruta RISC-V</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="../../courses/aarch64/roadmap.html"> 
+    <a class="nav-link active" href="../../../courses/aarch64/roadmap.html" aria-current="page"> 
 <span class="menu-text">Roadmap</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -154,19 +154,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-guías">    
         <li>
-    <a class="dropdown-item" href="../../guides/setup/index.html">
+    <a class="dropdown-item" href="../../../guides/setup/index.html">
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../guides/debugging/qemu-vscode.html">
+    <a class="dropdown-item" href="../../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../guides/debugging/native-vscode.html">
+    <a class="dropdown-item" href="../../../guides/debugging/native-vscode.html">
  <span class="dropdown-text">Debugging nativo ARM</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../guides/troubleshooting.html">
+    <a class="dropdown-item" href="../../../guides/troubleshooting.html">
  <span class="dropdown-text">Troubleshooting</span></a>
   </li>  
     </ul>
@@ -183,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../guides/setup/index.html">Entorno</a></li><li class="breadcrumb-item"><a href="../../guides/setup/docker.html">Setup: Docker</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">Mapa de la unidad</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -198,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Entorno</span></a>
+ <span class="menu-text">AArch64</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -206,68 +206,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup</span></a>
+  <a href="../../../courses/aarch64/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio del curso</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/qemu-x86_64.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: x86_64 con QEMU</span></a>
+  <a href="../../../courses/aarch64/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/native-aarch64.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Setup: ARM nativo</span></a>
+  <a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Contexto, historia y objetivos</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/setup/docker.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Setup: Docker</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
+          <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Debugging</span></a>
+ <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/debugging/qemu-vscode.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Depuración: QEMU y VS Code</span></a>
+  <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Mapa de la unidad</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../guides/debugging/native-vscode.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Depuración: ARM nativo y VS Code</span></a>
+  <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Entorno Linux ARM64</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Instalación toolchain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Primer programa</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inspección del binario</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Debugging mínimo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
       </ul>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Troubleshooting</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar sección">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../guides/troubleshooting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Troubleshooting</span></a>
-  </div>
-</li>
       </ul>
   </li>
     </ul>
@@ -280,23 +287,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#construir-imagen" id="toc-construir-imagen" class="nav-link active" data-scroll-target="#construir-imagen">Construir imagen</a></li>
-  <li><a href="#usar-contenedor" id="toc-usar-contenedor" class="nav-link" data-scroll-target="#usar-contenedor">Usar contenedor</a></li>
-  <li><a href="#depurar-desde-vs-code" id="toc-depurar-desde-vs-code" class="nav-link" data-scroll-target="#depurar-desde-vs-code">Depurar desde VS Code</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#qué-ruta-uso" id="toc-qué-ruta-uso" class="nav-link" data-scroll-target="#qué-ruta-uso">Qué ruta uso</a></li>
+  <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#herramientas-del-laboratorio" id="toc-herramientas-del-laboratorio" class="nav-link" data-scroll-target="#herramientas-del-laboratorio">Herramientas del laboratorio</a></li>
+  <li><a href="#resultado-esperado" id="toc-resultado-esperado" class="nav-link" data-scroll-target="#resultado-esperado">Resultado esperado</a></li>
+  <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
+  <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../guides/setup/index.html">Entorno</a></li><li class="breadcrumb-item"><a href="../../guides/setup/docker.html">Setup: Docker</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">Mapa de la unidad</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Setup: Docker</h1>
+<h1 class="title">01 · Laboratorio ARM64 reproducible</h1>
+<p class="subtitle lead">Instala, ejecuta, inspecciona y depura el primer programa AArch64 sin perderte en detalles avanzados.</p>
 </div>
 
 <div>
   <div class="description">
-    Usa un contenedor reproducible para compilar, ejecutar y depurar las lecciones AArch64.
+    Página principal de la Unidad 01 de la ruta AArch64.
   </div>
 </div>
 
@@ -313,54 +325,152 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Docker ofrece un entorno reproducible para laboratorios, máquinas prestadas o equipos donde instalar toolchains causa demasiada fricción.</p>
-<div class="callout callout-style-simple callout-note callout-titled">
+<div class="breadcrumb-lite">
+<p>Cursos &gt; AArch64 &gt; Laboratorio ARM64 reproducible</p>
+</div>
+<div class="hero-lab">
+<p>Esta unidad prepara el laboratorio base. No estudia ELF, ABI, debugging avanzado ni syscalls en profundidad. El objetivo es que puedas instalar el entorno, elegir la ruta correcta, ejecutar un ejemplo mínimo y verificar que el binario AArch64 existe y corre.</p>
+<div class="hero-actions">
+<p><a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html#raspberry-pi-arm64-real" class="lab-button">Tengo Raspberry Pi</a></p>
+<p><a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html#host-x86_64-con-qemu-user-mode" class="lab-button secondary">No tengo Raspberry Pi</a></p>
+<p><a href="../../../courses/aarch64/laboratorio/03-primer-programa.html" class="lab-button secondary">Primer ejemplo</a></p>
+<p><a href="../../../slides/aarch64/laboratorio/overview/" class="lab-button secondary">Ver presentación</a></p>
+</div>
+</div>
+<section id="mapa-rápido" class="level2">
+<h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
+<div class="lab-flow">
+<div class="lab-step">
+<p><strong>1. Elige ruta</strong> Raspberry Pi ARM64 real o x86_64 con QEMU user mode.</p>
+</div>
+<div class="lab-step">
+<p><strong>2. Instala</strong> Toolchain, binutils, Make, QEMU o GDB según tu máquina.</p>
+</div>
+<div class="lab-step">
+<p><strong>3. Ejecuta</strong> Compila con <code>make -C src</code> y corre con <code>make -C src run</code>.</p>
+</div>
+<div class="lab-step">
+<p><strong>4. Observa</strong> Usa <code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code> y <code>strace</code> como primera mirada.</p>
+</div>
+<div class="lab-step">
+<p><strong>5. Depura</strong> Detente en <code>_start</code>, mira registros y avanza instrucción por instrucción.</p>
+</div>
+</div>
+</section>
+<section id="qué-ruta-uso" class="level2">
+<h2 class="anchored" data-anchor-id="qué-ruta-uso">Qué ruta uso</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Si tienes…</th>
+<th>Usa…</th>
+<th>Señal esperada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Raspberry Pi con Linux de 64 bits</td>
+<td>ARM64 nativo</td>
+<td><code>uname -m</code> muestra <code>aarch64</code> o <code>arm64</code></td>
+</tr>
+<tr class="even">
+<td>Laptop o PC Linux x86_64</td>
+<td>Cross toolchain + QEMU user mode</td>
+<td><code>uname -m</code> puede mostrar <code>x86_64</code></td>
+</tr>
+<tr class="odd">
+<td>Máquina restringida o laboratorio compartido</td>
+<td>Docker opcional</td>
+<td>Mismo entorno dentro del contenedor</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-simple callout-tip callout-titled" title="Recomendación docente">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Cuándo conviene Docker
+<span class="screen-reader-only">Tip</span>Recomendación docente
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Úsalo si necesitas que todo el grupo tenga el mismo entorno. Si estás trabajando en tu máquina personal y puedes instalar paquetes, QEMU en x86_64 suele ser más directo.</p>
+<p>Si el estudiante no sabe cuál usar, debe empezar por x86_64 con QEMU user mode. Es la ruta más reproducible cuando no hay Raspberry Pi disponible.</p>
 </div>
 </div>
-<section id="construir-imagen" class="level2">
-<h2 class="anchored" data-anchor-id="construir-imagen">Construir imagen</h2>
-<p>Desde la raíz del repo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> arm-riscv-lab <span class="at">-f</span> tooling/docker/Dockerfile .</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="usar-contenedor" class="level2">
-<h2 class="anchored" data-anchor-id="usar-contenedor">Usar contenedor</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/workspace <span class="at">-w</span> /workspace arm-riscv-lab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Dentro del contenedor:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="lecciones-de-esta-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="lecciones-de-esta-unidad">Lecciones de esta unidad</h2>
+<div class="resource-grid">
+<section id="entorno-linux-arm64" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="entorno-linux-arm64">Entorno Linux ARM64</h3>
+<p>Linux como base, Raspberry Pi real, QEMU user mode y mención de QEMU system mode.</p>
+<p><a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" class="resource-action">Abrir</a></p>
 </section>
-<section id="depurar-desde-vs-code" class="level2">
-<h2 class="anchored" data-anchor-id="depurar-desde-vs-code">Depurar desde VS Code</h2>
-<p>Expón el puerto del GDB server:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">-p</span> 1234:1234 <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/workspace <span class="at">-w</span> /workspace arm-riscv-lab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Dentro del contenedor:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En el host, conecta VS Code a <code>localhost:1234</code>.</p>
-<div class="callout callout-style-simple callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<section id="instalación-toolchain" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="instalación-toolchain">Instalación toolchain</h3>
+<p>Paquetes por ruta, verificación mínima y Docker como alternativa.</p>
+<p><a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="primer-programa" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="primer-programa">Primer programa</h3>
+<p>Assembly AArch64 mínimo, Makefile, <code>make -C src</code>, <code>make -C src run</code> y salida esperada.</p>
+<p><a href="../../../courses/aarch64/laboratorio/03-primer-programa.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="inspección-del-binario" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="inspección-del-binario">Inspección del binario</h3>
+<p><code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code>, <code>hexdump</code>, <code>xxd</code>, <code>ldd</code> y <code>strace</code>.</p>
+<p><a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="debugging-mínimo" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="debugging-mínimo">Debugging mínimo</h3>
+<p>Breakpoints, registros y <code>stepi</code> con <code>gdb</code> o <code>gdb-multiarch</code>.</p>
+<p><a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="estructura-del-repo" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="estructura-del-repo">Estructura del repo</h3>
+<p>Cómo organizar teoría, ejemplos, ejercicios, slides y Makefiles.</p>
+<p><a href="06-estructura-repositorio.qmd" class="resource-action">Abrir</a></p>
+</section>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Rutas dentro y fuera del contenedor
+</section>
+<section id="herramientas-del-laboratorio" class="level2">
+<h2 class="anchored" data-anchor-id="herramientas-del-laboratorio">Herramientas del laboratorio</h2>
+<div class="tool-chip-row">
+<p><span class="tool-chip"><code>Linux</code></span> <span class="tool-chip"><code>make</code></span> <span class="tool-chip"><code>as</code></span> <span class="tool-chip"><code>ld</code></span> <span class="tool-chip"><code>gcc</code></span> <span class="tool-chip"><code>aarch64-linux-gnu-gcc</code></span> <span class="tool-chip"><code>qemu-aarch64</code></span> <span class="tool-chip"><code>gdb-multiarch</code></span> <span class="tool-chip"><code>objdump</code></span> <span class="tool-chip"><code>readelf</code></span> <span class="tool-chip"><code>nm</code></span> <span class="tool-chip"><code>file</code></span> <span class="tool-chip"><code>ldd</code></span> <span class="tool-chip"><code>strace</code></span> <span class="tool-chip"><code>hexdump</code></span> <span class="tool-chip"><code>xxd</code></span> <span class="tool-chip"><code>perf</code></span> <span class="tool-chip"><code>Docker</code></span></p>
 </div>
-</div>
-<div class="callout-body-container callout-body">
-<p>El proyecto vive como <code>/workspace</code> dentro del contenedor. Si una configuración de debugging no encuentra el binario, revisa que VS Code esté abierto en la raíz del repo en el host.</p>
-</div>
-</div>
+</section>
+<section id="resultado-esperado" class="level2">
+<h2 class="anchored" data-anchor-id="resultado-esperado">Resultado esperado</h2>
+<p>Al terminar la unidad debes poder ejecutar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> ARM64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Y debes poder explicar, en una frase corta, qué herramienta genera el binario, qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.</p>
+</section>
+<section id="checklist-de-cierre" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-cierre">Checklist de cierre</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Sé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.</label></li>
+<li><label><input type="checkbox">Instalé las herramientas mínimas de mi ruta.</label></li>
+<li><label><input type="checkbox"><code>make -C src</code> genera <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox"><code>make -C src run</code> imprime <code>Hola ARM64</code>.</label></li>
+<li><label><input type="checkbox"><code>file src/build/main</code> identifica un binario AArch64.</label></li>
+<li><label><input type="checkbox">Puedo ver símbolos con <code>nm</code> o instrucciones con <code>objdump</code>.</label></li>
+<li><label><input type="checkbox">Puedo detenerme en <code>_start</code> con GDB.</label></li>
+<li><label><input type="checkbox">Sé dónde van teoría, ejemplo, ejercicio y presentación.</label></li>
+</ul>
+</section>
+<section id="siguiente-paso" class="level2">
+<h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
+<p>Empieza por <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html">Entorno Linux ARM64</a>. Si ya sabes tu ruta y tienes paquetes instalados, salta directo a <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html">Primer programa</a>.</p>
 
 
 </section>
@@ -770,13 +880,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../guides/setup/native-aarch64.html" class="pagination-link" aria-label="Setup: ARM nativo">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Setup: ARM nativo</span>
+      <a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" class="pagination-link" aria-label="00 · Contexto, historia y objetivos">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">00 · Contexto, historia y objetivos</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../guides/debugging/qemu-vscode.html" class="pagination-link" aria-label="Depuración: QEMU y VS Code">
-        <span class="nav-page-text">Depuración: QEMU y VS Code</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" class="pagination-link" aria-label="Entorno Linux ARM64">
+        <span class="nav-page-text">Entorno Linux ARM64</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
