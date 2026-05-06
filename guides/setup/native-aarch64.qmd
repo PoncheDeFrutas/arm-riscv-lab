@@ -40,11 +40,15 @@ No estás en ARM nativo. Vuelve a [QEMU en x86_64](qemu-x86_64.qmd).
 
 ## Ejecución
 
+Antes de compilar, usa el template ARM64 nativo como `src/Makefile`. Después los
+comandos son iguales que en QEMU.
+
 ```bash
 cd 00-hello-minimo
-make -C src -f Makefile.arm64
-make -C src -f Makefile.arm64 run
-make -C src -f Makefile.arm64 gdb
+cd src
+make
+make run
+make gdb
 ```
 
 ## Debugging

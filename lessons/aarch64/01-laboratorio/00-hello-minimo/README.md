@@ -21,31 +21,34 @@ mensaje con `write` y termina con `exit`.
 |- README.md
 `- src/
    |- Makefile
-   |- Makefile.arm64
    `- main.s
 ```
 
 | Archivo | Rol |
 |---|---|
 | `src/main.s` | Fuente AArch64 mínimo |
-| `src/Makefile` | Flujo x86_64 con QEMU user mode |
-| `src/Makefile.arm64` | Flujo Raspberry Pi / ARM64 nativo |
+| `src/Makefile` | Makefile activo según tu entorno |
 | `src/build/main` | Binario generado |
 
 ## Flujo x86_64 con QEMU
 
 ```bash
-make -C src
-make -C src run
-make -C src gdb
+cd src
+make
+make run
+make gdb
 ```
 
 ## Flujo Raspberry Pi ARM64
 
+Primero copia el template ARM64 como `src/Makefile`. Luego usa los mismos
+comandos:
+
 ```bash
-make -C src -f Makefile.arm64
-make -C src -f Makefile.arm64 run
-make -C src -f Makefile.arm64 gdb
+cd src
+make
+make run
+make gdb
 ```
 
 ## Salida esperada
@@ -57,19 +60,19 @@ Hola ARM64
 ## Inspección rápida
 
 ```bash
-file src/build/main
-aarch64-linux-gnu-objdump -d src/build/main
-aarch64-linux-gnu-nm src/build/main
+file build/main
+aarch64-linux-gnu-objdump -d build/main
+aarch64-linux-gnu-nm build/main
 ```
 
 En Raspberry Pi puedes usar `objdump` y `nm` sin prefijo si están instalados.
 
 ## Checklist
 
-- [ ] `make -C src` genera `src/build/main`.
-- [ ] `make -C src run` imprime `Hola ARM64`.
-- [ ] `file src/build/main` identifica AArch64.
-- [ ] Puedo iniciar `make -C src gdb` según mi ruta.
+- [ ] `make` genera `build/main`.
+- [ ] `make run` imprime `Hola ARM64`.
+- [ ] `file build/main` identifica AArch64.
+- [ ] Puedo iniciar `make gdb` según mi ruta.
 
 ## Ejercicios cortos
 

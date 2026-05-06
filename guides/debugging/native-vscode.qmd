@@ -17,13 +17,14 @@ Verifica con `uname -m`. Si reporta `x86_64`, vuelve a
 
 ```bash
 cd 00-hello-minimo
-make -C src -f Makefile.arm64
+cd src
+make
 ```
 
 ## Lanza GDB
 
 ```bash
-make -C src -f Makefile.arm64 gdb
+make gdb
 ```
 
 En VS Code usa la configuración `Debug ARM64 (nativo)`.
@@ -71,7 +72,7 @@ Config completa para copiar en `.vscode/launch.json`:
 | Ejecución | `qemu-aarch64` | Directa |
 | Debugger | `gdb-multiarch` | `gdb` |
 | Conexión | `localhost:1234` | Launch local |
-| Makefile | `Makefile` | `Makefile.arm64` |
+| Makefile activo | Template QEMU copiado como `Makefile` | Template ARM64 copiado como `Makefile` |
 
 ::: {.callout-tip}
 ## Misma idea, menos capas

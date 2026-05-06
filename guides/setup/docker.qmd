@@ -32,8 +32,9 @@ Dentro del contenedor:
 
 ```bash
 cd 00-hello-minimo
-make -C src
-make -C src run
+cd src
+make
+make run
 ```
 
 ## Depurar desde VS Code
@@ -48,7 +49,8 @@ Dentro del contenedor:
 
 ```bash
 cd 00-hello-minimo
-make -C src gdb
+cd src
+make gdb
 ```
 
 En el host, conecta VS Code a `localhost:1234`.

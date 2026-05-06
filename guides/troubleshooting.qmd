@@ -32,7 +32,7 @@ sudo apt install -y qemu-user
 
 ## VS Code no conecta a GDB
 
-Verifica que `make -C src gdb` siga corriendo y que el puerto sea `1234`.
+Verifica que `make gdb` siga corriendo y que el puerto sea `1234`.
 
 ```bash
 ss -ltn | grep 1234
@@ -41,7 +41,7 @@ ss -ltn | grep 1234
 ::: {.callout-warning}
 ## No cierres la terminal de QEMU
 
-En la ruta x86_64, `make -C src gdb` debe quedarse vivo mientras VS Code se conecta.
+En la ruta x86_64, `make gdb` debe quedarse vivo mientras VS Code se conecta.
 Si esa terminal termina, el puerto desaparece.
 :::
 
@@ -51,13 +51,13 @@ Es esperado. El binario es AArch64 y tu sistema anfitrión no lo ejecuta
 directamente. Usa:
 
 ```bash
-make -C src run
+make run
 ```
 
 No uses:
 
 ```bash
-./src/build/main
+./build/main
 ```
 
 ## `uname -m` no dice `aarch64`
@@ -81,6 +81,6 @@ lección si sabes lo que estás haciendo.
 ::: {.callout-caution}
 ## Mantén una sola sesión de debug
 
-Para la primera lección, usa una terminal con `make -C src gdb` y una conexión
-desde VS Code. Varias sesiones simultáneas hacen más difícil entender el error.
+Para la primera lección, usa una terminal con `make gdb` y una conexión desde VS
+Code. Varias sesiones simultáneas hacen más difícil entender el error.
 :::

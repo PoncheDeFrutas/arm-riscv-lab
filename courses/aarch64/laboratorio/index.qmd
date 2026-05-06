@@ -40,7 +40,7 @@ Toolchain, binutils, Make, QEMU o GDB según tu máquina.
 
 ::: {.lab-step}
 **3. Ejecuta**
-Compila con `make -C src` y corre con `make -C src run`.
+Entra a `src`, compila con `make` y corre con `make run`.
 :::
 
 ::: {.lab-step}
@@ -89,8 +89,7 @@ Paquetes por ruta, verificación mínima y Docker como alternativa.
 ::: {.resource-card}
 ### Primer programa
 
-Assembly AArch64 mínimo, Makefile, `make -C src`, `make -C src run` y salida
-esperada.
+Assembly AArch64 mínimo, Makefile, `make`, `make run` y salida esperada.
 
 [Abrir](03-primer-programa.qmd){.resource-action}
 :::
@@ -149,8 +148,9 @@ Al terminar la unidad debes poder ejecutar:
 
 ```bash
 cd 00-hello-minimo
-make -C src
-make -C src run
+cd src
+make
+make run
 ```
 
 Salida esperada:
@@ -166,9 +166,9 @@ qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.
 
 - [ ] Sé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.
 - [ ] Instalé las herramientas mínimas de mi ruta.
-- [ ] `make -C src` genera `src/build/main`.
-- [ ] `make -C src run` imprime `Hola ARM64`.
-- [ ] `file src/build/main` identifica un binario AArch64.
+- [ ] `make` genera `build/main` si estoy dentro de `src/`.
+- [ ] `make run` imprime `Hola ARM64`.
+- [ ] `file build/main` identifica un binario AArch64.
 - [ ] Puedo ver símbolos con `nm` o instrucciones con `objdump`.
 - [ ] Puedo detenerme en `_start` con GDB.
 - [ ] Sé dónde van teoría, ejemplo, ejercicio y presentación.

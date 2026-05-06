@@ -38,7 +38,7 @@ clean:
 	rm -rf $(BUILD)
 
 info:
-	@echo "Targets:"
+	@echo "Targets disponibles:"
 	@echo "  make        -> ensambla y enlaza todos los .s"
 	@echo "  make run    -> ejecuta directo"
 	@echo "  make gdb    -> abre GDB local"

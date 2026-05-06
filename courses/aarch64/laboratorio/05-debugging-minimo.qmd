@@ -18,13 +18,8 @@ quedan para guías y unidades posteriores.
 
 ```bash
 cd 00-hello-minimo
-make -C src
-```
-
-En Raspberry Pi:
-
-```bash
-make -C src -f Makefile.arm64
+cd src
+make
 ```
 
 ## Ruta x86_64 con QEMU
@@ -32,7 +27,7 @@ make -C src -f Makefile.arm64
 Terminal 1:
 
 ```bash
-make -C src gdb
+make gdb
 ```
 
 La terminal queda esperando conexión en `localhost:1234`.
@@ -40,7 +35,7 @@ La terminal queda esperando conexión en `localhost:1234`.
 Terminal 2:
 
 ```bash
-gdb-multiarch src/build/main
+gdb-multiarch build/main
 ```
 
 Dentro de GDB:
@@ -59,7 +54,7 @@ info registers x0 x1 x2 x8 pc
 ## Ruta Raspberry Pi ARM64 real
 
 ```bash
-make -C src -f Makefile.arm64 gdb
+make gdb
 ```
 
 Dentro de GDB:
@@ -192,7 +187,7 @@ significa necesariamente que el programa esté mal.
 | Funciones auxiliares | Puedes saltar a otra etiqueta o volver después | Pon breakpoints por etiqueta |
 
 En esta unidad, el Makefile de QEMU ya usa `-singlestep` cuando corres
-`make -C src gdb`.
+`make gdb`.
 
 ## Debug Console de VS Code
 

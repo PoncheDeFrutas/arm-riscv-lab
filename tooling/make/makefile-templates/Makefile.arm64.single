@@ -35,7 +35,7 @@ clean:
 	rm -rf $(BUILD)
 
 info:
-	@echo "Targets:"
+	@echo "Targets disponibles:"
 	@echo "  make        -> ensambla y enlaza en ARM64 nativo"
 	@echo "  make run    -> ejecuta directo"
 	@echo "  make gdb    -> abre GDB local"

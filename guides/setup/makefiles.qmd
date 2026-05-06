@@ -1,0 +1,266 @@
+---
+title: "Makefiles ARM64"
+description: "Elige, copia y usa el Makefile correcto para QEMU o Raspberry Pi sin cambiar comandos."
+---
+
+El Makefile existe para evitar confusiones entre entornos. El estudiante no debe
+recordar comandos distintos para QEMU y Raspberry Pi. Debe elegir el Makefile
+correcto, guardarlo como `src/Makefile` y usar siempre los mismos comandos.
+
+## Regla principal
+
+```bash
+cd 00-hello-minimo
+cd src
+make
+make run
+make gdb
+```
+
+El binario queda en:
+
+```bash
+build/main
+```
+
+Si abres el proyecto desde VS Code, esa misma ruta se ve como:
+
+```bash
+src/build/main
+```
+
+## Qué Makefile copio
+
+| Caso | Copia como `src/Makefile` |
+|---|---|
+| Laptop/PC x86_64 con QEMU, un archivo `main.s` | `Makefile.qemu.single` |
+| Laptop/PC x86_64 con QEMU, varios `.s` | `Makefile.qemu.multi` |
+| Raspberry Pi / ARM64 real, un archivo `main.s` | `Makefile.arm64.single` |
+| Raspberry Pi / ARM64 real, varios `.s` | `Makefile.arm64.multi` |
+
+::: {.callout-tip title="Idea clave"}
+No uses banderas especiales de `make`. Si cambias de QEMU a Raspberry Pi,
+cambia el contenido de `src/Makefile`. Los comandos siguen iguales.
+:::
+
+## Comandos disponibles
+
+| Comando | Qué hace |
+|---|---|
+| `make` | Ensambla y enlaza |
+| `make run` | Ejecuta el programa |
+| `make gdb` | Abre depuración según el entorno |
+| `make clean` | Borra `build/` |
+| `make info` | Muestra ayuda corta |
+
+## QEMU, un solo archivo
+
+Usa este Makefile si trabajas en x86_64 con QEMU y solo tienes `main.s`.
+
+```makefile
+# Template: ARM64 en host x86_64 con QEMU user mode (un solo main.s)
+
+AS      = aarch64-linux-gnu-as
+LD      = aarch64-linux-gnu-ld
+QEMU    = qemu-aarch64
+
+SRC     = main.s
+BUILD   = build
+OBJ     = $(BUILD)/main.o
+BIN     = $(BUILD)/main
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(BIN)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(OBJ): $(SRC) | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BIN): $(OBJ)
+	$(LD) $(LDFLAGS) -o $@ $<
+
+run: $(BIN)
+	$(QEMU) $(BIN)
+
+gdb: $(BIN)
+	@echo "Starting QEMU and waiting for GDB on port 1234..."
+	$(QEMU) -g 1234 -singlestep $(BIN)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza"
+	@echo "  make run    -> ejecuta con QEMU"
+	@echo "  make gdb    -> QEMU + espera GDB en localhost:1234"
+	@echo "  make clean  -> limpia build/"
+```
+
+## QEMU, varios archivos
+
+Usa este Makefile si trabajas en x86_64 con QEMU y tu programa tiene varios
+archivos `.s`.
+
+```makefile
+# Template: ARM64 en host x86_64 con QEMU user mode (multiarchivo)
+
+AS      = aarch64-linux-gnu-as
+LD      = aarch64-linux-gnu-ld
+QEMU    = qemu-aarch64
+
+BUILD   = build
+TARGET  = $(BUILD)/main
+
+MAIN_SRC = main.s
+AUX_SRCS = $(filter-out $(MAIN_SRC), $(wildcard *.s))
+SRCS     = $(MAIN_SRC) $(AUX_SRCS)
+OBJS     = $(patsubst %.s,$(BUILD)/%.o,$(SRCS))
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(TARGET)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(TARGET): $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+run: $(TARGET)
+	$(QEMU) $(TARGET)
+
+gdb: $(TARGET)
+	@echo "Starting QEMU and waiting for GDB on port 1234..."
+	$(QEMU) -g 1234 -singlestep $(TARGET)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza todos los .s"
+	@echo "  make run    -> ejecuta con QEMU"
+	@echo "  make gdb    -> QEMU + espera GDB en localhost:1234"
+	@echo "  make clean  -> limpia build/"
+```
+
+## ARM64 nativo, un solo archivo
+
+Usa este Makefile en Raspberry Pi o Linux ARM64 real si solo tienes `main.s`.
+
+```makefile
+# Template: ARM64 nativo (Raspberry Pi / Linux ARM64, un solo main.s)
+
+AS      = as
+LD      = ld
+
+SRC     = main.s
+BUILD   = build
+OBJ     = $(BUILD)/main.o
+BIN     = $(BUILD)/main
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(BIN)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(OBJ): $(SRC) | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BIN): $(OBJ)
+	$(LD) $(LDFLAGS) -o $@ $<
+
+run: $(BIN)
+	$(BIN)
+
+gdb: $(BIN)
+	gdb $(BIN)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza en ARM64 nativo"
+	@echo "  make run    -> ejecuta directo"
+	@echo "  make gdb    -> abre GDB local"
+	@echo "  make clean  -> limpia build/"
+```
+
+## ARM64 nativo, varios archivos
+
+Usa este Makefile en Raspberry Pi o Linux ARM64 real si tu programa tiene varios
+archivos `.s`.
+
+```makefile
+# Template: ARM64 nativo (Raspberry Pi / Linux ARM64, multiarchivo)
+
+AS      = as
+LD      = ld
+
+BUILD   = build
+TARGET  = $(BUILD)/main
+
+MAIN_SRC = main.s
+AUX_SRCS = $(filter-out $(MAIN_SRC), $(wildcard *.s))
+SRCS     = $(MAIN_SRC) $(AUX_SRCS)
+OBJS     = $(patsubst %.s,$(BUILD)/%.o,$(SRCS))
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(TARGET)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(TARGET): $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+run: $(TARGET)
+	$(TARGET)
+
+gdb: $(TARGET)
+	gdb $(TARGET)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza todos los .s"
+	@echo "  make run    -> ejecuta directo"
+	@echo "  make gdb    -> abre GDB local"
+	@echo "  make clean  -> limpia build/"
+```
+
+## Checklist
+
+- [ ] Elegí un template según mi máquina.
+- [ ] Lo guardé como `src/Makefile`.
+- [ ] Puedo ejecutar `make`.
+- [ ] Puedo ejecutar `make run`.
+- [ ] El binario aparece como `build/main` dentro de `src/`.

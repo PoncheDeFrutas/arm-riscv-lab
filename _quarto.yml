@@ -39,6 +39,8 @@ website:
         menu:
           - href: guides/setup/index.qmd
             text: Setup
+          - href: guides/setup/makefiles.qmd
+            text: Makefiles
           - href: guides/debugging/qemu-vscode.qmd
             text: Debugging con QEMU
           - href: guides/debugging/native-vscode.qmd
@@ -101,6 +103,7 @@ website:
             - guides/setup/index.qmd
             - guides/setup/qemu-x86_64.qmd
             - guides/setup/native-aarch64.qmd
+            - guides/setup/makefiles.qmd
             - guides/setup/docker.qmd
         - section: "Debugging"
           contents:

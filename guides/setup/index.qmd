@@ -10,8 +10,8 @@ depende de tu máquina, no de tu nivel.
 
 | Ruta | Úsala si... | Comandos principales |
 |---|---|---|
-| [QEMU en x86_64](qemu-x86_64.qmd) | Tu laptop o PC no es ARM64 | `make -C src`, `make -C src run`, `make -C src gdb` |
-| [ARM nativo](native-aarch64.qmd) | Estás en Linux ARM64 real | `make -C src -f Makefile.arm64 run` |
+| [QEMU en x86_64](qemu-x86_64.qmd) | Tu laptop o PC no es ARM64 | `make`, `make run`, `make gdb` |
+| [ARM nativo](native-aarch64.qmd) | Estás en Linux ARM64 real | `make`, `make run`, `make gdb` |
 | [Docker](docker.qmd) | Necesitas entorno reproducible | `docker build`, `docker run` |
 
 ::: {.callout-tip}
@@ -34,16 +34,19 @@ Al terminar esta sección debes poder ejecutar:
 
 ```bash
 cd 00-hello-minimo
-make -C src
-make -C src run
+cd src
+make
+make run
 ```
 
 Y para depurar:
 
 ```bash
-make -C src gdb
+make gdb
 ```
 
 Luego sigue con [Depuración: QEMU y VS Code](../debugging/qemu-vscode.qmd) o con
 [Depuración: ARM nativo y VS Code](../debugging/native-vscode.qmd), según tu
 ruta.
+
+Para elegir el Makefile correcto, revisa [Makefiles ARM64](makefiles.qmd).

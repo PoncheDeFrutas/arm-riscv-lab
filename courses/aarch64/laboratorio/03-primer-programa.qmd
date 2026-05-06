@@ -23,7 +23,6 @@ que el laboratorio puede construir y ejecutar un binario AArch64.
 |  `- settings.json
 `- src/
    |- Makefile
-   |- Makefile.arm64
    `- main.s
 ```
 
@@ -31,6 +30,7 @@ Entra a la carpeta:
 
 ```bash
 cd 00-hello-minimo
+cd src
 ```
 
 ## Código mínimo
@@ -69,36 +69,22 @@ Lectura mínima:
 
 ## Compilar
 
-Ruta x86_64 con QEMU:
+Usa el Makefile correcto para tu entorno y compila:
 
 ```bash
-make -C src
-```
-
-Ruta Raspberry Pi ARM64:
-
-```bash
-make -C src -f Makefile.arm64
+make
 ```
 
 Resultado esperado:
 
 ```bash
-src/build/main
+build/main
 ```
 
 ## Ejecutar
 
-Ruta x86_64 con QEMU:
-
 ```bash
-make -C src run
-```
-
-Ruta Raspberry Pi ARM64:
-
-```bash
-make -C src -f Makefile.arm64 run
+make run
 ```
 
 Salida esperada:
@@ -108,19 +94,19 @@ Hola ARM64
 ```
 
 ::: {.callout-tip title="Por qué usamos make"}
-`make` evita escribir comandos largos. En x86_64 usas `Makefile`; en Raspberry
-Pi ARM64 real usas `Makefile.arm64`.
+`make` evita escribir comandos largos. QEMU y Raspberry Pi usan comandos
+iguales; lo que cambia es el contenido de `src/Makefile`.
 :::
 
 ## Comandos útiles
 
 ```bash
-make -C src info
-make -C src clean
+make info
+make clean
 ```
 
-`make -C src info` muestra ayuda del Makefile actual. `make -C src clean` borra
-`src/build/` para reconstruir desde cero.
+`make info` muestra ayuda del Makefile actual. `make clean` borra `build/` para
+reconstruir desde cero.
 
 ## Errores comunes
 
@@ -129,14 +115,15 @@ make -C src clean
 | `compiler not found` | Faltan paquetes de la ruta |
 | `Exec format error` | Intentaste ejecutar directo un binario AArch64 en x86_64 |
 | No imprime nada | Revisa longitud del mensaje y syscall `write` |
-| Usaste `Makefile.arm64` en x86_64 | Ese Makefile es solo para ARM64 real |
+| Copiaste template equivocado | Revisa la guía de Makefiles según tu máquina |
 
 ## Checklist
 
 - [ ] Entré a la carpeta del ejemplo.
-- [ ] `make -C src` generó `src/build/main`.
-- [ ] `make -C src run` imprimió `Hola ARM64`.
-- [ ] Puedo limpiar con `make -C src clean`.
+- [ ] Entré a `src/`.
+- [ ] `make` generó `build/main`.
+- [ ] `make run` imprimió `Hola ARM64`.
+- [ ] Puedo limpiar con `make clean`.
 - [ ] Entiendo que todavía no estamos estudiando syscalls a fondo.
 
 Siguiente: [Inspección del binario](04-inspeccion-binario.qmd).

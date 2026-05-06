@@ -1,6 +1,6 @@
 # Flujo principal: x86_64 + QEMU user mode.
-# Desde la carpeta del ejemplo usa: make -C src
-# En Raspberry Pi ARM64 real usa: make -C src -f Makefile.arm64
+# Flujo principal: x86_64 + QEMU user mode.
+# En Raspberry Pi ARM64 real copia un template ARM64 como Makefile.
 
 AS      = aarch64-linux-gnu-as
 LD      = aarch64-linux-gnu-ld
@@ -39,8 +39,8 @@ clean:
 
 info:
 	@echo "Flujo: x86_64 + QEMU user mode"
-	@echo "Desde la carpeta del ejemplo:"
-	@echo "  make -C src"
-	@echo "  make -C src run"
-	@echo "  make -C src gdb"
-	@echo "Raspberry Pi ARM64: make -C src -f Makefile.arm64 run"
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza"
+	@echo "  make run    -> ejecuta con QEMU"
+	@echo "  make gdb    -> QEMU + espera GDB en localhost:1234"
+	@echo "  make clean  -> limpia build/"

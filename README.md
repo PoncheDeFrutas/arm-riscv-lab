@@ -10,9 +10,10 @@ RISC-V sin mezclar contenido ni duplicar teoría.
 
 ```bash
 cd 00-hello-minimo
-make -C src
-make -C src run
-make -C src gdb
+cd src
+make
+make run
+make gdb
 ```
 
 El flujo recomendado para estudiantes es:
@@ -21,13 +22,15 @@ El flujo recomendado para estudiantes es:
 leer teoría -> ejecutar ejemplo -> depurar -> resolver ejercicio
 ```
 
-Para Raspberry Pi ARM64 real, usa el Makefile nativo de la lección:
+Para Raspberry Pi ARM64 real, copia el template ARM64 como `src/Makefile` y usa
+los mismos comandos:
 
 ```bash
 cd 00-hello-minimo
-make -C src -f Makefile.arm64
-make -C src -f Makefile.arm64 run
-make -C src -f Makefile.arm64 gdb
+cd src
+make
+make run
+make gdb
 ```
 
 ## Estructura

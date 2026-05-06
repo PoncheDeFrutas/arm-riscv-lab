@@ -50,7 +50,7 @@ En esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas
 
 ::: {.lab-step}
 **Ejecuta**
-`./src/build/main`
+`./build/main`
 :::
 
 ::: {.lab-step}
@@ -85,7 +85,7 @@ máquina completa.
 
 ::: {.lab-step}
 **Ejecuta**
-`qemu-aarch64 ./src/build/main`
+`qemu-aarch64 ./build/main`
 :::
 
 ::: {.lab-step}
@@ -95,8 +95,8 @@ máquina completa.
 :::
 
 ::: {.callout-warning title="No ejecutes directo en x86_64"}
-Si tu host es `x86_64`, `./src/build/main` no es el comando correcto para el
-binario AArch64. Usa `make -C src run`.
+Si tu host es `x86_64`, `./build/main` no es el comando correcto para el
+binario AArch64. Entra a `src/` y usa `make run`.
 :::
 
 ## QEMU system mode
@@ -112,7 +112,7 @@ En esta unidad solo aparece como mapa mental:
 | QEMU system mode | Una máquina ARM completa | Solo mención |
 
 ::: {.callout-tip title="Regla práctica"}
-Si solo quieres correr `src/build/main`, usa QEMU user mode. Si necesitas
+Si solo quieres correr `build/main`, usa QEMU user mode. Si necesitas
 arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más
 adelante.
 :::

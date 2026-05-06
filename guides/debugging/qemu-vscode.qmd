@@ -17,13 +17,14 @@ lanza el programa directamente; se conecta a ese proceso.
 
 ```bash
 cd 00-hello-minimo
-make -C src
+cd src
+make
 ```
 
 ## 2. Arranca QEMU con GDB server
 
 ```bash
-make -C src gdb
+make gdb
 ```
 
 Deja esa terminal abierta. El programa está esperando al debugger. En el
@@ -132,8 +133,8 @@ Dirección del mensaje apuntada por `x1`.
 ::: {.callout-warning}
 ## Error común
 
-Si VS Code dice que no puede conectar, casi siempre `make -C src gdb` no está
-corriendo o el puerto `1234` ya está ocupado.
+Si VS Code dice que no puede conectar, casi siempre `make gdb` no está corriendo
+o el puerto `1234` ya está ocupado.
 :::
 
 ::: {.callout-tip title="Breakpoints por etiqueta"}

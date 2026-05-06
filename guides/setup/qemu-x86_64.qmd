@@ -43,8 +43,9 @@ reportando `x86_64`; QEMU ejecutará el binario ARM64.
 
 ```bash
 cd 00-hello-minimo
-make -C src
-make -C src run
+cd src
+make
+make run
 ```
 
 Salida esperada:
@@ -58,7 +59,7 @@ Hola ARM64
 Arranca QEMU con GDB server:
 
 ```bash
-make -C src gdb
+make gdb
 ```
 
 Luego conecta VS Code con la configuración `Debug ARM64 (QEMU)`.
@@ -66,7 +67,7 @@ Luego conecta VS Code con la configuración `Debug ARM64 (QEMU)`.
 ::: {.callout-warning}
 ## Terminal bloqueada es normal
 
-`make -C src gdb` queda esperando conexión en `localhost:1234`. Deja esa terminal
+`make gdb` queda esperando conexión en `localhost:1234`. Deja esa terminal
 abierta y conecta el debugger desde VS Code en otra acción.
 :::
 

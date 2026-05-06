@@ -1,5 +1,5 @@
 # Proyecto mínimo ARM64: x86_64 + QEMU user mode.
-# En Raspberry Pi ARM64 real usa una plantilla Makefile.arm64.*.
+# En Raspberry Pi ARM64 real copia una plantilla ARM64 como Makefile.
 
 AS      = aarch64-linux-gnu-as
 LD      = aarch64-linux-gnu-ld
@@ -37,8 +37,8 @@ clean:
 	rm -rf $(BUILD)
 
 info:
-	@echo "Desde la carpeta del proyecto:"
-	@echo "  make -C src"
-	@echo "  make -C src run"
-	@echo "  make -C src gdb"
-	@echo "  make -C src clean"
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza"
+	@echo "  make run    -> ejecuta con QEMU"
+	@echo "  make gdb    -> QEMU + espera GDB en localhost:1234"
+	@echo "  make clean  -> limpia build/"

@@ -1,0 +1,97 @@
+---
+title: "01.6 · Estructura del repositorio"
+subtitle: "Carpetas mínimas para ejemplos, proyectos, VS Code y Makefiles."
+description: "Organización base de lecciones, proyectos y templates de Makefile."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Laboratorio > Estructura del repositorio
+:::
+
+::: {.hero-lab}
+La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas.
+Cada ejemplo pequeño puede vivir como una carpeta simple con `.vscode/` y
+`src/`.
+:::
+
+## Proyecto mínimo
+
+```bash
+00-hello-minimo/
+|- .vscode/
+|  |- launch.json
+|  `- settings.json
+`- src/
+   |- Makefile
+   `- main.s
+```
+
+En `src/` solo necesitas dos archivos para empezar:
+
+| Archivo | Uso |
+|---|---|
+| `main.s` | Código assembly |
+| `Makefile` | Flujo activo: QEMU o ARM64 nativo |
+
+El binario generado queda en `src/build/main` visto desde VS Code, y en
+`build/main` cuando ya estás dentro de `src/`.
+
+## Flujo único
+
+```bash
+cd 00-hello-minimo
+cd src
+make
+make run
+make gdb
+```
+
+QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile
+que copiaste como `src/Makefile`.
+
+## Templates disponibles
+
+Los templates viven en:
+
+```bash
+tooling/make/makefile-templates/
+|- Makefile.qemu.single
+|- Makefile.qemu.multi
+|- Makefile.arm64.single
+`- Makefile.arm64.multi
+```
+
+| Template | Cuándo usarlo |
+|---|---|
+| `Makefile.qemu.single` | x86_64 + QEMU, un `main.s` |
+| `Makefile.qemu.multi` | x86_64 + QEMU, varios `.s` |
+| `Makefile.arm64.single` | Raspberry Pi / ARM64 real, un `main.s` |
+| `Makefile.arm64.multi` | Raspberry Pi / ARM64 real, varios `.s` |
+
+Para copiar y entender cada uno, usa la guía
+[Makefiles ARM64](../../../guides/setup/makefiles.qmd).
+
+::: {.callout-tip title="Regla docente"}
+No uses banderas especiales de `make` en las prácticas iniciales. Cambia el
+contenido de `src/Makefile` y conserva los comandos.
+:::
+
+## Carpetas del curso
+
+| Carpeta | Uso |
+|---|---|
+| `courses/` | Páginas Quarto del curso |
+| `guides/` | Setup, Makefiles, debugging y troubleshooting |
+| `lessons/` | Ejemplos ejecutables |
+| `exercises/` | Prácticas |
+| `projects/` | Estructuras mínimas de proyecto |
+| `slides/` | Presentaciones Slidev |
+| `tooling/` | Templates y soporte técnico |
+
+## Checklist
+
+- [ ] Mi ejemplo tiene `.vscode/` y `src/`.
+- [ ] `src/` solo necesita `Makefile` y `main.s` para empezar.
+- [ ] Uso `make`, `make run` y `make gdb`.
+- [ ] Si cambio de entorno, reemplazo `src/Makefile`.
+- [ ] VS Code apunta a `src/build/main`.

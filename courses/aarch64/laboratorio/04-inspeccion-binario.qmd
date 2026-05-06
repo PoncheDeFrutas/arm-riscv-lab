@@ -17,19 +17,14 @@ arquitectura, símbolos, instrucciones, bytes y syscalls observables.
 
 ```bash
 cd 00-hello-minimo
-make -C src
-```
-
-En Raspberry Pi:
-
-```bash
-make -C src -f Makefile.arm64
+cd src
+make
 ```
 
 ## Identificar el archivo
 
 ```bash
-file src/build/main
+file build/main
 ```
 
 Debes ver que es un ejecutable ELF de AArch64 o ARM aarch64.
@@ -42,7 +37,7 @@ segmentos, secciones y loader vendrán después.
 ## Ver encabezado ELF
 
 ```bash
-readelf -h src/build/main
+readelf -h build/main
 ```
 
 Busca tres datos:
@@ -56,13 +51,13 @@ Busca tres datos:
 ## Ver instrucciones
 
 ```bash
-aarch64-linux-gnu-objdump -d src/build/main
+aarch64-linux-gnu-objdump -d build/main
 ```
 
 En Raspberry Pi también puede funcionar:
 
 ```bash
-objdump -d src/build/main
+objdump -d build/main
 ```
 
 Busca `_start` y las instrucciones `mov`, `adr` y `svc`.
@@ -70,13 +65,13 @@ Busca `_start` y las instrucciones `mov`, `adr` y `svc`.
 ## Ver símbolos
 
 ```bash
-aarch64-linux-gnu-nm src/build/main
+aarch64-linux-gnu-nm build/main
 ```
 
 En Raspberry Pi:
 
 ```bash
-nm src/build/main
+nm build/main
 ```
 
 Busca:
@@ -90,8 +85,8 @@ Busca:
 ## Ver bytes
 
 ```bash
-hexdump -C src/build/main | head
-xxd src/build/main | head
+hexdump -C build/main | head
+xxd build/main | head
 ```
 
 No necesitas interpretar todo. La meta es notar que el archivo final son bytes y
@@ -100,7 +95,7 @@ que las herramientas dan distintas vistas del mismo binario.
 ## Ver bibliotecas dinámicas
 
 ```bash
-ldd src/build/main
+ldd build/main
 ```
 
 Como este ejemplo se enlaza sin libc y estático, puede aparecer algo como:
@@ -116,13 +111,13 @@ Eso está bien para este laboratorio.
 Ruta Raspberry Pi ARM64:
 
 ```bash
-strace ./src/build/main
+strace ./build/main
 ```
 
 Ruta x86_64 con QEMU:
 
 ```bash
-strace qemu-aarch64 ./src/build/main
+strace qemu-aarch64 ./build/main
 ```
 
 En x86_64, `strace` observa el proceso QEMU desde el host. No lo uses todavía
