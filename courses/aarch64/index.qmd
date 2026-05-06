@@ -173,6 +173,7 @@ En este bloque se construye la base para entender cómo se ejecuta un programa
 AArch64 antes de entrar en programas más grandes.
 
 ::: {.planned-list}
+- [00 · Contexto, historia y objetivos](fundamentos/contexto-historia-objetivos.qmd)
 - Setup y herramientas
 - Bases binarias y representación de datos
 - Modelo ARMv8-A / AArch64
@@ -182,5 +183,5 @@ AArch64 antes de entrar en programas más grandes.
 
 ## Siguiente paso
 
-Crear la unidad "Setup y herramientas" y mantener el roadmap completo como
-referencia, no como lista obligatoria para empezar.
+Empezar por la unidad "00 · Contexto, historia y objetivos" y mantener el
+roadmap completo como referencia, no como lista obligatoria para empezar.

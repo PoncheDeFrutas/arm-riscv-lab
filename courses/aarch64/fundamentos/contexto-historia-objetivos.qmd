@@ -1,0 +1,251 @@
+---
+title: "00 · Contexto, historia y objetivos"
+subtitle: "Antes de escribir instrucciones, conviene entender qué es ARM64, qué papel cumple una ISA y por qué assembly ayuda a ver la relación entre software y hardware."
+description: "Unidad introductoria sobre assembly, ISA, ARM, ARMv8-A, AArch64 y A64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Fundamentos > Contexto, historia y objetivos
+:::
+
+::: {.hero-lab}
+Esta unidad ubica el mapa antes de escribir código. El objetivo no es memorizar
+instrucciones todavía, sino entender qué significa estudiar ARM64/AArch64 y por
+qué assembly sirve para observar lo que normalmente queda oculto detrás de un
+lenguaje de alto nivel.
+:::
+
+<div class="hero-actions">
+<a class="lab-button" href="../../../slides/aarch64/fundamentos/contexto-historia-objetivos/">Ver presentación</a>
+</div>
+
+## Qué aprenderás en esta unidad
+
+- Qué es assembly.
+- Qué es una ISA.
+- Qué es ARM.
+- Qué significan ARMv8-A, AArch64 y A64.
+- Diferencia entre arquitectura e implementación.
+- Diferencia entre ARM32 y ARM64.
+- Por qué aprender assembly sigue siendo útil.
+- Qué podrás hacer al avanzar en la ruta.
+
+## Qué es assembly
+
+Assembly es una forma textual de escribir instrucciones cercanas a las que
+entiende el procesador. No es lenguaje de máquina puro: el procesador no lee
+directamente palabras como `mov`, `add` o `ldr`; esas instrucciones se ensamblan
+en valores binarios. Aun así, assembly está mucho más cerca del hardware que C,
+Python o JavaScript.
+
+Cada arquitectura tiene su propio assembly. El assembly de AArch64 no es igual
+al de x86-64, RISC-V o MIPS, porque cada familia define instrucciones, registros
+y reglas visibles distintas.
+
+Assembly permite observar registros, memoria, saltos e instrucciones con menos
+capas intermedias. Aprenderlo no significa escribir todo en assembly, sino
+entender mejor cómo se ejecutan los programas que escribimos en otros lenguajes.
+
+::: {.callout-note title="Idea clave"}
+Assembly es una herramienta de estudio: ayuda a ver la ejecución de un programa
+desde el punto de vista del procesador.
+:::
+
+## Qué es una ISA
+
+Una ISA, del inglés *Instruction Set Architecture*, es el contrato visible entre
+software y hardware. Define qué instrucciones existen, qué registros puede usar
+un programa y cómo el software controla el comportamiento observable del
+procesador.
+
+La ISA no describe necesariamente cómo está construido internamente un procesador
+real. Dos procesadores pueden ser compatibles con la misma ISA y aun así tener
+diseños internos distintos.
+
+## ISA vs implementación / microarquitectura
+
+La diferencia entre ISA e implementación evita una confusión común: no todo lo
+que pertenece al procesador pertenece a la arquitectura visible para el
+programador.
+
+| ISA | Implementación / microarquitectura |
+| --- | --- |
+| Define instrucciones. | Define cómo un procesador real ejecuta internamente esas instrucciones. |
+| Define registros. | Puede incluir pipeline, cachés, predicción de saltos y ejecución fuera de orden. |
+| Define comportamiento visible para el programador. | Puede variar entre procesadores compatibles con la misma ISA. |
+
+En esta ruta estudiaremos primero el lado visible para el programador. Más
+adelante aparecerán detalles de rendimiento y hardware, pero no son necesarios
+para empezar.
+
+## Qué es ARM
+
+ARM es una familia de arquitecturas RISC muy usada en teléfonos, sistemas
+embebidos, Raspberry Pi, servidores, dispositivos IoT y hardware de bajo
+consumo.
+
+Su origen histórico está ligado a Acorn y al diseño de procesadores RISC:
+procesadores con instrucciones relativamente regulares y un modelo pensado para
+ejecutarlas de manera eficiente. Con el tiempo, ARM pasó de equipos y sistemas
+embebidos a convertirse en una arquitectura dominante en dispositivos modernos.
+
+Para estudiar bajo nivel, ARM es útil porque permite conectar conceptos de
+arquitectura, memoria, compiladores, sistemas operativos y hardware sin empezar
+con una ISA innecesariamente irregular.
+
+## Qué es ARMv8-A
+
+ARMv8-A es una versión y perfil de la arquitectura ARM orientado a sistemas
+capaces de ejecutar sistemas operativos ricos, como Linux. La letra `A` se
+asocia al perfil de aplicación.
+
+ARMv8-A puede describir software de 32 bits y de 64 bits. Por eso conviene
+separar la versión/perfil de arquitectura del estado de ejecución que se use en
+un momento concreto.
+
+## Qué es AArch64
+
+AArch64 es el estado de ejecución de 64 bits introducido con ARMv8-A. Cuando un
+procesador ejecuta en ese estado, usa registros y reglas de ejecución de 64
+bits.
+
+En este curso, AArch64 será el estado principal de estudio. Nos interesa porque
+es la base de ARM64 moderno en Linux, herramientas de desarrollo, servidores,
+Raspberry Pi recientes y muchos dispositivos actuales.
+
+## Qué es A64
+
+A64 es el conjunto de instrucciones usado cuando el procesador ejecuta en
+AArch64.
+
+::: {.callout-note title="Idea clave"}
+AArch64 no es exactamente lo mismo que A64. AArch64 es el estado de ejecución de
+64 bits; A64 es el conjunto de instrucciones usado en ese estado.
+:::
+
+## ARM32 vs ARM64
+
+ARM no es una sola cosa. En conversaciones prácticas, ARM32 suele asociarse con
+AArch32, el estado de ejecución de 32 bits, y puede usar conjuntos de
+instrucciones como A32 o T32.
+
+ARM64 suele asociarse con AArch64, el estado de ejecución de 64 bits, y usa el
+conjunto de instrucciones A64.
+
+## AArch32 vs AArch64
+
+AArch32 es el estado de ejecución de 32 bits. AArch64 es el estado de ejecución
+de 64 bits. La diferencia no es solo el tamaño de algunos datos: también cambia
+el modelo visible para el programador y el conjunto de instrucciones disponible.
+
+Para esta ruta, la regla será simple: estudiaremos AArch64. AArch32 aparecerá
+solo cuando ayude a comparar ideas o entender material histórico.
+
+## A32 / T32 / A64
+
+A32 y T32 son conjuntos de instrucciones asociados al mundo ARM de 32 bits. A32
+se conoce tradicionalmente como ARM, mientras que T32 viene de Thumb/Thumb-2.
+
+A64 es el conjunto de instrucciones usado en AArch64. En otras palabras: ARM no
+es una sola sintaxis ni un solo modo de ejecución; hay estados de ejecución y
+conjuntos de instrucciones distintos.
+
+## RISC vs CISC
+
+ARM se suele presentar como una arquitectura RISC. RISC no significa
+"automáticamente mejor"; significa que la arquitectura sigue ciertas decisiones
+de diseño.
+
+En una arquitectura RISC, las instrucciones tienden a ser más regulares. Muchas
+operaciones de datos trabajan principalmente sobre registros, y el acceso a
+memoria se concentra en instrucciones de carga y almacenamiento. A este enfoque
+se le llama arquitectura *load/store*.
+
+CISC, por contraste, describe arquitecturas con instrucciones históricamente más
+complejas y con más variedad de formatos y comportamientos.
+
+La diferencia importa como contexto, no como juicio absoluto. Los procesadores
+modernos mezclan muchas técnicas internas, y el rendimiento real depende de
+mucho más que una etiqueta RISC o CISC.
+
+## Dónde se usa ARM64
+
+ARM64 aparece en teléfonos, tablets, computadoras personales, placas como
+Raspberry Pi, servidores, dispositivos IoT y sistemas embebidos modernos.
+
+Ese uso extendido hace que AArch64 sea una buena arquitectura educativa: permite
+aprender bajo nivel con una ISA actual, documentada y conectada con plataformas
+reales.
+
+## Por qué aprender assembly hoy
+
+Assembly sigue siendo útil porque muestra el punto de encuentro entre el
+programa, el compilador, el sistema operativo y el hardware.
+
+Aprender assembly ayuda a:
+
+- entender cómo el compilador traduce programas;
+- depurar errores difíciles;
+- comprender punteros, memoria y stack;
+- estudiar sistemas operativos;
+- entender ABI, llamadas a funciones y binarios;
+- optimizar partes críticas;
+- analizar código generado;
+- prepararse para bare metal, drivers, reversing y seguridad.
+
+No todos los programadores escribirán sistemas completos en assembly, pero casi
+todos se benefician de entender qué ocurre debajo de sus abstracciones.
+
+## Relación con C, Linux, hardware y sistemas
+
+Esta ruta no estudia assembly de forma aislada. Assembly será el lenguaje de
+observación para conectar C, compiladores, Linux, debugging, binarios ELF,
+memoria, hardware y sistemas.
+
+Primero trabajaremos con ideas pequeñas y controladas. Más adelante aparecerán
+programas, herramientas de inspección, llamadas al sistema, funciones, ABI,
+stack, binarios, bare metal y kernel. Esta unidad solo prepara el vocabulario
+para que esas piezas tengan sentido cuando lleguen.
+
+## Qué podrás hacer al avanzar en la ruta
+
+Al avanzar en la ruta podrás:
+
+- leer programas AArch64 simples;
+- entender qué hacen los registros;
+- escribir programas mínimos en Linux sin depender de libc al inicio;
+- observar ejecución con GDB;
+- inspeccionar binarios con objdump y readelf;
+- entender stack, funciones y ABI;
+- conectar software con hardware de forma progresiva.
+
+## Resumen de la unidad
+
+En esta unidad no se busca memorizar instrucciones. El objetivo es ubicar el
+mapa: ARM64 es una arquitectura moderna, AArch64 es su estado de ejecución de 64
+bits, A64 es su conjunto de instrucciones, y assembly será la herramienta para
+estudiar cómo se conectan software, sistema operativo y hardware.
+
+## Checklist
+
+- [ ] Puedo explicar qué es assembly.
+- [ ] Puedo explicar qué es una ISA.
+- [ ] Puedo distinguir ISA de implementación.
+- [ ] Puedo diferenciar ARMv8-A, AArch64 y A64.
+- [ ] Puedo explicar por qué este curso empieza con fundamentos antes de escribir código.
+- [ ] Puedo describir para qué sirve aprender assembly aunque programe en lenguajes de alto nivel.
+
+## Siguiente unidad
+
+La siguiente unidad será "Setup y herramientas", donde se preparará el entorno
+para ensamblar, ejecutar e inspeccionar programas AArch64.
+
+**01 · Setup y herramientas**  
+Disponible cuando se publique la siguiente página.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Armv8-A Instruction Set Architecture](https://developer.arm.com/-/media/Arm%20Developer%20Community/PDF/Learn%20the%20Architecture/Armv8-A%20Instruction%20Set%20Architecture.pdf).
+- Larry D. Pyeatt y William Ughetta, [ARM 64-Bit Assembly Language](https://www.oreilly.com/library/view/arm-64-bit-assembly/9780128192221/).
+- Arm, [Arm Architecture Reference Manual Supplement: Armv8, for R-profile AArch64 architecture](https://developer.arm.com/documentation/ddi0600/latest).

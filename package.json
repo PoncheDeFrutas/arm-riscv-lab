@@ -5,8 +5,8 @@
   "type": "module",
   "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "slides:dev": "slidev slides/aarch64/02-syscalls/00-hello-world/slides.md",
-    "slides:build": "slidev build slides/aarch64/02-syscalls/00-hello-world/slides.md --out $PWD/_site/slides/aarch64/02-syscalls/00-hello-world --base ./ --router-mode hash"
+    "slides:dev": "slidev slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md",
+    "slides:build": "slidev build slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md --out .slidev-dist --base ./ --router-mode hash && rm -rf $PWD/_site/slides/aarch64/fundamentos/contexto-historia-objetivos && mkdir -p $PWD/_site/slides/aarch64/fundamentos/contexto-historia-objetivos && cp -R slides/aarch64/fundamentos/contexto-historia-objetivos/.slidev-dist/. $PWD/_site/slides/aarch64/fundamentos/contexto-historia-objetivos && rm -rf slides/aarch64/fundamentos/contexto-historia-objetivos/.slidev-dist"
   },
   "devDependencies": {
     "@slidev/cli": "52.15.0",

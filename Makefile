@@ -1,8 +1,9 @@
 .PHONY: help site quarto-site preview slides slides-build nojekyll publish hello hello-run hello-gdb clean
 
 LESSON ?= lessons/aarch64/02-syscalls/00-hello-world
-SLIDES ?= slides/aarch64/02-syscalls/00-hello-world/slides.md
-SLIDES_OUT ?= _site/slides/aarch64/02-syscalls/00-hello-world
+SLIDES ?= slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md
+SLIDES_OUT ?= $(CURDIR)/_site/slides/aarch64/fundamentos/contexto-historia-objetivos
+SLIDES_TMP ?= $(dir $(SLIDES)).slidev-dist
 
 help:
 	@echo "Targets:"
@@ -10,8 +11,8 @@ help:
 	@echo "  make publish    Render locally and publish to GitHub Pages"
 	@echo "  make quarto-site Render only Quarto pages"
 	@echo "  make preview    Preview Quarto site"
-	@echo "  make slides     Run Slidev for the first deck"
-	@echo "  make slides-build Build first Slidev deck into _site"
+	@echo "  make slides     Run Slidev for the current deck"
+	@echo "  make slides-build Build current Slidev deck into _site"
 	@echo "  make hello      Build first AArch64 lesson"
 	@echo "  make hello-run  Run first AArch64 lesson"
 	@echo "  make hello-gdb  Start first AArch64 lesson under GDB server"
@@ -34,7 +35,11 @@ slides:
 
 slides-build:
 	@if [ -f "$(SLIDES)" ]; then \
-		pnpm exec slidev build "$(SLIDES)" --out "$(SLIDES_OUT)" --base ./ --router-mode hash; \
+		pnpm exec slidev build "$(SLIDES)" --out ".slidev-dist" --base ./ --router-mode hash; \
+		rm -rf "$(SLIDES_OUT)"; \
+		mkdir -p "$(SLIDES_OUT)"; \
+		cp -R "$(SLIDES_TMP)/." "$(SLIDES_OUT)"; \
+		rm -rf "$(SLIDES_TMP)"; \
 	else \
 		echo "Slidev deck not found at $(SLIDES); skipping."; \
 	fi
