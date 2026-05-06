@@ -5,6 +5,8 @@ dist/
 .slidev/
 
 build/
+**/build/
+**/.slidev-dist/
 *.o
 *.elf
 *.out

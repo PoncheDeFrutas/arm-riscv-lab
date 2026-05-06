@@ -5,8 +5,8 @@
   "type": "module",
   "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "slides:dev": "slidev slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md",
-    "slides:build": "slidev build slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md --out .slidev-dist --base ./ --router-mode hash && rm -rf $PWD/_site/slides/aarch64/fundamentos/contexto-historia-objetivos && mkdir -p $PWD/_site/slides/aarch64/fundamentos/contexto-historia-objetivos && cp -R slides/aarch64/fundamentos/contexto-historia-objetivos/.slidev-dist/. $PWD/_site/slides/aarch64/fundamentos/contexto-historia-objetivos && rm -rf slides/aarch64/fundamentos/contexto-historia-objetivos/.slidev-dist"
+    "slides:dev": "slidev slides/aarch64/laboratorio/overview/slides.md",
+    "slides:build": "slidev build slides/aarch64/laboratorio/overview/slides.md --out .slidev-dist --base ./ --router-mode hash && rm -rf $PWD/_site/slides/aarch64/laboratorio/overview && mkdir -p $PWD/_site/slides/aarch64/laboratorio/overview && cp -R slides/aarch64/laboratorio/overview/.slidev-dist/. $PWD/_site/slides/aarch64/laboratorio/overview && rm -rf slides/aarch64/laboratorio/overview/.slidev-dist"
   },
   "devDependencies": {
     "@slidev/cli": "52.15.0",

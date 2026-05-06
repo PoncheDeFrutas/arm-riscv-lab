@@ -16,17 +16,53 @@ Verifica con `uname -m`. Si reporta `x86_64`, vuelve a
 ## Compila
 
 ```bash
-cd lessons/aarch64/02-syscalls/00-hello-world
-make RUN_MODE=native
+cd 00-hello-minimo
+make -C src -f Makefile.arm64
 ```
 
 ## Lanza GDB
 
 ```bash
-make RUN_MODE=native gdb
+make -C src -f Makefile.arm64 gdb
 ```
 
-En VS Code usa la configuración `AArch64 native: launch`.
+En VS Code usa la configuración `Debug ARM64 (nativo)`.
+
+Instala estas extensiones:
+
+| Extensión | ID |
+|---|---|
+| C/C++ | `ms-vscode.cpptools` |
+| Makefile Tools | `ms-vscode.makefile-tools` |
+| ARM64 Assembly (GNU AS) | `Felipenguim.vscode-arm64-assembly` |
+| StackScope | `EightLayerStudio.StackScope` |
+
+Config completa para copiar en `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug ARM64 (nativo)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/build/main",
+      "cwd": "${workspaceFolder}/src",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "stopAtEntry": true,
+      "setupCommands": [
+        { "text": "-enable-pretty-printing" },
+        { "text": "set architecture aarch64" },
+        { "text": "set disassemble-next-line on" },
+        { "text": "set step-mode on" },
+        { "text": "set pagination off" }
+      ]
+    }
+  ]
+}
+```
 
 ## Qué cambia frente a QEMU
 
@@ -35,11 +71,36 @@ En VS Code usa la configuración `AArch64 native: launch`.
 | Ejecución | `qemu-aarch64` | Directa |
 | Debugger | `gdb-multiarch` | `gdb` |
 | Conexión | `localhost:1234` | Launch local |
-| `RUN_MODE` | Por defecto | `native` |
+| Makefile | `Makefile` | `Makefile.arm64` |
 
 ::: {.callout-tip}
 ## Misma idea, menos capas
 
 Los registros, syscalls y flujo del programa son los mismos. Lo que cambia es la
 forma en que el proceso llega a ejecutarse.
+:::
+
+## Errores visuales comunes
+
+En ARM nativo también puede parecer que GDB salta líneas. Esto ocurre porque GDB
+puede avanzar por líneas fuente, mientras el procesador ejecuta instrucciones.
+Para assembly, usa comandos por instrucción en la Debug Console:
+
+```bash
+stepi
+nexti
+break _start
+break printString
+break readIntFromConsole
+info registers x0 x1 x2 x8 pc
+x/6i $pc
+```
+
+`svc #0` entra al kernel. No esperes ver por dentro la syscall como si fuera una
+función de tu código.
+
+::: {.callout-tip title="Breakpoints por etiqueta"}
+`break nombreEtiqueta` funciona si el símbolo existe en el binario. Con
+`.include`, la etiqueta queda en el mismo ensamblado; con `.extern`, debe venir
+de otro objeto enlazado.
 :::

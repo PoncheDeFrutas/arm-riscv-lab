@@ -1,0 +1,42 @@
+# Template: ARM64 nativo (Raspberry Pi / Linux ARM64, un solo main.s)
+# Copia este archivo como Makefile dentro de la lección en hardware ARM64 real.
+
+AS      = as
+LD      = ld
+
+SRC     = main.s
+BUILD   = build
+OBJ     = $(BUILD)/main.o
+BIN     = $(BUILD)/main
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(BIN)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(OBJ): $(SRC) | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BIN): $(OBJ)
+	$(LD) $(LDFLAGS) -o $@ $<
+
+run: $(BIN)
+	$(BIN)
+
+gdb: $(BIN)
+	gdb $(BIN)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets:"
+	@echo "  make        -> ensambla y enlaza en ARM64 nativo"
+	@echo "  make run    -> ejecuta directo"
+	@echo "  make gdb    -> abre GDB local"
+	@echo "  make clean  -> limpia build/"

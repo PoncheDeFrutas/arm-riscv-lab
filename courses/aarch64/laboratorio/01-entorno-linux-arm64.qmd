@@ -1,0 +1,137 @@
+---
+title: "01.1 · Entorno Linux ARM64"
+subtitle: "El laboratorio usa Linux como base y dos rutas principales: ARM64 real o x86_64 con QEMU user mode."
+description: "Rutas de ejecución para la Unidad 01 AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Laboratorio > Entorno Linux ARM64
+:::
+
+::: {.hero-lab}
+Antes de instalar paquetes conviene decidir dónde correrá el programa. En esta
+unidad la fuente en assembly es la misma. Lo que cambia es la forma de compilar,
+ejecutar y depurar.
+:::
+
+## Idea central
+
+Linux será el entorno principal del curso porque permite estudiar AArch64 desde
+userland: procesos, binarios, syscalls, archivos, depuración y herramientas de
+inspección sin entrar todavía a bare metal.
+
+::: {.callout-note title="Límite de esta unidad"}
+No vamos a arrancar kernels, construir imágenes completas ni configurar placas
+desde cero. Eso pertenece a unidades posteriores.
+:::
+
+## Raspberry Pi ARM64 real
+
+Usa esta ruta si tienes una Raspberry Pi con Linux de 64 bits.
+
+```bash
+uname -m
+```
+
+Señal correcta:
+
+```bash
+aarch64
+```
+
+En esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas
+`qemu-aarch64` para ejecutar el ejemplo básico.
+
+::: {.lab-flow}
+::: {.lab-step}
+**Compila**
+`gcc`, `as`, `ld`
+:::
+
+::: {.lab-step}
+**Ejecuta**
+`./src/build/main`
+:::
+
+::: {.lab-step}
+**Depura**
+`gdb`
+:::
+:::
+
+## Host x86_64 con QEMU user mode
+
+Usa esta ruta si tienes una laptop o PC Linux común sin ARM64 real.
+
+```bash
+uname -m
+```
+
+Señal común:
+
+```bash
+x86_64
+```
+
+En esta ruta compilas un binario AArch64 con toolchain cruzado y lo ejecutas con
+`qemu-aarch64`. QEMU user mode ejecuta un programa ARM64 individual, no una
+máquina completa.
+
+::: {.lab-flow}
+::: {.lab-step}
+**Compila**
+`aarch64-linux-gnu-gcc`
+:::
+
+::: {.lab-step}
+**Ejecuta**
+`qemu-aarch64 ./src/build/main`
+:::
+
+::: {.lab-step}
+**Depura**
+`qemu-aarch64 -g 1234` + `gdb-multiarch`
+:::
+:::
+
+::: {.callout-warning title="No ejecutes directo en x86_64"}
+Si tu host es `x86_64`, `./src/build/main` no es el comando correcto para el
+binario AArch64. Usa `make -C src run`.
+:::
+
+## QEMU system mode
+
+QEMU system mode emula una máquina completa: CPU, memoria, dispositivos y arranque
+del sistema. Sirve para kernel, bare metal o sistemas completos.
+
+En esta unidad solo aparece como mapa mental:
+
+| Modo | Qué emula | Uso en esta unidad |
+|---|---|---|
+| QEMU user mode | Un proceso AArch64 | Ruta principal en x86_64 |
+| QEMU system mode | Una máquina ARM completa | Solo mención |
+
+::: {.callout-tip title="Regla práctica"}
+Si solo quieres correr `src/build/main`, usa QEMU user mode. Si necesitas
+arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más
+adelante.
+:::
+
+## Docker opcional
+
+Docker puede dar un entorno repetible en laboratorios compartidos. No reemplaza
+el aprendizaje del flujo: dentro del contenedor seguirás usando `make`,
+toolchain AArch64, QEMU y GDB.
+
+Docker no será requisito principal porque agrega otra capa antes de entender el
+programa. Úsalo si no puedes instalar paquetes en tu sistema.
+
+## Decisión final
+
+| Pregunta | Respuesta | Sigue con |
+|---|---|---|
+| ¿`uname -m` dice `aarch64` o `arm64`? | Sí | Ruta nativa |
+| ¿`uname -m` dice `x86_64`? | Sí | Ruta QEMU user mode |
+| ¿No puedes instalar paquetes? | Sí | Docker opcional |
+
+Siguiente: [Instalación toolchain](02-instalacion-toolchain.qmd).

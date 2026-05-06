@@ -1,0 +1,236 @@
+---
+title: "01.5 · Debugging mínimo"
+subtitle: "Detente en _start, mira registros y avanza una instrucción."
+description: "Primer flujo de depuración con gdb y gdb-multiarch para AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Laboratorio > Debugging mínimo
+:::
+
+::: {.hero-lab}
+Depurar aquí significa algo pequeño: parar el programa, mirar registros y
+avanzar instrucción por instrucción. VS Code, stack frames y debugging avanzado
+quedan para guías y unidades posteriores.
+:::
+
+## Prepara binario
+
+```bash
+cd 00-hello-minimo
+make -C src
+```
+
+En Raspberry Pi:
+
+```bash
+make -C src -f Makefile.arm64
+```
+
+## Ruta x86_64 con QEMU
+
+Terminal 1:
+
+```bash
+make -C src gdb
+```
+
+La terminal queda esperando conexión en `localhost:1234`.
+
+Terminal 2:
+
+```bash
+gdb-multiarch src/build/main
+```
+
+Dentro de GDB:
+
+```bash
+set architecture aarch64
+target remote localhost:1234
+break _start
+continue
+info registers x0 x1 x2 x8 pc
+x/4i $pc
+stepi
+info registers x0 x1 x2 x8 pc
+```
+
+## Ruta Raspberry Pi ARM64 real
+
+```bash
+make -C src -f Makefile.arm64 gdb
+```
+
+Dentro de GDB:
+
+```bash
+break _start
+run
+info registers x0 x1 x2 x8 pc
+x/4i $pc
+stepi
+info registers x0 x1 x2 x8 pc
+```
+
+## Qué observar primero
+
+::: {.lab-flow}
+::: {.lab-step}
+**`pc`**
+Instrucción actual.
+:::
+
+::: {.lab-step}
+**`x0`**
+Primer argumento de syscall.
+:::
+
+::: {.lab-step}
+**`x1`**
+Dirección del mensaje.
+:::
+
+::: {.lab-step}
+**`x2`**
+Longitud del mensaje.
+:::
+
+::: {.lab-step}
+**`x8`**
+Número de syscall.
+:::
+:::
+
+## Salir sin confundirse
+
+En GDB:
+
+```bash
+quit
+```
+
+Si QEMU quedó esperando en otra terminal, ciérralo con `Ctrl+C`.
+
+## VS Code
+
+Para usar debugging visual instala:
+
+| Extensión | ID |
+|---|---|
+| C/C++ | `ms-vscode.cpptools` |
+| Makefile Tools | `ms-vscode.makefile-tools` |
+| ARM64 Assembly (GNU AS) | `Felipenguim.vscode-arm64-assembly` |
+| StackScope | `EightLayerStudio.StackScope` |
+
+El repo trae `.vscode/launch.json`, pero conviene que puedas copiar la
+configuración completa desde esta página. Esta versión fuerza vista de
+instrucciones y reduce errores visuales al depurar assembly.
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug ARM64 (QEMU)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/build/main",
+      "cwd": "${workspaceFolder}/src",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb-multiarch",
+      "miDebuggerServerAddress": "localhost:1234",
+      "stopAtEntry": true,
+      "sourceFileMap": {
+        "${workspaceFolder}/src": "${workspaceFolder}/src"
+      },
+      "setupCommands": [
+        { "text": "-enable-pretty-printing" },
+        { "text": "set architecture aarch64" },
+        { "text": "set disassemble-next-line on" },
+        { "text": "set step-mode on" },
+        { "text": "set pagination off" },
+        { "text": "set breakpoint auto-hw on" }
+      ]
+    },
+    {
+      "name": "Debug ARM64 (nativo)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/build/main",
+      "cwd": "${workspaceFolder}/src",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "stopAtEntry": true,
+      "setupCommands": [
+        { "text": "-enable-pretty-printing" },
+        { "text": "set architecture aarch64" },
+        { "text": "set disassemble-next-line on" },
+        { "text": "set step-mode on" },
+        { "text": "set pagination off" }
+      ]
+    }
+  ]
+}
+```
+
+::: {.callout-note title="Si tu repo se abre en otra carpeta"}
+La configuración anterior asume que VS Code abre `00-hello-minimo/` como
+workspace. Así el código queda corto y portable: `src/build/main`.
+:::
+
+## Errores visuales al avanzar
+
+Cuando depuras assembly, VS Code y GDB pueden parecer “saltarse” líneas. No
+significa necesariamente que el programa esté mal.
+
+| Caso | Qué ocurre | Qué hacer |
+|---|---|---|
+| QEMU | Puede ejecutar bloques de instrucciones | Usar `qemu-aarch64 -g 1234 -singlestep` |
+| Nativo | GDB puede seguir líneas fuente, no instrucciones exactas | Usar `stepi` y `nexti` |
+| `svc #0` | Entra al kernel; no se depura por dentro como tu código | Observa registros antes y después |
+| Funciones auxiliares | Puedes saltar a otra etiqueta o volver después | Pon breakpoints por etiqueta |
+
+En esta unidad, el Makefile de QEMU ya usa `-singlestep` cuando corres
+`make -C src gdb`.
+
+## Debug Console de VS Code
+
+En la consola de depuración puedes escribir comandos GDB directamente:
+
+```bash
+stepi
+nexti
+break _start
+break printString
+break readIntFromConsole
+info registers x0 x1 x2 x8 pc
+x/6i $pc
+```
+
+`stepi` avanza una instrucción. `nexti` avanza una instrucción, pero trata una
+llamada como una unidad cuando aplica. Los breakpoints por etiqueta funcionan si
+el símbolo existe en el binario y fue ensamblado/enlazado con información útil
+para GDB.
+
+::: {.callout-tip title="Sobre `.include` y `.extern`"}
+Con `.include`, el código incluido se ensambla como parte del mismo archivo. Con
+`.extern`, el símbolo viene de otro archivo enlazado. En ambos casos, para hacer
+`break nombreEtiqueta`, GDB necesita que la etiqueta exista como símbolo visible
+en el binario.
+:::
+
+## Guías ampliadas
+
+Si quieres interfaz gráfica, usa:
+
+- [Depuración con QEMU](../../../guides/debugging/qemu-vscode.qmd)
+- [Depuración nativa ARM](../../../guides/debugging/native-vscode.qmd)
+
+## Checklist
+
+- [ ] Puedo iniciar GDB según mi ruta.
+- [ ] Puedo poner breakpoint en `_start`.
+- [ ] Puedo ver `pc`, `x0`, `x1`, `x2` y `x8`.
+- [ ] Puedo ejecutar `stepi`.
+- [ ] Puedo salir de GDB y cerrar QEMU si aplica.

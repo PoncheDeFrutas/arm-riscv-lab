@@ -9,16 +9,25 @@ RISC-V sin mezclar contenido ni duplicar teoría.
 ## Flujo principal
 
 ```bash
-cd lessons/aarch64/02-syscalls/00-hello-world
-make
-make run
-make gdb
+cd 00-hello-minimo
+make -C src
+make -C src run
+make -C src gdb
 ```
 
 El flujo recomendado para estudiantes es:
 
-```text
+```bash
 leer teoría -> ejecutar ejemplo -> depurar -> resolver ejercicio
+```
+
+Para Raspberry Pi ARM64 real, usa el Makefile nativo de la lección:
+
+```bash
+cd 00-hello-minimo
+make -C src -f Makefile.arm64
+make -C src -f Makefile.arm64 run
+make -C src -f Makefile.arm64 gdb
 ```
 
 ## Estructura
@@ -28,7 +37,8 @@ leer teoría -> ejecutar ejemplo -> depurar -> resolver ejercicio
 - `lessons/`: ejemplos ejecutables autocontenidos.
 - `exercises/`: prácticas asociadas a cada lección.
 - `slides/`: presentaciones Slidev de apoyo a clase.
-- `tooling/`: Makefiles compartidos y Docker.
+- `tooling/`: templates de Makefile y Docker.
+- `projects/`: estructura mínima de proyecto con `.vscode/` y `src/`.
 
 ## Sitio
 
@@ -44,8 +54,8 @@ quarto preview
 
 ```bash
 pnpm install
-pnpm exec slidev slides/aarch64/02-syscalls/00-hello-world/slides.md
+pnpm exec slidev slides/aarch64/laboratorio/overview/slides.md
 ```
 
 El workflow de GitHub Pages compila el deck en
-`_site/slides/aarch64/02-syscalls/00-hello-world/`.
+`_site/slides/aarch64/laboratorio/overview/`.

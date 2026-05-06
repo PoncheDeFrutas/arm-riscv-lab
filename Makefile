@@ -1,8 +1,8 @@
 .PHONY: help site quarto-site preview slides slides-build nojekyll publish hello hello-run hello-gdb clean
 
-LESSON ?= lessons/aarch64/02-syscalls/00-hello-world
-SLIDES ?= slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md
-SLIDES_OUT ?= $(CURDIR)/_site/slides/aarch64/fundamentos/contexto-historia-objetivos
+LESSON ?= lessons/aarch64/01-laboratorio/00-hello-minimo/src
+SLIDES ?= slides/aarch64/laboratorio/overview/slides.md
+SLIDES_OUT ?= $(CURDIR)/_site/slides/aarch64/laboratorio/overview
 SLIDES_TMP ?= $(dir $(SLIDES)).slidev-dist
 
 help:

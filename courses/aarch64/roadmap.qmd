@@ -41,7 +41,7 @@ seguridad, virtualización y proyectos.
 <summary>Bloque A — Fundamentos de computación y ARM64</summary>
 <div class="unit-list">
 <div class="unit-card"><strong><a href="fundamentos/contexto-historia-objetivos.qmd">0. Contexto, historia y objetivos</a></strong><p>Qué es assembly, ISA, ARMv8-A, AArch64, A64 y por qué aprender bajo nivel.</p></div>
-<div class="unit-card"><strong>1. Laboratorio ARM64 reproducible</strong><p>Linux, QEMU, toolchain, binutils, GDB, strace y flujo mínimo de trabajo.</p></div>
+<div class="unit-card"><strong><a href="laboratorio/index.qmd">1. Laboratorio ARM64 reproducible</a></strong><p>Linux, QEMU, toolchain, binutils, GDB, strace y flujo mínimo de trabajo.</p></div>
 <div class="unit-card"><strong>2. Bases binarias y representación</strong><p>Bits, bytes, bases numéricas, signed/unsigned, overflow, endianness y direcciones.</p></div>
 <div class="unit-card"><strong>3. Modelo ARMv8-A / AArch64</strong><p>Registros X/W, SP, PC, LR, PSTATE, NZCV, SIMD y niveles de excepción como mapa inicial.</p></div>
 <div class="unit-card"><strong>4. GNU Assembly, directivas y pseudo-instrucciones</strong><p>Archivo .s, secciones, símbolos, datos, macros básicas, literales y direccionamiento simbólico.</p></div>

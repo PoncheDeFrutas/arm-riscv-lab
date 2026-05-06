@@ -237,11 +237,10 @@ estudiar cómo se conectan software, sistema operativo y hardware.
 
 ## Siguiente unidad
 
-La siguiente unidad será "Setup y herramientas", donde se preparará el entorno
-para ensamblar, ejecutar e inspeccionar programas AArch64.
-
-**01 · Setup y herramientas**  
-Disponible cuando se publique la siguiente página.
+La siguiente unidad es
+[01 · Laboratorio ARM64 reproducible](../laboratorio/index.qmd), donde se
+prepara el entorno para ensamblar, ejecutar, inspeccionar y depurar programas
+AArch64.
 
 ## Fuentes {.unlisted .unnumbered}
 

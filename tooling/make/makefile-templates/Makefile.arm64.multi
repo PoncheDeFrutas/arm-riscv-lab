@@ -1,0 +1,45 @@
+# Template: ARM64 nativo (Raspberry Pi / Linux ARM64, multiarchivo)
+# Copia este archivo como Makefile dentro de la lección en hardware ARM64 real.
+
+AS      = as
+LD      = ld
+
+BUILD   = build
+TARGET  = $(BUILD)/main
+
+MAIN_SRC = main.s
+AUX_SRCS = $(filter-out $(MAIN_SRC), $(wildcard *.s))
+SRCS     = $(MAIN_SRC) $(AUX_SRCS)
+OBJS     = $(patsubst %.s,$(BUILD)/%.o,$(SRCS))
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(TARGET)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(TARGET): $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+run: $(TARGET)
+	$(TARGET)
+
+gdb: $(TARGET)
+	gdb $(TARGET)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets:"
+	@echo "  make        -> ensambla y enlaza todos los .s"
+	@echo "  make run    -> ejecuta directo"
+	@echo "  make gdb    -> abre GDB local"
+	@echo "  make clean  -> limpia build/"

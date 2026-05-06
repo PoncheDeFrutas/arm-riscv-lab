@@ -41,13 +41,13 @@ No estás en ARM nativo. Vuelve a [QEMU en x86_64](qemu-x86_64.qmd).
 ## Ejecución
 
 ```bash
-cd lessons/aarch64/02-syscalls/00-hello-world
-make RUN_MODE=native
-make RUN_MODE=native run
-make RUN_MODE=native gdb
+cd 00-hello-minimo
+make -C src -f Makefile.arm64
+make -C src -f Makefile.arm64 run
+make -C src -f Makefile.arm64 gdb
 ```
 
 ## Debugging
 
-Para VS Code usa `AArch64 native: launch`. Esa configuración lanza GDB local, sin
+Para VS Code usa `Debug ARM64 (nativo)`. Esa configuración lanza GDB local, sin
 conectar a un puerto QEMU.

@@ -1,0 +1,180 @@
+---
+title: "01 · Laboratorio ARM64 reproducible"
+subtitle: "Instala, ejecuta, inspecciona y depura el primer programa AArch64 sin perderte en detalles avanzados."
+description: "Página principal de la Unidad 01 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Laboratorio ARM64 reproducible
+:::
+
+::: {.hero-lab}
+Esta unidad prepara el laboratorio base. No estudia ELF, ABI, debugging avanzado
+ni syscalls en profundidad. El objetivo es que puedas instalar el entorno,
+elegir la ruta correcta, ejecutar un ejemplo mínimo y verificar que el binario
+AArch64 existe y corre.
+
+::: {.hero-actions}
+[Tengo Raspberry Pi](01-entorno-linux-arm64.qmd#raspberry-pi-arm64-real){.lab-button}
+
+[No tengo Raspberry Pi](01-entorno-linux-arm64.qmd#host-x86_64-con-qemu-user-mode){.lab-button .secondary}
+
+[Primer ejemplo](03-primer-programa.qmd){.lab-button .secondary}
+
+[Ver presentación](../../../slides/aarch64/laboratorio/overview/){.lab-button .secondary}
+:::
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Elige ruta**
+Raspberry Pi ARM64 real o x86_64 con QEMU user mode.
+:::
+
+::: {.lab-step}
+**2. Instala**
+Toolchain, binutils, Make, QEMU o GDB según tu máquina.
+:::
+
+::: {.lab-step}
+**3. Ejecuta**
+Compila con `make -C src` y corre con `make -C src run`.
+:::
+
+::: {.lab-step}
+**4. Observa**
+Usa `file`, `readelf`, `objdump`, `nm` y `strace` como primera mirada.
+:::
+
+::: {.lab-step}
+**5. Depura**
+Detente en `_start`, mira registros y avanza instrucción por instrucción.
+:::
+:::
+
+## Qué ruta uso
+
+| Si tienes... | Usa... | Señal esperada |
+|---|---|---|
+| Raspberry Pi con Linux de 64 bits | ARM64 nativo | `uname -m` muestra `aarch64` o `arm64` |
+| Laptop o PC Linux x86_64 | Cross toolchain + QEMU user mode | `uname -m` puede mostrar `x86_64` |
+| Máquina restringida o laboratorio compartido | Docker opcional | Mismo entorno dentro del contenedor |
+
+::: {.callout-tip title="Recomendación docente"}
+Si el estudiante no sabe cuál usar, debe empezar por x86_64 con QEMU user mode.
+Es la ruta más reproducible cuando no hay Raspberry Pi disponible.
+:::
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Entorno Linux ARM64
+
+Linux como base, Raspberry Pi real, QEMU user mode y mención de QEMU system mode.
+
+[Abrir](01-entorno-linux-arm64.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Instalación toolchain
+
+Paquetes por ruta, verificación mínima y Docker como alternativa.
+
+[Abrir](02-instalacion-toolchain.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Primer programa
+
+Assembly AArch64 mínimo, Makefile, `make -C src`, `make -C src run` y salida
+esperada.
+
+[Abrir](03-primer-programa.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Inspección del binario
+
+`file`, `readelf`, `objdump`, `nm`, `hexdump`, `xxd`, `ldd` y `strace`.
+
+[Abrir](04-inspeccion-binario.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Debugging mínimo
+
+Breakpoints, registros y `stepi` con `gdb` o `gdb-multiarch`.
+
+[Abrir](05-debugging-minimo.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Estructura del repo
+
+Cómo organizar teoría, ejemplos, ejercicios, slides y Makefiles.
+
+[Abrir](06-estructura-repositorio.qmd){.resource-action}
+:::
+:::
+
+## Herramientas del laboratorio
+
+::: {.tool-chip-row}
+[`Linux`]{.tool-chip}
+[`make`]{.tool-chip}
+[`as`]{.tool-chip}
+[`ld`]{.tool-chip}
+[`gcc`]{.tool-chip}
+[`aarch64-linux-gnu-gcc`]{.tool-chip}
+[`qemu-aarch64`]{.tool-chip}
+[`gdb-multiarch`]{.tool-chip}
+[`objdump`]{.tool-chip}
+[`readelf`]{.tool-chip}
+[`nm`]{.tool-chip}
+[`file`]{.tool-chip}
+[`ldd`]{.tool-chip}
+[`strace`]{.tool-chip}
+[`hexdump`]{.tool-chip}
+[`xxd`]{.tool-chip}
+[`perf`]{.tool-chip}
+[`Docker`]{.tool-chip}
+:::
+
+## Resultado esperado
+
+Al terminar la unidad debes poder ejecutar:
+
+```bash
+cd 00-hello-minimo
+make -C src
+make -C src run
+```
+
+Salida esperada:
+
+```bash
+Hola ARM64
+```
+
+Y debes poder explicar, en una frase corta, qué herramienta genera el binario,
+qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.
+
+## Checklist de cierre
+
+- [ ] Sé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.
+- [ ] Instalé las herramientas mínimas de mi ruta.
+- [ ] `make -C src` genera `src/build/main`.
+- [ ] `make -C src run` imprime `Hola ARM64`.
+- [ ] `file src/build/main` identifica un binario AArch64.
+- [ ] Puedo ver símbolos con `nm` o instrucciones con `objdump`.
+- [ ] Puedo detenerme en `_start` con GDB.
+- [ ] Sé dónde van teoría, ejemplo, ejercicio y presentación.
+
+## Siguiente paso
+
+Empieza por [Entorno Linux ARM64](01-entorno-linux-arm64.qmd). Si ya sabes tu
+ruta y tienes paquetes instalados, salta directo a
+[Primer programa](03-primer-programa.qmd).

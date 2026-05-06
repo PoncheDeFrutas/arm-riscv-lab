@@ -16,38 +16,90 @@ lanza el programa directamente; se conecta a ese proceso.
 ## 1. Compila el ejemplo
 
 ```bash
-cd lessons/aarch64/02-syscalls/00-hello-world
-make
+cd 00-hello-minimo
+make -C src
 ```
 
 ## 2. Arranca QEMU con GDB server
 
 ```bash
-make gdb
+make -C src gdb
 ```
 
-Deja esa terminal abierta. El programa está esperando al debugger.
+Deja esa terminal abierta. El programa está esperando al debugger. En el
+Makefile de QEMU, este target usa `-singlestep` para reducir saltos visuales:
+
+```make
+gdb: $(TARGET)
+	$(QEMU) -g 1234 -singlestep $(TARGET)
+```
 
 ## 3. Conecta VS Code
 
-En VS Code usa la configuración `AArch64 QEMU: attach`.
+Instala estas extensiones:
 
-Parámetros importantes:
+| Extensión | ID |
+|---|---|
+| C/C++ | `ms-vscode.cpptools` |
+| Makefile Tools | `ms-vscode.makefile-tools` |
+| ARM64 Assembly (GNU AS) | `Felipenguim.vscode-arm64-assembly` |
+| StackScope | `EightLayerStudio.StackScope` |
+
+En VS Code usa la configuración `Debug ARM64 (QEMU)`.
+
+Config completa para copiar en `.vscode/launch.json`:
 
 ```json
 {
-  "miDebuggerPath": "/usr/bin/gdb-multiarch",
-  "miDebuggerServerAddress": "localhost:1234",
-  "MIMode": "gdb"
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug ARM64 (QEMU)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/build/main",
+      "cwd": "${workspaceFolder}/src",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb-multiarch",
+      "miDebuggerServerAddress": "localhost:1234",
+      "stopAtEntry": true,
+      "sourceFileMap": {
+        "${workspaceFolder}/src": "${workspaceFolder}/src"
+      },
+      "setupCommands": [
+        { "text": "-enable-pretty-printing" },
+        { "text": "set architecture aarch64" },
+        { "text": "set disassemble-next-line on" },
+        { "text": "set step-mode on" },
+        { "text": "set pagination off" },
+        { "text": "set breakpoint auto-hw on" }
+      ]
+    }
+  ]
 }
 ```
 
-Comandos de setup:
+::: {.callout-note title="Si usas otra carpeta"}
+Abre `00-hello-minimo/` como workspace. Así VS Code encuentra
+`${workspaceFolder}/src/build/main`.
+:::
 
-```text
-set architecture aarch64
-set disassemble-next-line on
+## 4. Debug Console
+
+En la Debug Console de VS Code puedes forzar depuración por instrucción:
+
+```bash
+stepi
+nexti
+break _start
+break printString
+break readIntFromConsole
+info registers x0 x1 x2 x8 pc
+x/6i $pc
 ```
+
+`svc #0` entra al kernel. GDB no entra a depurar internamente esa llamada como
+si fuera una función de tu archivo `.s`; observa registros antes y después.
 
 ## Qué observar primero
 
@@ -80,6 +132,12 @@ Dirección del mensaje apuntada por `x1`.
 ::: {.callout-warning}
 ## Error común
 
-Si VS Code dice que no puede conectar, casi siempre `make gdb` no está corriendo
-o el puerto `1234` ya está ocupado.
+Si VS Code dice que no puede conectar, casi siempre `make -C src gdb` no está
+corriendo o el puerto `1234` ya está ocupado.
+:::
+
+::: {.callout-tip title="Breakpoints por etiqueta"}
+`break nombreEtiqueta` funciona si el símbolo existe en el binario. Con
+`.include`, la etiqueta queda en el mismo ensamblado; con `.extern`, debe venir
+de otro objeto enlazado.
 :::

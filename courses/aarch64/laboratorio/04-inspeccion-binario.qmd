@@ -1,0 +1,148 @@
+---
+title: "01.4 · Inspección básica del binario"
+subtitle: "Mira el binario generado sin convertir esta unidad en una clase completa de ELF."
+description: "Primer uso de file, readelf, objdump, nm, hexdump, xxd, ldd y strace."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Laboratorio > Inspección del binario
+:::
+
+::: {.hero-lab}
+Un binario no es una caja negra. En esta página solo haremos una primera mirada:
+arquitectura, símbolos, instrucciones, bytes y syscalls observables.
+:::
+
+## Prepara el ejemplo
+
+```bash
+cd 00-hello-minimo
+make -C src
+```
+
+En Raspberry Pi:
+
+```bash
+make -C src -f Makefile.arm64
+```
+
+## Identificar el archivo
+
+```bash
+file src/build/main
+```
+
+Debes ver que es un ejecutable ELF de AArch64 o ARM aarch64.
+
+::: {.callout-note title="No estudiar ELF todavía"}
+Por ahora solo usa `file` para confirmar arquitectura y tipo de archivo. Headers,
+segmentos, secciones y loader vendrán después.
+:::
+
+## Ver encabezado ELF
+
+```bash
+readelf -h src/build/main
+```
+
+Busca tres datos:
+
+| Campo | Qué observar |
+|---|---|
+| `Class` | `ELF64` |
+| `Machine` | AArch64 |
+| `Entry point address` | Dirección donde inicia el programa |
+
+## Ver instrucciones
+
+```bash
+aarch64-linux-gnu-objdump -d src/build/main
+```
+
+En Raspberry Pi también puede funcionar:
+
+```bash
+objdump -d src/build/main
+```
+
+Busca `_start` y las instrucciones `mov`, `adr` y `svc`.
+
+## Ver símbolos
+
+```bash
+aarch64-linux-gnu-nm src/build/main
+```
+
+En Raspberry Pi:
+
+```bash
+nm src/build/main
+```
+
+Busca:
+
+| Símbolo | Significado mínimo |
+|---|---|
+| `_start` | Entrada del programa |
+| `msg` | Dirección del mensaje |
+| `msg_len` | Longitud calculada por assembler |
+
+## Ver bytes
+
+```bash
+hexdump -C src/build/main | head
+xxd src/build/main | head
+```
+
+No necesitas interpretar todo. La meta es notar que el archivo final son bytes y
+que las herramientas dan distintas vistas del mismo binario.
+
+## Ver bibliotecas dinámicas
+
+```bash
+ldd src/build/main
+```
+
+Como este ejemplo se enlaza sin libc y estático, puede aparecer algo como:
+
+```bash
+not a dynamic executable
+```
+
+Eso está bien para este laboratorio.
+
+## Observar syscalls
+
+Ruta Raspberry Pi ARM64:
+
+```bash
+strace ./src/build/main
+```
+
+Ruta x86_64 con QEMU:
+
+```bash
+strace qemu-aarch64 ./src/build/main
+```
+
+En x86_64, `strace` observa el proceso QEMU desde el host. No lo uses todavía
+como explicación completa de syscalls ARM64. Aquí solo sirve para ver que hay
+interacción con Linux.
+
+## `perf` como herramienta futura
+
+`perf` sirve para medición y rendimiento: ciclos, eventos, hotspots y profiling.
+En esta unidad solo se menciona. No será práctica central hasta unidades de
+performance.
+
+## Checklist
+
+- [ ] `file` confirma AArch64.
+- [ ] `readelf -h` muestra `ELF64`.
+- [ ] `objdump -d` muestra `_start`.
+- [ ] `nm` muestra símbolos.
+- [ ] `hexdump` o `xxd` muestra bytes.
+- [ ] `ldd` no me preocupa si dice `not a dynamic executable`.
+- [ ] Sé que `perf` queda para después.
+
+Siguiente: [Debugging mínimo](05-debugging-minimo.qmd).

@@ -64,6 +64,22 @@ website:
               href: courses/aarch64/roadmap.qmd
             - text: "00 · Contexto, historia y objetivos"
               href: courses/aarch64/fundamentos/contexto-historia-objetivos.qmd
+            - section: "01 · Laboratorio ARM64 reproducible"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/laboratorio/index.qmd
+                - text: "Entorno Linux ARM64"
+                  href: courses/aarch64/laboratorio/01-entorno-linux-arm64.qmd
+                - text: "Instalación toolchain"
+                  href: courses/aarch64/laboratorio/02-instalacion-toolchain.qmd
+                - text: "Primer programa"
+                  href: courses/aarch64/laboratorio/03-primer-programa.qmd
+                - text: "Inspección del binario"
+                  href: courses/aarch64/laboratorio/04-inspeccion-binario.qmd
+                - text: "Debugging mínimo"
+                  href: courses/aarch64/laboratorio/05-debugging-minimo.qmd
+                - text: "Estructura del repositorio"
+                  href: courses/aarch64/laboratorio/06-estructura-repositorio.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

@@ -1,0 +1,47 @@
+# Template: ARM64 en host x86_64 con QEMU user mode (multiarchivo)
+# Copia este archivo como Makefile dentro de la lección.
+
+AS      = aarch64-linux-gnu-as
+LD      = aarch64-linux-gnu-ld
+QEMU    = qemu-aarch64
+
+BUILD   = build
+TARGET  = $(BUILD)/main
+
+MAIN_SRC = main.s
+AUX_SRCS = $(filter-out $(MAIN_SRC), $(wildcard *.s))
+SRCS     = $(MAIN_SRC) $(AUX_SRCS)
+OBJS     = $(patsubst %.s,$(BUILD)/%.o,$(SRCS))
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(TARGET)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(BUILD)/%.o: %.s | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(TARGET): $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+run: $(TARGET)
+	$(QEMU) $(TARGET)
+
+gdb: $(TARGET)
+	@echo "Starting QEMU and waiting for GDB on port 1234..."
+	$(QEMU) -g 1234 -singlestep $(TARGET)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Targets disponibles:"
+	@echo "  make        -> ensambla y enlaza todos los .s"
+	@echo "  make run    -> ejecuta con QEMU"
+	@echo "  make gdb    -> QEMU + espera GDB en localhost:1234"
+	@echo "  make clean  -> limpia build/"

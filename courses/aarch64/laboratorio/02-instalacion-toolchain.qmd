@@ -1,0 +1,141 @@
+---
+title: "01.2 · Instalación toolchain"
+subtitle: "Instala solo lo necesario para compilar, ejecutar, inspeccionar y depurar el primer ejemplo."
+description: "Instalación mínima de herramientas ARM64 para Raspberry Pi y x86_64 con QEMU."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Laboratorio > Instalación toolchain
+:::
+
+::: {.hero-lab}
+La instalación se divide por ruta. No memorices la lista completa de herramientas:
+primero instala, verifica y ejecuta el ejemplo mínimo.
+:::
+
+## Herramientas por función
+
+| Función | Herramientas |
+|---|---|
+| Construir | `make`, `gcc`, `as`, `ld`, `aarch64-linux-gnu-gcc` |
+| Ejecutar en x86_64 | `qemu-aarch64` |
+| Inspeccionar | `file`, `readelf`, `objdump`, `nm`, `hexdump`, `xxd`, `ldd`, `strace` |
+| Depurar | `gdb`, `gdb-multiarch` |
+| Rendimiento futuro | `perf` |
+| Entorno opcional | Docker |
+| VS Code visual | C/C++, Makefile Tools, ARM64 Assembly, StackScope |
+
+::: {.callout-note title="Qué estudiar después"}
+`readelf`, `objdump`, `nm`, `strace` y `perf` aparecen aquí como herramientas de
+laboratorio. ELF, ABI, syscalls, linking y profiling se estudian en unidades
+posteriores.
+:::
+
+## Raspberry Pi ARM64 real
+
+En Debian, Ubuntu o Raspberry Pi OS de 64 bits:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential binutils gdb make file xxd strace libc-bin bsdextrautils
+```
+
+`ldd` viene normalmente con `libc-bin`. `hexdump` viene normalmente con
+`bsdextrautils`.
+
+Verifica:
+
+```bash
+uname -m
+gcc --version
+as --version
+ld --version
+gdb --version
+file --version
+strace --version
+```
+
+Señal esperada:
+
+```bash
+uname -m -> aarch64 o arm64
+```
+
+## Host x86_64 con QEMU user mode
+
+En Debian o Ubuntu:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user gdb-multiarch make file xxd strace libc-bin bsdextrautils
+```
+
+Verifica:
+
+```bash
+uname -m
+aarch64-linux-gnu-gcc --version
+aarch64-linux-gnu-as --version
+aarch64-linux-gnu-ld --version
+qemu-aarch64 --version
+gdb-multiarch --version
+file --version
+strace --version
+```
+
+Señal esperada:
+
+```bash
+uname -m -> x86_64
+qemu-aarch64 --version -> responde sin error
+```
+
+::: {.callout-tip title="Diferencia clave"}
+En x86_64 no necesitas que `uname -m` diga ARM64. El binario será ARM64; tu host
+seguirá siendo x86_64.
+:::
+
+## Docker opcional
+
+Si no puedes instalar paquetes en el host:
+
+```bash
+docker build -t arm-riscv-lab -f tooling/docker/Dockerfile .
+docker run --rm -it -v "$PWD":/workspace -w /workspace arm-riscv-lab
+```
+
+Dentro del contenedor:
+
+```bash
+aarch64-linux-gnu-gcc --version
+qemu-aarch64 --version
+gdb-multiarch --version
+```
+
+Docker es alternativa de laboratorio, no requisito principal.
+
+## Extensiones recomendadas de VS Code
+
+Para depurar con interfaz visual instala estas extensiones:
+
+| Extensión | ID |
+|---|---|
+| C/C++ | `ms-vscode.cpptools` |
+| Makefile Tools | `ms-vscode.makefile-tools` |
+| ARM64 Assembly | `mkornelsen.vscode-arm64` |
+| StackScope | `EightLayerStudio.StackScope` |
+
+`StackScope` ayuda a inspeccionar memoria y registros desde una sesión de
+debugging. No es requisito para compilar.
+
+## Verificación mínima antes de seguir
+
+Marca la ruta que aplica:
+
+- [ ] Raspberry Pi: `uname -m` muestra `aarch64` o `arm64`.
+- [ ] x86_64: `aarch64-linux-gnu-gcc --version` funciona.
+- [ ] x86_64: `qemu-aarch64 --version` funciona.
+- [ ] Debugging: `gdb` o `gdb-multiarch` responde.
+- [ ] Inspección: `file`, `readelf`, `objdump`, `nm` y `strace` responden.
+
+Siguiente: [Primer programa](03-primer-programa.qmd).

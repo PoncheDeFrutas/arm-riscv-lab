@@ -10,8 +10,8 @@ depende de tu máquina, no de tu nivel.
 
 | Ruta | Úsala si... | Comandos principales |
 |---|---|---|
-| [QEMU en x86_64](qemu-x86_64.qmd) | Tu laptop o PC no es ARM64 | `make`, `make run`, `make gdb` |
-| [ARM nativo](native-aarch64.qmd) | Estás en Linux ARM64 real | `make RUN_MODE=native run` |
+| [QEMU en x86_64](qemu-x86_64.qmd) | Tu laptop o PC no es ARM64 | `make -C src`, `make -C src run`, `make -C src gdb` |
+| [ARM nativo](native-aarch64.qmd) | Estás en Linux ARM64 real | `make -C src -f Makefile.arm64 run` |
 | [Docker](docker.qmd) | Necesitas entorno reproducible | `docker build`, `docker run` |
 
 ::: {.callout-tip}
@@ -33,15 +33,15 @@ eso necesitas `gdb-multiarch` para depurar.
 Al terminar esta sección debes poder ejecutar:
 
 ```bash
-cd lessons/aarch64/02-syscalls/00-hello-world
-make
-make run
+cd 00-hello-minimo
+make -C src
+make -C src run
 ```
 
 Y para depurar:
 
 ```bash
-make gdb
+make -C src gdb
 ```
 
 Luego sigue con [Depuración: QEMU y VS Code](../debugging/qemu-vscode.qmd) o con

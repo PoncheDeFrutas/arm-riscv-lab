@@ -1,0 +1,41 @@
+# Flujo alternativo: Raspberry Pi / Linux ARM64 real.
+
+AS      = as
+LD      = ld
+
+SRC     = main.s
+BUILD   = build
+OBJ     = $(BUILD)/main.o
+BIN     = $(BUILD)/main
+
+ASFLAGS = -g
+LDFLAGS =
+
+.PHONY: all run gdb clean info
+
+all: $(BIN)
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(OBJ): $(SRC) | $(BUILD)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BIN): $(OBJ)
+	$(LD) $(LDFLAGS) -o $@ $<
+
+run: $(BIN)
+	$(BIN)
+
+gdb: $(BIN)
+	gdb $(BIN)
+
+clean:
+	rm -rf $(BUILD)
+
+info:
+	@echo "Flujo: ARM64 nativo"
+	@echo "Desde la carpeta del ejemplo:"
+	@echo "  make -C src -f Makefile.arm64"
+	@echo "  make -C src -f Makefile.arm64 run"
+	@echo "  make -C src -f Makefile.arm64 gdb"
