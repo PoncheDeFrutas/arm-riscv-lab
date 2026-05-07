@@ -56,7 +56,7 @@ seguridad, virtualización y proyectos.
 <div class="unit-card"><strong><a href="memoria-direccionamiento/index.qmd">6. Memoria básica, secciones y direccionamiento</a></strong><p>Load/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.</p></div>
 <div class="unit-card"><strong><a href="aritmetica-logica-bits/index.qmd">7. Aritmética, lógica, flags y bits</a></strong><p>Operaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.</p></div>
 <div class="unit-card"><strong><a href="control-flujo/index.qmd">8. Control de flujo y programación estructurada</a></strong><p>Branches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.</p></div>
-<div class="unit-card"><strong>9. Syscalls esenciales</strong><p>Contrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.</p></div>
+<div class="unit-card"><strong><a href="syscalls-esenciales/index.qmd">9. Syscalls esenciales</a></strong><p>Contrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.</p></div>
 <div class="unit-card"><strong>10. Linux como API del kernel</strong><p>File descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.</p></div>
 </div>
 </details>

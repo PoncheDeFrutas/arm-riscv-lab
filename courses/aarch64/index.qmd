@@ -182,6 +182,7 @@ AArch64 antes de entrar en programas más grandes.
 - [06 · Memoria básica, secciones y direccionamiento](memoria-direccionamiento/index.qmd)
 - [07 · Aritmética, lógica, flags y bits](aritmetica-logica-bits/index.qmd)
 - [08 · Control de flujo y programación estructurada](control-flujo/index.qmd)
+- [09 · Syscalls esenciales](syscalls-esenciales/index.qmd)
 :::
 
 ## Siguiente paso

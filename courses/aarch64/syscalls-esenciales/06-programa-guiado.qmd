@@ -1,0 +1,152 @@
+---
+title: "09.6 · Programa guiado"
+subtitle: "openat, write, close, manejo mínimo de error y salida."
+description: "Lectura guiada de un programa AArch64 que crea archivo con syscalls esenciales."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Syscalls esenciales > Programa guiado
+:::
+
+::: {.hero-lab}
+Esta lección junta el contrato de la unidad en un programa completo. El objetivo
+es leer cada bloque: abrir archivo, revisar error, escribir bytes, cerrar fd y
+terminar con código de salida.
+:::
+
+## Programa completo
+
+Guarda este archivo como `crear-archivo.s`.
+
+```asm
+.equ AT_FDCWD, -100
+.equ O_WRONLY, 1
+.equ O_CREAT, 64
+.equ O_TRUNC, 512
+
+.global _start
+
+.text
+_start:
+    mov x0, #AT_FDCWD
+    ldr x1, =nombre
+    mov x2, #(O_WRONLY | O_CREAT | O_TRUNC)
+    mov x3, #0644
+    mov x8, #56
+    svc #0
+    cmp x0, #0
+    b.lt error
+
+    mov x19, x0
+
+    mov x0, x19
+    ldr x1, =mensaje
+    mov x2, #len
+    mov x8, #64
+    svc #0
+    cmp x0, #0
+    b.lt error
+
+    mov x0, x19
+    mov x8, #57
+    svc #0
+    cmp x0, #0
+    b.lt error
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #2
+    ldr x1, =msg_error
+    mov x2, #msg_error_len
+    mov x8, #64
+    svc #0
+
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+.section .rodata
+nombre:
+    .asciz "salida-syscall.txt"
+
+mensaje:
+    .ascii "Creado con syscalls AArch64\n"
+len = . - mensaje
+
+msg_error:
+    .ascii "Error en syscall\n"
+msg_error_len = . - msg_error
+```
+
+## Construir y ejecutar
+
+```bash
+$ aarch64-linux-gnu-as crear-archivo.s -o crear-archivo.o
+$ aarch64-linux-gnu-ld crear-archivo.o -o crear-archivo
+$ qemu-aarch64 ./crear-archivo
+$ echo $?
+0
+$ cat salida-syscall.txt
+Creado con syscalls AArch64
+```
+
+## Lectura por bloques
+
+| Bloque | Syscall | Resultado esperado |
+|---|---|---|
+| abrir | `openat` | `x0 = fd` |
+| revisar | `cmp x0, #0` + `b.lt` | error si negativo |
+| escribir | `write` | `x0 = bytes escritos` |
+| cerrar | `close` | `x0 = 0` si funciona |
+| salir | `exit` | proceso termina |
+
+## Por qué se guarda `x19`
+
+```asm
+mov x19, x0
+```
+
+Después de `openat`, `x0` contiene fd. Luego `write` usa `x0` como argumento y
+lo reemplaza con retorno. Si no guardas el fd, no sabrás qué cerrar.
+
+En una unidad futura veremos qué registros debe preservar una función según ABI.
+Aquí no llamamos funciones externas; usamos `x19` como lugar claro para guardar
+el fd en un programa pequeño.
+
+## Manejo de error compartido
+
+Varios bloques saltan a la misma etiqueta:
+
+```asm
+cmp x0, #0
+b.lt error
+```
+
+Esto evita duplicar mensaje de error. Si algo falla, el programa escribe en
+`stderr` y termina con código `1`.
+
+## Qué no hace este programa
+
+| Tema | Motivo |
+|---|---|
+| No muestra `errno` | unidad todavía usa error mínimo |
+| No reintenta `write` parcial | queda para I/O más robusto |
+| No usa `libc` | todo va directo por syscall |
+| No procesa argumentos | eso requiere stack/ABI futuros |
+
+## Mini ejercicios
+
+1. Cambia el nombre del archivo.
+2. Cambia el mensaje y ajusta mentalmente `len`.
+3. Quita `O_CREAT` y predice qué ocurre si el archivo no existe.
+4. Explica qué pasaría si no se guardara el fd en `x19`.
+5. Explica por qué el bloque `error` escribe a fd `2`.
+
+## Cierre
+
+Este programa muestra la idea central de la unidad: Linux es una API de kernel.
+Tu programa prepara registros, entra con `svc #0`, lee retorno y decide el
+siguiente paso.

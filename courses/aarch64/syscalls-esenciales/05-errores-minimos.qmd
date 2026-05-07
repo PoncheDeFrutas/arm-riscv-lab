@@ -1,0 +1,143 @@
+---
+title: "09.5 · Errores mínimos"
+subtitle: "Muchas syscalls devuelven error como valor negativo en x0."
+description: "Retornos negativos, cmp x0, #0, b.lt error y manejo mínimo sin errno completo."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Syscalls esenciales > Errores mínimos
+:::
+
+::: {.hero-lab}
+Las syscalls no siempre funcionan. Un archivo puede no existir, un fd puede ser
+inválido o una operación puede fallar. En esta unidad usaremos una regla mínima:
+si el retorno en `x0` es negativo, saltamos a un bloque de error.
+:::
+
+## Regla mínima
+
+| Retorno en `x0` | Lectura |
+|---|---|
+| `>= 0` | resultado válido |
+| `< 0` | error |
+
+Patrón:
+
+```asm
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+`b.lt` interpreta la comparación como signed. Un retorno negativo tiene bit de
+signo encendido.
+
+## No sobrescribir `x0` antes de revisar
+
+Error común:
+
+```asm
+svc #0
+mov x0, #1
+cmp x0, #0
+b.lt error
+```
+
+Aquí ya perdiste el retorno. Sobrescribiste `x0` antes de comprobarlo.
+
+Forma correcta:
+
+```asm
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+Si necesitas conservar el retorno válido, guárdalo después de revisar.
+
+## Error al abrir archivo
+
+```asm
+.equ AT_FDCWD, -100
+
+.global _start
+
+.text
+_start:
+    mov x0, #AT_FDCWD
+    ldr x1, =nombre
+    mov x2, #0          // lectura simple
+    mov x3, #0
+    mov x8, #56         // openat
+    svc #0
+    cmp x0, #0
+    b.lt error
+
+    mov x19, x0
+    mov x0, x19
+    mov x8, #57
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #2
+    ldr x1, =msg_error
+    mov x2, #msg_error_len
+    mov x8, #64
+    svc #0
+
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+.section .rodata
+nombre:
+    .asciz "archivo-que-no-existe.txt"
+
+msg_error:
+    .ascii "Error de syscall\n"
+msg_error_len = . - msg_error
+```
+
+Este ejemplo no convierte el error a `errno`. Solo detecta fallo, escribe a
+`stderr` y sale con código `1`.
+
+## stderr para errores
+
+```asm
+mov x0, #2
+ldr x1, =msg_error
+mov x2, #msg_error_len
+mov x8, #64
+svc #0
+```
+
+`x0 = 2` aquí significa `stderr`, no código de salida. El código de salida se
+elige cuando llamas `exit`.
+
+## `errno` queda fuera
+
+Funciones de `libc` suelen traducir errores a `errno`. En syscalls directas,
+vemos el retorno negativo. Más adelante se puede estudiar cómo convertirlo a un
+número de error positivo o mostrar mensajes más ricos.
+
+::: {.callout-note title="Límite de esta unidad"}
+Manejo mínimo significa detectar error y tomar otro camino. No significa
+implementar `perror`, `strerror` ni wrappers completos.
+:::
+
+## Mini ejercicios
+
+1. ¿Por qué debes revisar `x0` antes de reutilizarlo?
+2. ¿Por qué `b.lt error` tiene sentido para retorno negativo?
+3. ¿Qué fd se usa para escribir mensajes de error?
+4. ¿Qué queda fuera cuando decimos “sin `errno` completo”?
+
+## Cierre
+
+Una syscall útil no termina en `svc #0`. Termina cuando lees su retorno y decides
+qué hacer si falló. Esta unidad usa el patrón mínimo: comparar `x0` contra cero
+y saltar si es negativo.

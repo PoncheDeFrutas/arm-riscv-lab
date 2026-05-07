@@ -1,0 +1,137 @@
+---
+title: "09.3 · read y buffers"
+subtitle: "Leer bytes desde stdin hacia memoria reservada en .bss."
+description: "Syscall read, buffers, stdin, retorno como cantidad de bytes y eco básico."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Syscalls esenciales > read y buffers
+:::
+
+::: {.hero-lab}
+`read` llena un buffer con bytes que vienen de un file descriptor. Para usarla
+bien necesitas memoria reservada, dirección del buffer, tamaño máximo y lectura
+del retorno.
+:::
+
+## Contrato de `read`
+
+| Registro | Uso |
+|---|---|
+| `x0` | file descriptor origen |
+| `x1` | dirección del buffer destino |
+| `x2` | máximo de bytes a leer |
+| `x8` | `63` |
+| retorno `x0` | bytes leídos, `0` o error negativo |
+
+Para leer desde terminal usamos stdin:
+
+```bash
+x0 = 0
+```
+
+## Buffer en `.bss`
+
+```asm
+.bss
+buffer:
+    .skip 64
+```
+
+Esto reserva 64 bytes. `read` necesita la dirección de ese espacio:
+
+```asm
+ldr x1, =buffer
+```
+
+No confundas dirección con contenido. `x1` apunta al buffer; los bytes llegarán
+a la memoria apuntada por `x1`.
+
+## Eco básico: stdin -> stdout
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0          // stdin
+    ldr x1, =buffer     // buffer destino
+    mov x2, #64         // máximo de bytes
+    mov x8, #63         // read
+    svc #0              // x0 = bytes leídos o error negativo
+
+    mov x2, x0          // cantidad leída
+    mov x0, #1          // stdout
+    ldr x1, =buffer
+    mov x8, #64         // write
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.bss
+buffer:
+    .skip 64
+```
+
+Construir y probar:
+
+```bash
+$ aarch64-linux-gnu-as read-echo.s -o read-echo.o
+$ aarch64-linux-gnu-ld read-echo.o -o read-echo
+$ printf 'abc\n' | qemu-aarch64 ./read-echo
+abc
+```
+
+## Por qué `mov x2, x0`
+
+Después de `read`, `x0` ya no es fd. Ahora `x0` es retorno: cantidad de bytes
+leídos.
+
+```bash
+antes de read:
+x0 = 0       stdin
+
+después de read:
+x0 = n       bytes leídos
+```
+
+Para escribir exactamente lo leído, copiamos ese retorno a `x2`, porque `write`
+usa `x2` como longitud.
+
+## Retorno `0`
+
+Un retorno `0` de `read` puede significar fin de entrada. En esta unidad no
+haremos manejo avanzado de EOF, pero debes reconocer que `0` no es error
+negativo.
+
+| Retorno | Lectura inicial |
+|---|---|
+| `> 0` | bytes leídos |
+| `0` | nada leído / fin de entrada |
+| `< 0` | error |
+
+## Error mínimo
+
+Todavía no entraremos a `errno`, pero el patrón mínimo ya se ve:
+
+```asm
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+Importante: revisa `x0` antes de usarlo como longitud si quieres detectar error.
+
+## Mini ejercicios
+
+1. ¿Dónde debe existir el buffer antes de llamar `read`?
+2. ¿Qué contiene `x0` antes de `read`?
+3. ¿Qué contiene `x0` después de `read`?
+4. ¿Por qué usamos el retorno de `read` como longitud para `write`?
+
+## Cierre
+
+`read` conecta syscalls con memoria. Linux no “crea” tu buffer: tú reservas
+espacio, pasas su dirección y luego lees cuántos bytes llegaron.

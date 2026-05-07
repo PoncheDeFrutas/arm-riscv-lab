@@ -200,6 +200,22 @@ website:
                   href: courses/aarch64/control-flujo/05-branches-especializados-csel.qmd
                 - text: "Link y branch por registro"
                   href: courses/aarch64/control-flujo/06-branch-link-register.qmd
+            - section: "09 · Syscalls esenciales"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/syscalls-esenciales/index.qmd
+                - text: "Contrato de syscall"
+                  href: courses/aarch64/syscalls-esenciales/01-contrato-syscall.qmd
+                - text: "exit y write"
+                  href: courses/aarch64/syscalls-esenciales/02-exit-write.qmd
+                - text: "read y buffers"
+                  href: courses/aarch64/syscalls-esenciales/03-read-buffers.qmd
+                - text: "openat y close"
+                  href: courses/aarch64/syscalls-esenciales/04-openat-close.qmd
+                - text: "Errores mínimos"
+                  href: courses/aarch64/syscalls-esenciales/05-errores-minimos.qmd
+                - text: "Programa guiado"
+                  href: courses/aarch64/syscalls-esenciales/06-programa-guiado.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

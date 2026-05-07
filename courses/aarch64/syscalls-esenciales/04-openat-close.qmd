@@ -1,0 +1,148 @@
+---
+title: "09.4 · openat y close"
+subtitle: "Abrir un archivo devuelve un file descriptor; cerrar libera ese recurso."
+description: "openat, close, AT_FDCWD, flags mínimos, modos y file descriptors en Linux AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Syscalls esenciales > openat y close
+:::
+
+::: {.hero-lab}
+`openat` pide al kernel abrir un archivo y devuelve un file descriptor. Ese fd
+luego se usa con `read`, `write` o `close`. En esta unidad usaremos flags
+mínimos y `AT_FDCWD` sin entrar a directorios avanzados.
+:::
+
+## Por qué `openat`
+
+En Linux AArch64 se usa `openat` como syscall básica para abrir archivos.
+Recibe un directorio base, nombre de archivo, flags y modo.
+
+Para abrir relativo al directorio actual usaremos:
+
+```asm
+.equ AT_FDCWD, -100
+```
+
+No profundizaremos todavía en directorios. Solo lee `AT_FDCWD` como “desde el
+directorio actual”.
+
+## Contrato de `openat`
+
+| Registro | Uso |
+|---|---|
+| `x0` | directorio base, aquí `AT_FDCWD` |
+| `x1` | dirección del nombre |
+| `x2` | flags |
+| `x3` | modo si se crea archivo |
+| `x8` | `56` |
+| retorno `x0` | fd o error negativo |
+
+Constantes mínimas:
+
+```asm
+.equ AT_FDCWD, -100
+.equ O_WRONLY, 1
+.equ O_CREAT, 64
+.equ O_TRUNC, 512
+```
+
+`O_WRONLY | O_CREAT | O_TRUNC` significa: abrir para escritura, crear si no
+existe, truncar si ya existe.
+
+## Abrir, escribir y cerrar
+
+```asm
+.equ AT_FDCWD, -100
+.equ O_WRONLY, 1
+.equ O_CREAT, 64
+.equ O_TRUNC, 512
+
+.global _start
+
+.text
+_start:
+    mov x0, #AT_FDCWD
+    ldr x1, =nombre
+    mov x2, #(O_WRONLY | O_CREAT | O_TRUNC)
+    mov x3, #0644
+    mov x8, #56
+    svc #0              // x0 = fd o error negativo
+
+    mov x19, x0         // guardar fd para write y close
+
+    mov x0, x19
+    ldr x1, =mensaje
+    mov x2, #len
+    mov x8, #64
+    svc #0
+
+    mov x0, x19
+    mov x8, #57
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.section .rodata
+nombre:
+    .asciz "salida.txt"
+
+mensaje:
+    .ascii "Archivo creado desde syscall\n"
+len = . - mensaje
+```
+
+## Por qué guardar el fd
+
+Después de `openat`, `x0` contiene el fd. Pero `write` también usa `x0` como
+argumento fd y luego reemplaza `x0` con su retorno. Si quieres cerrar el mismo
+archivo después, guarda el fd en otro registro.
+
+```bash
+openat -> x0 = fd
+guardar fd -> x19 = fd
+write -> x0 cambia a bytes escritos
+close -> x0 debe volver a ser fd
+```
+
+Más adelante hablaremos de convenciones de registros. Aquí `x19` solo sirve como
+registro temporal para mantener el ejemplo legible.
+
+## `close`
+
+`close` recibe el fd en `x0`.
+
+```asm
+mov x0, x19
+mov x8, #57
+svc #0
+```
+
+Cerrar importa porque un fd es un recurso del proceso. En programas pequeños que
+terminan enseguida el kernel limpia recursos al salir, pero aprender a cerrar
+prepara hábitos correctos.
+
+## Verificar archivo
+
+```bash
+$ aarch64-linux-gnu-as archivo.s -o archivo.o
+$ aarch64-linux-gnu-ld archivo.o -o archivo
+$ qemu-aarch64 ./archivo
+$ cat salida.txt
+Archivo creado desde syscall
+```
+
+## Mini ejercicios
+
+1. ¿Qué devuelve `openat` en `x0` si funciona?
+2. ¿Por qué se guarda el fd antes de llamar `write`?
+3. ¿Qué syscall usa número `57`?
+4. ¿Qué significa `AT_FDCWD` en esta unidad?
+
+## Cierre
+
+`openat` transforma un nombre de archivo en un fd. Ese fd es el valor que las
+demás syscalls entienden. Abrir, usar y cerrar es el ciclo mínimo de archivo.

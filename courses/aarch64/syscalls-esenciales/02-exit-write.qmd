@@ -1,0 +1,147 @@
+---
+title: "09.2 · exit y write"
+subtitle: "Formaliza salida de proceso y escritura de bytes en stdout o stderr."
+description: "Syscalls exit y write en Linux AArch64, file descriptors y longitud exacta."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Syscalls esenciales > exit y write
+:::
+
+::: {.hero-lab}
+Ya usaste `exit` y `write` en Unidad 05. Aquí las leemos como contrato formal:
+qué argumentos recibe cada syscall, qué devuelve y qué errores comunes conviene
+evitar.
+:::
+
+## `exit`: terminar proceso
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0      // código de salida
+    mov x8, #93     // exit
+    svc #0
+```
+
+Tabla:
+
+| Registro | Valor | Significado |
+|---|---:|---|
+| `x0` | `0` | código de salida |
+| `x8` | `93` | syscall `exit` |
+
+Después de `exit`, el proceso termina. No esperes que se ejecute código normal
+después del `svc #0`.
+
+## Ver código de salida
+
+```bash
+$ aarch64-linux-gnu-as exit.s -o exit.o
+$ aarch64-linux-gnu-ld exit.o -o exit
+$ qemu-aarch64 ./exit
+$ echo $?
+0
+```
+
+`echo $?` debe ejecutarse justo después del programa que quieres revisar.
+
+## `write`: escribir bytes
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #1          // stdout
+    ldr x1, =mensaje    // dirección del buffer
+    mov x2, #len        // cantidad de bytes
+    mov x8, #64         // write
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.section .rodata
+mensaje:
+    .ascii "Hola desde syscall\n"
+len = . - mensaje
+```
+
+Tabla de `write`:
+
+| Registro | Uso |
+|---|---|
+| `x0` | file descriptor |
+| `x1` | dirección del buffer |
+| `x2` | cantidad de bytes |
+| `x8` | `64` |
+| retorno `x0` | bytes escritos o error negativo |
+
+## `write` no es `printf`
+
+`write` no interpreta formato, no busca `\0` y no calcula longitud. Escribe la
+cantidad exacta de bytes que le pasas en `x2`.
+
+```bash
+buffer: "Hola\n"
+x2:     5
+write:  escribe 5 bytes
+```
+
+Si `x2` es menor, escribe menos. Si `x2` es mayor, puede intentar leer bytes que
+no eran parte del mensaje.
+
+::: {.callout-warning title="Error común"}
+No uses `.asciz` pensando que `write` se detiene en byte cero. `write` solo mira
+dirección y longitud.
+:::
+
+## stdout y stderr
+
+| FD | Uso |
+|---:|---|
+| `1` | stdout |
+| `2` | stderr |
+
+Escribir a `stderr` cambia solo `x0`.
+
+```asm
+mov x0, #2
+ldr x1, =error_msg
+mov x2, #error_len
+mov x8, #64
+svc #0
+```
+
+Esto sirve para mensajes de error mínimos sin `printf`.
+
+## Resultado de `write`
+
+Si `write` funciona, `x0` contiene la cantidad de bytes escritos. En ejemplos
+pequeños muchas veces no revisamos ese retorno, pero en programas reales importa.
+
+```asm
+mov x8, #64
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+Revisar retorno antes de sobrescribir `x0` será tema de errores mínimos.
+
+## Mini ejercicios
+
+1. ¿Qué registro cambia si quieres escribir en `stderr`?
+2. ¿Por qué `write` necesita longitud?
+3. ¿Qué contiene `x0` después de `write`?
+4. ¿Por qué `stdout = 1` no es lo mismo que código de salida `1`?
+
+## Cierre
+
+`exit` y `write` son pequeñas pero muestran todo el contrato: número en `x8`,
+argumentos en registros, retorno en `x0`. Lo que cambia en otras syscalls es el
+significado de esos argumentos.

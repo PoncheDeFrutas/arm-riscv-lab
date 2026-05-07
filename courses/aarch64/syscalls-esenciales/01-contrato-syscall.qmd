@@ -1,0 +1,134 @@
+---
+title: "09.1 · Contrato de syscall"
+subtitle: "Linux mira registros: número en x8, argumentos en x0-x5 y retorno en x0."
+description: "Qué es una syscall, user mode, kernel mode, svc #0 y contrato AArch64 Linux."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Syscalls esenciales > Contrato
+:::
+
+::: {.hero-lab}
+Una syscall es una petición al kernel. Tu programa corre en user mode y no puede
+hacer todo directamente: para leer entrada, escribir salida, abrir archivos o
+terminar el proceso, prepara registros y ejecuta `svc #0`.
+:::
+
+## Qué problema resuelve una syscall
+
+Un programa de usuario no escribe directamente en la terminal ni abre archivos
+por su cuenta. Esas operaciones pertenecen al sistema operativo.
+
+```bash
+programa en EL0
+  prepara registros
+  ejecuta svc #0
+
+kernel en EL1
+  revisa número de syscall
+  usa argumentos
+  devuelve resultado en x0
+```
+
+`EL0` y `EL1` vienen del mapa inicial de Unidad 03. Aquí no estudiaremos
+excepciones en detalle; solo usaremos la idea práctica: userland pide, kernel
+responde.
+
+## `svc #0`
+
+`svc` significa supervisor call. En Linux AArch64, `svc #0` provoca la entrada
+controlada al kernel para atender una syscall.
+
+```asm
+mov x8, #93
+mov x0, #0
+svc #0
+```
+
+`svc #0` no significa `exit` por sí solo. Es `exit` porque antes pusiste `93` en
+`x8`.
+
+::: {.callout-warning title="Error común"}
+Si pones el número de syscall en `x0`, Linux no lo leerá como número de syscall.
+`x0` es argumento 0. El número va en `x8`.
+:::
+
+## Tabla de registros
+
+| Registro | Uso antes de `svc #0` | Uso después de `svc #0` |
+|---|---|---|
+| `x8` | número de syscall | no lo usamos como retorno |
+| `x0` | argumento 0 | retorno |
+| `x1` | argumento 1 | puede quedar modificado |
+| `x2` | argumento 2 | puede quedar modificado |
+| `x3` | argumento 3 | puede quedar modificado |
+| `x4` | argumento 4 | puede quedar modificado |
+| `x5` | argumento 5 | puede quedar modificado |
+
+Regla de lectura: después de `svc #0`, mira `x0` si quieres saber qué devolvió
+Linux.
+
+## Plantilla mental
+
+```asm
+// 1. argumentos
+mov x0, #...
+mov x1, #...
+mov x2, #...
+
+// 2. número de syscall
+mov x8, #...
+
+// 3. entrada al kernel
+svc #0
+
+// 4. x0 contiene retorno
+```
+
+No todas las syscalls usan todos los argumentos. Si una syscall necesita tres,
+usas `x0`, `x1`, `x2`. Si necesita uno, solo `x0`.
+
+## Syscall vs función de `libc`
+
+| Tema | Syscall directa | Función de `libc` |
+|---|---|---|
+| Ejemplo | `write` con `x8 = 64` | `printf` |
+| Entrada | registros + `svc #0` | llamada a función |
+| Buffering | no hay buffering de `stdio` | puede haber buffering |
+| Error | retorno negativo | suele exponer `errno` |
+| Dependencia | kernel Linux | runtime y biblioteca |
+
+`printf` no es una syscall. Puede llamar a `write` por dentro, pero agrega
+formateo, buffering y reglas de biblioteca. Aquí trabajamos sin `libc`.
+
+## Retornos
+
+Muchas syscalls devuelven:
+
+| Retorno en `x0` | Lectura |
+|---|---|
+| `>= 0` | resultado válido |
+| `< 0` | error |
+
+Ejemplo mínimo:
+
+```asm
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+No convertiremos todavía ese valor a `errno`. Basta reconocer la rama de error.
+
+## Mini ejercicios
+
+1. ¿Qué registro contiene número de syscall?
+2. ¿Qué registro contiene retorno?
+3. ¿Qué hace `svc #0` si no preparaste `x8`?
+4. ¿Por qué `printf` no es lo mismo que `write` syscall?
+
+## Cierre
+
+El contrato no cambia de una syscall a otra: preparas registros, pones número
+en `x8`, ejecutas `svc #0`, lees retorno en `x0`. Las lecciones siguientes solo
+cambian qué número y qué argumentos se usan.
