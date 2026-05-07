@@ -1,0 +1,144 @@
+---
+title: "05.5 · Lectura guiada de syscalls"
+subtitle: "Lee exit y write mirando qué valor va en cada registro."
+description: "Lectura práctica de registros x0, x1, x2, x8 y svc #0 en syscalls Linux AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Primeros programas > Lectura guiada de syscalls
+:::
+
+::: {.hero-lab}
+Esta página junta los dos programas de la unidad y los lee por registros. La
+pregunta siempre es la misma: qué syscall pide `x8` y qué argumentos puso el
+programa antes de `svc #0`.
+:::
+
+## Patrón general
+
+```bash
+preparar argumentos en registros
+preparar número de syscall en x8
+ejecutar svc #0
+continuar según retorno o terminar
+```
+
+| Registro | Papel inicial |
+|---|---|
+| `x0` | primer argumento |
+| `x1` | segundo argumento |
+| `x2` | tercer argumento |
+| `x8` | número de syscall |
+
+## Leer `exit`
+
+```asm
+mov x0, #7
+mov x8, #93
+svc #0
+```
+
+| Registro | Valor | Lectura |
+|---|---:|---|
+| `x0` | `7` | código de salida |
+| `x8` | `93` | syscall `exit` |
+
+`svc #0` entra al kernel. Como `x8 = 93`, Linux interpreta el pedido como
+`exit`.
+
+## Leer `write`
+
+```asm
+mov x0, #1
+ldr x1, =mensaje
+mov x2, #len
+mov x8, #64
+svc #0
+```
+
+| Registro | Valor | Lectura |
+|---|---|---|
+| `x0` | `1` | stdout |
+| `x1` | `mensaje` | dirección donde empiezan los bytes |
+| `x2` | `len` | cantidad de bytes |
+| `x8` | `64` | syscall `write` |
+
+## Dirección no es contenido
+
+```asm
+ldr x1, =mensaje
+```
+
+Esta línea prepara una dirección. No copia el texto completo dentro de `x1`.
+
+```bash
+x1 -> dirección de mensaje
+mensaje -> bytes "Hola AArch64\n"
+```
+
+`write` usa la dirección y la longitud para leer bytes desde memoria.
+
+## `svc #0` no decide solo
+
+La instrucción `svc #0` cambia al kernel. El significado del pedido depende de
+los registros preparados.
+
+| Si `x8` vale... | Linux entiende... |
+|---:|---|
+| `64` | `write` |
+| `93` | `exit` |
+
+Por eso poner `93` en `x0` no sirve para llamar `exit`. El número de syscall va
+en `x8`.
+
+## Lectura final de Hello World
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #1
+    ldr x1, =mensaje
+    mov x2, #len
+    mov x8, #64
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.rodata
+mensaje:
+    .ascii "Hola AArch64\n"
+len = . - mensaje
+```
+
+| Bloque | Qué hace |
+|---|---|
+| Primer syscall | escribe mensaje |
+| Segundo syscall | termina con código `0` |
+| `.rodata` | guarda bytes del mensaje |
+| `len` | cantidad de bytes |
+
+## Mini ejercicios
+
+1. Identifica registros de `write`.
+2. Identifica registros de `exit`.
+3. Explica qué pasa si `x8 = 93` y `x0 = 1`.
+4. Explica qué pasa si olvidas preparar `x2` antes de `write`.
+5. Explica por qué `svc #0` necesita contexto.
+
+## Checklist
+
+- [ ] Puedo leer `exit` por registros.
+- [ ] Puedo leer `write` por registros.
+- [ ] Puedo explicar `x8`.
+- [ ] Puedo explicar `svc #0`.
+- [ ] Puedo distinguir dirección de contenido.
+
+## Cierre de la unidad
+
+Ya puedes escribir programas AArch64 pequeños que hacen trabajo real en Linux:
+terminan correctamente, escriben bytes y muestran su resultado con herramientas
+del laboratorio.

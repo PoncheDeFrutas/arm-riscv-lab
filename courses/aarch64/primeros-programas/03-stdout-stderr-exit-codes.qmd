@@ -1,0 +1,110 @@
+---
+title: "05.3 · stdout, stderr y códigos de salida"
+subtitle: "stdout y stderr son destinos de escritura; el código de salida es otro dato."
+description: "File descriptors 1 y 2, exit codes y cambios pequeños en programas AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Primeros programas > stdout, stderr y exit codes
+:::
+
+::: {.hero-lab}
+`stdout = 1`, `stderr = 2` y `exit code = 1` no significan lo mismo. Esta página
+separa destino de escritura y resultado del proceso.
+:::
+
+## File descriptors básicos
+
+| File descriptor | Nombre | Uso |
+|---:|---|---|
+| `0` | stdin | entrada estándar |
+| `1` | stdout | salida normal |
+| `2` | stderr | salida de error |
+
+Para `write`, el primer argumento va en `x0`.
+
+```asm
+mov x0, #1      // stdout
+```
+
+o:
+
+```asm
+mov x0, #2      // stderr
+```
+
+## Escribir en stderr
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #2
+    ldr x1, =mensaje
+    mov x2, #len
+    mov x8, #64
+    svc #0
+
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+.rodata
+mensaje:
+    .ascii "Error de ejemplo\n"
+len = . - mensaje
+```
+
+El mensaje va a `stderr`. El proceso termina con código `1`.
+
+```bash
+aarch64-linux-gnu-as stderr.s -o stderr.o
+aarch64-linux-gnu-ld stderr.o -o stderr
+qemu-aarch64 ./stderr
+echo $?
+```
+
+Salida esperada:
+
+```bash
+Error de ejemplo
+1
+```
+
+## No confundas destinos con códigos
+
+| Valor | Donde aparece | Qué significa |
+|---:|---|---|
+| `1` en `write` | `x0` antes de `write` | stdout |
+| `2` en `write` | `x0` antes de `write` | stderr |
+| `1` en `exit` | `x0` antes de `exit` | código de salida |
+
+El significado depende de la syscall que pones en `x8`.
+
+## Códigos de salida
+
+| Código | Lectura común |
+|---:|---|
+| `0` | terminó bien |
+| distinto de `0` | hubo algún problema o resultado especial |
+
+El kernel no decide por ti si `7` significa error grave o caso de prueba. Tu
+programa elige ese código.
+
+## Mini ejercicios
+
+1. Cambia el programa para escribir en `stdout` pero salir con código `2`.
+2. Cambia el programa para escribir en `stderr` pero salir con código `0`.
+3. Explica por qué `x0 = 1` puede significar cosas distintas.
+4. Ejecuta `echo $?` inmediatamente después del programa.
+
+## Checklist
+
+- [ ] Puedo explicar stdout `1`.
+- [ ] Puedo explicar stderr `2`.
+- [ ] Puedo distinguir file descriptor de código de salida.
+- [ ] Puedo cambiar destino de `write`.
+- [ ] Puedo cambiar código de `exit`.
+
+Siguiente: [`_start`, `main` y libc](04-start-main-libc.qmd).

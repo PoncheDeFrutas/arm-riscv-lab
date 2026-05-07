@@ -1,0 +1,100 @@
+---
+title: "05.4 · _start, main y libc"
+subtitle: "Cuando no usas runtime de C, el programa empieza en _start."
+description: "Diferencia inicial entre _start, main, libc y printf en programas AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Primeros programas > _start, main y libc
+:::
+
+::: {.hero-lab}
+En estos programas no usamos `main`, `printf` ni runtime de C. El binario entra
+directamente por `_start` y el programa llama syscalls de Linux por su cuenta.
+:::
+
+## Por qué usamos `_start`
+
+`_start` es el símbolo de entrada que usamos cuando enlazamos un programa mínimo
+sin runtime de C.
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+El linker necesita saber dónde inicia el programa. En estas prácticas, esa
+entrada es `_start`.
+
+## Dónde aparece `main`
+
+En programas normales escritos con C, el código no entra directamente a `main`
+desde el kernel. Antes hay código de arranque de runtime.
+
+```bash
+kernel carga proceso
+        |
+        v
+runtime de C prepara entorno
+        |
+        v
+       main
+        |
+        v
+       exit
+```
+
+Aquí no estamos usando ese runtime. Por eso no escribimos `main`.
+
+## Qué hace normalmente `libc`
+
+`libc` suele dar funciones como `printf`, manejar arranque del programa, preparar
+argumentos de `main`, inicializar partes del entorno y terminar el proceso de
+forma ordenada.
+
+En esta unidad no usamos `libc` para que la relación con Linux sea visible:
+
+```bash
+registros -> svc #0 -> kernel
+```
+
+## Por qué no usamos `printf`
+
+`printf` no es syscall. Es función de biblioteca. Para llegar a pantalla,
+eventualmente debe usar servicios del sistema, pero agrega formato, buffering y
+otras capas.
+
+Esta unidad usa `write` porque el contrato queda directo:
+
+| Registro | Papel |
+|---|---|
+| `x0` | file descriptor |
+| `x1` | dirección de bytes |
+| `x2` | cantidad de bytes |
+| `x8` | número de syscall |
+
+## Límite práctico
+
+Más adelante usaremos funciones, stack, ABI y llamadas a C. Por ahora, `_start`
+mantiene el programa pequeño y visible.
+
+## Mini ejercicios
+
+1. Explica por qué este curso usa `_start`.
+2. Explica qué capa agrega `libc`.
+3. Explica por qué `printf` no aparece en el programa.
+4. Dibuja el camino `registros -> svc #0 -> kernel`.
+
+## Checklist
+
+- [ ] Puedo distinguir `_start` de `main`.
+- [ ] Puedo explicar qué hace normalmente `libc`.
+- [ ] Puedo explicar por qué aquí no usamos `printf`.
+- [ ] Sé que `write` es syscall y `printf` es biblioteca.
+
+Siguiente: [Lectura guiada de syscalls](05-lectura-guiada-syscalls.qmd).

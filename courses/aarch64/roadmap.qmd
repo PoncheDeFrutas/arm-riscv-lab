@@ -45,6 +45,7 @@ seguridad, virtualización y proyectos.
 <div class="unit-card"><strong><a href="bases-binarias/index.qmd">2. Bases binarias y representación</a></strong><p>Bits, bytes, bases numéricas, signed/unsigned, overflow, endianness y direcciones.</p></div>
 <div class="unit-card"><strong><a href="modelo-aarch64/index.qmd">3. Modelo ARMv8-A / AArch64</a></strong><p>Registros X/W, SP, PC, LR, PSTATE, NZCV, SIMD y niveles de excepción como mapa inicial.</p></div>
 <div class="unit-card"><strong><a href="gnu-assembly/index.qmd">4. GNU Assembly, directivas y pseudo-instrucciones</a></strong><p>Archivo .s, secciones, símbolos, datos, macros básicas, literales y direccionamiento simbólico.</p></div>
+<div class="unit-card"><strong><a href="primeros-programas/index.qmd">5. Primeros programas en Linux AArch64</a></strong><p>_start, exit, write, stdout, stderr, svc #0 y programas ejecutables sin libc.</p></div>
 </div>
 </details>
 

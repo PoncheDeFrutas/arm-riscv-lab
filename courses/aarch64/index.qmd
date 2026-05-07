@@ -178,7 +178,7 @@ AArch64 antes de entrar en programas más grandes.
 - [02 · Bases binarias y representación de datos](bases-binarias/index.qmd)
 - [03 · Modelo ARMv8-A / AArch64](modelo-aarch64/index.qmd)
 - [04 · GNU Assembly, directivas y pseudo-instrucciones](gnu-assembly/index.qmd)
-- Primer programa mínimo
+- [05 · Primeros programas en Linux AArch64](primeros-programas/index.qmd)
 :::
 
 ## Siguiente paso

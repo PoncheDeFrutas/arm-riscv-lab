@@ -1,0 +1,132 @@
+---
+title: "05.1 · Programa mínimo con exit"
+subtitle: "El primer programa real solo termina y devuelve un código de salida."
+description: "Programa AArch64 mínimo en Linux con _start, exit, x0, x8 y svc #0."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Primeros programas > Programa mínimo con exit
+:::
+
+::: {.hero-lab}
+El programa más pequeño útil en Linux AArch64 no imprime nada. Solo le dice al
+kernel que terminó. Esto confirma que puedes escribir código, ensamblarlo,
+enlazarlo y ejecutarlo.
+:::
+
+## Archivo `exit.s`
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0      // código de salida
+    mov x8, #93     // syscall exit
+    svc #0
+```
+
+Lectura mínima:
+
+| Línea | Qué hace |
+|---|---|
+| `.global _start` | Hace visible el punto de entrada |
+| `_start:` | Dirección donde inicia el programa |
+| `mov x0, #0` | Código de salida |
+| `mov x8, #93` | Número de syscall `exit` |
+| `svc #0` | Entra al kernel |
+
+## Ensamblar y enlazar en x86_64 con QEMU
+
+```bash
+aarch64-linux-gnu-as exit.s -o exit.o
+aarch64-linux-gnu-ld exit.o -o exit
+qemu-aarch64 ./exit
+echo $?
+```
+
+Salida esperada:
+
+```bash
+0
+```
+
+## Ensamblar y ejecutar en ARM64 nativo
+
+En Raspberry Pi o Linux ARM64:
+
+```bash
+as exit.s -o exit.o
+ld exit.o -o exit
+./exit
+echo $?
+```
+
+Salida esperada:
+
+```bash
+0
+```
+
+## Cambiar código de salida
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #7
+    mov x8, #93
+    svc #0
+```
+
+Ejecuta de nuevo y revisa:
+
+```bash
+echo $?
+```
+
+Resultado esperado:
+
+```bash
+7
+```
+
+::: {.callout-warning title="Revisa inmediatamente"}
+`echo $?` muestra el código de salida del último comando ejecutado. Si ejecutas
+otro comando antes, ya no estarás viendo el resultado de tu programa.
+:::
+
+## Qué pasa si no llamas `exit`
+
+Un proceso necesita terminar de forma definida. Si tu código llega a bytes que no
+son una salida válida o continúa hacia memoria que no preparaste como
+instrucciones, el resultado puede ser un fallo o comportamiento confuso.
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0
+    // falta exit
+```
+
+Regla práctica: en estos programas mínimos, termina siempre con syscall `exit`.
+
+## Mini ejercicios
+
+1. Cambia el código de salida a `3`.
+2. Ejecuta y revisa `echo $?`.
+3. Explica por qué `93` va en `x8`.
+4. Explica por qué `0` o `7` van en `x0`.
+
+## Checklist
+
+- [ ] Puedo escribir `exit.s`.
+- [ ] Puedo ensamblar a `exit.o`.
+- [ ] Puedo enlazar a `exit`.
+- [ ] Puedo ejecutar el programa.
+- [ ] Puedo revisar código de salida.
+
+Siguiente: [Hello World con write](02-hello-world-write.qmd).

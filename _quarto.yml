@@ -132,6 +132,20 @@ website:
                   href: courses/aarch64/gnu-assembly/06-include-macros.qmd
                 - text: "Lectura de archivo completo"
                   href: courses/aarch64/gnu-assembly/07-lectura-archivo-completo.qmd
+            - section: "05 · Primeros programas"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/primeros-programas/index.qmd
+                - text: "Programa mínimo con exit"
+                  href: courses/aarch64/primeros-programas/01-programa-minimo-exit.qmd
+                - text: "Hello World con write"
+                  href: courses/aarch64/primeros-programas/02-hello-world-write.qmd
+                - text: "stdout, stderr y exit codes"
+                  href: courses/aarch64/primeros-programas/03-stdout-stderr-exit-codes.qmd
+                - text: "_start, main y libc"
+                  href: courses/aarch64/primeros-programas/04-start-main-libc.qmd
+                - text: "Lectura guiada de syscalls"
+                  href: courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

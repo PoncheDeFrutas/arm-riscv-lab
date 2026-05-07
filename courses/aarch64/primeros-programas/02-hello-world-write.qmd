@@ -1,0 +1,121 @@
+---
+title: "05.2 · Hello World con write"
+subtitle: "Escribe bytes en stdout usando la syscall write, sin printf y sin libc."
+description: "Hello World AArch64 con syscall write, .rodata, dirección del mensaje y longitud."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Primeros programas > Hello World con write
+:::
+
+::: {.hero-lab}
+Ahora el programa sí produce salida visible. No usaremos `printf`: el programa
+le pedirá directamente al kernel que escriba bytes en `stdout`.
+:::
+
+## Archivo `hello.s`
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #1          // stdout
+    ldr x1, =mensaje    // dirección del mensaje
+    mov x2, #len        // cantidad de bytes
+    mov x8, #64         // syscall write
+    svc #0
+
+    mov x0, #0
+    mov x8, #93         // syscall exit
+    svc #0
+
+.rodata
+mensaje:
+    .ascii "Hola AArch64\n"
+len = . - mensaje
+```
+
+## Construir y ejecutar
+
+Ruta x86_64 con QEMU:
+
+```bash
+aarch64-linux-gnu-as hello.s -o hello.o
+aarch64-linux-gnu-ld hello.o -o hello
+qemu-aarch64 ./hello
+echo $?
+```
+
+Ruta ARM64 nativa:
+
+```bash
+as hello.s -o hello.o
+ld hello.o -o hello
+./hello
+echo $?
+```
+
+Salida esperada:
+
+```bash
+Hola AArch64
+0
+```
+
+## Registros de `write`
+
+| Registro | Valor | Significado |
+|---|---:|---|
+| `x0` | `1` | file descriptor: stdout |
+| `x1` | dirección de `mensaje` | dónde empiezan los bytes |
+| `x2` | `len` | cuántos bytes escribir |
+| `x8` | `64` | syscall `write` |
+
+`svc #0` no imprime por sí solo. La impresión ocurre porque antes preparaste
+`x8 = 64` y los argumentos de `write`.
+
+## Mensaje en memoria
+
+```bash
+mensaje:
+48 6f 6c 61 20 41 41 72 63 68 36 34 0a
+```
+
+`x1` apunta al primer byte. `x2` dice cuántos bytes debe leer `write`.
+
+```bash
+x1 -> mensaje
+x2 -> len
+```
+
+## Por qué usamos `.ascii`
+
+```asm
+mensaje:
+    .ascii "Hola AArch64\n"
+len = . - mensaje
+```
+
+`.ascii` coloca los bytes exactos del mensaje. `len = . - mensaje` calcula la
+cantidad de bytes desde la etiqueta hasta la posición actual.
+
+Si usaras `.asciz`, se agregaría un byte cero al final. Para `write`, ese byte
+también se escribiría si lo cuentas dentro de la longitud.
+
+## Mini ejercicios
+
+1. Cambia el mensaje.
+2. Cambia `x0` de `1` a `2` y observa la salida.
+3. Quita `\n` y mira cómo cambia la terminal.
+4. Explica qué pasaría si `x2` es menor que `len`.
+
+## Checklist
+
+- [ ] Puedo escribir `hello.s`.
+- [ ] Puedo explicar `stdout`.
+- [ ] Puedo explicar dirección del mensaje en `x1`.
+- [ ] Puedo explicar longitud en `x2`.
+- [ ] Puedo terminar con `exit`.
+
+Siguiente: [stdout, stderr y exit codes](03-stdout-stderr-exit-codes.qmd).
