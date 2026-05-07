@@ -98,6 +98,22 @@ website:
                   href: courses/aarch64/bases-binarias/05-endianness-alineacion.qmd
                 - text: "Direcciones y punteros"
                   href: courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.qmd
+            - section: "03 · Modelo ARMv8-A / AArch64"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/modelo-aarch64/index.qmd
+                - text: "Registros generales"
+                  href: courses/aarch64/modelo-aarch64/01-registros-generales.qmd
+                - text: "Registros especiales"
+                  href: courses/aarch64/modelo-aarch64/02-registros-especiales.qmd
+                - text: "PSTATE y flags"
+                  href: courses/aarch64/modelo-aarch64/03-pstate-flags.qmd
+                - text: "SIMD/Floating Point"
+                  href: courses/aarch64/modelo-aarch64/04-simd-floating-registers.qmd
+                - text: "Exception levels"
+                  href: courses/aarch64/modelo-aarch64/05-exception-levels.qmd
+                - text: "Lectura con GDB"
+                  href: courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

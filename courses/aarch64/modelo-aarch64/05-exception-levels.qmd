@@ -1,0 +1,100 @@
+---
+title: "03.5 · Exception levels: EL0 a EL3"
+subtitle: "Un programa de usuario no corre con todos los privilegios del procesador."
+description: "EL0, EL1, EL2, EL3, user mode y kernel mode como mapa inicial."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Modelo AArch64 > Exception levels
+:::
+
+::: {.hero-lab}
+AArch64 separa niveles de privilegio. Esta lección solo da el mapa: dónde corre
+un programa de usuario, dónde corre el kernel y por qué no todo el estado del
+procesador está disponible para tu programa.
+:::
+
+## Mapa de niveles
+
+| Nivel | Nombre común | Uso típico |
+|---|---|---|
+| `EL0` | User mode | Programas de usuario |
+| `EL1` | Kernel mode | Kernel del sistema operativo |
+| `EL2` | Hypervisor | Virtualización |
+| `EL3` | Secure monitor | Transición secure / non-secure |
+
+```bash
+EL3  secure monitor
+EL2  hypervisor
+EL1  kernel
+EL0  programa de usuario
+```
+
+En este curso, los primeros programas corren en `EL0` sobre Linux.
+
+## User mode vs kernel mode
+
+Un programa normal no puede ejecutar instrucciones privilegiadas ni tocar
+libremente registros de sistema. Eso protege al sistema y separa responsabilidades.
+
+| Modo | Qué puede hacer |
+|---|---|
+| User mode / `EL0` | Ejecutar programa, usar registros generales, pedir servicios al kernel |
+| Kernel mode / `EL1` | Administrar memoria, procesos, dispositivos y privilegios |
+
+::: {.callout-note title="Idea clave"}
+Tu programa puede usar registros generales, pero no controla todo el procesador.
+Linux corre el programa en `EL0` y el kernel trabaja en `EL1`.
+:::
+
+## Syscall como cambio de contexto conceptual
+
+Cuando un programa necesita un servicio del kernel, usa una syscall. En AArch64
+Linux, eso se hará con `svc #0` en unidades posteriores.
+
+```asm
+svc #0
+```
+
+Para esta unidad, no estudiaremos números de syscall ni argumentos. Solo importa
+la idea: programa en `EL0` pide servicio a kernel en `EL1`.
+
+## Qué no puede tocar libremente un programa
+
+| Estado | Acceso desde programa normal |
+|---|---|
+| Registros generales `Xn/Wn` | Sí |
+| `SP`, `PC`, `NZCV` | Visible o usable según reglas de instrucciones |
+| Registros de sistema privilegiados | No libremente |
+| Configuración de MMU | No |
+| Control de interrupciones | No |
+
+## Por qué esto importa para debugging
+
+Si GDB muestra registros de un programa, estás mirando estado de ese proceso en
+su contexto de usuario. No estás viendo todo el estado interno del kernel ni de
+hardware privilegiado.
+
+## Límite de esta unidad
+
+::: {.callout-warning title="No es unidad de kernel"}
+No estudiaremos excepciones reales, vectores, ESR, ELR, SPSR, MMU, tablas de
+páginas, virtualización ni TrustZone. Solo necesitamos el mapa.
+:::
+
+## Mini ejercicios
+
+1. Indica en qué nivel corre un programa normal de Linux.
+2. Indica en qué nivel corre el kernel.
+3. Explica por qué un programa de usuario no puede tocar todo el estado.
+4. Explica qué idea representa `svc #0` sin entrar en syscalls.
+
+## Checklist
+
+- [ ] Puedo ubicar `EL0`.
+- [ ] Puedo ubicar `EL1`.
+- [ ] Sé que `EL2` se relaciona con virtualización.
+- [ ] Sé que `EL3` se relaciona con secure monitor.
+- [ ] Puedo explicar user mode vs kernel mode.
+
+Siguiente: [Lectura de registros con GDB](06-lectura-registros-gdb.qmd).

@@ -1,0 +1,155 @@
+---
+title: "03.6 · Lectura básica de registros con GDB"
+subtitle: "Depurar empieza por saber mirar registros sin perder el contexto."
+description: "Lectura mínima de registros AArch64 con GDB o gdb-multiarch."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Modelo AArch64 > Lectura con GDB
+:::
+
+::: {.hero-lab}
+Esta página no reemplaza una unidad de debugging. Solo conecta el modelo de
+registros con una herramienta real: detener el programa y mirar estado visible.
+:::
+
+## Preparación
+
+Usa el ejemplo mínimo de la Unidad 01.
+
+```bash
+cd 00-hello-minimo
+cd src
+make
+```
+
+Ruta x86_64 con QEMU:
+
+```bash
+make gdb
+```
+
+En otra terminal:
+
+```bash
+gdb-multiarch build/main
+```
+
+Dentro de GDB:
+
+```bash
+set architecture aarch64
+target remote localhost:1234
+break _start
+continue
+```
+
+Ruta Raspberry Pi ARM64:
+
+```bash
+gdb build/main
+break _start
+run
+```
+
+## Ver registros generales
+
+```bash
+info registers x0 x1 x2 x8
+```
+
+En el primer programa de laboratorio, estos registros se usan para preparar una
+syscall. No estudiaremos syscalls aquí; solo observamos que GDB muestra valores
+en registros.
+
+## Ver `sp` y `pc`
+
+```bash
+info registers sp pc
+```
+
+| Registro | Qué mirar |
+|---|---|
+| `sp` | Dirección actual del stack |
+| `pc` | Dirección de ejecución |
+
+Puedes mirar instrucciones cerca de `pc`:
+
+```bash
+x/4i $pc
+```
+
+## Ver `fp` y `lr`
+
+```bash
+info registers x29 x30
+```
+
+| Registro | Alias común | Idea inicial |
+|---|---|---|
+| `x29` | `fp` | Frame pointer |
+| `x30` | `lr` | Link register |
+
+En el programa mínimo quizá no tengan un rol interesante todavía. Lo importante
+es reconocerlos cuando aparezcan.
+
+## Ver estado de flags
+
+```bash
+info registers cpsr
+```
+
+Según el entorno, GDB puede mostrar estado de flags dentro de `cpsr`. No debes
+memorizar la salida exacta todavía. Busca la relación con `NZCV`.
+
+## Leer sin sobreinterpretar
+
+| Si ves... | Pregunta correcta |
+|---|---|
+| `x0 = 0x1` | ¿Es entero, dirección o argumento? |
+| `sp = 0x...` | ¿A qué región de stack apunta? |
+| `pc = 0x...` | ¿Qué instrucción está por ejecutarse? |
+| `x30 = 0x...` | ¿Podría ser dirección de retorno? |
+| flags | ¿Qué instrucción los actualizó antes? |
+
+::: {.callout-note title="Idea clave"}
+GDB muestra valores. El curso te enseña a interpretarlos con contexto:
+registro, tamaño, instrucción actual y memoria asociada.
+:::
+
+## Salir
+
+```bash
+quit
+```
+
+Si QEMU quedó esperando en otra terminal, ciérralo con `Ctrl+C`.
+
+## Límite de esta página
+
+::: {.callout-warning title="No es debugging avanzado"}
+No veremos watchpoints, stack frames completos, core dumps, macros de GDB,
+señales ni depuración de kernel. Esta página solo enseña a mirar registros.
+:::
+
+## Mini ejercicios
+
+1. Muestra `x0`, `x1`, `x2` y `x8`.
+2. Muestra `sp` y `pc`.
+3. Usa `x/4i $pc`.
+4. Explica por qué `x0` podría ser valor o dirección.
+5. Explica por qué `pc` no debe interpretarse como dato normal.
+
+## Checklist
+
+- [ ] Puedo abrir GDB según mi ruta.
+- [ ] Puedo detenerme en `_start`.
+- [ ] Puedo mostrar registros generales.
+- [ ] Puedo mostrar `sp` y `pc`.
+- [ ] Puedo mirar instrucciones cerca de `pc`.
+- [ ] Puedo salir de GDB sin dejar QEMU esperando.
+
+## Cierre de la unidad
+
+Si puedes mirar `x0`, `w0`, `sp`, `pc`, `x29`, `x30`, `NZCV` y saber qué
+pregunta hacer, ya tienes el mapa básico del estado visible de AArch64.

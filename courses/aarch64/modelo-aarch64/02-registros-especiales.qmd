@@ -1,0 +1,133 @@
+---
+title: "03.2 · Registros especiales: ZR, SP, PC, FP y LR"
+subtitle: "No todos los nombres que ves en AArch64 se comportan como registros generales normales."
+description: "XZR/WZR, SP, PC, X29/FP y X30/LR como registros o nombres con significado especial."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Modelo AArch64 > Registros especiales
+:::
+
+::: {.hero-lab}
+Algunos registros o nombres de AArch64 tienen reglas especiales. Esta lección
+los ubica sin entrar todavía en stack frames, ABI ni llamadas a función en
+profundidad.
+:::
+
+## Mapa rápido
+
+| Nombre | Qué representa | Idea inicial |
+|---|---|---|
+| `xzr` / `wzr` | Zero register | Leer da cero; escribir descarta |
+| `sp` | Stack pointer | Dirección actual del stack |
+| `pc` | Program counter | Posición de ejecución |
+| `x29` / `fp` | Frame pointer | Referencia de stack frame en funciones |
+| `x30` / `lr` | Link register | Dirección de retorno en llamadas |
+
+## `XZR` y `WZR`
+
+`xzr` y `wzr` representan el zero register. Leerlo produce cero. Escribir ahí
+descarta el resultado.
+
+```asm
+mov x0, xzr       // x0 = 0
+add x1, xzr, #5   // x1 = 5
+mov xzr, x1       // resultado descartado
+```
+
+::: {.callout-note title="Idea clave"}
+`xzr` no es una variable que guarda cero. Es un nombre especial: leer produce
+cero y escribir no conserva nada.
+:::
+
+## `SP`
+
+`sp` es el stack pointer. Guarda una dirección relacionada con el stack actual.
+No se debe tratar como cualquier registro general.
+
+```asm
+mov x0, sp
+```
+
+Ese fragmento copia el valor actual de `sp` hacia `x0`. No significa que `sp`
+sea un registro temporal normal.
+
+::: {.callout-warning title="Límite de esta unidad"}
+Todavía no estudiaremos stack frames. Por ahora basta saber que `sp` apunta al
+stack y tiene reglas especiales.
+:::
+
+## `PC`
+
+`pc` es el program counter: representa la posición de ejecución. En A64, `pc` no
+se usa como registro general libre para cualquier operación.
+
+Para obtener una dirección cercana al código actual se usan instrucciones como
+`adr`.
+
+```asm
+adr x0, .
+```
+
+Lectura mínima: `adr x0, .` coloca en `x0` una dirección asociada a la posición
+actual del programa.
+
+## `X29` / `FP`
+
+`x29` también puede nombrarse como `fp`, frame pointer. Aparece en funciones
+cuando se construyen stack frames.
+
+```asm
+mov x29, sp
+```
+
+Este ejemplo solo muestra la idea de copiar una dirección del stack. La forma
+real de construir un frame queda para una unidad posterior.
+
+## `X30` / `LR`
+
+`x30` también puede nombrarse como `lr`, link register. En llamadas a función,
+guarda una dirección de retorno.
+
+```asm
+mov x0, x30
+```
+
+Más adelante, instrucciones como `bl` y `ret` harán que `lr` sea central para
+llamadas a función. Aquí solo necesitas reconocerlo.
+
+## Qué registros tienen significado especial
+
+| Registro | Se puede ver en GDB | Se usa libremente como temporal |
+|---|---|---|
+| `x0`-`x28` | Sí | Como mapa inicial, sí |
+| `x29` / `fp` | Sí | Tiene rol común en stack frames |
+| `x30` / `lr` | Sí | Tiene rol común en retorno |
+| `sp` | Sí | No como general normal |
+| `pc` | Sí | No como general normal |
+| `xzr` / `wzr` | Conceptual | No almacena |
+
+## Error común
+
+::: {.callout-warning title="PC no es un Xn más"}
+En A64, no programes pensando que `pc` se usa como un registro general. Puedes
+observarlo y puedes generar direcciones relativas, pero no lo trates como `x0`.
+:::
+
+## Mini ejercicios
+
+1. Explica qué pasa al leer `xzr`.
+2. Explica qué pasa al escribir en `xzr`.
+3. Di por qué `sp` no es un temporal normal.
+4. Explica para qué servirá `x30/lr` más adelante.
+5. Explica por qué `adr x0, .` es útil para hablar de `pc`.
+
+## Checklist
+
+- [ ] Puedo explicar `xzr/wzr`.
+- [ ] Puedo explicar `sp`.
+- [ ] Puedo explicar por qué `pc` no es general.
+- [ ] Puedo reconocer `x29/fp`.
+- [ ] Puedo reconocer `x30/lr`.
+
+Siguiente: [PSTATE y flags](03-pstate-flags.qmd).

@@ -1,0 +1,131 @@
+---
+title: "03.1 · Registros generales Xn y Wn"
+subtitle: "AArch64 ofrece 31 registros generales visibles como X0-X30 o W0-W30."
+description: "Registros generales de AArch64, vistas de 64 y 32 bits, y zero-extension al escribir en Wn."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Modelo AArch64 > Registros generales
+:::
+
+::: {.hero-lab}
+Un programa AArch64 trabaja principalmente moviendo valores entre registros y
+memoria. Esta lección presenta los registros generales: el lugar donde vivirán
+enteros, direcciones, resultados temporales y argumentos en unidades futuras.
+:::
+
+## Registros `X0` a `X30`
+
+AArch64 tiene 31 registros generales visibles de 64 bits. Se escriben como
+`x0`, `x1`, `x2` hasta `x30`.
+
+| Grupo | Tamaño | Uso inicial en el curso |
+|---|---:|---|
+| `x0`-`x30` | 64 bits | Valores enteros, direcciones y temporales |
+
+```asm
+mov x0, #42
+mov x1, #100
+add x2, x0, x1
+```
+
+Lectura mínima:
+
+| Registro | Valor conceptual |
+|---|---:|
+| `x0` | `42` |
+| `x1` | `100` |
+| `x2` | `142` |
+
+## Registros `W0` a `W30`
+
+Cada registro `Wn` representa los 32 bits bajos del registro `Xn`
+correspondiente.
+
+| Vista | Tamaño | Relación |
+|---|---:|---|
+| `x0` | 64 bits | Registro completo |
+| `w0` | 32 bits | Parte baja de `x0` |
+
+```bash
+x0:
+63                                32 31                                0
++-----------------------------------+-----------------------------------+
+|          bits altos de x0          |                w0                 |
++-----------------------------------+-----------------------------------+
+```
+
+::: {.callout-note title="Idea clave"}
+`w0` no es un registro aparte. Es la vista de 32 bits bajos de `x0`.
+:::
+
+## Escribir en `Wn`
+
+Cuando una instrucción escribe en `Wn`, AArch64 limpia los 32 bits altos del
+registro `Xn` correspondiente. Esto es zero-extension hacia 64 bits.
+
+```asm
+mov x0, #-1     // x0 = 0xFFFFFFFFFFFFFFFF
+mov w0, #1      // x0 = 0x0000000000000001
+```
+
+Antes:
+
+```bash
+x0 = 0xFFFFFFFFFFFFFFFF
+```
+
+Después de `mov w0, #1`:
+
+```bash
+x0 = 0x0000000000000001
+```
+
+No queda `0xFFFFFFFF00000001`. Los bits altos se limpian.
+
+## Usar 32 o 64 bits
+
+| Si necesitas... | Usa... |
+|---|---|
+| Dirección de memoria | `Xn` |
+| Valor entero de 64 bits | `Xn` |
+| Operación de 32 bits | `Wn` |
+| Resultado que debe limpiar bits altos | escribir en `Wn` |
+
+En Linux AArch64, las direcciones de userland se manejan como valores de 64
+bits, por eso se guardan en registros `Xn`.
+
+## Qué registros puede tocar un programa
+
+Como mapa inicial, un programa puede usar registros generales para cálculos. Más
+adelante la ABI dirá cuáles debe preservar al llamar funciones y cuáles se usan
+para argumentos o retornos.
+
+::: {.callout-warning title="Límite de esta lección"}
+No estudiaremos AAPCS64 todavía. Por ahora solo importa reconocer registros
+generales y entender `Xn` contra `Wn`.
+:::
+
+## Error común
+
+::: {.callout-warning title="No dupliques mentalmente registros"}
+No pienses que hay un `x0` separado y un `w0` separado. Es el mismo registro
+visto con tamaños distintos.
+:::
+
+## Mini ejercicios
+
+1. Explica qué parte de `x3` representa `w3`.
+2. Explica qué pasa con `x5` después de escribir en `w5`.
+3. Indica si una dirección debería guardarse en `w0` o `x0`.
+4. Explica por qué `mov w0, #1` limpia los bits altos de `x0`.
+
+## Checklist
+
+- [ ] Sé que existen `X0`-`X30`.
+- [ ] Sé que existen `W0`-`W30`.
+- [ ] Puedo dibujar `Wn` como los 32 bits bajos de `Xn`.
+- [ ] Puedo explicar zero-extension al escribir en `Wn`.
+- [ ] Sé que direcciones se manejan en registros `Xn`.
+
+Siguiente: [Registros especiales](02-registros-especiales.qmd).

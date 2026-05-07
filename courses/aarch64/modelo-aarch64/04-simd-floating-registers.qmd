@@ -1,0 +1,109 @@
+---
+title: "03.4 · Registros SIMD/Floating Point"
+subtitle: "AArch64 también tiene 32 registros de 128 bits para floating point y operaciones vectoriales."
+description: "V0-V31 y vistas Bn, Hn, Sn, Dn y Qn como mapa inicial."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Modelo AArch64 > SIMD/Floating Point
+:::
+
+::: {.hero-lab}
+No todo valor vive en `x0` o `w0`. AArch64 también tiene registros para datos
+floating point y vectoriales. En esta unidad solo los ubicamos en el mapa; NEON,
+SIMD y floating point vendrán después.
+:::
+
+## Registros `V0` a `V31`
+
+AArch64 define 32 registros SIMD/Floating Point de 128 bits: `v0` a `v31`.
+
+| Banco | Cantidad | Tamaño máximo |
+|---|---:|---:|
+| `v0`-`v31` | 32 registros | 128 bits |
+
+Estos registros no son `x0`-`x30`. Son otro banco de registros.
+
+## Vistas por tamaño
+
+El mismo registro vectorial puede verse con distintos tamaños.
+
+| Vista | Tamaño | Uso inicial |
+|---|---:|---|
+| `bn` | 8 bits | byte |
+| `hn` | 16 bits | halfword |
+| `sn` | 32 bits | single precision / word |
+| `dn` | 64 bits | double precision / doubleword |
+| `qn` | 128 bits | quadword |
+
+Ejemplo con registro 0:
+
+| Nombre | Qué mira |
+|---|---|
+| `b0` | 8 bits bajos de `v0` |
+| `h0` | 16 bits bajos de `v0` |
+| `s0` | 32 bits bajos de `v0` |
+| `d0` | 64 bits bajos de `v0` |
+| `q0` | 128 bits completos |
+
+## Ejemplo floating point mínimo
+
+```asm
+fmov d0, #1.0
+fmov d1, #2.0
+fadd d2, d0, d1
+```
+
+Lectura mínima:
+
+| Registro | Idea |
+|---|---|
+| `d0` | Valor floating point de 64 bits |
+| `d1` | Otro valor floating point |
+| `d2` | Resultado |
+
+No estudiaremos formato IEEE 754 ni operaciones FP completas todavía.
+
+## Enteros vs SIMD/FP
+
+| Registro | Banco | Uso |
+|---|---|---|
+| `x0` | General | Enteros, direcciones |
+| `w0` | General | 32 bits bajos de `x0` |
+| `v0` | SIMD/FP | Vector o FP de hasta 128 bits |
+| `d0` | SIMD/FP | Vista de 64 bits de `v0` |
+
+::: {.callout-warning title="No mezcles bancos"}
+`x0` y `d0` no son el mismo registro. Tienen el mismo número, pero pertenecen a
+bancos distintos.
+:::
+
+## Por qué aparece ahora
+
+Aunque no estudiaremos NEON todavía, GDB, objdump o documentación pueden mostrar
+registros `v0`-`v31`. Conviene reconocerlos para no confundirlos con registros
+generales.
+
+## Límite de esta unidad
+
+::: {.callout-note title="Solo mapa inicial"}
+No veremos lanes, saturación, vectores, intrinsics, NEON avanzado ni formato
+floating point. Esta página solo ubica el banco de registros.
+:::
+
+## Mini ejercicios
+
+1. Explica cuántos registros `Vn` existen.
+2. Explica qué tamaño máximo tiene `v0`.
+3. Di si `x0` y `d0` son el mismo registro.
+4. Ordena `b0`, `h0`, `s0`, `d0`, `q0` por tamaño.
+
+## Checklist
+
+- [ ] Sé que existen `V0`-`V31`.
+- [ ] Sé que son registros de hasta 128 bits.
+- [ ] Puedo distinguir `Vn` de `Xn`.
+- [ ] Puedo reconocer vistas `Bn`, `Hn`, `Sn`, `Dn`, `Qn`.
+- [ ] Sé que NEON y floating point quedan para después.
+
+Siguiente: [Exception levels](05-exception-levels.qmd).

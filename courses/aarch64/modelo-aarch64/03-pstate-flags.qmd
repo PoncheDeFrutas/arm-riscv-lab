@@ -1,0 +1,131 @@
+---
+title: "03.3 · PSTATE y flags NZCV"
+subtitle: "Los flags resumen resultados de operaciones y preparan saltos condicionales."
+description: "PSTATE, NZCV y primera relación entre comparación, flags y branches condicionales."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Modelo AArch64 > PSTATE y flags
+:::
+
+::: {.hero-lab}
+Además de registros generales, AArch64 mantiene estado de condición. Los flags
+permiten que una comparación deje señales para que una instrucción posterior
+decida si salta o no.
+:::
+
+## Qué es PSTATE
+
+`PSTATE` contiene estado del procesador visible a nivel arquitectónico. En esta
+unidad solo usaremos una parte pequeña: los flags `NZCV`.
+
+| Flag | Nombre | Pregunta que ayuda a responder |
+|---|---|---|
+| `N` | Negative | ¿Resultado con bit de signo encendido? |
+| `Z` | Zero | ¿Resultado fue cero? |
+| `C` | Carry | ¿Hubo carry o no borrow en aritmética unsigned? |
+| `V` | Overflow | ¿Hubo overflow en aritmética signed? |
+
+::: {.callout-note title="Idea clave"}
+Los flags no son registros generales. Son señales de estado que ciertas
+instrucciones actualizan y otras consultan.
+:::
+
+## Comparar y saltar
+
+`cmp` compara dos operandos actualizando flags. Un branch condicional puede usar
+esos flags.
+
+```asm
+cmp x0, x1
+b.eq iguales
+```
+
+Lectura mínima:
+
+| Instrucción | Qué hace |
+|---|---|
+| `cmp x0, x1` | Actualiza flags como si restara `x0 - x1` |
+| `b.eq iguales` | Salta si la comparación indicó igualdad |
+
+## Flag `Z`
+
+`Z` se activa cuando el resultado de una operación o comparación es cero.
+
+```asm
+mov x0, #5
+mov x1, #5
+cmp x0, x1
+b.eq iguales
+```
+
+Como `5 - 5` da `0`, la comparación activa condición de igualdad.
+
+## Flags `C` y `V`
+
+`C` y `V` vienen de la unidad anterior:
+
+| Flag | Relación principal |
+|---|---|
+| `C` | Carry / borrow en unsigned |
+| `V` | Overflow en signed |
+
+No memorices condiciones completas todavía. Solo separa la idea: unsigned mira
+carry; signed mira overflow.
+
+## Instrucciones que actualizan flags
+
+No todas las instrucciones cambian flags. En AArch64, algunas instrucciones
+tienen variantes o formas que actualizan flags.
+
+| Tipo | Idea |
+|---|---|
+| `cmp` | Actualiza flags para comparación |
+| `adds` | Suma y actualiza flags |
+| `subs` | Resta y actualiza flags |
+| `b.cond` | Consulta flags para decidir salto |
+
+```asm
+adds x2, x0, x1
+b.vs overflow_signed
+```
+
+Este ejemplo prepara una unidad futura de aritmética y saltos. Aquí no se
+desarrollan todas las condiciones.
+
+## Qué verá GDB
+
+GDB puede mostrar flags dentro de registros de estado como `cpsr` o mediante
+vista de registros.
+
+```bash
+info registers cpsr
+```
+
+La forma exacta de presentación puede variar por GDB y entorno. Lo importante es
+que el depurador permite observar el estado de condición.
+
+## Error común
+
+::: {.callout-warning title="Flags no duran como variables normales"}
+Una instrucción posterior puede cambiar flags. No pienses en `Z` o `C` como
+variables guardadas para siempre.
+:::
+
+## Mini ejercicios
+
+1. Explica qué representa `Z`.
+2. Explica por qué `cmp x0, x1` puede preparar `b.eq`.
+3. Indica qué flag se relaciona con overflow signed.
+4. Indica qué flag se relaciona con carry unsigned.
+5. Explica por qué no todas las instrucciones cambian flags.
+
+## Checklist
+
+- [ ] Puedo explicar qué es `PSTATE` como mapa inicial.
+- [ ] Puedo nombrar `N`, `Z`, `C` y `V`.
+- [ ] Puedo explicar `cmp` + `b.eq`.
+- [ ] Puedo distinguir `C` de `V`.
+- [ ] Sé que flags no son registros generales.
+
+Siguiente: [SIMD/Floating Point](04-simd-floating-registers.qmd).

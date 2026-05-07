@@ -176,7 +176,7 @@ AArch64 antes de entrar en programas más grandes.
 - [00 · Contexto, historia y objetivos](fundamentos/contexto-historia-objetivos.qmd)
 - [01 · Laboratorio ARM64 reproducible](laboratorio/index.qmd)
 - [02 · Bases binarias y representación de datos](bases-binarias/index.qmd)
-- Modelo ARMv8-A / AArch64
+- [03 · Modelo ARMv8-A / AArch64](modelo-aarch64/index.qmd)
 - GNU Assembly, directivas y pseudo-instrucciones
 - Primer programa mínimo
 :::
