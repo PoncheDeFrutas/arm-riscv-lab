@@ -1,0 +1,151 @@
+---
+title: "06.3 · Load/store básico"
+subtitle: "AArch64 calcula en registros y accede a memoria con instrucciones explícitas."
+description: "Introducción práctica a ldr, str y arquitectura load/store en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Load/store básico
+:::
+
+::: {.hero-lab}
+En AArch64 no sumas directamente un número guardado en memoria. Primero lo
+cargas a un registro. Después operas con registros. Si necesitas conservar el
+resultado, lo escribes de vuelta a memoria.
+:::
+
+## Arquitectura load/store
+
+```bash
+memoria -> load -> registro -> operación -> registro -> store -> memoria
+```
+
+| Acción | Instrucción típica | Resultado |
+|---|---|---|
+| Leer memoria | `ldr x1, [x0]` | `x1` recibe contenido desde la dirección en `x0` |
+| Escribir memoria | `str x1, [x0]` | memoria recibe el contenido de `x1` |
+| Calcular | `add x2, x1, #5` | la ALU trabaja con registros |
+
+## Cargar un valor de 64 bits
+
+```asm
+.data
+valor:
+    .quad 42
+
+.text
+.global _start
+_start:
+    ldr x0, =valor
+    ldr x1, [x0]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+`x0` contiene la dirección. `x1` contiene el valor de 64 bits leído desde esa
+dirección.
+
+## Escribir en memoria
+
+```asm
+.data
+contador:
+    .quad 0
+
+.text
+.global _start
+_start:
+    ldr x0, =contador
+    mov x1, #10
+    str x1, [x0]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Después de `str x1, [x0]`, los ocho bytes de `contador` representan `10` en
+little-endian.
+
+```bash
+Antes:
+contador:  00 00 00 00 00 00 00 00
+
+Después de str x1, [x0] con x1 = 10:
+contador:  0A 00 00 00 00 00 00 00
+```
+
+## Leer, modificar y guardar
+
+```asm
+.data
+contador:
+    .quad 5
+
+.text
+.global _start
+_start:
+    ldr x0, =contador
+    ldr x1, [x0]
+    add x1, x1, #1
+    str x1, [x0]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Este patrón aparece todo el curso:
+
+```bash
+1. cargar dirección
+2. cargar contenido
+3. modificar en registro
+4. guardar resultado
+```
+
+## `ldr x` y `ldr w`
+
+`xN` lee 64 bits. `wN` lee 32 bits hacia la mitad baja del registro `xN`.
+
+```asm
+ldr x1, [x0]    // lee 64 bits
+ldr w2, [x0]    // lee 32 bits y limpia la mitad alta de x2
+```
+
+Esto conecta con la Unidad 03: escribir en un registro `Wn` limpia los 32 bits
+altos de `Xn`.
+
+## Verificar construcción
+
+```bash
+$ aarch64-linux-gnu-as contador.s -o contador.o
+$ aarch64-linux-gnu-ld contador.o -o contador
+$ qemu-aarch64 ./contador
+$ echo $?
+0
+```
+
+El programa no imprime nada. Sirve para estudiar instrucciones y luego mirar
+registros o memoria con GDB.
+
+## Mini ejercicio
+
+Completa mentalmente:
+
+```asm
+ldr x0, =dato
+ldr x1, [x0]
+add x1, x1, #3
+str x1, [x0]
+```
+
+Si `dato` empieza con `.quad 7`, ¿qué valor queda guardado al final?
+
+## Cierre
+
+`ldr` y `str` son la puerta de entrada a memoria. Si tienes claro qué registro
+tiene la dirección y qué registro tiene el valor, la mitad de los errores de
+memoria desaparece.

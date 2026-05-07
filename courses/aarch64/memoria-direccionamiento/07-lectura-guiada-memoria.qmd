@@ -1,0 +1,170 @@
+---
+title: "06.7 · Lectura guiada de memoria"
+subtitle: "Un archivo completo para separar secciones, direcciones, contenido y modos de acceso."
+description: "Lectura guiada de un programa AArch64 con datos, loads, stores, arrays y syscalls."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Lectura guiada
+:::
+
+::: {.hero-lab}
+Esta página reúne las piezas de la unidad. El objetivo es leer un archivo `.s`
+como lo leerás en prácticas futuras: primero secciones y símbolos, luego
+direcciones, luego cargas, stores y recorrido de memoria.
+:::
+
+## Programa completo
+
+Guarda este archivo como `memoria.s`.
+
+```asm
+.section .rodata
+mensaje:
+    .ascii "Memoria lista\n"
+len = . - mensaje
+
+.data
+contador:
+    .quad 0
+
+array:
+    .quad 10, 20, 30
+
+.bss
+buffer:
+    .skip 16
+
+.text
+.global _start
+_start:
+    ldr x0, =contador
+    mov x1, #3
+    str x1, [x0]
+
+    ldr x2, =array
+    ldr x3, [x2], #8
+    ldr x4, [x2], #8
+    add x3, x3, x4
+    ldr x4, [x2], #8
+    add x3, x3, x4
+
+    ldr x5, =buffer
+    str x3, [x5]
+
+    mov x0, #1
+    ldr x1, =mensaje
+    mov x2, #len
+    mov x8, #64
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+## Construir y ejecutar
+
+```bash
+$ aarch64-linux-gnu-as memoria.s -o memoria.o
+$ aarch64-linux-gnu-ld memoria.o -o memoria
+$ qemu-aarch64 ./memoria
+Memoria lista
+$ echo $?
+0
+```
+
+En Raspberry Pi ARM64 nativa, usa `as`, `ld` y `./memoria`.
+
+## Primera lectura: secciones
+
+| Sección | Símbolo | Papel |
+|---|---|---|
+| `.rodata` | `mensaje`, `len` | bytes constantes para `write` |
+| `.data` | `contador`, `array` | datos modificables con valor inicial |
+| `.bss` | `buffer` | espacio reservado |
+| `.text` | `_start` | instrucciones que ejecuta el CPU |
+
+## Segunda lectura: dirección vs contenido
+
+```asm
+ldr x0, =contador
+mov x1, #3
+str x1, [x0]
+```
+
+`x0` recibe la dirección de `contador`. `x1` recibe el valor `3`. `str` guarda
+ese valor en la memoria apuntada por `x0`.
+
+```bash
+contador antes:   00 00 00 00 00 00 00 00
+contador después: 03 00 00 00 00 00 00 00
+```
+
+## Tercera lectura: recorrido de array
+
+```asm
+ldr x2, =array
+ldr x3, [x2], #8
+ldr x4, [x2], #8
+add x3, x3, x4
+ldr x4, [x2], #8
+add x3, x3, x4
+```
+
+`x2` empieza apuntando a `array[0]`. Cada `ldr ..., [x2], #8` lee un elemento y
+avanza al siguiente. `x3` queda con `10 + 20 + 30`.
+
+## Cuarta lectura: guardar resultado
+
+```asm
+ldr x5, =buffer
+str x3, [x5]
+```
+
+`buffer` está en `.bss`. Reservó espacio, y aquí se escribe el resultado de la
+suma en sus primeros 8 bytes.
+
+## Quinta lectura: syscall `write`
+
+```asm
+mov x0, #1
+ldr x1, =mensaje
+mov x2, #len
+mov x8, #64
+svc #0
+```
+
+Esta parte viene de Unidad 05:
+
+| Registro | Significado |
+|---|---|
+| `x0` | file descriptor `1`, stdout |
+| `x1` | dirección del mensaje |
+| `x2` | cantidad de bytes |
+| `x8` | syscall `write`, número `64` |
+
+## Mirar bytes del binario
+
+```bash
+$ objdump -s -j .data memoria
+$ objdump -s -j .rodata memoria
+```
+
+`objdump` muestra bytes por sección. Usa esto para comprobar que `.data` tiene
+datos iniciales y `.rodata` contiene el mensaje.
+
+## Preguntas de cierre
+
+- ¿Qué registros contienen direcciones?
+- ¿Qué instrucciones usan corchetes?
+- ¿Dónde se escribe el valor `3`?
+- ¿Qué instrucción avanza el puntero del array?
+- ¿Por qué `buffer` no necesita listar 16 bytes en el archivo?
+- ¿Qué parte imprime y qué parte solo modifica memoria?
+
+## Cierre
+
+Esta unidad prepara el terreno para arrays con loops, strings, stack frames y
+debugging. La base no cambia: identifica dirección, tamaño, contenido y modo de
+direccionamiento antes de interpretar un acceso a memoria.

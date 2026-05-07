@@ -1,0 +1,189 @@
+---
+title: "06.6 · Arrays y recorrido de memoria"
+subtitle: "Acceder a elementos con base, índice y tamaño."
+description: "Arrays simples, punteros, offsets escalados y recorrido lineal en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Arrays y recorrido
+:::
+
+::: {.hero-lab}
+Un array es memoria consecutiva. La dirección del elemento depende del inicio
+del array, el índice y el tamaño de cada elemento. Esta lección arma esa fórmula
+con instrucciones AArch64.
+:::
+
+## Fórmula mental
+
+```bash
+dirección de array[i] = base + i * tamaño
+```
+
+| Elemento | Tamaño | Dirección relativa |
+|---|---:|---|
+| `array[0]` | 8 bytes | `base + 0` |
+| `array[1]` | 8 bytes | `base + 8` |
+| `array[2]` | 8 bytes | `base + 16` |
+| `array[3]` | 8 bytes | `base + 24` |
+
+## Array de 64 bits
+
+```asm
+.data
+array:
+    .quad 10, 20, 30, 40
+
+.text
+.global _start
+_start:
+    ldr x0, =array
+
+    ldr x1, [x0]        // array[0]
+    ldr x2, [x0, #8]    // array[1]
+    ldr x3, [x0, #16]   // array[2]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Para pocos elementos, un offset inmediato es suficiente.
+
+## Índice en registro
+
+Cuando el índice cambia, conviene usar offset escalado.
+
+```asm
+.data
+array:
+    .quad 10, 20, 30, 40
+
+.text
+.global _start
+_start:
+    ldr x0, =array
+    mov x1, #2
+    ldr x2, [x0, x1, lsl #3]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+`lsl #3` convierte índice a bytes: `2 * 8 = 16`.
+
+## Array de 32 bits
+
+```asm
+.data
+array32:
+    .word 100, 200, 300, 400
+
+.text
+.global _start
+_start:
+    ldr x0, =array32
+    mov x1, #2
+    ldr w2, [x0, x1, lsl #2]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Aquí la escala es `lsl #2` porque cada `.word` ocupa 4 bytes.
+
+## Recorrido con post-index
+
+Post-index sirve cuando quieres avanzar elemento por elemento.
+
+```asm
+.data
+array:
+    .quad 1, 2, 3
+
+.text
+.global _start
+_start:
+    ldr x0, =array
+
+    ldr x1, [x0], #8
+    ldr x2, [x0], #8
+    ldr x3, [x0], #8
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Visualmente:
+
+```bash
+Inicio:      x0 -> array[0]
+Después 1:  x0 -> array[1]
+Después 2:  x0 -> array[2]
+Después 3:  x0 -> después del array
+```
+
+## Recorrido con acumulación pequeña
+
+Todavía no hemos estudiado loops de forma completa, pero ya puedes ver el
+patrón:
+
+```asm
+.data
+array:
+    .quad 1, 2, 3
+
+.text
+.global _start
+_start:
+    ldr x0, =array
+
+    ldr x1, [x0], #8
+    ldr x2, [x0], #8
+    add x1, x1, x2
+    ldr x2, [x0], #8
+    add x1, x1, x2
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+`x1` termina con la suma `1 + 2 + 3`. Más adelante este mismo patrón se
+convertirá en un loop.
+
+## Puntero a elemento
+
+Un puntero puede apuntar al inicio del array o a cualquier elemento interno.
+
+```asm
+ldr x0, =array
+add x4, x0, #16     // x4 apunta a array[2] si cada elemento ocupa 8 bytes
+ldr x5, [x4]        // x5 = array[2]
+```
+
+El puntero sigue siendo un número. Lo importante es saber a qué zona apunta y
+qué tamaño de dato esperas leer.
+
+## Mini ejercicio
+
+Para este array:
+
+```asm
+nums:
+    .word 5, 6, 7, 8
+```
+
+Responde:
+
+- ¿Qué escala usa el índice?
+- ¿Qué instrucción leería `nums[3]` en `w2`?
+- ¿Cuántos bytes hay entre `nums[0]` y `nums[3]`?
+
+## Cierre
+
+Arrays no son tema aparte de memoria. Son memoria consecutiva con una regla de
+offset. Si sabes calcular `base + índice * tamaño`, puedes leerlos.

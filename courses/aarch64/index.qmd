@@ -179,6 +179,7 @@ AArch64 antes de entrar en programas más grandes.
 - [03 · Modelo ARMv8-A / AArch64](modelo-aarch64/index.qmd)
 - [04 · GNU Assembly, directivas y pseudo-instrucciones](gnu-assembly/index.qmd)
 - [05 · Primeros programas en Linux AArch64](primeros-programas/index.qmd)
+- [06 · Memoria básica, secciones y direccionamiento](memoria-direccionamiento/index.qmd)
 :::
 
 ## Siguiente paso

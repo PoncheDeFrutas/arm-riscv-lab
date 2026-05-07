@@ -146,6 +146,24 @@ website:
                   href: courses/aarch64/primeros-programas/04-start-main-libc.qmd
                 - text: "Lectura guiada de syscalls"
                   href: courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.qmd
+            - section: "06 · Memoria y direccionamiento"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/memoria-direccionamiento/index.qmd
+                - text: "Dirección y contenido"
+                  href: courses/aarch64/memoria-direccionamiento/01-memoria-direccion-contenido.qmd
+                - text: "Secciones y mapa inicial"
+                  href: courses/aarch64/memoria-direccionamiento/02-secciones-mapa-memoria.qmd
+                - text: "Load/store básico"
+                  href: courses/aarch64/memoria-direccionamiento/03-load-store-basico.qmd
+                - text: "Tamaños de acceso"
+                  href: courses/aarch64/memoria-direccionamiento/04-tamanos-acceso.qmd
+                - text: "Modos de direccionamiento"
+                  href: courses/aarch64/memoria-direccionamiento/05-modos-direccionamiento.qmd
+                - text: "Arrays y recorrido"
+                  href: courses/aarch64/memoria-direccionamiento/06-arrays-recorrido-memoria.qmd
+                - text: "Lectura guiada de memoria"
+                  href: courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

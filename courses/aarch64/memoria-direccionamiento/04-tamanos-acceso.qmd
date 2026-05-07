@@ -1,0 +1,155 @@
+---
+title: "06.4 · Tamaños de acceso"
+subtitle: "No siempre lees ocho bytes: AArch64 permite acceder a bytes, halfwords, words y doublewords."
+description: "Lecturas y escrituras por tamaño, ldrb, ldrh, ldrsw, strb, strh y alineación práctica."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Tamaños de acceso
+:::
+
+::: {.hero-lab}
+La memoria guarda bytes. La instrucción decide cuántos bytes leer o escribir.
+Esta lección conecta tamaños de la Unidad 02 con instrucciones reales de carga y
+almacenamiento.
+:::
+
+## Tamaños frecuentes
+
+| Tamaño | Bytes | Carga | Store | Registro destino típico |
+|---|---:|---|---|---|
+| Byte | 1 | `ldrb` | `strb` | `wN` |
+| Halfword | 2 | `ldrh` | `strh` | `wN` |
+| Word | 4 | `ldr wN` | `str wN` | `wN` |
+| Doubleword | 8 | `ldr xN` | `str xN` | `xN` |
+
+## Leer la misma memoria con tamaños distintos
+
+```asm
+.data
+bytes:
+    .byte 0x11, 0x22, 0x33, 0x44
+
+.text
+.global _start
+_start:
+    ldr x0, =bytes
+    ldrb w1, [x0]    // w1 = 0x00000011
+    ldrh w2, [x0]    // w2 = 0x00002211 en little-endian
+    ldr  w3, [x0]    // w3 = 0x44332211
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Mismos bytes, tres lecturas distintas.
+
+```bash
+Bytes en memoria:
+11 22 33 44
+
+ldrb desde el primer byte: 11
+ldrh desde el primer byte: 22 11
+ldr w desde el primer byte: 44 33 22 11
+```
+
+La última línea se escribe como número little-endian: `0x44332211`.
+
+## Escribir menos de 64 bits
+
+```asm
+.data
+zona:
+    .byte 0xAA, 0xAA, 0xAA, 0xAA
+
+.text
+.global _start
+_start:
+    ldr x0, =zona
+    mov w1, #0x55
+    strb w1, [x0]      // cambia solo el primer byte
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Después de `strb`, la zona queda así:
+
+```bash
+55 AA AA AA
+```
+
+`strb` no escribe una palabra completa. Escribe un byte.
+
+## `ldrsw`: cargar 32 bits con signo hacia 64 bits
+
+`ldr wN, [xM]` carga 32 bits y limpia la mitad alta. `ldrsw xN, [xM]` carga 32
+bits, interpreta bit de signo y extiende hacia 64 bits.
+
+```asm
+.data
+negativo:
+    .word 0xFFFFFFFF
+
+.text
+.global _start
+_start:
+    ldr x0, =negativo
+    ldr   w1, [x0]     // x1 = 0x00000000FFFFFFFF
+    ldrsw x2, [x0]     // x2 = 0xFFFFFFFFFFFFFFFF
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+La diferencia no está en los bytes guardados. Está en cómo se extiende el valor
+al registro de 64 bits.
+
+## Alineación práctica
+
+La alineación no cambia el significado lógico de un dato, pero sí ayuda a que
+la memoria sea más natural para el procesador y para quien lee el código.
+
+```bash
+Dato de 4 bytes: mejor si empieza en dirección múltiplo de 4
+Dato de 8 bytes: mejor si empieza en dirección múltiplo de 8
+```
+
+Para esta unidad basta con respetar datos ordenados y usar `.balign` cuando el
+archivo mezcle bytes y palabras.
+
+```asm
+.data
+marca:
+    .byte 1
+
+    .balign 8
+valor64:
+    .quad 0x1122334455667788
+```
+
+No entraremos todavía en penalizaciones, excepciones, ABI ni layout avanzado.
+
+## Mini ejercicio
+
+Con estos bytes:
+
+```asm
+datos:
+    .byte 0xFF, 0x00, 0x00, 0x00
+```
+
+Responde:
+
+- ¿Qué lee `ldrb w1, [x0]`?
+- ¿Qué lee `ldr w2, [x0]` en little-endian?
+- ¿Por qué no significan lo mismo aunque empiezan en la misma dirección?
+
+## Cierre
+
+No existe "leer una variable" como idea única. Existen instrucciones que leen
+1, 2, 4 u 8 bytes desde una dirección. Elegir tamaño correcto es parte del
+programa.

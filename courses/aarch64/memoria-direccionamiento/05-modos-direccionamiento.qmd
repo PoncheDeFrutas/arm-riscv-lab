@@ -1,0 +1,187 @@
+---
+title: "06.5 · Modos de direccionamiento"
+subtitle: "Cómo AArch64 calcula la dirección efectiva de un acceso a memoria."
+description: "Base, offset inmediato, offset en registro, offset escalado, pre-index y post-index en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Modos de direccionamiento
+:::
+
+::: {.hero-lab}
+Un acceso a memoria no siempre usa solo `[x0]`. Muchas veces necesitas sumar un
+offset, usar un índice o avanzar el puntero después de leer. Los modos de
+direccionamiento dicen cómo se calcula la dirección final.
+:::
+
+## Dirección efectiva
+
+```bash
+dirección efectiva = base + offset
+```
+
+El registro base suele contener el inicio de un dato, array o zona de memoria.
+El offset indica cuántos bytes moverse desde esa base.
+
+## Formas principales
+
+| Forma | Lectura práctica |
+|---|---|
+| `[x0]` | Usa la dirección guardada en `x0` |
+| `[x0, #8]` | Usa `x0 + 8` |
+| `[x0, x1]` | Usa `x0 + x1` |
+| `[x0, x1, lsl #3]` | Usa `x0 + x1 * 8` |
+| `[x0, #8]!` | Suma 8 a `x0` y usa el nuevo valor |
+| `[x0], #8` | Usa `x0` y luego suma 8 |
+
+## Base sin offset
+
+```asm
+ldr x1, [x0]
+```
+
+`x0` ya debe tener una dirección válida. La CPU lee desde esa dirección.
+
+## Offset inmediato
+
+```asm
+.data
+par:
+    .quad 10
+    .quad 20
+
+.text
+.global _start
+_start:
+    ldr x0, =par
+    ldr x1, [x0]       // primer valor: 10
+    ldr x2, [x0, #8]   // segundo valor: 20
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Cada `.quad` ocupa 8 bytes. Por eso el segundo valor está en `base + 8`.
+
+## Offset en registro
+
+```asm
+ldr x2, [x0, x1]
+```
+
+Aquí `x1` contiene un desplazamiento en bytes. Si `x1 = 16`, la carga lee desde
+`x0 + 16`.
+
+Esto sirve cuando el offset se calcula durante la ejecución.
+
+## Offset escalado
+
+```asm
+.data
+array:
+    .quad 10, 20, 30, 40
+
+.text
+.global _start
+_start:
+    ldr x0, =array
+    mov x1, #2
+    ldr x2, [x0, x1, lsl #3]    // array[2]
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+`x1` es índice, no bytes. `lsl #3` multiplica por 8 porque cada elemento ocupa
+8 bytes.
+
+| Tipo de elemento | Tamaño | Escala común |
+|---|---:|---|
+| `.byte` | 1 | sin escala |
+| `.word` | 4 | `lsl #2` |
+| `.quad` | 8 | `lsl #3` |
+
+## Pre-index
+
+```asm
+ldr x1, [x0, #8]!
+```
+
+Primero actualiza `x0 = x0 + 8`. Luego lee desde el nuevo `x0`.
+
+Útil cuando quieres avanzar un puntero antes del acceso.
+
+## Post-index
+
+```asm
+ldr x1, [x0], #8
+```
+
+Primero lee desde el `x0` actual. Después actualiza `x0 = x0 + 8`.
+
+Este patrón es cómodo para recorrer memoria linealmente.
+
+```asm
+.data
+array:
+    .quad 1, 2, 3
+
+.text
+.global _start
+_start:
+    ldr x0, =array
+    ldr x1, [x0], #8
+    ldr x2, [x0], #8
+    ldr x3, [x0], #8
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Después de cada lectura, `x0` queda apuntando al siguiente elemento.
+
+## `ldp` y `stp`
+
+`ldp` carga un par de registros. `stp` guarda un par de registros. Son comunes
+cuando dos valores consecutivos están juntos en memoria.
+
+```asm
+.data
+pares:
+    .quad 11, 22
+
+.text
+.global _start
+_start:
+    ldr x0, =pares
+    ldp x1, x2, [x0]    // x1 = 11, x2 = 22
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Más adelante `stp` y `ldp` aparecerán mucho con stack frames. Por ahora basta
+con leerlos como acceso a dos registros consecutivos.
+
+## Mini ejercicio
+
+Si `array` contiene `.quad 10, 20, 30, 40`:
+
+```asm
+ldr x0, =array
+mov x1, #3
+ldr x2, [x0, x1, lsl #3]
+```
+
+- ¿Qué elemento lee?
+- ¿Cuántos bytes suma a la base?
+- ¿Qué escala usarías si el array fuera de `.word`?
+
+## Cierre
+
+Los modos de direccionamiento evitan calcular todo a mano con `add`. Aun así,
+la idea sigue igual: base, offset, tamaño de elemento y dirección final.

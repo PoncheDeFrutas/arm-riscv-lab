@@ -52,8 +52,8 @@ seguridad, virtualización y proyectos.
 <details class="roadmap-accordion">
 <summary>Bloque B — Programación ARM64 userland en Linux</summary>
 <div class="unit-list">
-<div class="unit-card"><strong>5. Primeros programas en Linux AArch64</strong><p>_start, exit, write, hello world sin libc, ensamblado, linking y svc #0.</p></div>
-<div class="unit-card"><strong>6. Memoria básica, secciones y direccionamiento</strong><p>Load/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.</p></div>
+<div class="unit-card"><strong><a href="primeros-programas/index.qmd">5. Primeros programas en Linux AArch64</a></strong><p>_start, exit, write, hello world sin libc, ensamblado, linking y svc #0.</p></div>
+<div class="unit-card"><strong><a href="memoria-direccionamiento/index.qmd">6. Memoria básica, secciones y direccionamiento</a></strong><p>Load/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.</p></div>
 <div class="unit-card"><strong>7. Aritmética, lógica, flags y bits</strong><p>Operaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.</p></div>
 <div class="unit-card"><strong>8. Control de flujo y programación estructurada</strong><p>Branches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.</p></div>
 <div class="unit-card"><strong>9. Syscalls esenciales</strong><p>Contrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.</p></div>

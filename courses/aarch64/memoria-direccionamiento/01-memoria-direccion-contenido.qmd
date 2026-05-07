@@ -1,0 +1,140 @@
+---
+title: "06.1 · Dirección y contenido"
+subtitle: "La primera regla de memoria: una dirección dice dónde mirar; el contenido dice qué bytes hay allí."
+description: "Memoria como arreglo de bytes, direcciones, contenido y punteros iniciales en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Dirección y contenido
+:::
+
+::: {.hero-lab}
+Cuando depuras un programa, casi siempre estás leyendo números. Un registro
+puede contener un valor normal, una dirección o un resultado temporal. La CPU no
+adivina el significado: la instrucción y el programador le dan sentido.
+:::
+
+## Memoria como arreglo de bytes
+
+Piensa la memoria como una fila larga de casillas. Cada casilla tiene una
+dirección y guarda un byte.
+
+```bash
+Dirección:   0x400120  0x400121  0x400122  0x400123
+Contenido:      2A        00        00        00
+```
+
+Los cuatro bytes pueden representar el entero `42` si los lees como un `word`
+little-endian de 32 bits. También podrían ser bytes sueltos. La memoria guarda
+bytes; la interpretación viene después.
+
+## Dirección, contenido y valor
+
+| Palabra | Qué significa | Ejemplo |
+|---|---|---|
+| Dirección | Número que indica una posición de memoria | `0x400120` |
+| Contenido | Bytes guardados desde esa posición | `2A 00 00 00` |
+| Valor | Interpretación de esos bytes | `42` como entero de 32 bits |
+
+::: {.callout-warning title="Error común"}
+`valor` como etiqueta no es el número `42`. La etiqueta nombra una dirección.
+Para leer el `42`, primero necesitas una dirección válida y luego una carga
+desde memoria.
+:::
+
+## Cargar dirección vs cargar contenido
+
+```asm
+.data
+valor:
+    .quad 42
+
+.text
+.global _start
+_start:
+    ldr x0, =valor    // x0 = dirección donde empieza valor
+    ldr x1, [x0]      // x1 = contenido de 64 bits guardado allí
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+La primera carga prepara un puntero. La segunda usa ese puntero para entrar a
+memoria.
+
+| Línea | Qué queda en el registro |
+|---|---|
+| `ldr x0, =valor` | Una dirección, por ejemplo `0x410158` |
+| `ldr x1, [x0]` | El contenido leído desde esa dirección: `42` |
+
+## Corchetes significan "leer desde memoria"
+
+En AArch64, los corchetes marcan un acceso a memoria.
+
+```asm
+ldr x0, =valor    // carga dirección de valor
+ldr x1, [x0]      // carga contenido apuntado por x0
+```
+
+Sin corchetes, estás moviendo o calculando valores entre registros y símbolos.
+Con corchetes, estás usando el registro como dirección.
+
+## Puntero inicial
+
+Un puntero es un valor que representa una dirección. En assembly no aparece como
+tipo especial; aparece como un número dentro de un registro.
+
+```bash
+x0 = 0x410158
+
+0x410158:  2A 00 00 00 00 00 00 00
+```
+
+Si haces `ldr x1, [x0]`, `x0` se interpreta como dirección y `x1` recibe los
+ocho bytes guardados allí.
+
+## PC-relative como forma de ubicar datos
+
+Muchas veces el assembler ayuda a obtener direcciones cercanas al código.
+
+```asm
+adr x0, valor       // x0 = dirección de valor si está cerca
+ldr x1, =valor      // pseudo-instrucción: el assembler elige cómo materializar la dirección
+```
+
+No necesitas dominar todavía relocations ni literal pools. Quédate con esta
+regla: estas formas ayudan a poner una dirección en un registro; no cargan el
+contenido final por sí solas.
+
+## Prueba mínima
+
+Guarda el ejemplo como `direccion.s` y ejecútalo con el flujo de la Unidad 05.
+
+```bash
+$ aarch64-linux-gnu-as direccion.s -o direccion.o
+$ aarch64-linux-gnu-ld direccion.o -o direccion
+$ qemu-aarch64 ./direccion
+$ echo $?
+0
+```
+
+## Mini ejercicio
+
+Mira estas dos instrucciones:
+
+```asm
+ldr x2, =contador
+ldr x3, [x2]
+```
+
+Responde:
+
+- ¿Cuál registro contiene una dirección?
+- ¿Cuál registro contiene el valor leído?
+- ¿Qué pasaría si `x2` no tuviera una dirección válida?
+
+## Cierre
+
+Esta lección deja la base para todo lo que sigue: primero consigues una
+dirección, luego eliges cuántos bytes leer o escribir desde esa dirección.

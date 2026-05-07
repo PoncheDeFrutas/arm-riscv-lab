@@ -1,0 +1,161 @@
+---
+title: "06.2 · Secciones y mapa inicial de memoria"
+subtitle: "Dónde viven código, datos constantes, datos modificables y espacio reservado."
+description: "Mapa conceptual de secciones, stack y heap para programas AArch64 en Linux."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria > Secciones y mapa inicial
+:::
+
+::: {.hero-lab}
+Un archivo `.s` no coloca todo en el mismo lugar. Las secciones ayudan a separar
+código, datos de solo lectura, datos modificables y espacio reservado. En esta
+unidad no estudiaremos ELF en detalle; usaremos las secciones como mapa mental.
+:::
+
+## Mapa simple
+
+```bash
+Direcciones bajas
+
+.text     código ejecutable
+.rodata   datos constantes
+.data     datos inicializados y modificables
+.bss      espacio reservado, normalmente iniciado en cero
+heap      memoria dinámica futura
+...
+stack     zona usada por llamadas, variables temporales y contexto
+
+Direcciones altas
+```
+
+El orden exacto puede cambiar según sistema, linker y opciones. Para esta etapa
+importa entender qué clase de contenido va en cada región.
+
+## Secciones principales
+
+| Sección | Uso | Ejemplo |
+|---|---|---|
+| `.text` | Instrucciones que ejecuta el CPU | `_start: mov x0, #0` |
+| `.rodata` | Bytes constantes, mensajes, tablas de solo lectura | `.ascii "Hola\n"` |
+| `.data` | Datos con valor inicial que puedes modificar | `.quad 42` |
+| `.bss` | Espacio reservado sin escribir todos los bytes en el archivo | `.skip 64` |
+
+::: {.callout-note title="Lectura práctica"}
+Cuando veas una etiqueta, pregunta en qué sección está. Una etiqueta en `.text`
+suele nombrar código. Una etiqueta en `.data` o `.rodata` suele nombrar datos.
+:::
+
+## Ejemplo con secciones
+
+```asm
+.section .rodata
+mensaje:
+    .ascii "Memoria AArch64\n"
+len = . - mensaje
+
+.data
+contador:
+    .quad 10
+
+.bss
+buffer:
+    .skip 64
+
+.text
+.global _start
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+`mensaje`, `contador` y `buffer` son símbolos. Cada uno nombra una dirección.
+La sección donde están te dice cómo esperas usarlos.
+
+## `.bss` no es lo mismo que `.data`
+
+`.data` guarda bytes iniciales en el programa. `.bss` reserva tamaño, pero no
+necesita listar todos los bytes en el archivo. Para un buffer grande, eso evita
+llenar el binario con ceros escritos a mano.
+
+```asm
+.data
+valor_inicial:
+    .quad 99
+
+.bss
+buffer:
+    .skip 128
+```
+
+En Linux, el espacio de `.bss` aparece listo para el proceso al iniciar. Para el
+estudiante, la regla útil es: `.bss` sirve para espacio reservado que todavía no
+tiene datos escritos por tu programa.
+
+## Stack inicial
+
+El stack ya existe cuando tu programa entra en `_start`. AArch64 usa `sp` para
+apuntar a esa región. Aquí solo debes reconocerlo como zona de memoria especial.
+
+```asm
+mov x0, sp      // x0 recibe la dirección actual del stack
+```
+
+No vamos a construir stack frames todavía. Eso viene cuando aparezcan funciones,
+llamadas y ABI.
+
+## Heap inicial
+
+El heap es la región asociada a memoria dinámica. En programas C suele aparecer
+con `malloc`, pero aquí no vamos a usar `malloc` ni `libc`. También existe
+`mmap`, pero queda para una unidad posterior.
+
+En esta etapa basta con saber que:
+
+- `.data` y `.bss` son datos del programa.
+- `stack` existe desde el inicio y usa `sp`.
+- `heap` será memoria dinámica más adelante.
+
+## Mirar secciones con herramientas
+
+Si guardas el ejemplo como `secciones.s`, puedes ver sus secciones:
+
+```bash
+$ aarch64-linux-gnu-as secciones.s -o secciones.o
+$ aarch64-linux-gnu-ld secciones.o -o secciones
+$ readelf -S secciones
+$ objdump -s -j .data secciones
+```
+
+`readelf` muestra la lista de secciones. `objdump -s` permite mirar bytes de
+una sección concreta.
+
+## Mini ejercicio
+
+Clasifica cada símbolo:
+
+```asm
+.rodata
+titulo:
+    .ascii "Lab\n"
+
+.data
+estado:
+    .word 1
+
+.bss
+temp:
+    .skip 32
+```
+
+- ¿Cuál símbolo apunta a texto constante?
+- ¿Cuál apunta a dato inicializado?
+- ¿Cuál apunta a espacio reservado?
+
+## Cierre
+
+Las secciones no son decoración del archivo `.s`. Son el primer mapa para saber
+qué direcciones apuntan a código, qué direcciones apuntan a datos y qué zonas se
+pueden modificar durante la ejecución.

@@ -1,0 +1,177 @@
+---
+title: "06 · Memoria básica, secciones y direccionamiento"
+subtitle: "Carga direcciones, lee contenido, escribe bytes y recorre memoria con instrucciones load/store."
+description: "Página principal de la Unidad 06 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Memoria básica, secciones y direccionamiento
+:::
+
+::: {.hero-lab}
+Esta unidad trabaja una idea central: en AArch64 el procesador opera con
+registros, y la memoria se toca de forma explícita con instrucciones de carga y
+almacenamiento. Antes de escribir algoritmos, arrays grandes, strings o stack
+frames, necesitas dominar la diferencia entre dirección, contenido y valor.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Ubica**
+Memoria como arreglo de bytes.
+:::
+
+::: {.lab-step}
+**2. Distingue**
+Dirección, contenido y valor interpretado.
+:::
+
+::: {.lab-step}
+**3. Carga**
+`ldr`, `ldrb`, `ldrh` y `ldrsw`.
+:::
+
+::: {.lab-step}
+**4. Escribe**
+`str`, `strb`, `strh`, `stp`.
+:::
+
+::: {.lab-step}
+**5. Recorre**
+Offsets, índices, pre-index y post-index.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 02: bytes, endianness y punteros | Leer memoria como bytes y no como "variables mágicas" |
+| Unidad 04: secciones y símbolos | Ubicar datos en `.rodata`, `.data` y `.bss` |
+| Unidad 05: `_start` y syscalls | Cerrar programas con `exit` mientras pruebas memoria |
+
+## Idea de trabajo
+
+```bash
+dirección -> memoria -> bytes -> interpretación
+```
+
+Una dirección es un número. El contenido son bytes guardados en esa dirección.
+El valor depende de la instrucción usada y del tamaño de lectura.
+
+| Pregunta | Ejemplo |
+|---|---|
+| ¿Dónde está? | `ldr x0, =valor` carga una dirección |
+| ¿Qué hay ahí? | `ldr x1, [x0]` carga contenido desde esa dirección |
+| ¿Cuánto leo? | `ldrb`, `ldrh`, `ldr w`, `ldr x` leen tamaños distintos |
+| ¿Avanzo? | `[x0], #8` lee y luego actualiza el puntero |
+
+::: {.callout-note title="Idea clave"}
+AArch64 es una arquitectura load/store. La ALU trabaja con registros. Si un
+valor está en memoria, primero lo cargas a un registro. Si quieres guardar un
+resultado, lo escribes de vuelta con `str` o una variante.
+:::
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Dirección y contenido
+
+Memoria como bytes, punteros y diferencia entre cargar una dirección y cargar
+lo apuntado.
+
+[Abrir](01-memoria-direccion-contenido.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Secciones y mapa inicial
+
+`.text`, `.rodata`, `.data`, `.bss`, stack y heap como mapa de lectura.
+
+[Abrir](02-secciones-mapa-memoria.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Load/store básico
+
+`ldr`, `str`, registros, memoria y escritura simple.
+
+[Abrir](03-load-store-basico.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Tamaños de acceso
+
+Bytes, halfwords, words, doublewords, `ldrb`, `ldrh`, `ldrsw` y alineación.
+
+[Abrir](04-tamanos-acceso.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Modos de direccionamiento
+
+`[x0]`, offsets inmediatos, offsets en registro, escala, pre-index y
+post-index.
+
+[Abrir](05-modos-direccionamiento.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Arrays y recorrido
+
+Acceso a elementos, punteros, offsets escalados y recorrido lineal.
+
+[Abrir](06-arrays-recorrido-memoria.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lectura guiada
+
+Un archivo completo para identificar secciones, símbolos, direcciones,
+cargas, stores y recorrido.
+
+[Abrir](07-lectura-guiada-memoria.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| Stack frames completos | Primero veremos `sp` como región y no como convenio de funciones |
+| ABI/AAPCS64 | Todavía no llamaremos funciones externas |
+| Heap real, `malloc` o `mmap` | Aquí basta el mapa conceptual de regiones |
+| ELF profundo | Usamos secciones sin estudiar headers, loader ni linker scripts |
+| Estructuras complejas | Primero arrays simples y bytes |
+| Cachés, barreras y atomics | Son temas posteriores de rendimiento y concurrencia |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+slides/aarch64/memoria-direccionamiento/overview/slides.md
+```
+
+Esa presentación debe practicar lectura visual de memoria; no debe reemplazar
+estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar memoria como secuencia de bytes.
+- [ ] Puedo distinguir dirección, contenido y valor.
+- [ ] Puedo cargar una dirección con `ldr =symbol`.
+- [ ] Puedo cargar contenido con `ldr xN, [xM]`.
+- [ ] Puedo escribir memoria con `str`.
+- [ ] Puedo elegir entre `ldrb`, `ldrh`, `ldr` y `ldrsw`.
+- [ ] Puedo calcular offsets para arrays de 4 y 8 bytes.
+- [ ] Puedo reconocer pre-index y post-index.
+- [ ] Puedo leer un archivo `.s` que define datos y los usa desde `.text`.
+
+## Siguiente paso
+
+Empieza por [Dirección y contenido](01-memoria-direccion-contenido.qmd).
