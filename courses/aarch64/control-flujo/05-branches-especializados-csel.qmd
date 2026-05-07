@@ -1,0 +1,188 @@
+---
+title: "08.5 · Branches especializados y conditional select"
+subtitle: "Comparar con cero, probar bits y elegir valores sin rama pequeña."
+description: "cbz, cbnz, tbz, tbnz, csel, cinc, cset, cneg, csinc, csinv y csneg en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo > Branches especializados y select
+:::
+
+::: {.hero-lab}
+No toda decisión necesita `cmp` + `b.cond`. AArch64 tiene instrucciones para
+casos frecuentes: saltar si un registro es cero, saltar según un bit o elegir
+entre dos valores sin abrir dos caminos largos.
+:::
+
+## `cbz` y `cbnz`
+
+`cbz` compara un registro contra cero y salta si es cero.
+
+```asm
+cbz x0, es_cero
+```
+
+`cbnz` salta si el registro no es cero.
+
+```asm
+cbnz x1, no_es_cero
+```
+
+Equivalencia mental de `cbz`:
+
+```asm
+cmp x0, #0
+b.eq es_cero
+```
+
+`cbz` es más directo cuando solo te importa cero/no cero.
+
+::: {.callout-warning title="Error común"}
+No uses `cbz` si necesitas comparar dos registros, por ejemplo `x0 < x1`. Para
+eso usa `cmp` y una rama condicional.
+:::
+
+## `tbz` y `tbnz`
+
+`tbz` prueba un bit concreto y salta si ese bit es cero.
+
+```asm
+tbz x0, #3, bit_3_es_cero
+```
+
+`tbnz` salta si ese bit es uno.
+
+```asm
+tbnz x0, #3, bit_3_es_uno
+```
+
+Lectura:
+
+```bash
+registro = x0
+bit probado = 3
+destino = etiqueta
+```
+
+Esto conecta con Unidad 07: `tbz/tbnz` son ramas para pruebas de bits, no para
+probar valores completos.
+
+## Ejemplo con bit de estado
+
+```asm
+mov x0, #0b1000
+tbnz x0, #3, activo
+
+inactivo:
+    mov x1, #0
+    b fin
+
+activo:
+    mov x1, #1
+
+fin:
+```
+
+Como el bit 3 está encendido, el flujo salta a `activo`.
+
+## Conditional select con `csel`
+
+`csel` elige entre dos registros según una condición.
+
+```asm
+cmp x0, x1
+csel x2, x0, x1, gt
+```
+
+Lectura:
+
+```bash
+si x0 > x1 signed, x2 = x0
+si no, x2 = x1
+```
+
+Esto sirve para decisiones pequeñas, como elegir un valor, sin abrir bloques
+`if/else`.
+
+## Variantes útiles
+
+| Instrucción | Lectura práctica |
+|---|---|
+| `csel` | elige entre dos registros |
+| `cinc` | elige registro o registro + 1 |
+| `cset` | escribe `1` si condición se cumple, si no `0` |
+| `cneg` | elige registro o su negación |
+| `csinc` | base de `cinc`, select + increment |
+| `csinv` | select + invert |
+| `csneg` | select + negate |
+
+## `cset`: convertir condición en 0 o 1
+
+```asm
+cmp x0, x1
+cset x2, eq
+```
+
+Lectura:
+
+```bash
+si x0 == x1, x2 = 1
+si no, x2 = 0
+```
+
+`cset` es útil cuando quieres guardar el resultado de una condición como valor.
+
+## `cinc` y `cneg`
+
+```asm
+cmp x0, #0
+cinc x1, x1, eq
+```
+
+Si condición se cumple, incrementa. Si no, deja el valor base según la semántica
+del alias.
+
+```asm
+cmp x0, #0
+cneg x1, x0, mi
+```
+
+Si `x0` es negativo signed, guarda su negación; si no, conserva `x0`. Es un
+patrón útil para valor absoluto simple, aunque aquí no entraremos a todos los
+casos límite.
+
+## Cuándo usar branch y cuándo `csel`
+
+| Caso | Mejor herramienta |
+|---|---|
+| Dos bloques grandes | branch condicional |
+| Elegir entre dos valores | `csel` |
+| Convertir condición a 0/1 | `cset` |
+| Probar cero | `cbz` / `cbnz` |
+| Probar un bit | `tbz` / `tbnz` |
+
+::: {.callout-note title="Idea clave"}
+`csel` no reemplaza toda estructura `if`. Reemplaza decisiones pequeñas donde
+solo quieres escoger un valor.
+:::
+
+## Mini ejercicios
+
+1. ¿Qué reemplaza `cbz x0, destino`?
+2. ¿Qué prueba `tbz x0, #3, destino`: todo `x0` o solo el bit 3?
+3. Lee:
+
+```asm
+cmp x0, x1
+cset x2, ne
+```
+
+- ¿Cuándo vale `1` `x2`?
+
+4. ¿Cuándo sería más claro usar branch en lugar de `csel`?
+
+## Cierre
+
+Branches especializados evitan código repetitivo para casos comunes. Conditional
+select evita ramas pequeñas cuando solo necesitas elegir un valor. La claridad
+del flujo sigue siendo la regla principal.

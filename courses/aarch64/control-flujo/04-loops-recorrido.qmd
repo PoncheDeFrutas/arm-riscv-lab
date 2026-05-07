@@ -1,0 +1,195 @@
+---
+title: "08.4 · Loops y recorrido"
+subtitle: "Un ciclo es una condición más un salto hacia atrás."
+description: "while, do while, for, loops con contador y puntero en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo > Loops y recorrido
+:::
+
+::: {.hero-lab}
+Un loop repite un bloque porque alguna rama vuelve a una etiqueta anterior. La
+forma exacta cambia entre `while`, `do while` y `for`, pero la idea siempre es:
+condición, cuerpo, actualización y salto.
+:::
+
+## `while`: probar antes de ejecutar
+
+Idea:
+
+```bash
+mientras condición:
+    cuerpo
+```
+
+Assembly:
+
+```asm
+mov x0, #0
+mov x1, #5
+
+loop:
+    cmp x0, x1
+    b.ge fin_loop
+
+    add x0, x0, #1
+    b loop
+
+fin_loop:
+```
+
+Lectura:
+
+```bash
+i = 0
+límite = 5
+si i >= límite, salir
+si no, sumar 1 y volver a loop
+```
+
+El branch hacia atrás es `b loop`.
+
+## `do while`: ejecutar antes de probar
+
+Idea:
+
+```bash
+hacer:
+    cuerpo
+mientras condición
+```
+
+Assembly:
+
+```asm
+mov x0, #0
+
+loop:
+    add x0, x0, #1
+    cmp x0, #5
+    b.lt loop
+```
+
+El cuerpo se ejecuta al menos una vez porque la condición se revisa al final.
+
+## `for`: inicialización, condición, actualización
+
+Idea:
+
+```bash
+para i = 0; i < 5; i++:
+    cuerpo
+```
+
+Assembly:
+
+```asm
+mov x0, #0          // i = 0
+mov x1, #5          // límite
+
+for_loop:
+    cmp x0, x1
+    b.ge for_fin
+
+    add x2, x2, x0  // cuerpo: acumulador += i
+
+    add x0, x0, #1  // i++
+    b for_loop
+
+for_fin:
+```
+
+`for` no es una instrucción. Es una forma de ordenar inicialización, condición,
+cuerpo y actualización.
+
+## Loop con contador descendente
+
+`subs` puede actualizar contador y flags a la vez.
+
+```asm
+mov x0, #5
+
+loop:
+    subs x0, x0, #1
+    b.ne loop
+```
+
+Lectura:
+
+```bash
+resta 1
+si el resultado no es cero, repite
+```
+
+Este patrón es compacto, pero debes recordar que `subs` cambia `NZCV`.
+
+## Loop con puntero
+
+Este patrón conecta con Unidad 06: un registro apunta al elemento actual y otro
+lleva cuántos elementos faltan.
+
+```asm
+.data
+array:
+    .quad 10, 20, 30, 40
+
+.text
+.global _start
+_start:
+    ldr x0, =array      // puntero actual
+    mov x1, #4          // cantidad
+    mov x3, #0          // suma
+
+loop:
+    cbz x1, fin
+    ldr x2, [x0], #8
+    add x3, x3, x2
+    sub x1, x1, #1
+    b loop
+
+fin:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Lectura:
+
+| Registro | Papel |
+|---|---|
+| `x0` | puntero al elemento actual |
+| `x1` | elementos restantes |
+| `x2` | elemento leído |
+| `x3` | acumulador |
+
+`[x0], #8` lee el elemento y avanza el puntero al siguiente `.quad`.
+
+## Salir de un loop
+
+Salir de un loop normalmente es saltar hacia adelante a una etiqueta final.
+
+```asm
+loop:
+    cmp x0, x1
+    b.ge fin
+    ...
+    b loop
+
+fin:
+```
+
+La etiqueta `fin` no rompe nada por sí sola. La rompe el branch que salta hacia
+ella.
+
+## Mini ejercicios
+
+1. En el `while`, ¿qué instrucción hace el salto hacia atrás?
+2. En el `do while`, ¿por qué el cuerpo se ejecuta al menos una vez?
+3. En el loop con puntero, ¿qué cambia después de `ldr x2, [x0], #8`?
+4. ¿Por qué `subs x0, x0, #1` puede reemplazar `sub` + `cmp` en contador?
+
+## Cierre
+
+Todo loop en esta unidad se puede leer con cuatro preguntas: dónde empieza,
+cuándo sale, qué hace el cuerpo y qué instrucción vuelve hacia atrás.

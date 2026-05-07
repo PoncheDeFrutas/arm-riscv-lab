@@ -1,0 +1,158 @@
+---
+title: "08.6 · Branch with link y branch por registro"
+subtitle: "Introducción a llamadas, retorno y saltos indirectos sin entrar todavía al ABI."
+description: "bl, br, blr, ret y LR/X30 como preparación para funciones en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo > Branch link/register
+:::
+
+::: {.hero-lab}
+Además de saltar a etiquetas, AArch64 puede saltar guardando retorno o saltar a
+una dirección guardada en un registro. Esta página es una introducción: prepara
+funciones futuras sin explicar todavía stack frames ni ABI.
+:::
+
+## `bl`: branch with link
+
+`bl` salta a una etiqueta y guarda dirección de retorno en `LR`, que en AArch64
+es `X30`.
+
+```asm
+bl funcion_simple
+```
+
+Lectura:
+
+```bash
+salta a funcion_simple
+guarda dónde volver en x30/lr
+```
+
+No es igual a `b`. `b` solo salta. `bl` salta y guarda retorno.
+
+## `ret`: volver usando `LR`
+
+```asm
+funcion_simple:
+    mov x1, #42
+    ret
+```
+
+`ret` vuelve a la dirección guardada en `LR` por `bl`.
+
+Programa completo:
+
+```asm
+.global _start
+
+.text
+_start:
+    bl funcion_simple
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+funcion_simple:
+    mov x1, #42
+    ret
+```
+
+Flujo:
+
+```bash
+_start -> bl funcion_simple -> funcion_simple -> ret -> instrucción después de bl
+```
+
+## Límite importante
+
+Este ejemplo funciona porque no hay llamadas anidadas ni necesidad de preservar
+registros. Más adelante, con funciones reales, aparecerán stack frames,
+convención de llamadas y preservación de `LR`.
+
+::: {.callout-warning title="No adelantar ABI"}
+No conviertas esta página en ABI/AAPCS64. Aquí solo se entiende el mecanismo
+base: `bl` guarda retorno y `ret` vuelve.
+:::
+
+## `br`: branch a registro
+
+`br` salta a la dirección guardada en un registro.
+
+```asm
+adr x0, destino
+br x0
+
+destino:
+    mov x1, #1
+```
+
+Lectura:
+
+```bash
+x0 contiene dirección de destino
+br x0 salta a esa dirección
+```
+
+Esto prepara ideas futuras como dispatch, tablas de saltos y código indirecto,
+pero no las desarrollaremos aquí.
+
+## `blr`: branch a registro con link
+
+`blr` salta a la dirección de un registro y guarda retorno en `LR`, igual que
+`bl`.
+
+```asm
+adr x0, funcion_simple
+blr x0
+```
+
+Lectura:
+
+```bash
+salta a la dirección en x0
+guarda retorno en lr/x30
+```
+
+Esto prepara llamadas indirectas. Por ahora solo reconoce la diferencia:
+
+| Instrucción | Destino | Guarda retorno |
+|---|---|---|
+| `b etiqueta` | etiqueta inmediata | no |
+| `bl etiqueta` | etiqueta inmediata | sí |
+| `br xN` | dirección en registro | no |
+| `blr xN` | dirección en registro | sí |
+| `ret` | dirección en `LR` o registro indicado | vuelve |
+
+## `ret` con registro explícito
+
+La forma común es:
+
+```asm
+ret
+```
+
+Equivale a volver usando `x30`. También existe forma explícita:
+
+```asm
+ret x5
+```
+
+No la usaremos todavía en prácticas normales. Es suficiente reconocer que `ret`
+usa una dirección de retorno.
+
+## Mini ejercicios
+
+1. ¿Qué guarda `bl` que `b` no guarda?
+2. ¿Qué registro se conoce como `LR`?
+3. ¿Qué usa `ret` para volver?
+4. ¿Cuál salta a una dirección guardada en registro: `b` o `br`?
+5. ¿Por qué no estudiaremos stack frames todavía?
+
+## Cierre
+
+`bl`, `br`, `blr` y `ret` abren la puerta a funciones, callbacks y llamadas
+indirectas. En esta unidad basta con el mapa inicial: saltar, guardar retorno y
+volver.

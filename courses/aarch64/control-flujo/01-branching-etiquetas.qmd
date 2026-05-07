@@ -1,0 +1,163 @@
+---
+title: "08.1 · Branching y etiquetas"
+subtitle: "Una etiqueta marca un lugar; una rama cambia el flujo hacia ese lugar."
+description: "b, etiquetas, salto hacia adelante y salto hacia atrás en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo > Branching y etiquetas
+:::
+
+::: {.hero-lab}
+El primer paso para entender control de flujo es separar etiqueta y branch. La
+etiqueta solo nombra una posición del programa. `b` es la instrucción que cambia
+qué se ejecuta después.
+:::
+
+## Flujo normal
+
+Sin saltos, el procesador ejecuta una instrucción y luego la siguiente.
+
+```bash
+A -> B -> C -> D
+```
+
+En AArch64, `PC` apunta a la zona de código que se está ejecutando, pero no se
+usa como registro general en A64. Para esta unidad basta con pensar: si no hay
+branch, el flujo baja a la siguiente instrucción.
+
+## Etiqueta como destino
+
+```asm
+inicio:
+    mov x0, #1
+
+salir:
+    mov x8, #93
+    svc #0
+```
+
+`inicio` y `salir` son nombres de posiciones. No ejecutan nada por sí solas. El
+CPU ejecuta instrucciones, no nombres.
+
+::: {.callout-warning title="Error común"}
+Una etiqueta no “llama” ni “activa” código. Solo se vuelve importante cuando una
+instrucción como `b`, `bl`, `cbz` o `b.eq` salta hacia ella.
+:::
+
+## Salto incondicional hacia adelante
+
+```asm
+.global _start
+
+.text
+_start:
+    b salir
+
+    mov x0, #99      // esta instrucción no se ejecuta
+
+salir:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Lectura del flujo:
+
+```bash
+_start -> b salir -> salir -> exit(0)
+```
+
+La instrucción `mov x0, #99` queda en el archivo, pero no se ejecuta porque el
+branch la salta.
+
+## Verificar con código de salida
+
+```bash
+$ aarch64-linux-gnu-as salto.s -o salto.o
+$ aarch64-linux-gnu-ld salto.o -o salto
+$ qemu-aarch64 ./salto
+$ echo $?
+0
+```
+
+Si `mov x0, #99` se ejecutara antes de `exit`, el código de salida sería `99`.
+Como no se ejecuta, ves `0`.
+
+## Salto hacia atrás
+
+Un salto hacia atrás vuelve a una etiqueta anterior. Esa forma crea repetición.
+
+```asm
+mov x0, #0
+
+loop:
+    add x0, x0, #1
+    cmp x0, #3
+    b.lt loop
+```
+
+Lectura:
+
+```bash
+loop -> suma -> compara -> si x0 < 3, vuelve a loop
+```
+
+Un loop no es magia. Es una rama hacia atrás controlada por una condición.
+
+## Salto incondicional para evitar caer en otro bloque
+
+En `if/else`, muchas veces necesitas saltar al final después de ejecutar el caso
+verdadero, para no caer dentro del caso falso.
+
+```asm
+cmp x0, #0
+b.eq es_cero
+
+no_es_cero:
+    mov x1, #1
+    b fin
+
+es_cero:
+    mov x1, #0
+
+fin:
+```
+
+El `b fin` evita que el flujo siga bajando al bloque `es_cero`.
+
+## Mapa visual
+
+```bash
+salto hacia adelante:
+inicio -> b destino -> destino
+
+salto hacia atrás:
+loop -> cuerpo -> condición -> b loop
+```
+
+| Tipo de salto | Uso común |
+|---|---|
+| hacia adelante | omitir bloque, salir de `if`, salir de loop |
+| hacia atrás | repetir cuerpo de loop |
+| incondicional | cambiar flujo sin mirar flags |
+| condicional | cambiar flujo según flags o registro |
+
+## Mini ejercicios
+
+1. En el ejemplo de `b salir`, explica por qué `mov x0, #99` no se ejecuta.
+2. Indica si este branch va hacia adelante o hacia atrás:
+
+```asm
+loop:
+    add x0, x0, #1
+    b loop
+```
+
+3. Explica qué pasaría si quitas `b fin` en un patrón `if/else`.
+
+## Cierre
+
+Control de flujo empieza con una idea simple: el programa tiene posiciones
+nombradas y ramas que cambian la siguiente posición ejecutada. Todo `if` y todo
+loop se construye desde ahí.

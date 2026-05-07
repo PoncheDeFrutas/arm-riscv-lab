@@ -1,0 +1,179 @@
+---
+title: "08.2 · Condiciones y flags"
+subtitle: "Una rama condicional consulta flags que otra instrucción preparó."
+description: "cmp, subs, NZCV y ramas condicionales signed/unsigned en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo > Condiciones y flags
+:::
+
+::: {.hero-lab}
+Una rama condicional no compara por sí sola. Normalmente consulta flags que
+quedaron preparados por `cmp`, `subs`, `adds`, `tst` u otra instrucción que
+actualiza `NZCV`.
+:::
+
+## Recordatorio de `NZCV`
+
+| Flag | Pregunta |
+|---|---|
+| `N` | ¿resultado con bit de signo encendido? |
+| `Z` | ¿resultado fue cero? |
+| `C` | ¿carry o no borrow en unsigned? |
+| `V` | ¿overflow signed? |
+
+Los flags pertenecen a la última instrucción que los actualizó. Si haces `cmp` y
+luego otra instrucción que cambia flags, la rama mirará los flags nuevos.
+
+## `cmp` prepara una resta sin guardar resultado
+
+```asm
+cmp x0, x1
+```
+
+Lectura:
+
+```bash
+actualiza NZCV como si hiciera x0 - x1
+no guarda x0 - x1 en un registro general
+```
+
+Equivalencia mental:
+
+```asm
+subs xzr, x0, x1
+```
+
+## Igualdad y desigualdad
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #5
+    mov x1, #5
+    cmp x0, x1
+    b.eq iguales
+
+    mov x0, #1
+    b salir
+
+iguales:
+    mov x0, #0
+
+salir:
+    mov x8, #93
+    svc #0
+```
+
+`b.eq` salta si `Z = 1`. Eso ocurre cuando la comparación dio cero.
+
+| Condición | Lectura |
+|---|---|
+| `b.eq` | salta si son iguales |
+| `b.ne` | salta si no son iguales |
+
+## Signed vs unsigned
+
+La misma resta puede leerse como signed o unsigned. Por eso AArch64 tiene
+condiciones distintas.
+
+| Relación | Signed | Unsigned |
+|---|---|---|
+| mayor que | `b.gt` | `b.hi` |
+| mayor o igual | `b.ge` | `b.hs` |
+| menor que | `b.lt` | `b.lo` |
+| menor o igual | `b.le` | `b.ls` |
+
+`hs` significa higher or same. `lo` significa lower. Son nombres unsigned.
+
+::: {.callout-warning title="Error común"}
+`b.ge` y `b.hs` no son sinónimos. `b.ge` es signed. `b.hs` es unsigned y se
+relaciona con carry/no borrow.
+:::
+
+## Comparación signed
+
+```asm
+mov x0, #-1
+mov x1, #1
+cmp x0, x1
+b.lt menor_signed
+```
+
+Lectura signed:
+
+```bash
+-1 < 1
+```
+
+Usa `lt`, `le`, `gt`, `ge` cuando los valores representan signed.
+
+## Comparación unsigned
+
+```asm
+mov x0, #-1
+mov x1, #1
+cmp x0, x1
+b.hi mayor_unsigned
+```
+
+El patrón de `-1` en 64 bits también puede leerse como `0xFFFFFFFFFFFFFFFF`,
+un unsigned enorme.
+
+Lectura unsigned:
+
+```bash
+0xFFFFFFFFFFFFFFFF > 1
+```
+
+Usa `hi`, `hs`, `lo`, `ls` cuando los valores representan unsigned, tamaños,
+índices o direcciones.
+
+## `subs` también puede preparar branch
+
+No siempre necesitas `cmp`. Si ya estabas restando y quieres flags, usa `subs`.
+
+```asm
+subs x0, x0, #1
+b.ne loop
+```
+
+Lectura:
+
+```bash
+resta 1
+si resultado no fue cero, vuelve a loop
+```
+
+Esto aparece mucho en loops con contador.
+
+## Tabla rápida de condiciones de esta unidad
+
+| Branch | Significado práctico |
+|---|---|
+| `b.eq` | igual |
+| `b.ne` | distinto |
+| `b.gt` | mayor signed |
+| `b.ge` | mayor o igual signed |
+| `b.lt` | menor signed |
+| `b.le` | menor o igual signed |
+| `b.hi` | mayor unsigned |
+| `b.hs` | mayor o igual unsigned |
+| `b.lo` | menor unsigned |
+| `b.ls` | menor o igual unsigned |
+
+## Mini ejercicios
+
+1. Después de `cmp x0, x1`, ¿qué guarda `x0`?
+2. ¿Qué condición usarías para comparar dos tamaños unsigned?
+3. ¿Qué condición usarías para comparar dos enteros signed?
+4. Explica por qué `b.gt` no es lo mismo que `b.hi`.
+
+## Cierre
+
+La rama condicional no decide desde cero. Consulta una historia corta guardada
+en `NZCV`. Tu trabajo es preparar flags correctos y escoger condición según la
+interpretación: signed o unsigned.

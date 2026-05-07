@@ -1,0 +1,196 @@
+---
+title: "08.3 · if e if/else"
+subtitle: "Una decisión se vuelve comparación, branch, etiquetas y salida común."
+description: "Traducción de if e if/else a ramas AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo > if e if/else
+:::
+
+::: {.hero-lab}
+El procesador no tiene una instrucción llamada `if`. Un `if` se construye con
+una comparación, una rama condicional y etiquetas que separan los caminos.
+:::
+
+## Patrón básico de `if`
+
+Idea de alto nivel:
+
+```bash
+si condición:
+    ejecutar bloque
+continuar
+```
+
+Forma en assembly:
+
+```asm
+    cmp x0, #10
+    b.ge fin_if
+
+    mov x1, #1
+
+fin_if:
+```
+
+Lectura:
+
+```bash
+si x0 >= 10, salta al final
+si no saltó, ejecuta el bloque
+```
+
+Muchas veces se usa condición invertida para saltar cuando el `if` no debe
+ejecutarse.
+
+## `if/else` con salida común
+
+```asm
+cmp x0, #10
+b.lt menor
+
+mayor_o_igual:
+    mov x1, #1
+    b fin_if
+
+menor:
+    mov x1, #0
+
+fin_if:
+```
+
+Mapa:
+
+```bash
+cmp
+si x0 < 10 -> menor
+si no -> mayor_o_igual
+ambos terminan en fin_if
+```
+
+`b fin_if` es importante. Sin ese salto, después de ejecutar el caso
+`mayor_o_igual`, el flujo caería dentro de `menor`.
+
+## Programa completo con código de salida
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #7
+
+    cmp x0, #10
+    b.lt menor
+
+mayor_o_igual:
+    mov x0, #1
+    b salir
+
+menor:
+    mov x0, #0
+
+salir:
+    mov x8, #93
+    svc #0
+```
+
+Verificación:
+
+```bash
+$ aarch64-linux-gnu-as ifelse.s -o ifelse.o
+$ aarch64-linux-gnu-ld ifelse.o -o ifelse
+$ qemu-aarch64 ./ifelse
+$ echo $?
+0
+```
+
+Como `7 < 10`, el programa sale con código `0`.
+
+## Condición invertida
+
+Puedes escribir el mismo `if` saltando cuando la condición no se cumple.
+
+```asm
+cmp x0, #10
+b.ge fin_if
+
+mov x1, #0
+
+fin_if:
+```
+
+Lectura:
+
+```bash
+si x0 >= 10, evita el bloque
+si x0 < 10, ejecuta el bloque
+```
+
+Esto reduce etiquetas cuando no hay `else`.
+
+## Decidir signed o unsigned
+
+Si `x0` representa número signed, usa `b.lt`, `b.ge`, etc.
+
+```asm
+cmp x0, #0
+b.lt negativo
+```
+
+Si `x0` representa tamaño, índice o cantidad unsigned, usa `b.lo`, `b.hs`, etc.
+
+```asm
+cmp x0, x1
+b.hs dentro_o_al_limite
+```
+
+La estructura `if` no decide signed/unsigned. Tú lo decides al escoger la
+condición.
+
+## `switch` conceptual
+
+Un `switch` simple puede empezar como una cadena de comparaciones.
+
+```asm
+cmp x0, #0
+b.eq caso_0
+
+cmp x0, #1
+b.eq caso_1
+
+b caso_default
+```
+
+No veremos jump tables reales todavía. Por ahora basta reconocer que un
+`switch` también es selección por saltos.
+
+## Mini ejercicios
+
+1. Explica por qué este patrón necesita `b fin_if`:
+
+```asm
+cmp x0, #5
+b.eq caso_igual
+
+caso_distinto:
+    mov x1, #1
+    b fin_if
+
+caso_igual:
+    mov x1, #0
+
+fin_if:
+```
+
+2. Cambia mentalmente el ejemplo para que `x0 = 12`. ¿Qué código de salida
+obtendrías?
+
+3. Si comparas tamaños, ¿usarías `b.lt` o `b.lo`?
+
+## Cierre
+
+Un `if` en assembly es una ruta. Comparas, eliges un salto y aseguras que cada
+camino llegue al punto correcto. La claridad del flujo importa más que reducir
+una instrucción.
