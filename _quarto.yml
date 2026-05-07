@@ -114,6 +114,24 @@ website:
                   href: courses/aarch64/modelo-aarch64/05-exception-levels.qmd
                 - text: "Lectura con GDB"
                   href: courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.qmd
+            - section: "04 · GNU Assembly"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/gnu-assembly/index.qmd
+                - text: "Estructura de archivo .s"
+                  href: courses/aarch64/gnu-assembly/01-estructura-archivo-s.qmd
+                - text: "Secciones"
+                  href: courses/aarch64/gnu-assembly/02-secciones.qmd
+                - text: "Directivas básicas"
+                  href: courses/aarch64/gnu-assembly/03-directivas-basicas.qmd
+                - text: "Definición de datos"
+                  href: courses/aarch64/gnu-assembly/04-definicion-datos.qmd
+                - text: "Pseudo-instrucciones"
+                  href: courses/aarch64/gnu-assembly/05-pseudo-instrucciones-direcciones.qmd
+                - text: "Include y macros"
+                  href: courses/aarch64/gnu-assembly/06-include-macros.qmd
+                - text: "Lectura de archivo completo"
+                  href: courses/aarch64/gnu-assembly/07-lectura-archivo-completo.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

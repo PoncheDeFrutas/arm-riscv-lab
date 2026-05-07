@@ -1,0 +1,124 @@
+---
+title: "04.1 · Estructura de archivo .s"
+subtitle: "Un archivo GNU Assembly mezcla comentarios, etiquetas, símbolos, directivas e instrucciones."
+description: "Forma mínima de un archivo .s para AArch64 con GNU assembler."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Estructura de archivo .s
+:::
+
+::: {.hero-lab}
+Antes de aprender más instrucciones, conviene leer bien el archivo fuente. Un
+`.s` no es solo una lista de instrucciones: también contiene información para el
+assembler.
+:::
+
+## Archivo mínimo
+
+```asm
+.global _start
+.type _start, %function
+
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.size _start, . - _start
+```
+
+| Línea | Tipo | Qué significa |
+|---|---|---|
+| `.global _start` | Directiva | Hace visible el símbolo `_start` |
+| `.type _start, %function` | Directiva | Marca `_start` como función para herramientas |
+| `.text` | Directiva | Cambia a sección de código |
+| `_start:` | Etiqueta | Nombra una dirección |
+| `mov x0, #0` | Instrucción A64 | CPU la ejecuta |
+| `.size _start, . - _start` | Directiva | Calcula tamaño del símbolo |
+
+## Comentarios
+
+En GNU Assembly para AArch64, los comentarios suelen escribirse con `//`.
+
+```asm
+mov x0, #0      // código de salida
+mov x8, #93     // syscall exit en Linux AArch64
+svc #0          // entrar al kernel
+```
+
+Usa comentarios para explicar intención, no para repetir cada instrucción.
+
+## Etiquetas
+
+Una etiqueta nombra una posición. Termina con `:`.
+
+```asm
+inicio:
+    mov x0, #0
+
+fin:
+    mov x8, #93
+```
+
+La etiqueta no guarda un valor como variable de alto nivel. Nombra una dirección
+que puede apuntar a código o datos.
+
+::: {.callout-note title="Idea clave"}
+Etiqueta = nombre de una dirección. El contenido en esa dirección depende de la
+sección donde esté.
+:::
+
+## Símbolos
+
+Un símbolo es un nombre que el assembler, linker o depurador puede usar. Una
+etiqueta crea un símbolo. Una constante con `.equ` también crea un símbolo.
+
+```asm
+.equ SYS_exit, 93
+
+_start:
+    mov x8, #SYS_exit
+```
+
+| Símbolo | Qué nombra |
+|---|---|
+| `SYS_exit` | Constante |
+| `_start` | Dirección de código |
+
+## Punto actual `.`
+
+En expresiones del assembler, `.` representa la posición actual.
+
+```asm
+msg:
+    .ascii "Hola\n"
+msg_len = . - msg
+```
+
+Lectura: `msg_len` vale distancia entre posición actual y etiqueta `msg`.
+
+## Error común
+
+::: {.callout-warning title="No todo símbolo es variable"}
+Una etiqueta como `_start` o `msg` nombra una dirección. No significa
+automáticamente “variable” en sentido de lenguaje de alto nivel.
+:::
+
+## Mini ejercicios
+
+1. Clasifica `.global _start`.
+2. Clasifica `_start:`.
+3. Clasifica `mov x0, #0`.
+4. Explica qué significa `msg_len = . - msg`.
+
+## Checklist
+
+- [ ] Puedo reconocer comentario.
+- [ ] Puedo reconocer directiva.
+- [ ] Puedo reconocer etiqueta.
+- [ ] Puedo reconocer instrucción A64.
+- [ ] Puedo explicar `_start` como símbolo de entrada.
+
+Siguiente: [Secciones](02-secciones.qmd).

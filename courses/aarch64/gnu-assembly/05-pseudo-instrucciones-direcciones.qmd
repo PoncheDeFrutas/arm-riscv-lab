@@ -1,0 +1,134 @@
+---
+title: "04.5 · Pseudo-instrucciones, direcciones y literales"
+subtitle: "Algunas líneas parecen instrucciones, pero el assembler las expande o resuelve."
+description: "ldr =symbol, adr, adrp + add, literales, literal pools y relocations conceptuales."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Pseudo-instrucciones y direcciones
+:::
+
+::: {.hero-lab}
+GNU assembler ofrece atajos útiles para cargar constantes y direcciones. Esos
+atajos pueden parecer instrucciones reales, pero a veces el assembler debe
+expandirlos, colocar literales o pedir ayuda al linker.
+:::
+
+## `ldr x0, =symbol`
+
+Esta forma es una pseudo-instrucción frecuente.
+
+```asm
+ldr x0, =mensaje
+```
+
+Lectura inicial: queremos que `x0` reciba la dirección asociada al símbolo
+`mensaje`. El assembler decide cómo materializar ese valor.
+
+::: {.callout-warning title="No siempre es una instrucción real única"}
+`ldr x0, =mensaje` no debe leerse como “cargar contenido de memoria en mensaje”.
+Es un atajo para obtener un valor, muchas veces una dirección o constante.
+:::
+
+## `adr`
+
+`adr` calcula una dirección cercana al `pc`.
+
+```asm
+adr x0, mensaje
+```
+
+Lectura: coloca en `x0` la dirección de `mensaje`, si está en rango para esta
+forma.
+
+No carga bytes desde `mensaje`. Solo calcula dirección.
+
+## `adrp + add`
+
+Para direcciones que necesitan construcción por página y offset, se usa el
+patrón `adrp + add`.
+
+```asm
+adrp x0, mensaje
+add x0, x0, :lo12:mensaje
+```
+
+Lectura conceptual:
+
+| Línea | Idea |
+|---|---|
+| `adrp x0, mensaje` | Calcula base de página relacionada con `mensaje` |
+| `add x0, x0, :lo12:mensaje` | Suma parte baja de la dirección |
+
+Por ahora basta con leer el patrón completo como una forma de construir una
+dirección. Más adelante, cuando aparezca el linker con más detalle, esta misma
+forma servirá para explicar relocations.
+
+## Comparación rápida
+
+| Forma | Idea inicial |
+|---|---|
+| `adr x0, mensaje` | Dirección cercana al código actual |
+| `adrp + add` | Dirección construida por página y offset |
+| `ldr x0, =mensaje` | Pseudo-instrucción; assembler elige estrategia |
+
+## Literales y literal pools
+
+Algunas constantes no caben directamente en una instrucción simple. El assembler
+puede colocar un literal en una zona cercana y generar una carga hacia ese
+literal.
+
+```asm
+ldr x0, =0x1122334455667788
+```
+
+Modelo conceptual:
+
+```bash
+código usa pseudo-instrucción
+        |
+        v
+assembler coloca literal cerca
+        |
+        v
+instrucción real carga ese valor desde literal pool
+```
+
+## Relocations conceptuales
+
+Una relocation es una marca para que assembler/linker terminen de resolver una
+dirección o valor cuando todavía no se conoce completamente.
+
+```asm
+adrp x0, mensaje
+add x0, x0, :lo12:mensaje
+```
+
+El CPU no “ejecuta una relocation”. El CPU ejecuta instrucciones ya generadas.
+La relocation es trabajo previo de herramientas.
+
+## Ver qué generó el assembler
+
+```bash
+aarch64-linux-gnu-as main.s -o main.o
+aarch64-linux-gnu-objdump -dr main.o
+```
+
+`-d` muestra desensamblado. `-r` muestra relocations si existen.
+
+## Mini ejercicios
+
+1. Explica si `adr x0, mensaje` carga contenido o dirección.
+2. Explica por qué `ldr x0, =mensaje` puede ser pseudo-instrucción.
+3. Explica qué idea representa un literal pool.
+4. Explica por qué relocation no es instrucción del CPU.
+
+## Checklist
+
+- [ ] Puedo explicar `ldr x0, =symbol`.
+- [ ] Puedo explicar `adr`.
+- [ ] Puedo explicar `adrp + add` como mapa inicial.
+- [ ] Puedo explicar literal pool conceptualmente.
+- [ ] Puedo explicar relocation conceptualmente.
+
+Siguiente: [Include y macros](06-include-macros.qmd).

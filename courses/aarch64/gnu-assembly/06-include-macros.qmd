@@ -1,0 +1,144 @@
+---
+title: "04.6 · Include básico y macros simples"
+subtitle: "Reutiliza código pequeño sin esconder lo que el assembler está haciendo."
+description: "Uso inicial de .include, .macro y .endm en GNU Assembly."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Include y macros
+:::
+
+::: {.hero-lab}
+Cuando un archivo empieza a repetir constantes o secuencias cortas, GNU
+Assembly ofrece dos herramientas útiles: incluir otro archivo y definir macros.
+La idea es ahorrar repetición sin perder de vista qué instrucciones terminarán
+en el programa.
+:::
+
+## `.include`
+
+`.include` inserta otro archivo durante ensamblado. Puedes leerlo como si el
+assembler copiara el contenido del archivo incluido en ese punto antes de seguir
+procesando el resto.
+
+```asm
+.include "constantes.inc"
+
+.text
+_start:
+    mov x0, #EXIT_OK
+    mov x8, #SYS_exit
+    svc #0
+```
+
+Archivo incluido:
+
+```asm
+.equ SYS_exit, 93
+.equ EXIT_OK, 0
+```
+
+Después del include, `SYS_exit` y `EXIT_OK` ya existen para el resto del archivo.
+Esto es útil cuando varias prácticas comparten los mismos números de syscall o
+constantes pequeñas.
+
+## Cuándo usar include
+
+| Conviene para | Evita usarlo para |
+|---|---|
+| Constantes compartidas | Ocultar el programa principal |
+| Macros pequeñas repetidas | Crear una capa propia difícil de leer |
+| Definiciones comunes | Evitar entender instrucciones reales |
+
+## Macro simple
+
+Una macro define una plantilla. Cuando escribes el nombre de la macro, el
+assembler coloca ahí las líneas de la plantilla con sus parámetros reemplazados.
+
+```asm
+.macro salir codigo
+    mov x0, #\codigo
+    mov x8, #93
+    svc #0
+.endm
+
+.text
+_start:
+    salir 0
+```
+
+Al ensamblar, el uso de `salir 0` se expande como si hubieras escrito:
+
+```asm
+mov x0, #0
+mov x8, #93
+svc #0
+```
+
+La macro evita repetir la secuencia, pero el binario final contiene
+instrucciones normales.
+
+::: {.callout-note title="Idea clave"}
+Una macro se expande antes de ejecutar el programa. No hay llamada, retorno ni
+stack frame por usar `.macro`.
+:::
+
+## Parámetros de macro
+
+Los parámetros se declaran en la línea `.macro` y se usan dentro con `\`.
+
+```asm
+.macro cargar_valor reg, valor
+    mov \reg, #\valor
+.endm
+
+_start:
+    cargar_valor x0, 42
+```
+
+En este ejemplo, `\reg` se reemplaza por `x0` y `\valor` por `42`.
+
+```asm
+mov x0, #42
+```
+
+Ese reemplazo ocurre durante ensamblado, no durante ejecución.
+
+## Uso responsable
+
+::: {.callout-tip title="Regla práctica"}
+Usa macros para secuencias pequeñas que ya entiendes. Si una macro oculta lo que
+quieres aprender, todavía no conviene usarla.
+:::
+
+Buenos primeros usos:
+
+| Caso | Ejemplo |
+|---|---|
+| Salir con código | macro `salir codigo` |
+| Cargar constante repetida | macro `cargar_valor reg, valor` |
+| Compartir syscalls | archivo `constantes.inc` |
+
+## Error común
+
+::: {.callout-warning title="Macro no es función"}
+Una macro no se ejecuta como subrutina. Se expande en el lugar donde aparece.
+Eso puede duplicar código.
+:::
+
+## Mini ejercicios
+
+1. Explica qué hace `.include`.
+2. Define `SYS_write` en un archivo incluido.
+3. Explica por qué macro no es función.
+4. Escribe una macro que cargue `x0` con un código de salida.
+
+## Checklist
+
+- [ ] Puedo explicar `.include`.
+- [ ] Puedo explicar `.macro`.
+- [ ] Puedo explicar `.endm`.
+- [ ] Puedo usar un parámetro con `\`.
+- [ ] Sé que macros avanzadas quedan para después.
+
+Siguiente: [Lectura de archivo completo](07-lectura-archivo-completo.qmd).

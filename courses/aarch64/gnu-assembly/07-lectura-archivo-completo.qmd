@@ -1,0 +1,132 @@
+---
+title: "04.7 · Lectura guiada de un archivo .s completo"
+subtitle: "Clasifica cada línea: directiva, etiqueta, símbolo, dato, pseudo-instrucción o instrucción real."
+description: "Lectura integrada de un archivo GNU Assembly AArch64 completo."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Lectura de archivo completo
+:::
+
+::: {.hero-lab}
+Aquí vas a leer un archivo `.s` como lo revisarías en el laboratorio: primero
+ubicas directivas, luego etiquetas, después datos y finalmente instrucciones. El
+objetivo es saber qué parte prepara el assembler y qué parte termina como código
+que ejecuta el procesador.
+:::
+
+## Archivo completo
+
+```asm
+.equ SYS_write, 64
+.equ SYS_exit, 93
+.equ STDOUT, 1
+.equ EXIT_OK, 0
+
+.global _start
+.type _start, %function
+
+.text
+_start:
+    mov x0, #STDOUT
+    ldr x1, =mensaje
+    mov x2, #mensaje_len
+    mov x8, #SYS_write
+    svc #0
+
+    mov x0, #EXIT_OK
+    mov x8, #SYS_exit
+    svc #0
+
+.size _start, . - _start
+
+.rodata
+mensaje:
+    .ascii "Hola GNU Assembly\n"
+mensaje_len = . - mensaje
+```
+
+## Clasificación línea por línea
+
+La tabla separa cada fragmento por su papel. Si una línea empieza con punto,
+normalmente habla con el assembler. Si termina en `:`, marca una dirección. Si
+usa un mnemónico como `mov` o `svc`, ya estás viendo una instrucción o una forma
+que el assembler convertirá en instrucciones.
+
+| Fragmento | Tipo | Lectura |
+|---|---|---|
+| `.equ SYS_write, 64` | Directiva | Crea nombre simbólico |
+| `.global _start` | Directiva | Hace visible `_start` |
+| `.type _start, %function` | Directiva | Metadato para herramientas |
+| `.text` | Directiva | Cambia a sección de código |
+| `_start:` | Etiqueta | Nombra dirección de inicio |
+| `mov x0, #STDOUT` | Instrucción A64 | Coloca valor en registro |
+| `ldr x1, =mensaje` | Pseudo-instrucción | Obtiene dirección/valor asociado |
+| `svc #0` | Instrucción A64 | Entra al kernel |
+| `.size _start, . - _start` | Directiva | Calcula tamaño |
+| `.rodata` | Directiva | Cambia a datos de solo lectura |
+| `mensaje:` | Etiqueta | Nombra dirección de datos |
+| `.ascii "Hola GNU Assembly\n"` | Directiva de datos | Coloca bytes |
+| `mensaje_len = . - mensaje` | Símbolo calculado | Longitud del mensaje |
+
+## Qué ejecuta el CPU
+
+El CPU ejecuta instrucciones como:
+
+```asm
+mov x0, #STDOUT
+mov x8, #SYS_write
+svc #0
+```
+
+No ejecuta:
+
+```asm
+.global _start
+.rodata
+mensaje:
+mensaje_len = . - mensaje
+```
+
+Esas líneas sirven para construir el binario.
+
+## Ensamblar e inspeccionar
+
+```bash
+aarch64-linux-gnu-as main.s -o main.o
+aarch64-linux-gnu-ld main.o -o main
+aarch64-linux-gnu-objdump -d main
+aarch64-linux-gnu-objdump -s -j .rodata main
+```
+
+Busca dos cosas: instrucciones en `.text` y bytes del mensaje en `.rodata`.
+
+## Error común
+
+::: {.callout-warning title="No confundas dirección con contenido"}
+`ldr x1, =mensaje` prepara una dirección o valor asociado al símbolo. No debes
+leerlo automáticamente como “cargar los bytes del mensaje”.
+:::
+
+## Mini ejercicios
+
+1. Marca todas las directivas del archivo.
+2. Marca todas las etiquetas.
+3. Marca todas las instrucciones A64 reales.
+4. Explica por qué `mensaje_len` no ocupa memoria como string.
+5. Explica qué bytes coloca `.ascii "Hola GNU Assembly\n"`.
+
+## Checklist final
+
+- [ ] Puedo clasificar cada línea de un `.s`.
+- [ ] Puedo distinguir directivas de instrucciones reales.
+- [ ] Puedo reconocer datos declarados.
+- [ ] Puedo reconocer pseudo-instrucciones.
+- [ ] Puedo explicar símbolos calculados con `.`.
+- [ ] Puedo usar `objdump` para revisar código y datos.
+
+## Cierre de la unidad
+
+Si puedes leer un `.s` y decir qué procesa el assembler, qué nombra una
+dirección, qué declara bytes y qué ejecuta el CPU, ya estás listo para escribir
+programas AArch64 más grandes sin confundir sintaxis con arquitectura.

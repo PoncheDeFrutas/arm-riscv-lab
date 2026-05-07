@@ -1,0 +1,136 @@
+---
+title: "04.4 · Definición de datos"
+subtitle: "Las directivas de datos colocan bytes o reservan espacio en una sección."
+description: "Directivas .byte, .hword, .word, .quad, .ascii, .asciz, .skip y .space."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Definición de datos
+:::
+
+::: {.hero-lab}
+Declarar datos en assembly significa colocar bytes en una sección. El assembler
+no está creando variables de alto nivel; está generando contenido binario con
+nombres simbólicos.
+:::
+
+## Enteros por tamaño
+
+| Directiva | Tamaño | Uso |
+|---|---:|---|
+| `.byte` | 1 byte | bytes individuales |
+| `.hword` | 2 bytes | halfword |
+| `.word` | 4 bytes | word |
+| `.quad` | 8 bytes | doubleword |
+
+```asm
+.data
+b:
+    .byte 0x41
+h:
+    .hword 0x1234
+w:
+    .word 0x12345678
+q:
+    .quad 0x1122334455667788
+```
+
+En plataformas AArch64 Linux usuales, estos valores se verán en memoria como
+little endian cuando ocupen más de un byte.
+
+## `.ascii` y `.asciz`
+
+`.ascii` coloca bytes de texto sin terminador automático. `.asciz` agrega byte
+cero al final.
+
+```asm
+.rodata
+sin_cero:
+    .ascii "ABC"
+
+con_cero:
+    .asciz "ABC"
+```
+
+| Directiva | Bytes |
+|---|---|
+| `.ascii "ABC"` | `41 42 43` |
+| `.asciz "ABC"` | `41 42 43 00` |
+
+::: {.callout-warning title="Error común"}
+No asumas que `.ascii` termina string. Si necesitas byte cero, usa `.asciz` o
+agrega `.byte 0`.
+:::
+
+## `.skip` y `.space`
+
+Reservan espacio.
+
+```asm
+.bss
+buffer:
+    .skip 64
+
+otro_buffer:
+    .space 32
+```
+
+`buffer` nombra la primera dirección del bloque reservado. Si luego cargas esa
+dirección en un registro, podrás usarla como inicio de un área de trabajo.
+
+```asm
+adr x0, buffer
+```
+
+En las prácticas iniciales, `.skip` y `.space` cumplen el mismo papel: separar un
+pedazo de memoria para usarlo después. Conviene ponerlos en `.bss` cuando el
+contenido inicial no importa y el programa solo necesita el espacio.
+
+## Datos no son tipos de lenguaje
+
+```asm
+valor:
+    .word 10
+```
+
+Esto coloca 4 bytes. Que luego lo interpretes como signed, unsigned, contador o
+dirección depende del código que lo lea.
+
+::: {.callout-note title="Idea clave"}
+`.word` define tamaño de almacenamiento. No crea automáticamente un `int` como
+en un lenguaje de alto nivel.
+:::
+
+## Ejemplo integrado
+
+```asm
+.data
+contador:
+    .word 10
+
+.rodata
+mensaje:
+    .asciz "Hola AArch64\n"
+
+.bss
+buffer:
+    .skip 64
+```
+
+## Mini ejercicios
+
+1. Elige directiva para guardar un byte `0xFF`.
+2. Elige directiva para guardar 8 bytes.
+3. Explica diferencia entre `.ascii "A"` y `.asciz "A"`.
+4. Reserva 128 bytes para un buffer.
+
+## Checklist
+
+- [ ] Puedo usar `.byte`.
+- [ ] Puedo usar `.hword`.
+- [ ] Puedo usar `.word`.
+- [ ] Puedo usar `.quad`.
+- [ ] Puedo distinguir `.ascii` de `.asciz`.
+- [ ] Puedo reservar espacio con `.skip` o `.space`.
+
+Siguiente: [Pseudo-instrucciones y direcciones](05-pseudo-instrucciones-direcciones.qmd).

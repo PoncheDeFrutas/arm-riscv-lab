@@ -1,0 +1,186 @@
+---
+title: "04.3 · Directivas básicas"
+subtitle: "Las directivas empiezan con punto y guían al assembler, linker o herramientas."
+description: "Directivas .global, .type, .size, .align, .balign, .equ y .set."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Directivas básicas
+:::
+
+::: {.hero-lab}
+Una directiva no es instrucción A64. Es una orden para el assembler. Algunas
+crean símbolos, otras cambian sección, otras alinean datos y otras agregan
+metadatos útiles para herramientas.
+:::
+
+## `.global`
+
+`.global` hace visible un símbolo fuera del archivo objeto. Sin esta directiva,
+un nombre puede existir dentro del archivo ensamblado, pero otras herramientas no
+tienen por qué tratarlo como punto visible de entrada o enlace.
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0
+```
+
+En los programas mínimos del curso, `_start` es el primer símbolo importante
+porque el linker lo usa como entrada del programa. La etiqueta `_start:` marca la
+dirección; `.global _start` hace que ese nombre sea visible.
+
+| Línea | Papel |
+|---|---|
+| `.global _start` | Exporta el nombre |
+| `_start:` | Marca la dirección |
+| `mov x0, #0` | Instrucción ubicada desde esa dirección |
+
+## `.type`
+
+`.type` agrega información de tipo para herramientas como `readelf`, `objdump` o
+el depurador.
+
+```asm
+.type _start, %function
+```
+
+Esta directiva no cambia las instrucciones que ejecuta el procesador. Sirve para
+que las herramientas puedan mostrar mejor el símbolo. En un archivo pequeño, esto
+ayuda a que `_start` aparezca identificado como código, no como dato sin
+contexto.
+
+```bash
+aarch64-linux-gnu-readelf -s main.o
+```
+
+Al revisar símbolos, la información de tipo ayuda a distinguir funciones,
+objetos y nombres sin clasificación clara.
+
+## `.size`
+
+`.size` marca cuántos bytes ocupa un símbolo. En código, suele colocarse al final
+del bloque que empieza en una etiqueta.
+
+```asm
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.size _start, . - _start
+```
+
+La expresión `. - _start` significa distancia entre posición actual y etiqueta
+`_start`.
+
+```bash
+.        posición actual
+_start   dirección donde empezó el símbolo
+. - _start = bytes entre ambas posiciones
+```
+
+El punto `.` no es un registro. Es la ubicación actual que el assembler lleva
+mientras procesa el archivo. Esa resta permite que el tamaño siga siendo correcto
+aunque agregues o quites instrucciones dentro del bloque.
+
+## `.align` y `.balign`
+
+Estas directivas alinean la posición actual antes de colocar lo siguiente.
+
+```asm
+.balign 4
+numero:
+    .word 10
+```
+
+Si `numero` ocupa 4 bytes, conviene que empiece en una dirección múltiplo de 4.
+`.balign 4` avanza la posición del assembler hasta una dirección adecuada antes
+de colocar el dato.
+
+```bash
+dirección 0x400080  alineada a 4
+dirección 0x400081  no alineada a 4
+dirección 0x400084  alineada a 4
+```
+
+::: {.callout-note title="Regla práctica"}
+En estas lecciones usaremos `.balign` cuando queramos hablar en bytes:
+`.balign 4` para un word, `.balign 8` para un doubleword.
+:::
+
+`.align` también existe, pero su interpretación puede depender del formato y de
+la arquitectura. Por eso `.balign` es más clara para empezar: el número expresa
+bytes de alineación.
+
+## `.equ` y `.set`
+
+Sirven para definir nombres simbólicos. En vez de escribir números sueltos dentro
+del programa, puedes darles un nombre que explique intención.
+
+```asm
+.equ SYS_exit, 93
+.set EXIT_OK, 0
+
+mov x0, #EXIT_OK
+mov x8, #SYS_exit
+svc #0
+```
+
+| Directiva | Uso inicial |
+|---|---|
+| `.equ` | Constante simbólica |
+| `.set` | Símbolo asignado por el assembler |
+
+En ejemplos pequeños, `.equ` es buena opción para constantes que no deberían
+cambiar dentro del archivo. `.set` también asigna un valor a un símbolo y puede
+redefinirse en usos más avanzados. Para esta etapa, lo importante es leer el
+programa con intención:
+
+```asm
+mov x8, #SYS_exit
+```
+
+se entiende mejor que:
+
+```asm
+mov x8, #93
+```
+
+El procesador recibirá un valor inmediato. El nombre simbólico lo resuelve el
+assembler antes de generar el objeto.
+
+## Directiva vs instrucción
+
+| Línea | Tipo |
+|---|---|
+| `.global _start` | Directiva |
+| `.equ SYS_exit, 93` | Directiva |
+| `mov x8, #SYS_exit` | Instrucción A64 con símbolo resuelto por assembler |
+| `svc #0` | Instrucción A64 |
+
+## Error común
+
+::: {.callout-warning title="Directiva no se ejecuta"}
+`.global`, `.type`, `.size` y `.equ` no son instrucciones que el CPU ejecuta. El
+assembler las usa antes de crear el objeto.
+:::
+
+## Mini ejercicios
+
+1. Explica por qué se usa `.global _start`.
+2. Explica qué mide `. - _start`.
+3. Define `SYS_write` con `.equ`.
+4. Explica cuándo usarías `.balign 8`.
+
+## Checklist
+
+- [ ] Puedo explicar `.global`.
+- [ ] Puedo explicar `.type`.
+- [ ] Puedo explicar `.size`.
+- [ ] Puedo explicar `.balign`.
+- [ ] Puedo usar `.equ` o `.set` para nombres simbólicos.
+
+Siguiente: [Definición de datos](04-definicion-datos.qmd).

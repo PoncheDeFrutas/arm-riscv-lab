@@ -1,0 +1,125 @@
+---
+title: "04.2 · Secciones: .text, .data, .rodata y .bss"
+subtitle: "Las secciones organizan código, datos inicializados, datos de solo lectura y espacio reservado."
+description: "Uso conceptual de secciones comunes en GNU Assembly para AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly > Secciones
+:::
+
+::: {.hero-lab}
+Las secciones no son decoración. Le dicen al assembler dónde colocar código,
+datos inicializados, datos de solo lectura o espacio reservado.
+:::
+
+## Mapa de secciones
+
+| Sección | Uso inicial |
+|---|---|
+| `.text` | Instrucciones |
+| `.data` | Datos inicializados modificables |
+| `.rodata` | Datos inicializados de solo lectura |
+| `.bss` | Espacio reservado sin bytes explícitos en el archivo |
+
+## `.text`
+
+`.text` contiene código.
+
+```asm
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Las líneas `mov` y `svc` son instrucciones A64. La línea `.text` es directiva.
+
+## `.data`
+
+`.data` contiene datos inicializados que el programa podría modificar.
+
+```asm
+.data
+contador:
+    .word 10
+```
+
+`contador` nombra una dirección. `.word 10` coloca 4 bytes con ese valor.
+
+## `.rodata`
+
+`.rodata` contiene datos de solo lectura.
+
+```asm
+.rodata
+mensaje:
+    .asciz "Hola AArch64\n"
+```
+
+Úsala para mensajes o tablas constantes que no necesitas modificar.
+
+## `.bss`
+
+`.bss` reserva espacio sin escribir todos esos bytes explícitamente en el
+archivo objeto.
+
+```asm
+.bss
+buffer:
+    .skip 64
+```
+
+Lectura mínima: `buffer` nombra inicio de un espacio reservado de 64 bytes.
+
+::: {.callout-note title="Idea clave"}
+`.bss` no significa “llenar el archivo con 64 bytes escritos”. Significa reservar
+espacio para datos que existirán al cargar el programa.
+:::
+
+## Ejemplo integrado
+
+```asm
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.data
+contador:
+    .word 10
+
+.rodata
+mensaje:
+    .asciz "Hola AArch64\n"
+
+.bss
+buffer:
+    .skip 64
+```
+
+## Error común
+
+::: {.callout-warning title="No uses .data para todo"}
+Si algo es código, va en `.text`. Si es mensaje constante, suele ir en
+`.rodata`. Si solo reservas espacio, `.bss` comunica mejor la intención.
+:::
+
+## Mini ejercicios
+
+1. Indica sección correcta para instrucciones.
+2. Indica sección correcta para mensaje constante.
+3. Indica sección correcta para buffer reservado.
+4. Explica qué diferencia hay entre `.data` y `.rodata`.
+
+## Checklist
+
+- [ ] Puedo explicar `.text`.
+- [ ] Puedo explicar `.data`.
+- [ ] Puedo explicar `.rodata`.
+- [ ] Puedo explicar `.bss`.
+- [ ] Puedo ubicar etiquetas de código y datos en secciones distintas.
+
+Siguiente: [Directivas básicas](03-directivas-basicas.qmd).
