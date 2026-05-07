@@ -72,7 +72,7 @@
     "href": "guides/setup/qemu-x86_64.html#primer-programa",
     "title": "Setup: x86_64 con QEMU",
     "section": "Primer programa",
-    "text": "Primer programa\ncd 00-hello-minimo\nmake -C src\nmake -C src run\nSalida esperada:\nHola ARM64",
+    "text": "Primer programa\ncd 00-hello-minimo\ncd src\nmake\nmake run\nSalida esperada:\nHola ARM64",
     "crumbs": [
       "Entorno",
       "Setup: x86_64 con QEMU"
@@ -83,7 +83,7 @@
     "href": "guides/setup/qemu-x86_64.html#depuración",
     "title": "Setup: x86_64 con QEMU",
     "section": "Depuración",
-    "text": "Depuración\nArranca QEMU con GDB server:\nmake -C src gdb\nLuego conecta VS Code con la configuración Debug ARM64 (QEMU).\n\n\n\n\n\n\nAdvertenciaTerminal bloqueada es normal\n\n\n\nmake -C src gdb queda esperando conexión en localhost:1234. Deja esa terminal abierta y conecta el debugger desde VS Code en otra acción.",
+    "text": "Depuración\nArranca QEMU con GDB server:\nmake gdb\nLuego conecta VS Code con la configuración Debug ARM64 (QEMU).\n\n\n\n\n\n\nAdvertenciaTerminal bloqueada es normal\n\n\n\nmake gdb queda esperando conexión en localhost:1234. Deja esa terminal abierta y conecta el debugger desde VS Code en otra acción.",
     "crumbs": [
       "Entorno",
       "Setup: x86_64 con QEMU"
@@ -101,250 +101,327 @@
     ]
   },
   {
-    "objectID": "guides/setup/index.html",
-    "href": "guides/setup/index.html",
-    "title": "Setup",
+    "objectID": "guides/setup/makefiles.html",
+    "href": "guides/setup/makefiles.html",
+    "title": "Makefiles ARM64",
     "section": "",
-    "text": "El setup del curso tiene una ruta principal y dos alternativas. La decisión depende de tu máquina, no de tu nivel.",
+    "text": "El Makefile existe para evitar confusiones entre entornos. El estudiante no debe recordar comandos distintos para QEMU y Raspberry Pi. Debe elegir el Makefile correcto, guardarlo como src/Makefile y usar siempre los mismos comandos.",
     "crumbs": [
       "Entorno",
-      "Setup"
+      "Makefiles ARM64"
     ]
   },
   {
-    "objectID": "guides/setup/index.html#elige-una-ruta",
-    "href": "guides/setup/index.html#elige-una-ruta",
-    "title": "Setup",
-    "section": "Elige una ruta",
-    "text": "Elige una ruta\n\n\n\nRuta\nÚsala si…\nComandos principales\n\n\n\n\nQEMU en x86_64\nTu laptop o PC no es ARM64\nmake -C src, make -C src run, make -C src gdb\n\n\nARM nativo\nEstás en Linux ARM64 real\nmake -C src -f Makefile.arm64 run\n\n\nDocker\nNecesitas entorno reproducible\ndocker build, docker run\n\n\n\n\n\n\n\n\n\nTipRecomendación para empezar\n\n\n\nSi no sabes cuál elegir, usa QEMU en x86_64. Es la ruta que permite trabajar desde una computadora común sin hardware ARM.\n\n\n\n\n\n\n\n\nAdvertenciaQEMU no convierte tu máquina en ARM\n\n\n\nQEMU ejecuta el binario AArch64 en user mode. Tu sistema sigue siendo x86_64, por eso necesitas gdb-multiarch para depurar.",
+    "objectID": "guides/setup/makefiles.html#regla-principal",
+    "href": "guides/setup/makefiles.html#regla-principal",
+    "title": "Makefiles ARM64",
+    "section": "Regla principal",
+    "text": "Regla principal\ncd 00-hello-minimo\ncd src\nmake\nmake run\nmake gdb\nEl binario queda en:\nbuild/main\nSi abres el proyecto desde VS Code, esa misma ruta se ve como:\nsrc/build/main",
     "crumbs": [
       "Entorno",
-      "Setup"
+      "Makefiles ARM64"
     ]
   },
   {
-    "objectID": "guides/setup/index.html#resultado-esperado",
-    "href": "guides/setup/index.html#resultado-esperado",
-    "title": "Setup",
-    "section": "Resultado esperado",
-    "text": "Resultado esperado\nAl terminar esta sección debes poder ejecutar:\ncd 00-hello-minimo\nmake -C src\nmake -C src run\nY para depurar:\nmake -C src gdb\nLuego sigue con Depuración: QEMU y VS Code o con Depuración: ARM nativo y VS Code, según tu ruta.",
+    "objectID": "guides/setup/makefiles.html#qué-makefile-copio",
+    "href": "guides/setup/makefiles.html#qué-makefile-copio",
+    "title": "Makefiles ARM64",
+    "section": "Qué Makefile copio",
+    "text": "Qué Makefile copio\n\n\n\n\n\n\n\nCaso\nCopia como src/Makefile\n\n\n\n\nLaptop/PC x86_64 con QEMU, un archivo main.s\nMakefile.qemu.single\n\n\nLaptop/PC x86_64 con QEMU, varios .s\nMakefile.qemu.multi\n\n\nRaspberry Pi / ARM64 real, un archivo main.s\nMakefile.arm64.single\n\n\nRaspberry Pi / ARM64 real, varios .s\nMakefile.arm64.multi\n\n\n\n\n\n\n\n\n\nTipIdea clave\n\n\n\nNo uses banderas especiales de make. Si cambias de QEMU a Raspberry Pi, cambia el contenido de src/Makefile. Los comandos siguen iguales.",
     "crumbs": [
       "Entorno",
-      "Setup"
+      "Makefiles ARM64"
     ]
   },
   {
-    "objectID": "guides/debugging/qemu-vscode.html",
-    "href": "guides/debugging/qemu-vscode.html",
-    "title": "Depuración: QEMU y VS Code",
+    "objectID": "guides/setup/makefiles.html#comandos-disponibles",
+    "href": "guides/setup/makefiles.html#comandos-disponibles",
+    "title": "Makefiles ARM64",
+    "section": "Comandos disponibles",
+    "text": "Comandos disponibles\n\n\n\nComando\nQué hace\n\n\n\n\nmake\nEnsambla y enlaza\n\n\nmake run\nEjecuta el programa\n\n\nmake gdb\nAbre depuración según el entorno\n\n\nmake clean\nBorra build/\n\n\nmake info\nMuestra ayuda corta",
+    "crumbs": [
+      "Entorno",
+      "Makefiles ARM64"
+    ]
+  },
+  {
+    "objectID": "guides/setup/makefiles.html#qemu-un-solo-archivo",
+    "href": "guides/setup/makefiles.html#qemu-un-solo-archivo",
+    "title": "Makefiles ARM64",
+    "section": "QEMU, un solo archivo",
+    "text": "QEMU, un solo archivo\nUsa este Makefile si trabajas en x86_64 con QEMU y solo tienes main.s.\n# Template: ARM64 en host x86_64 con QEMU user mode (un solo main.s)\n\nAS      = aarch64-linux-gnu-as\nLD      = aarch64-linux-gnu-ld\nQEMU    = qemu-aarch64\n\nSRC     = main.s\nBUILD   = build\nOBJ     = $(BUILD)/main.o\nBIN     = $(BUILD)/main\n\nASFLAGS = -g\nLDFLAGS =\n\n.PHONY: all run gdb clean info\n\nall: $(BIN)\n\n$(BUILD):\n    mkdir -p $(BUILD)\n\n$(OBJ): $(SRC) | $(BUILD)\n    $(AS) $(ASFLAGS) -o $@ $&lt;\n\n$(BIN): $(OBJ)\n    $(LD) $(LDFLAGS) -o $@ $&lt;\n\nrun: $(BIN)\n    $(QEMU) $(BIN)\n\ngdb: $(BIN)\n    @echo \"Starting QEMU and waiting for GDB on port 1234...\"\n    $(QEMU) -g 1234 -singlestep $(BIN)\n\nclean:\n    rm -rf $(BUILD)\n\ninfo:\n    @echo \"Targets disponibles:\"\n    @echo \"  make        -&gt; ensambla y enlaza\"\n    @echo \"  make run    -&gt; ejecuta con QEMU\"\n    @echo \"  make gdb    -&gt; QEMU + espera GDB en localhost:1234\"\n    @echo \"  make clean  -&gt; limpia build/\"",
+    "crumbs": [
+      "Entorno",
+      "Makefiles ARM64"
+    ]
+  },
+  {
+    "objectID": "guides/setup/makefiles.html#qemu-varios-archivos",
+    "href": "guides/setup/makefiles.html#qemu-varios-archivos",
+    "title": "Makefiles ARM64",
+    "section": "QEMU, varios archivos",
+    "text": "QEMU, varios archivos\nUsa este Makefile si trabajas en x86_64 con QEMU y tu programa tiene varios archivos .s.\n# Template: ARM64 en host x86_64 con QEMU user mode (multiarchivo)\n\nAS      = aarch64-linux-gnu-as\nLD      = aarch64-linux-gnu-ld\nQEMU    = qemu-aarch64\n\nBUILD   = build\nTARGET  = $(BUILD)/main\n\nMAIN_SRC = main.s\nAUX_SRCS = $(filter-out $(MAIN_SRC), $(wildcard *.s))\nSRCS     = $(MAIN_SRC) $(AUX_SRCS)\nOBJS     = $(patsubst %.s,$(BUILD)/%.o,$(SRCS))\n\nASFLAGS = -g\nLDFLAGS =\n\n.PHONY: all run gdb clean info\n\nall: $(TARGET)\n\n$(BUILD):\n    mkdir -p $(BUILD)\n\n$(BUILD)/%.o: %.s | $(BUILD)\n    $(AS) $(ASFLAGS) -o $@ $&lt;\n\n$(TARGET): $(OBJS)\n    $(LD) $(LDFLAGS) -o $@ $(OBJS)\n\nrun: $(TARGET)\n    $(QEMU) $(TARGET)\n\ngdb: $(TARGET)\n    @echo \"Starting QEMU and waiting for GDB on port 1234...\"\n    $(QEMU) -g 1234 -singlestep $(TARGET)\n\nclean:\n    rm -rf $(BUILD)\n\ninfo:\n    @echo \"Targets disponibles:\"\n    @echo \"  make        -&gt; ensambla y enlaza todos los .s\"\n    @echo \"  make run    -&gt; ejecuta con QEMU\"\n    @echo \"  make gdb    -&gt; QEMU + espera GDB en localhost:1234\"\n    @echo \"  make clean  -&gt; limpia build/\"",
+    "crumbs": [
+      "Entorno",
+      "Makefiles ARM64"
+    ]
+  },
+  {
+    "objectID": "guides/setup/makefiles.html#arm64-nativo-un-solo-archivo",
+    "href": "guides/setup/makefiles.html#arm64-nativo-un-solo-archivo",
+    "title": "Makefiles ARM64",
+    "section": "ARM64 nativo, un solo archivo",
+    "text": "ARM64 nativo, un solo archivo\nUsa este Makefile en Raspberry Pi o Linux ARM64 real si solo tienes main.s.\n# Template: ARM64 nativo (Raspberry Pi / Linux ARM64, un solo main.s)\n\nAS      = as\nLD      = ld\n\nSRC     = main.s\nBUILD   = build\nOBJ     = $(BUILD)/main.o\nBIN     = $(BUILD)/main\n\nASFLAGS = -g\nLDFLAGS =\n\n.PHONY: all run gdb clean info\n\nall: $(BIN)\n\n$(BUILD):\n    mkdir -p $(BUILD)\n\n$(OBJ): $(SRC) | $(BUILD)\n    $(AS) $(ASFLAGS) -o $@ $&lt;\n\n$(BIN): $(OBJ)\n    $(LD) $(LDFLAGS) -o $@ $&lt;\n\nrun: $(BIN)\n    $(BIN)\n\ngdb: $(BIN)\n    gdb $(BIN)\n\nclean:\n    rm -rf $(BUILD)\n\ninfo:\n    @echo \"Targets disponibles:\"\n    @echo \"  make        -&gt; ensambla y enlaza en ARM64 nativo\"\n    @echo \"  make run    -&gt; ejecuta directo\"\n    @echo \"  make gdb    -&gt; abre GDB local\"\n    @echo \"  make clean  -&gt; limpia build/\"",
+    "crumbs": [
+      "Entorno",
+      "Makefiles ARM64"
+    ]
+  },
+  {
+    "objectID": "guides/setup/makefiles.html#arm64-nativo-varios-archivos",
+    "href": "guides/setup/makefiles.html#arm64-nativo-varios-archivos",
+    "title": "Makefiles ARM64",
+    "section": "ARM64 nativo, varios archivos",
+    "text": "ARM64 nativo, varios archivos\nUsa este Makefile en Raspberry Pi o Linux ARM64 real si tu programa tiene varios archivos .s.\n# Template: ARM64 nativo (Raspberry Pi / Linux ARM64, multiarchivo)\n\nAS      = as\nLD      = ld\n\nBUILD   = build\nTARGET  = $(BUILD)/main\n\nMAIN_SRC = main.s\nAUX_SRCS = $(filter-out $(MAIN_SRC), $(wildcard *.s))\nSRCS     = $(MAIN_SRC) $(AUX_SRCS)\nOBJS     = $(patsubst %.s,$(BUILD)/%.o,$(SRCS))\n\nASFLAGS = -g\nLDFLAGS =\n\n.PHONY: all run gdb clean info\n\nall: $(TARGET)\n\n$(BUILD):\n    mkdir -p $(BUILD)\n\n$(BUILD)/%.o: %.s | $(BUILD)\n    $(AS) $(ASFLAGS) -o $@ $&lt;\n\n$(TARGET): $(OBJS)\n    $(LD) $(LDFLAGS) -o $@ $(OBJS)\n\nrun: $(TARGET)\n    $(TARGET)\n\ngdb: $(TARGET)\n    gdb $(TARGET)\n\nclean:\n    rm -rf $(BUILD)\n\ninfo:\n    @echo \"Targets disponibles:\"\n    @echo \"  make        -&gt; ensambla y enlaza todos los .s\"\n    @echo \"  make run    -&gt; ejecuta directo\"\n    @echo \"  make gdb    -&gt; abre GDB local\"\n    @echo \"  make clean  -&gt; limpia build/\"",
+    "crumbs": [
+      "Entorno",
+      "Makefiles ARM64"
+    ]
+  },
+  {
+    "objectID": "guides/setup/makefiles.html#checklist",
+    "href": "guides/setup/makefiles.html#checklist",
+    "title": "Makefiles ARM64",
+    "section": "Checklist",
+    "text": "Checklist\n\nElegí un template según mi máquina.\nLo guardé como src/Makefile.\nPuedo ejecutar make.\nPuedo ejecutar make run.\nEl binario aparece como build/main dentro de src/.",
+    "crumbs": [
+      "Entorno",
+      "Makefiles ARM64"
+    ]
+  },
+  {
+    "objectID": "guides/setup/docker.html",
+    "href": "guides/setup/docker.html",
+    "title": "Setup: Docker",
     "section": "",
-    "text": "Esta guía conecta VS Code con un binario AArch64 ejecutándose bajo QEMU. Es la ruta correcta cuando tu máquina anfitriona es x86_64.",
+    "text": "Docker ofrece un entorno reproducible para laboratorios, máquinas prestadas o equipos donde instalar toolchains causa demasiada fricción.",
     "crumbs": [
-      "Debugging",
-      "Depuración: QEMU y VS Code"
+      "Entorno",
+      "Setup: Docker"
     ]
   },
   {
-    "objectID": "guides/debugging/qemu-vscode.html#compila-el-ejemplo",
-    "href": "guides/debugging/qemu-vscode.html#compila-el-ejemplo",
-    "title": "Depuración: QEMU y VS Code",
-    "section": "1. Compila el ejemplo",
-    "text": "1. Compila el ejemplo\ncd 00-hello-minimo\nmake -C src",
+    "objectID": "guides/setup/docker.html#construir-imagen",
+    "href": "guides/setup/docker.html#construir-imagen",
+    "title": "Setup: Docker",
+    "section": "Construir imagen",
+    "text": "Construir imagen\nDesde la raíz del repo:\ndocker build -t arm-riscv-lab -f tooling/docker/Dockerfile .",
     "crumbs": [
-      "Debugging",
-      "Depuración: QEMU y VS Code"
+      "Entorno",
+      "Setup: Docker"
     ]
   },
   {
-    "objectID": "guides/debugging/qemu-vscode.html#arranca-qemu-con-gdb-server",
-    "href": "guides/debugging/qemu-vscode.html#arranca-qemu-con-gdb-server",
-    "title": "Depuración: QEMU y VS Code",
-    "section": "2. Arranca QEMU con GDB server",
-    "text": "2. Arranca QEMU con GDB server\nmake -C src gdb\nDeja esa terminal abierta. El programa está esperando al debugger. En el Makefile de QEMU, este target usa -singlestep para reducir saltos visuales:\ngdb: $(TARGET)\n    $(QEMU) -g 1234 -singlestep $(TARGET)",
+    "objectID": "guides/setup/docker.html#usar-contenedor",
+    "href": "guides/setup/docker.html#usar-contenedor",
+    "title": "Setup: Docker",
+    "section": "Usar contenedor",
+    "text": "Usar contenedor\ndocker run --rm -it -v \"$PWD\":/workspace -w /workspace arm-riscv-lab\nDentro del contenedor:\ncd 00-hello-minimo\ncd src\nmake\nmake run",
     "crumbs": [
-      "Debugging",
-      "Depuración: QEMU y VS Code"
+      "Entorno",
+      "Setup: Docker"
     ]
   },
   {
-    "objectID": "guides/debugging/qemu-vscode.html#conecta-vs-code",
-    "href": "guides/debugging/qemu-vscode.html#conecta-vs-code",
-    "title": "Depuración: QEMU y VS Code",
-    "section": "3. Conecta VS Code",
-    "text": "3. Conecta VS Code\nInstala estas extensiones:\n\n\n\nExtensión\nID\n\n\n\n\nC/C++\nms-vscode.cpptools\n\n\nMakefile Tools\nms-vscode.makefile-tools\n\n\nARM64 Assembly (GNU AS)\nFelipenguim.vscode-arm64-assembly\n\n\nStackScope\nEightLayerStudio.StackScope\n\n\n\nEn VS Code usa la configuración Debug ARM64 (QEMU).\nConfig completa para copiar en .vscode/launch.json:\n{\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"name\": \"Debug ARM64 (QEMU)\",\n      \"type\": \"cppdbg\",\n      \"request\": \"launch\",\n      \"program\": \"${workspaceFolder}/src/build/main\",\n      \"cwd\": \"${workspaceFolder}/src\",\n      \"MIMode\": \"gdb\",\n      \"miDebuggerPath\": \"/usr/bin/gdb-multiarch\",\n      \"miDebuggerServerAddress\": \"localhost:1234\",\n      \"stopAtEntry\": true,\n      \"sourceFileMap\": {\n        \"${workspaceFolder}/src\": \"${workspaceFolder}/src\"\n      },\n      \"setupCommands\": [\n        { \"text\": \"-enable-pretty-printing\" },\n        { \"text\": \"set architecture aarch64\" },\n        { \"text\": \"set disassemble-next-line on\" },\n        { \"text\": \"set step-mode on\" },\n        { \"text\": \"set pagination off\" },\n        { \"text\": \"set breakpoint auto-hw on\" }\n      ]\n    }\n  ]\n}\n\n\n\n\n\n\nNotaSi usas otra carpeta\n\n\n\nAbre 00-hello-minimo/ como workspace. Así VS Code encuentra ${workspaceFolder}/src/build/main.",
+    "objectID": "guides/setup/docker.html#depurar-desde-vs-code",
+    "href": "guides/setup/docker.html#depurar-desde-vs-code",
+    "title": "Setup: Docker",
+    "section": "Depurar desde VS Code",
+    "text": "Depurar desde VS Code\nExpón el puerto del GDB server:\ndocker run --rm -it -p 1234:1234 -v \"$PWD\":/workspace -w /workspace arm-riscv-lab\nDentro del contenedor:\ncd 00-hello-minimo\ncd src\nmake gdb\nEn el host, conecta VS Code a localhost:1234.\n\n\n\n\n\n\nAdvertenciaRutas dentro y fuera del contenedor\n\n\n\nEl proyecto vive como /workspace dentro del contenedor. Si una configuración de debugging no encuentra el binario, revisa que VS Code esté abierto en la raíz del repo en el host.",
     "crumbs": [
-      "Debugging",
-      "Depuración: QEMU y VS Code"
+      "Entorno",
+      "Setup: Docker"
     ]
   },
   {
-    "objectID": "guides/debugging/qemu-vscode.html#debug-console",
-    "href": "guides/debugging/qemu-vscode.html#debug-console",
-    "title": "Depuración: QEMU y VS Code",
-    "section": "4. Debug Console",
-    "text": "4. Debug Console\nEn la Debug Console de VS Code puedes forzar depuración por instrucción:\nstepi\nnexti\nbreak _start\nbreak printString\nbreak readIntFromConsole\ninfo registers x0 x1 x2 x8 pc\nx/6i $pc\nsvc #0 entra al kernel. GDB no entra a depurar internamente esa llamada como si fuera una función de tu archivo .s; observa registros antes y después.",
-    "crumbs": [
-      "Debugging",
-      "Depuración: QEMU y VS Code"
-    ]
-  },
-  {
-    "objectID": "guides/debugging/qemu-vscode.html#qué-observar-primero",
-    "href": "guides/debugging/qemu-vscode.html#qué-observar-primero",
-    "title": "Depuración: QEMU y VS Code",
-    "section": "Qué observar primero",
-    "text": "Qué observar primero\n\n\npc\nDirección de la instrucción actual.\n\n\nx0 a x2\nArgumentos de write y exit.\n\n\nx8\nNúmero de syscall.\n\n\nMemoria\nDirección del mensaje apuntada por x1.\n\n\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nSi VS Code dice que no puede conectar, casi siempre make -C src gdb no está corriendo o el puerto 1234 ya está ocupado.\n\n\n\n\n\n\n\n\nTipBreakpoints por etiqueta\n\n\n\nbreak nombreEtiqueta funciona si el símbolo existe en el binario. Con .include, la etiqueta queda en el mismo ensamblado; con .extern, debe venir de otro objeto enlazado.",
-    "crumbs": [
-      "Debugging",
-      "Depuración: QEMU y VS Code"
-    ]
-  },
-  {
-    "objectID": "courses/riscv/index.html",
-    "href": "courses/riscv/index.html",
-    "title": "Ruta RISC-V",
+    "objectID": "guides/debugging/native-vscode.html",
+    "href": "guides/debugging/native-vscode.html",
+    "title": "Depuración: ARM nativo y VS Code",
     "section": "",
-    "text": "Cursos &gt; RISC-V",
+    "text": "En ARM nativo no se usa QEMU. VS Code lanza GDB directamente sobre el binario AArch64 porque el procesador anfitrión ya puede ejecutarlo.",
     "crumbs": [
-      "RISC-V",
-      "Inicio del curso"
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
     ]
   },
   {
-    "objectID": "courses/riscv/index.html#estado-actual",
-    "href": "courses/riscv/index.html#estado-actual",
-    "title": "Ruta RISC-V",
-    "section": "Estado actual",
-    "text": "Estado actual\n\nBase inicial del curso\nEl contenido se agregará por unidades conforme avance la ruta.",
+    "objectID": "guides/debugging/native-vscode.html#compila",
+    "href": "guides/debugging/native-vscode.html#compila",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Compila",
+    "text": "Compila\ncd 00-hello-minimo\ncd src\nmake",
     "crumbs": [
-      "RISC-V",
-      "Inicio del curso"
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
     ]
   },
   {
-    "objectID": "courses/riscv/index.html#primer-bloque-previsto",
-    "href": "courses/riscv/index.html#primer-bloque-previsto",
-    "title": "Ruta RISC-V",
-    "section": "Primer bloque previsto",
-    "text": "Primer bloque previsto\n\nFundamentos de RISC-V\n\n\nSetup y herramientas\nBases binarias y representación de datos\nModelo de registros RISC-V\nInstrucciones base RV64I\nPrimer programa mínimo",
+    "objectID": "guides/debugging/native-vscode.html#lanza-gdb",
+    "href": "guides/debugging/native-vscode.html#lanza-gdb",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Lanza GDB",
+    "text": "Lanza GDB\nmake gdb\nEn VS Code usa la configuración Debug ARM64 (nativo).\nInstala estas extensiones:\n\n\n\nExtensión\nID\n\n\n\n\nC/C++\nms-vscode.cpptools\n\n\nMakefile Tools\nms-vscode.makefile-tools\n\n\nARM64 Assembly (GNU AS)\nFelipenguim.vscode-arm64-assembly\n\n\nStackScope\nEightLayerStudio.StackScope\n\n\n\nConfig completa para copiar en .vscode/launch.json:\n{\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"name\": \"Debug ARM64 (nativo)\",\n      \"type\": \"cppdbg\",\n      \"request\": \"launch\",\n      \"program\": \"${workspaceFolder}/src/build/main\",\n      \"cwd\": \"${workspaceFolder}/src\",\n      \"MIMode\": \"gdb\",\n      \"miDebuggerPath\": \"/usr/bin/gdb\",\n      \"stopAtEntry\": true,\n      \"setupCommands\": [\n        { \"text\": \"-enable-pretty-printing\" },\n        { \"text\": \"set architecture aarch64\" },\n        { \"text\": \"set disassemble-next-line on\" },\n        { \"text\": \"set step-mode on\" },\n        { \"text\": \"set pagination off\" }\n      ]\n    }\n  ]\n}",
     "crumbs": [
-      "RISC-V",
-      "Inicio del curso"
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
     ]
   },
   {
-    "objectID": "courses/riscv/index.html#siguiente-paso",
-    "href": "courses/riscv/index.html#siguiente-paso",
-    "title": "Ruta RISC-V",
-    "section": "Siguiente paso",
-    "text": "Siguiente paso\nCrear la unidad “Setup y herramientas”.",
+    "objectID": "guides/debugging/native-vscode.html#qué-cambia-frente-a-qemu",
+    "href": "guides/debugging/native-vscode.html#qué-cambia-frente-a-qemu",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Qué cambia frente a QEMU",
+    "text": "Qué cambia frente a QEMU\n\n\n\n\n\n\n\n\nTema\nQEMU en x86_64\nARM nativo\n\n\n\n\nEjecución\nqemu-aarch64\nDirecta\n\n\nDebugger\ngdb-multiarch\ngdb\n\n\nConexión\nlocalhost:1234\nLaunch local\n\n\nMakefile activo\nTemplate QEMU copiado como Makefile\nTemplate ARM64 copiado como Makefile\n\n\n\n\n\n\n\n\n\nTipMisma idea, menos capas\n\n\n\nLos registros, syscalls y flujo del programa son los mismos. Lo que cambia es la forma en que el proceso llega a ejecutarse.",
     "crumbs": [
-      "RISC-V",
-      "Inicio del curso"
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html",
-    "href": "courses/aarch64/laboratorio/index.html",
-    "title": "01 · Laboratorio ARM64 reproducible",
+    "objectID": "guides/debugging/native-vscode.html#errores-visuales-comunes",
+    "href": "guides/debugging/native-vscode.html#errores-visuales-comunes",
+    "title": "Depuración: ARM nativo y VS Code",
+    "section": "Errores visuales comunes",
+    "text": "Errores visuales comunes\nEn ARM nativo también puede parecer que GDB salta líneas. Esto ocurre porque GDB puede avanzar por líneas fuente, mientras el procesador ejecuta instrucciones. Para assembly, usa comandos por instrucción en la Debug Console:\nstepi\nnexti\nbreak _start\nbreak printString\nbreak readIntFromConsole\ninfo registers x0 x1 x2 x8 pc\nx/6i $pc\nsvc #0 entra al kernel. No esperes ver por dentro la syscall como si fuera una función de tu código.\n\n\n\n\n\n\nTipBreakpoints por etiqueta\n\n\n\nbreak nombreEtiqueta funciona si el símbolo existe en el binario. Con .include, la etiqueta queda en el mismo ensamblado; con .extern, debe venir de otro objeto enlazado.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: ARM nativo y VS Code"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/roadmap.html",
+    "href": "courses/aarch64/roadmap.html",
+    "title": "Roadmap AArch64",
     "section": "",
-    "text": "Cursos &gt; AArch64 &gt; Laboratorio ARM64 reproducible",
+    "text": "Cursos &gt; AArch64 &gt; Roadmap",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Roadmap"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#mapa-rápido",
-    "href": "courses/aarch64/laboratorio/index.html#mapa-rápido",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Mapa rápido",
-    "text": "Mapa rápido\n\n\n1. Elige ruta Raspberry Pi ARM64 real o x86_64 con QEMU user mode.\n\n\n2. Instala Toolchain, binutils, Make, QEMU o GDB según tu máquina.\n\n\n3. Ejecuta Compila con make -C src y corre con make -C src run.\n\n\n4. Observa Usa file, readelf, objdump, nm y strace como primera mirada.\n\n\n5. Depura Detente en _start, mira registros y avanza instrucción por instrucción.",
+    "objectID": "courses/aarch64/roadmap.html#lectura-rápida",
+    "href": "courses/aarch64/roadmap.html#lectura-rápida",
+    "title": "Roadmap AArch64",
+    "section": "Lectura rápida",
+    "text": "Lectura rápida\n\n\nBase obligatoria\nUnidades 0-10. Programas ARM64 simples en Linux con registros, memoria, control de flujo y syscalls.\n\n\nRuta profesional\nUnidades 11-44. ABI, ELF, debugging, SIMD, hardware, kernel, reversing, seguridad, virtualización y proyectos.",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Roadmap"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#qué-ruta-uso",
-    "href": "courses/aarch64/laboratorio/index.html#qué-ruta-uso",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Qué ruta uso",
-    "text": "Qué ruta uso\n\n\n\n\n\n\n\n\nSi tienes…\nUsa…\nSeñal esperada\n\n\n\n\nRaspberry Pi con Linux de 64 bits\nARM64 nativo\nuname -m muestra aarch64 o arm64\n\n\nLaptop o PC Linux x86_64\nCross toolchain + QEMU user mode\nuname -m puede mostrar x86_64\n\n\nMáquina restringida o laboratorio compartido\nDocker opcional\nMismo entorno dentro del contenedor\n\n\n\n\n\n\n\n\n\nTipRecomendación docente\n\n\n\nSi el estudiante no sabe cuál usar, debe empezar por x86_64 con QEMU user mode. Es la ruta más reproducible cuando no hay Raspberry Pi disponible.",
+    "objectID": "courses/aarch64/roadmap.html#bloques",
+    "href": "courses/aarch64/roadmap.html#bloques",
+    "title": "Roadmap AArch64",
+    "section": "Bloques",
+    "text": "Bloques\n\n\nBloque A — Fundamentos de computación y ARM64\n\n\n\n0. Contexto, historia y objetivos\n\nQué es assembly, ISA, ARMv8-A, AArch64, A64 y por qué aprender bajo nivel.\n\n\n\n1. Laboratorio ARM64 reproducible\n\nLinux, QEMU, toolchain, binutils, GDB, strace y flujo mínimo de trabajo.\n\n\n\n2. Bases binarias y representación\n\nBits, bytes, bases numéricas, signed/unsigned, overflow, endianness y direcciones.\n\n\n\n3. Modelo ARMv8-A / AArch64\n\nRegistros X/W, SP, PC, LR, PSTATE, NZCV, SIMD y niveles de excepción como mapa inicial.\n\n\n\n4. GNU Assembly, directivas y pseudo-instrucciones\n\nArchivo .s, secciones, símbolos, datos, macros básicas, literales y direccionamiento simbólico.\n\n\n\n\n\n\nBloque B — Programación ARM64 userland en Linux\n\n\n\n5. Primeros programas en Linux AArch64\n\n_start, exit, write, hello world sin libc, ensamblado, linking y svc #0.\n\n\n\n6. Memoria básica, secciones y direccionamiento\n\nLoad/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.\n\n\n\n7. Aritmética, lógica, flags y bits\n\nOperaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.\n\n\n\n8. Control de flujo y programación estructurada\n\nBranches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.\n\n\n\n9. Syscalls esenciales\n\nContrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.\n\n\n\n10. Linux como API del kernel\n\nFile descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.\n\n\n\n\n\n\nBloque C — Funciones, memoria dinámica, ABI y binarios\n\n\n\n11. Stack, funciones y stack frames\n\nCaller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.\n\n\n\n12. Heap y memoria dinámica\n\nStack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.\n\n\n\n13. mmap, munmap, mprotect, páginas y permisos\n\nMemoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.\n\n\n\n14. Layout de datos, structs, ADTs y objetos manuales\n\nOffsets, size, alignment, padding, invariantes, self pointer y descriptores propios.\n\n\n\n15. ABI, AAPCS64 e interoperabilidad con C\n\nCalling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.\n\n\n\n16. ELF, linking, loading y binarios\n\nObjetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT y GOT.\n\n\n\n17. Debugging con GDB, QEMU y strace\n\nBreakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.\n\n\n\n\n\n\nBloque D — Algoritmos, SIMD, rendimiento y validación\n\n\n\n18. Strings, arrays y algoritmos\n\nCadenas terminadas en cero, arrays, punteros, búsqueda, copia, comparación y conversiones.\n\n\n\n19. Floating point y SIMD/NEON básico\n\nRegistros S/D/V, conversiones, comparaciones, lanes, cargas vectoriales y reducciones básicas.\n\n\n\n20. Performance, profiling y optimización básica\n\nMedición, localidad, branches, csel, loop unrolling conceptual, perf básico y comparación con C.\n\n\n\n21. Concurrencia, atomics y barriers básico\n\nRace conditions, exclusive monitor, ldxr/stxr, acquire/release y memory ordering inicial.\n\n\n\n22. Excepciones, EL0-EL3, MMU y sistema conceptual\n\nException levels, traps, SVC, vectores, registros de excepción, MMU, page tables y TLB.\n\n\n\n23. Seguridad de memoria y errores comunes\n\nCrashes, SIGSEGV, overflows, stack/heap corruption, ASLR, NX, canaries, W^X y bugs de memoria.\n\n\n\n24. Testing, validación y documentación técnica\n\nPruebas por stdout, códigos de salida, errores, strace, GDB, supuestos y reportes de laboratorio.\n\n\n\n25. Proyectos integradores base\n\nHello sin libc, echo, cat, conversores, buffers dinámicos, mini malloc, strings, matrices y ELF simple.\n\n\n\n26. Apéndices y referencias\n\nTablas de registros, condiciones, syscalls, instrucciones, cheatsheets, glosario y bibliografía.\n\n\n\n\n\n\nBloque E — Hardware y bare metal\n\n\n\n27. Hardware real, GPIO y memoria mapeada desde Linux\n\nMMIO, Raspberry Pi, GPIO, /dev/mem, mmap físico, permisos root, volatile y barreras.\n\n\n\n28. Bare metal AArch64 en Raspberry Pi\n\nBoot flow, kernel8.img, linker script, stack inicial, .bss, GPIO directo, UART y monitor mínimo.\n\n\n\n29. Excepciones, interrupciones, timers y UART\n\nVector table, ESR/ELR/SPSR, eret, contexto, timer, interrupt controller, UART polling e interrupciones.\n\n\n\n30. MMU práctica, páginas, atributos y permisos\n\nTranslation tables, descriptors, MAIR, TCR, TTBR, SCTLR, Device memory, Normal memory y TLB.\n\n\n\n31. Caches, barriers, coherencia y memoria de dispositivos\n\nCache lines, maintenance, dsb/dmb/isb, coherencia, DMA conceptual y diferencias entre Device y Normal memory.\n\n\n\n\n\n\nBloque F — Sistemas avanzados\n\n\n\n32. Concurrencia avanzada, atomics y sincronización SMP\n\nSMP, spinlocks, lock-free básico, LSE atomics, barriers, seqlock, ticket lock y producer-consumer.\n\n\n\n33. RTOS mínimo\n\nDeterminismo, tick, scheduler cooperativo/preemptivo, TCB, stacks por tarea, prioridades y sincronización.\n\n\n\n34. Kernel internals de Linux ARM64\n\nSyscall path, exception entry, task_struct conceptual, VMAs, page tables, modules, procfs, sysfs y debugfs.\n\n\n\n35. Device drivers en Linux ARM64\n\nDevice tree, platform drivers, ioremap, readl/writel, interrupts, GPIO subsystem, char devices y DMA conceptual.\n\n\n\n\n\n\nBloque G — Optimización, reversing y seguridad\n\n\n\n36. NEON / Advanced SIMD avanzado\n\nLanes, ld/st múltiples, zip/unzip, tbl, saturating, widening, narrowing, reductions e intrinsics.\n\n\n\n37. Performance, profiling, PMU y microarquitectura\n\nPMU counters, cycles, cache misses, IPC, pipeline, OoO, speculation, data layout y cache blocking.\n\n\n\n38. Análisis binario e ingeniería inversa ARM64\n\nobjdump/readelf avanzados, símbolos, PLT/GOT, prologues, CFG, Ghidra, structs y patrones de compilador.\n\n\n\n39. Seguridad de memoria, vulnerabilidades y mitigaciones\n\nOverflows, use-after-free, NX, ASLR, canaries, RELRO, PIE, PAC, BTI, MTE y hardening defensivo.\n\n\n\n40. Side channels, speculation y constant-time programming\n\nTiming, cache side channels, speculation, Spectre, constant-time, DIT, SSBS, barriers y mitigaciones.\n\n\n\n\n\n\nBloque H — Arquitectura avanzada ARM\n\n\n\n41. Virtualización ARM, EL2 e hipervisores\n\nEL2, guests, traps, HVC, Stage 1/2 translation, IPA, VMID, VCPU, virtual interrupts y KVM/ARM.\n\n\n\n42. Trusted execution, TrustZone, secure boot y TEE\n\nSecure world, normal world, EL3, SMC, TEE, OP-TEE, secure boot, chain of trust y límites de TrustZone.\n\n\n\n43. Compiladores, inline assembly, intrinsics y código generado\n\nGCC/Clang, optimización, register allocation, inlining, tail calls, vectorización, constraints y clobbers.\n\n\n\n44. Proyectos integradores avanzados\n\nProyectos de hardware, kernel, MMU, SIMD, reversing y seguridad defensiva para cerrar la ruta.",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Roadmap"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#lecciones-de-esta-unidad",
-    "href": "courses/aarch64/laboratorio/index.html#lecciones-de-esta-unidad",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Lecciones de esta unidad",
-    "text": "Lecciones de esta unidad\n\n\nEntorno Linux ARM64\nLinux como base, Raspberry Pi real, QEMU user mode y mención de QEMU system mode.\nAbrir\n\n\nInstalación toolchain\nPaquetes por ruta, verificación mínima y Docker como alternativa.\nAbrir\n\n\nPrimer programa\nAssembly AArch64 mínimo, Makefile, make -C src, make -C src run y salida esperada.\nAbrir\n\n\nInspección del binario\nfile, readelf, objdump, nm, hexdump, xxd, ldd y strace.\nAbrir\n\n\nDebugging mínimo\nBreakpoints, registros y stepi con gdb o gdb-multiarch.\nAbrir\n\n\nEstructura del repo\nCómo organizar teoría, ejemplos, ejercicios, slides y Makefiles.\nAbrir",
+    "objectID": "courses/aarch64/roadmap.html#regla-de-crecimiento",
+    "href": "courses/aarch64/roadmap.html#regla-de-crecimiento",
+    "title": "Roadmap AArch64",
+    "section": "Regla de crecimiento",
+    "text": "Regla de crecimiento\nLa ruta no enlazará páginas que no existan. Primero se publica una unidad, luego aparece en el sidebar y en la navegación del bloque correspondiente.",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Roadmap"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#herramientas-del-laboratorio",
-    "href": "courses/aarch64/laboratorio/index.html#herramientas-del-laboratorio",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Herramientas del laboratorio",
-    "text": "Herramientas del laboratorio\n\nLinux make as ld gcc aarch64-linux-gnu-gcc qemu-aarch64 gdb-multiarch objdump readelf nm file ldd strace hexdump xxd perf Docker",
+    "objectID": "courses/aarch64/laboratorio/06-estructura-repositorio.html",
+    "href": "courses/aarch64/laboratorio/06-estructura-repositorio.html",
+    "title": "01.6 · Estructura del repositorio",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Laboratorio &gt; Estructura del repositorio",
     "crumbs": [
       "Roadmap",
       "AArch64",
       "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Estructura del repositorio"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#resultado-esperado",
-    "href": "courses/aarch64/laboratorio/index.html#resultado-esperado",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Resultado esperado",
-    "text": "Resultado esperado\nAl terminar la unidad debes poder ejecutar:\ncd 00-hello-minimo\nmake -C src\nmake -C src run\nSalida esperada:\nHola ARM64\nY debes poder explicar, en una frase corta, qué herramienta genera el binario, qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.",
+    "objectID": "courses/aarch64/laboratorio/06-estructura-repositorio.html#proyecto-mínimo",
+    "href": "courses/aarch64/laboratorio/06-estructura-repositorio.html#proyecto-mínimo",
+    "title": "01.6 · Estructura del repositorio",
+    "section": "Proyecto mínimo",
+    "text": "Proyecto mínimo\n00-hello-minimo/\n|- .vscode/\n|  |- launch.json\n|  `- settings.json\n`- src/\n   |- Makefile\n   `- main.s\nEn src/ solo necesitas dos archivos para empezar:\n\n\n\nArchivo\nUso\n\n\n\n\nmain.s\nCódigo assembly\n\n\nMakefile\nFlujo activo: QEMU o ARM64 nativo\n\n\n\nEl binario generado queda en src/build/main visto desde VS Code, y en build/main cuando ya estás dentro de src/.",
     "crumbs": [
       "Roadmap",
       "AArch64",
       "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Estructura del repositorio"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#checklist-de-cierre",
-    "href": "courses/aarch64/laboratorio/index.html#checklist-de-cierre",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Checklist de cierre",
-    "text": "Checklist de cierre\n\nSé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.\nInstalé las herramientas mínimas de mi ruta.\nmake -C src genera src/build/main.\nmake -C src run imprime Hola ARM64.\nfile src/build/main identifica un binario AArch64.\nPuedo ver símbolos con nm o instrucciones con objdump.\nPuedo detenerme en _start con GDB.\nSé dónde van teoría, ejemplo, ejercicio y presentación.",
+    "objectID": "courses/aarch64/laboratorio/06-estructura-repositorio.html#flujo-único",
+    "href": "courses/aarch64/laboratorio/06-estructura-repositorio.html#flujo-único",
+    "title": "01.6 · Estructura del repositorio",
+    "section": "Flujo único",
+    "text": "Flujo único\ncd 00-hello-minimo\ncd src\nmake\nmake run\nmake gdb\nQEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como src/Makefile.",
     "crumbs": [
       "Roadmap",
       "AArch64",
       "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Estructura del repositorio"
     ]
   },
   {
-    "objectID": "courses/aarch64/laboratorio/index.html#siguiente-paso",
-    "href": "courses/aarch64/laboratorio/index.html#siguiente-paso",
-    "title": "01 · Laboratorio ARM64 reproducible",
-    "section": "Siguiente paso",
-    "text": "Siguiente paso\nEmpieza por Entorno Linux ARM64. Si ya sabes tu ruta y tienes paquetes instalados, salta directo a Primer programa.",
+    "objectID": "courses/aarch64/laboratorio/06-estructura-repositorio.html#templates-disponibles",
+    "href": "courses/aarch64/laboratorio/06-estructura-repositorio.html#templates-disponibles",
+    "title": "01.6 · Estructura del repositorio",
+    "section": "Templates disponibles",
+    "text": "Templates disponibles\nLos templates viven en:\ntooling/make/makefile-templates/\n|- Makefile.qemu.single\n|- Makefile.qemu.multi\n|- Makefile.arm64.single\n`- Makefile.arm64.multi\n\n\n\nTemplate\nCuándo usarlo\n\n\n\n\nMakefile.qemu.single\nx86_64 + QEMU, un main.s\n\n\nMakefile.qemu.multi\nx86_64 + QEMU, varios .s\n\n\nMakefile.arm64.single\nRaspberry Pi / ARM64 real, un main.s\n\n\nMakefile.arm64.multi\nRaspberry Pi / ARM64 real, varios .s\n\n\n\nPara copiar y entender cada uno, usa la guía Makefiles ARM64.\n\n\n\n\n\n\nTipRegla docente\n\n\n\nNo uses banderas especiales de make en las prácticas iniciales. Cambia el contenido de src/Makefile y conserva los comandos.",
     "crumbs": [
       "Roadmap",
       "AArch64",
       "01 · Laboratorio ARM64 reproducible",
-      "Mapa de la unidad"
+      "Estructura del repositorio"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/laboratorio/06-estructura-repositorio.html#carpetas-del-curso",
+    "href": "courses/aarch64/laboratorio/06-estructura-repositorio.html#carpetas-del-curso",
+    "title": "01.6 · Estructura del repositorio",
+    "section": "Carpetas del curso",
+    "text": "Carpetas del curso\n\n\n\nCarpeta\nUso\n\n\n\n\ncourses/\nPáginas Quarto del curso\n\n\nguides/\nSetup, Makefiles, debugging y troubleshooting\n\n\nlessons/\nEjemplos ejecutables\n\n\nexercises/\nPrácticas\n\n\nprojects/\nEstructuras mínimas de proyecto\n\n\nslides/\nPresentaciones Slidev\n\n\ntooling/\nTemplates y soporte técnico",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "01 · Laboratorio ARM64 reproducible",
+      "Estructura del repositorio"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/laboratorio/06-estructura-repositorio.html#checklist",
+    "href": "courses/aarch64/laboratorio/06-estructura-repositorio.html#checklist",
+    "title": "01.6 · Estructura del repositorio",
+    "section": "Checklist",
+    "text": "Checklist\n\nMi ejemplo tiene .vscode/ y src/.\nsrc/ solo necesita Makefile y main.s para empezar.\nUso make, make run y make gdb.\nSi cambio de entorno, reemplazo src/Makefile.\nVS Code apunta a src/build/main.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "01 · Laboratorio ARM64 reproducible",
+      "Estructura del repositorio"
     ]
   },
   {
@@ -365,7 +442,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#prepara-el-ejemplo",
     "title": "01.4 · Inspección básica del binario",
     "section": "Prepara el ejemplo",
-    "text": "Prepara el ejemplo\ncd 00-hello-minimo\nmake -C src\nEn Raspberry Pi:\nmake -C src -f Makefile.arm64",
+    "text": "Prepara el ejemplo\ncd 00-hello-minimo\ncd src\nmake",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -378,7 +455,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#identificar-el-archivo",
     "title": "01.4 · Inspección básica del binario",
     "section": "Identificar el archivo",
-    "text": "Identificar el archivo\nfile src/build/main\nDebes ver que es un ejecutable ELF de AArch64 o ARM aarch64.\n\n\n\n\n\n\nNotaNo estudiar ELF todavía\n\n\n\nPor ahora solo usa file para confirmar arquitectura y tipo de archivo. Headers, segmentos, secciones y loader vendrán después.",
+    "text": "Identificar el archivo\nfile build/main\nDebes ver que es un ejecutable ELF de AArch64 o ARM aarch64.\n\n\n\n\n\n\nNotaNo estudiar ELF todavía\n\n\n\nPor ahora solo usa file para confirmar arquitectura y tipo de archivo. Headers, segmentos, secciones y loader vendrán después.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -391,7 +468,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#ver-encabezado-elf",
     "title": "01.4 · Inspección básica del binario",
     "section": "Ver encabezado ELF",
-    "text": "Ver encabezado ELF\nreadelf -h src/build/main\nBusca tres datos:\n\n\n\nCampo\nQué observar\n\n\n\n\nClass\nELF64\n\n\nMachine\nAArch64\n\n\nEntry point address\nDirección donde inicia el programa",
+    "text": "Ver encabezado ELF\nreadelf -h build/main\nBusca tres datos:\n\n\n\nCampo\nQué observar\n\n\n\n\nClass\nELF64\n\n\nMachine\nAArch64\n\n\nEntry point address\nDirección donde inicia el programa",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -404,7 +481,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#ver-instrucciones",
     "title": "01.4 · Inspección básica del binario",
     "section": "Ver instrucciones",
-    "text": "Ver instrucciones\naarch64-linux-gnu-objdump -d src/build/main\nEn Raspberry Pi también puede funcionar:\nobjdump -d src/build/main\nBusca _start y las instrucciones mov, adr y svc.",
+    "text": "Ver instrucciones\naarch64-linux-gnu-objdump -d build/main\nEn Raspberry Pi también puede funcionar:\nobjdump -d build/main\nBusca _start y las instrucciones mov, adr y svc.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -417,7 +494,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#ver-símbolos",
     "title": "01.4 · Inspección básica del binario",
     "section": "Ver símbolos",
-    "text": "Ver símbolos\naarch64-linux-gnu-nm src/build/main\nEn Raspberry Pi:\nnm src/build/main\nBusca:\n\n\n\nSímbolo\nSignificado mínimo\n\n\n\n\n_start\nEntrada del programa\n\n\nmsg\nDirección del mensaje\n\n\nmsg_len\nLongitud calculada por assembler",
+    "text": "Ver símbolos\naarch64-linux-gnu-nm build/main\nEn Raspberry Pi:\nnm build/main\nBusca:\n\n\n\nSímbolo\nSignificado mínimo\n\n\n\n\n_start\nEntrada del programa\n\n\nmsg\nDirección del mensaje\n\n\nmsg_len\nLongitud calculada por assembler",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -430,7 +507,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#ver-bytes",
     "title": "01.4 · Inspección básica del binario",
     "section": "Ver bytes",
-    "text": "Ver bytes\nhexdump -C src/build/main | head\nxxd src/build/main | head\nNo necesitas interpretar todo. La meta es notar que el archivo final son bytes y que las herramientas dan distintas vistas del mismo binario.",
+    "text": "Ver bytes\nhexdump -C build/main | head\nxxd build/main | head\nNo necesitas interpretar todo. La meta es notar que el archivo final son bytes y que las herramientas dan distintas vistas del mismo binario.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -443,7 +520,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#ver-bibliotecas-dinámicas",
     "title": "01.4 · Inspección básica del binario",
     "section": "Ver bibliotecas dinámicas",
-    "text": "Ver bibliotecas dinámicas\nldd src/build/main\nComo este ejemplo se enlaza sin libc y estático, puede aparecer algo como:\nnot a dynamic executable\nEso está bien para este laboratorio.",
+    "text": "Ver bibliotecas dinámicas\nldd build/main\nComo este ejemplo se enlaza sin libc y estático, puede aparecer algo como:\nnot a dynamic executable\nEso está bien para este laboratorio.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -456,7 +533,7 @@
     "href": "courses/aarch64/laboratorio/04-inspeccion-binario.html#observar-syscalls",
     "title": "01.4 · Inspección básica del binario",
     "section": "Observar syscalls",
-    "text": "Observar syscalls\nRuta Raspberry Pi ARM64:\nstrace ./src/build/main\nRuta x86_64 con QEMU:\nstrace qemu-aarch64 ./src/build/main\nEn x86_64, strace observa el proceso QEMU desde el host. No lo uses todavía como explicación completa de syscalls ARM64. Aquí solo sirve para ver que hay interacción con Linux.",
+    "text": "Observar syscalls\nRuta Raspberry Pi ARM64:\nstrace ./build/main\nRuta x86_64 con QEMU:\nstrace qemu-aarch64 ./build/main\nEn x86_64, strace observa el proceso QEMU desde el host. No lo uses todavía como explicación completa de syscalls ARM64. Aquí solo sirve para ver que hay interacción con Linux.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -948,7 +1025,7 @@
     "href": "courses/aarch64/laboratorio/01-entorno-linux-arm64.html#raspberry-pi-arm64-real",
     "title": "01.1 · Entorno Linux ARM64",
     "section": "Raspberry Pi ARM64 real",
-    "text": "Raspberry Pi ARM64 real\nUsa esta ruta si tienes una Raspberry Pi con Linux de 64 bits.\nuname -m\nSeñal correcta:\naarch64\nEn esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas qemu-aarch64 para ejecutar el ejemplo básico.\n\n\nCompila gcc, as, ld\n\n\nEjecuta ./src/build/main\n\n\nDepura gdb",
+    "text": "Raspberry Pi ARM64 real\nUsa esta ruta si tienes una Raspberry Pi con Linux de 64 bits.\nuname -m\nSeñal correcta:\naarch64\nEn esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas qemu-aarch64 para ejecutar el ejemplo básico.\n\n\nCompila gcc, as, ld\n\n\nEjecuta ./build/main\n\n\nDepura gdb",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -961,7 +1038,7 @@
     "href": "courses/aarch64/laboratorio/01-entorno-linux-arm64.html#host-x86_64-con-qemu-user-mode",
     "title": "01.1 · Entorno Linux ARM64",
     "section": "Host x86_64 con QEMU user mode",
-    "text": "Host x86_64 con QEMU user mode\nUsa esta ruta si tienes una laptop o PC Linux común sin ARM64 real.\nuname -m\nSeñal común:\nx86_64\nEn esta ruta compilas un binario AArch64 con toolchain cruzado y lo ejecutas con qemu-aarch64. QEMU user mode ejecuta un programa ARM64 individual, no una máquina completa.\n\n\nCompila aarch64-linux-gnu-gcc\n\n\nEjecuta qemu-aarch64 ./src/build/main\n\n\nDepura qemu-aarch64 -g 1234 + gdb-multiarch\n\n\n\n\n\n\n\n\nAdvertenciaNo ejecutes directo en x86_64\n\n\n\nSi tu host es x86_64, ./src/build/main no es el comando correcto para el binario AArch64. Usa make -C src run.",
+    "text": "Host x86_64 con QEMU user mode\nUsa esta ruta si tienes una laptop o PC Linux común sin ARM64 real.\nuname -m\nSeñal común:\nx86_64\nEn esta ruta compilas un binario AArch64 con toolchain cruzado y lo ejecutas con qemu-aarch64. QEMU user mode ejecuta un programa ARM64 individual, no una máquina completa.\n\n\nCompila aarch64-linux-gnu-gcc\n\n\nEjecuta qemu-aarch64 ./build/main\n\n\nDepura qemu-aarch64 -g 1234 + gdb-multiarch\n\n\n\n\n\n\n\n\nAdvertenciaNo ejecutes directo en x86_64\n\n\n\nSi tu host es x86_64, ./build/main no es el comando correcto para el binario AArch64. Entra a src/ y usa make run.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -974,7 +1051,7 @@
     "href": "courses/aarch64/laboratorio/01-entorno-linux-arm64.html#qemu-system-mode",
     "title": "01.1 · Entorno Linux ARM64",
     "section": "QEMU system mode",
-    "text": "QEMU system mode\nQEMU system mode emula una máquina completa: CPU, memoria, dispositivos y arranque del sistema. Sirve para kernel, bare metal o sistemas completos.\nEn esta unidad solo aparece como mapa mental:\n\n\n\nModo\nQué emula\nUso en esta unidad\n\n\n\n\nQEMU user mode\nUn proceso AArch64\nRuta principal en x86_64\n\n\nQEMU system mode\nUna máquina ARM completa\nSolo mención\n\n\n\n\n\n\n\n\n\nTipRegla práctica\n\n\n\nSi solo quieres correr src/build/main, usa QEMU user mode. Si necesitas arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más adelante.",
+    "text": "QEMU system mode\nQEMU system mode emula una máquina completa: CPU, memoria, dispositivos y arranque del sistema. Sirve para kernel, bare metal o sistemas completos.\nEn esta unidad solo aparece como mapa mental:\n\n\n\nModo\nQué emula\nUso en esta unidad\n\n\n\n\nQEMU user mode\nUn proceso AArch64\nRuta principal en x86_64\n\n\nQEMU system mode\nUna máquina ARM completa\nSolo mención\n\n\n\n\n\n\n\n\n\nTipRegla práctica\n\n\n\nSi solo quieres correr build/main, usa QEMU user mode. Si necesitas arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más adelante.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1026,7 +1103,7 @@
     "href": "courses/aarch64/laboratorio/03-primer-programa.html#carpeta-del-ejemplo",
     "title": "01.3 · Primer programa",
     "section": "Carpeta del ejemplo",
-    "text": "Carpeta del ejemplo\n00-hello-minimo/\n|- .vscode/\n|  |- launch.json\n|  `- settings.json\n`- src/\n   |- Makefile\n   |- Makefile.arm64\n   `- main.s\nEntra a la carpeta:\ncd 00-hello-minimo",
+    "text": "Carpeta del ejemplo\n00-hello-minimo/\n|- .vscode/\n|  |- launch.json\n|  `- settings.json\n`- src/\n   |- Makefile\n   `- main.s\nEntra a la carpeta:\ncd 00-hello-minimo\ncd src",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1052,7 +1129,7 @@
     "href": "courses/aarch64/laboratorio/03-primer-programa.html#compilar",
     "title": "01.3 · Primer programa",
     "section": "Compilar",
-    "text": "Compilar\nRuta x86_64 con QEMU:\nmake -C src\nRuta Raspberry Pi ARM64:\nmake -C src -f Makefile.arm64\nResultado esperado:\nsrc/build/main",
+    "text": "Compilar\nUsa el Makefile correcto para tu entorno y compila:\nmake\nResultado esperado:\nbuild/main",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1065,7 +1142,7 @@
     "href": "courses/aarch64/laboratorio/03-primer-programa.html#ejecutar",
     "title": "01.3 · Primer programa",
     "section": "Ejecutar",
-    "text": "Ejecutar\nRuta x86_64 con QEMU:\nmake -C src run\nRuta Raspberry Pi ARM64:\nmake -C src -f Makefile.arm64 run\nSalida esperada:\nHola ARM64\n\n\n\n\n\n\nTipPor qué usamos make\n\n\n\nmake evita escribir comandos largos. En x86_64 usas Makefile; en Raspberry Pi ARM64 real usas Makefile.arm64.",
+    "text": "Ejecutar\nmake run\nSalida esperada:\nHola ARM64\n\n\n\n\n\n\nTipPor qué usamos make\n\n\n\nmake evita escribir comandos largos. QEMU y Raspberry Pi usan comandos iguales; lo que cambia es el contenido de src/Makefile.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1078,7 +1155,7 @@
     "href": "courses/aarch64/laboratorio/03-primer-programa.html#comandos-útiles",
     "title": "01.3 · Primer programa",
     "section": "Comandos útiles",
-    "text": "Comandos útiles\nmake -C src info\nmake -C src clean\nmake -C src info muestra ayuda del Makefile actual. make -C src clean borra src/build/ para reconstruir desde cero.",
+    "text": "Comandos útiles\nmake info\nmake clean\nmake info muestra ayuda del Makefile actual. make clean borra build/ para reconstruir desde cero.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1091,7 +1168,7 @@
     "href": "courses/aarch64/laboratorio/03-primer-programa.html#errores-comunes",
     "title": "01.3 · Primer programa",
     "section": "Errores comunes",
-    "text": "Errores comunes\n\n\n\n\n\n\n\nError\nQué revisar\n\n\n\n\ncompiler not found\nFaltan paquetes de la ruta\n\n\nExec format error\nIntentaste ejecutar directo un binario AArch64 en x86_64\n\n\nNo imprime nada\nRevisa longitud del mensaje y syscall write\n\n\nUsaste Makefile.arm64 en x86_64\nEse Makefile es solo para ARM64 real",
+    "text": "Errores comunes\n\n\n\n\n\n\n\nError\nQué revisar\n\n\n\n\ncompiler not found\nFaltan paquetes de la ruta\n\n\nExec format error\nIntentaste ejecutar directo un binario AArch64 en x86_64\n\n\nNo imprime nada\nRevisa longitud del mensaje y syscall write\n\n\nCopiaste template equivocado\nRevisa la guía de Makefiles según tu máquina",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1104,7 +1181,7 @@
     "href": "courses/aarch64/laboratorio/03-primer-programa.html#checklist",
     "title": "01.3 · Primer programa",
     "section": "Checklist",
-    "text": "Checklist\n\nEntré a la carpeta del ejemplo.\nmake -C src generó src/build/main.\nmake -C src run imprimió Hola ARM64.\nPuedo limpiar con make -C src clean.\nEntiendo que todavía no estamos estudiando syscalls a fondo.\n\nSiguiente: Inspección del binario.",
+    "text": "Checklist\n\nEntré a la carpeta del ejemplo.\nEntré a src/.\nmake generó build/main.\nmake run imprimió Hola ARM64.\nPuedo limpiar con make clean.\nEntiendo que todavía no estamos estudiando syscalls a fondo.\n\nSiguiente: Inspección del binario.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1130,7 +1207,7 @@
     "href": "courses/aarch64/laboratorio/05-debugging-minimo.html#prepara-binario",
     "title": "01.5 · Debugging mínimo",
     "section": "Prepara binario",
-    "text": "Prepara binario\ncd 00-hello-minimo\nmake -C src\nEn Raspberry Pi:\nmake -C src -f Makefile.arm64",
+    "text": "Prepara binario\ncd 00-hello-minimo\ncd src\nmake",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1143,7 +1220,7 @@
     "href": "courses/aarch64/laboratorio/05-debugging-minimo.html#ruta-x86_64-con-qemu",
     "title": "01.5 · Debugging mínimo",
     "section": "Ruta x86_64 con QEMU",
-    "text": "Ruta x86_64 con QEMU\nTerminal 1:\nmake -C src gdb\nLa terminal queda esperando conexión en localhost:1234.\nTerminal 2:\ngdb-multiarch src/build/main\nDentro de GDB:\nset architecture aarch64\ntarget remote localhost:1234\nbreak _start\ncontinue\ninfo registers x0 x1 x2 x8 pc\nx/4i $pc\nstepi\ninfo registers x0 x1 x2 x8 pc",
+    "text": "Ruta x86_64 con QEMU\nTerminal 1:\nmake gdb\nLa terminal queda esperando conexión en localhost:1234.\nTerminal 2:\ngdb-multiarch build/main\nDentro de GDB:\nset architecture aarch64\ntarget remote localhost:1234\nbreak _start\ncontinue\ninfo registers x0 x1 x2 x8 pc\nx/4i $pc\nstepi\ninfo registers x0 x1 x2 x8 pc",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1156,7 +1233,7 @@
     "href": "courses/aarch64/laboratorio/05-debugging-minimo.html#ruta-raspberry-pi-arm64-real",
     "title": "01.5 · Debugging mínimo",
     "section": "Ruta Raspberry Pi ARM64 real",
-    "text": "Ruta Raspberry Pi ARM64 real\nmake -C src -f Makefile.arm64 gdb\nDentro de GDB:\nbreak _start\nrun\ninfo registers x0 x1 x2 x8 pc\nx/4i $pc\nstepi\ninfo registers x0 x1 x2 x8 pc",
+    "text": "Ruta Raspberry Pi ARM64 real\nmake gdb\nDentro de GDB:\nbreak _start\nrun\ninfo registers x0 x1 x2 x8 pc\nx/4i $pc\nstepi\ninfo registers x0 x1 x2 x8 pc",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1208,7 +1285,7 @@
     "href": "courses/aarch64/laboratorio/05-debugging-minimo.html#errores-visuales-al-avanzar",
     "title": "01.5 · Debugging mínimo",
     "section": "Errores visuales al avanzar",
-    "text": "Errores visuales al avanzar\nCuando depuras assembly, VS Code y GDB pueden parecer “saltarse” líneas. No significa necesariamente que el programa esté mal.\n\n\n\n\n\n\n\n\nCaso\nQué ocurre\nQué hacer\n\n\n\n\nQEMU\nPuede ejecutar bloques de instrucciones\nUsar qemu-aarch64 -g 1234 -singlestep\n\n\nNativo\nGDB puede seguir líneas fuente, no instrucciones exactas\nUsar stepi y nexti\n\n\nsvc #0\nEntra al kernel; no se depura por dentro como tu código\nObserva registros antes y después\n\n\nFunciones auxiliares\nPuedes saltar a otra etiqueta o volver después\nPon breakpoints por etiqueta\n\n\n\nEn esta unidad, el Makefile de QEMU ya usa -singlestep cuando corres make -C src gdb.",
+    "text": "Errores visuales al avanzar\nCuando depuras assembly, VS Code y GDB pueden parecer “saltarse” líneas. No significa necesariamente que el programa esté mal.\n\n\n\n\n\n\n\n\nCaso\nQué ocurre\nQué hacer\n\n\n\n\nQEMU\nPuede ejecutar bloques de instrucciones\nUsar qemu-aarch64 -g 1234 -singlestep\n\n\nNativo\nGDB puede seguir líneas fuente, no instrucciones exactas\nUsar stepi y nexti\n\n\nsvc #0\nEntra al kernel; no se depura por dentro como tu código\nObserva registros antes y después\n\n\nFunciones auxiliares\nPuedes saltar a otra etiqueta o volver después\nPon breakpoints por etiqueta\n\n\n\nEn esta unidad, el Makefile de QEMU ya usa -singlestep cuando corres make gdb.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1256,150 +1333,250 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/roadmap.html",
-    "href": "courses/aarch64/roadmap.html",
-    "title": "Roadmap AArch64",
+    "objectID": "courses/aarch64/laboratorio/index.html",
+    "href": "courses/aarch64/laboratorio/index.html",
+    "title": "01 · Laboratorio ARM64 reproducible",
     "section": "",
-    "text": "Cursos &gt; AArch64 &gt; Roadmap",
+    "text": "Cursos &gt; AArch64 &gt; Laboratorio ARM64 reproducible",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "Roadmap"
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
     ]
   },
   {
-    "objectID": "courses/aarch64/roadmap.html#lectura-rápida",
-    "href": "courses/aarch64/roadmap.html#lectura-rápida",
-    "title": "Roadmap AArch64",
-    "section": "Lectura rápida",
-    "text": "Lectura rápida\n\n\nBase obligatoria\nUnidades 0-10. Programas ARM64 simples en Linux con registros, memoria, control de flujo y syscalls.\n\n\nRuta profesional\nUnidades 11-44. ABI, ELF, debugging, SIMD, hardware, kernel, reversing, seguridad, virtualización y proyectos.",
+    "objectID": "courses/aarch64/laboratorio/index.html#mapa-rápido",
+    "href": "courses/aarch64/laboratorio/index.html#mapa-rápido",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Mapa rápido",
+    "text": "Mapa rápido\n\n\n1. Elige ruta Raspberry Pi ARM64 real o x86_64 con QEMU user mode.\n\n\n2. Instala Toolchain, binutils, Make, QEMU o GDB según tu máquina.\n\n\n3. Ejecuta Entra a src, compila con make y corre con make run.\n\n\n4. Observa Usa file, readelf, objdump, nm y strace como primera mirada.\n\n\n5. Depura Detente en _start, mira registros y avanza instrucción por instrucción.",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "Roadmap"
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
     ]
   },
   {
-    "objectID": "courses/aarch64/roadmap.html#bloques",
-    "href": "courses/aarch64/roadmap.html#bloques",
-    "title": "Roadmap AArch64",
-    "section": "Bloques",
-    "text": "Bloques\n\n\nBloque A — Fundamentos de computación y ARM64\n\n\n\n0. Contexto, historia y objetivos\n\nQué es assembly, ISA, ARMv8-A, AArch64, A64 y por qué aprender bajo nivel.\n\n\n\n1. Laboratorio ARM64 reproducible\n\nLinux, QEMU, toolchain, binutils, GDB, strace y flujo mínimo de trabajo.\n\n\n\n2. Bases binarias y representación\n\nBits, bytes, bases numéricas, signed/unsigned, overflow, endianness y direcciones.\n\n\n\n3. Modelo ARMv8-A / AArch64\n\nRegistros X/W, SP, PC, LR, PSTATE, NZCV, SIMD y niveles de excepción como mapa inicial.\n\n\n\n4. GNU Assembly, directivas y pseudo-instrucciones\n\nArchivo .s, secciones, símbolos, datos, macros básicas, literales y direccionamiento simbólico.\n\n\n\n\n\n\nBloque B — Programación ARM64 userland en Linux\n\n\n\n5. Primeros programas en Linux AArch64\n\n_start, exit, write, hello world sin libc, ensamblado, linking y svc #0.\n\n\n\n6. Memoria básica, secciones y direccionamiento\n\nLoad/store, .text, .data, .bss, stack, punteros y modos de direccionamiento.\n\n\n\n7. Aritmética, lógica, flags y bits\n\nOperaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.\n\n\n\n8. Control de flujo y programación estructurada\n\nBranches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.\n\n\n\n9. Syscalls esenciales\n\nContrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.\n\n\n\n10. Linux como API del kernel\n\nFile descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.\n\n\n\n\n\n\nBloque C — Funciones, memoria dinámica, ABI y binarios\n\n\n\n11. Stack, funciones y stack frames\n\nCaller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.\n\n\n\n12. Heap y memoria dinámica\n\nStack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.\n\n\n\n13. mmap, munmap, mprotect, páginas y permisos\n\nMemoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.\n\n\n\n14. Layout de datos, structs, ADTs y objetos manuales\n\nOffsets, size, alignment, padding, invariantes, self pointer y descriptores propios.\n\n\n\n15. ABI, AAPCS64 e interoperabilidad con C\n\nCalling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.\n\n\n\n16. ELF, linking, loading y binarios\n\nObjetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT y GOT.\n\n\n\n17. Debugging con GDB, QEMU y strace\n\nBreakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.\n\n\n\n\n\n\nBloque D — Algoritmos, SIMD, rendimiento y validación\n\n\n\n18. Strings, arrays y algoritmos\n\nCadenas terminadas en cero, arrays, punteros, búsqueda, copia, comparación y conversiones.\n\n\n\n19. Floating point y SIMD/NEON básico\n\nRegistros S/D/V, conversiones, comparaciones, lanes, cargas vectoriales y reducciones básicas.\n\n\n\n20. Performance, profiling y optimización básica\n\nMedición, localidad, branches, csel, loop unrolling conceptual, perf básico y comparación con C.\n\n\n\n21. Concurrencia, atomics y barriers básico\n\nRace conditions, exclusive monitor, ldxr/stxr, acquire/release y memory ordering inicial.\n\n\n\n22. Excepciones, EL0-EL3, MMU y sistema conceptual\n\nException levels, traps, SVC, vectores, registros de excepción, MMU, page tables y TLB.\n\n\n\n23. Seguridad de memoria y errores comunes\n\nCrashes, SIGSEGV, overflows, stack/heap corruption, ASLR, NX, canaries, W^X y bugs de memoria.\n\n\n\n24. Testing, validación y documentación técnica\n\nPruebas por stdout, códigos de salida, errores, strace, GDB, supuestos y reportes de laboratorio.\n\n\n\n25. Proyectos integradores base\n\nHello sin libc, echo, cat, conversores, buffers dinámicos, mini malloc, strings, matrices y ELF simple.\n\n\n\n26. Apéndices y referencias\n\nTablas de registros, condiciones, syscalls, instrucciones, cheatsheets, glosario y bibliografía.\n\n\n\n\n\n\nBloque E — Hardware y bare metal\n\n\n\n27. Hardware real, GPIO y memoria mapeada desde Linux\n\nMMIO, Raspberry Pi, GPIO, /dev/mem, mmap físico, permisos root, volatile y barreras.\n\n\n\n28. Bare metal AArch64 en Raspberry Pi\n\nBoot flow, kernel8.img, linker script, stack inicial, .bss, GPIO directo, UART y monitor mínimo.\n\n\n\n29. Excepciones, interrupciones, timers y UART\n\nVector table, ESR/ELR/SPSR, eret, contexto, timer, interrupt controller, UART polling e interrupciones.\n\n\n\n30. MMU práctica, páginas, atributos y permisos\n\nTranslation tables, descriptors, MAIR, TCR, TTBR, SCTLR, Device memory, Normal memory y TLB.\n\n\n\n31. Caches, barriers, coherencia y memoria de dispositivos\n\nCache lines, maintenance, dsb/dmb/isb, coherencia, DMA conceptual y diferencias entre Device y Normal memory.\n\n\n\n\n\n\nBloque F — Sistemas avanzados\n\n\n\n32. Concurrencia avanzada, atomics y sincronización SMP\n\nSMP, spinlocks, lock-free básico, LSE atomics, barriers, seqlock, ticket lock y producer-consumer.\n\n\n\n33. RTOS mínimo\n\nDeterminismo, tick, scheduler cooperativo/preemptivo, TCB, stacks por tarea, prioridades y sincronización.\n\n\n\n34. Kernel internals de Linux ARM64\n\nSyscall path, exception entry, task_struct conceptual, VMAs, page tables, modules, procfs, sysfs y debugfs.\n\n\n\n35. Device drivers en Linux ARM64\n\nDevice tree, platform drivers, ioremap, readl/writel, interrupts, GPIO subsystem, char devices y DMA conceptual.\n\n\n\n\n\n\nBloque G — Optimización, reversing y seguridad\n\n\n\n36. NEON / Advanced SIMD avanzado\n\nLanes, ld/st múltiples, zip/unzip, tbl, saturating, widening, narrowing, reductions e intrinsics.\n\n\n\n37. Performance, profiling, PMU y microarquitectura\n\nPMU counters, cycles, cache misses, IPC, pipeline, OoO, speculation, data layout y cache blocking.\n\n\n\n38. Análisis binario e ingeniería inversa ARM64\n\nobjdump/readelf avanzados, símbolos, PLT/GOT, prologues, CFG, Ghidra, structs y patrones de compilador.\n\n\n\n39. Seguridad de memoria, vulnerabilidades y mitigaciones\n\nOverflows, use-after-free, NX, ASLR, canaries, RELRO, PIE, PAC, BTI, MTE y hardening defensivo.\n\n\n\n40. Side channels, speculation y constant-time programming\n\nTiming, cache side channels, speculation, Spectre, constant-time, DIT, SSBS, barriers y mitigaciones.\n\n\n\n\n\n\nBloque H — Arquitectura avanzada ARM\n\n\n\n41. Virtualización ARM, EL2 e hipervisores\n\nEL2, guests, traps, HVC, Stage 1/2 translation, IPA, VMID, VCPU, virtual interrupts y KVM/ARM.\n\n\n\n42. Trusted execution, TrustZone, secure boot y TEE\n\nSecure world, normal world, EL3, SMC, TEE, OP-TEE, secure boot, chain of trust y límites de TrustZone.\n\n\n\n43. Compiladores, inline assembly, intrinsics y código generado\n\nGCC/Clang, optimización, register allocation, inlining, tail calls, vectorización, constraints y clobbers.\n\n\n\n44. Proyectos integradores avanzados\n\nProyectos de hardware, kernel, MMU, SIMD, reversing y seguridad defensiva para cerrar la ruta.",
+    "objectID": "courses/aarch64/laboratorio/index.html#qué-ruta-uso",
+    "href": "courses/aarch64/laboratorio/index.html#qué-ruta-uso",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Qué ruta uso",
+    "text": "Qué ruta uso\n\n\n\n\n\n\n\n\nSi tienes…\nUsa…\nSeñal esperada\n\n\n\n\nRaspberry Pi con Linux de 64 bits\nARM64 nativo\nuname -m muestra aarch64 o arm64\n\n\nLaptop o PC Linux x86_64\nCross toolchain + QEMU user mode\nuname -m puede mostrar x86_64\n\n\nMáquina restringida o laboratorio compartido\nDocker opcional\nMismo entorno dentro del contenedor\n\n\n\n\n\n\n\n\n\nTipRecomendación docente\n\n\n\nSi el estudiante no sabe cuál usar, debe empezar por x86_64 con QEMU user mode. Es la ruta más reproducible cuando no hay Raspberry Pi disponible.",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "Roadmap"
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
     ]
   },
   {
-    "objectID": "courses/aarch64/roadmap.html#regla-de-crecimiento",
-    "href": "courses/aarch64/roadmap.html#regla-de-crecimiento",
-    "title": "Roadmap AArch64",
-    "section": "Regla de crecimiento",
-    "text": "Regla de crecimiento\nLa ruta no enlazará páginas que no existan. Primero se publica una unidad, luego aparece en el sidebar y en la navegación del bloque correspondiente.",
+    "objectID": "courses/aarch64/laboratorio/index.html#lecciones-de-esta-unidad",
+    "href": "courses/aarch64/laboratorio/index.html#lecciones-de-esta-unidad",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Lecciones de esta unidad",
+    "text": "Lecciones de esta unidad\n\n\nEntorno Linux ARM64\nLinux como base, Raspberry Pi real, QEMU user mode y mención de QEMU system mode.\nAbrir\n\n\nInstalación toolchain\nPaquetes por ruta, verificación mínima y Docker como alternativa.\nAbrir\n\n\nPrimer programa\nAssembly AArch64 mínimo, Makefile, make, make run y salida esperada.\nAbrir\n\n\nInspección del binario\nfile, readelf, objdump, nm, hexdump, xxd, ldd y strace.\nAbrir\n\n\nDebugging mínimo\nBreakpoints, registros y stepi con gdb o gdb-multiarch.\nAbrir\n\n\nEstructura del repo\nCómo organizar teoría, ejemplos, ejercicios, slides y Makefiles.\nAbrir",
     "crumbs": [
       "Roadmap",
       "AArch64",
-      "Roadmap"
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
     ]
   },
   {
-    "objectID": "guides/debugging/native-vscode.html",
-    "href": "guides/debugging/native-vscode.html",
-    "title": "Depuración: ARM nativo y VS Code",
+    "objectID": "courses/aarch64/laboratorio/index.html#herramientas-del-laboratorio",
+    "href": "courses/aarch64/laboratorio/index.html#herramientas-del-laboratorio",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Herramientas del laboratorio",
+    "text": "Herramientas del laboratorio\n\nLinux make as ld gcc aarch64-linux-gnu-gcc qemu-aarch64 gdb-multiarch objdump readelf nm file ldd strace hexdump xxd perf Docker",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/laboratorio/index.html#resultado-esperado",
+    "href": "courses/aarch64/laboratorio/index.html#resultado-esperado",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Resultado esperado",
+    "text": "Resultado esperado\nAl terminar la unidad debes poder ejecutar:\ncd 00-hello-minimo\ncd src\nmake\nmake run\nSalida esperada:\nHola ARM64\nY debes poder explicar, en una frase corta, qué herramienta genera el binario, qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/laboratorio/index.html#checklist-de-cierre",
+    "href": "courses/aarch64/laboratorio/index.html#checklist-de-cierre",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Checklist de cierre",
+    "text": "Checklist de cierre\n\nSé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.\nInstalé las herramientas mínimas de mi ruta.\nmake genera build/main si estoy dentro de src/.\nmake run imprime Hola ARM64.\nfile build/main identifica un binario AArch64.\nPuedo ver símbolos con nm o instrucciones con objdump.\nPuedo detenerme en _start con GDB.\nSé dónde van teoría, ejemplo, ejercicio y presentación.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/laboratorio/index.html#siguiente-paso",
+    "href": "courses/aarch64/laboratorio/index.html#siguiente-paso",
+    "title": "01 · Laboratorio ARM64 reproducible",
+    "section": "Siguiente paso",
+    "text": "Siguiente paso\nEmpieza por Entorno Linux ARM64. Si ya sabes tu ruta y tienes paquetes instalados, salta directo a Primer programa.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "01 · Laboratorio ARM64 reproducible",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/riscv/index.html",
+    "href": "courses/riscv/index.html",
+    "title": "Ruta RISC-V",
     "section": "",
-    "text": "En ARM nativo no se usa QEMU. VS Code lanza GDB directamente sobre el binario AArch64 porque el procesador anfitrión ya puede ejecutarlo.",
+    "text": "Cursos &gt; RISC-V",
     "crumbs": [
-      "Debugging",
-      "Depuración: ARM nativo y VS Code"
+      "RISC-V",
+      "Inicio del curso"
     ]
   },
   {
-    "objectID": "guides/debugging/native-vscode.html#compila",
-    "href": "guides/debugging/native-vscode.html#compila",
-    "title": "Depuración: ARM nativo y VS Code",
-    "section": "Compila",
-    "text": "Compila\ncd 00-hello-minimo\nmake -C src -f Makefile.arm64",
+    "objectID": "courses/riscv/index.html#estado-actual",
+    "href": "courses/riscv/index.html#estado-actual",
+    "title": "Ruta RISC-V",
+    "section": "Estado actual",
+    "text": "Estado actual\n\nBase inicial del curso\nEl contenido se agregará por unidades conforme avance la ruta.",
     "crumbs": [
-      "Debugging",
-      "Depuración: ARM nativo y VS Code"
+      "RISC-V",
+      "Inicio del curso"
     ]
   },
   {
-    "objectID": "guides/debugging/native-vscode.html#lanza-gdb",
-    "href": "guides/debugging/native-vscode.html#lanza-gdb",
-    "title": "Depuración: ARM nativo y VS Code",
-    "section": "Lanza GDB",
-    "text": "Lanza GDB\nmake -C src -f Makefile.arm64 gdb\nEn VS Code usa la configuración Debug ARM64 (nativo).\nInstala estas extensiones:\n\n\n\nExtensión\nID\n\n\n\n\nC/C++\nms-vscode.cpptools\n\n\nMakefile Tools\nms-vscode.makefile-tools\n\n\nARM64 Assembly (GNU AS)\nFelipenguim.vscode-arm64-assembly\n\n\nStackScope\nEightLayerStudio.StackScope\n\n\n\nConfig completa para copiar en .vscode/launch.json:\n{\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"name\": \"Debug ARM64 (nativo)\",\n      \"type\": \"cppdbg\",\n      \"request\": \"launch\",\n      \"program\": \"${workspaceFolder}/src/build/main\",\n      \"cwd\": \"${workspaceFolder}/src\",\n      \"MIMode\": \"gdb\",\n      \"miDebuggerPath\": \"/usr/bin/gdb\",\n      \"stopAtEntry\": true,\n      \"setupCommands\": [\n        { \"text\": \"-enable-pretty-printing\" },\n        { \"text\": \"set architecture aarch64\" },\n        { \"text\": \"set disassemble-next-line on\" },\n        { \"text\": \"set step-mode on\" },\n        { \"text\": \"set pagination off\" }\n      ]\n    }\n  ]\n}",
+    "objectID": "courses/riscv/index.html#primer-bloque-previsto",
+    "href": "courses/riscv/index.html#primer-bloque-previsto",
+    "title": "Ruta RISC-V",
+    "section": "Primer bloque previsto",
+    "text": "Primer bloque previsto\n\nFundamentos de RISC-V\n\n\nSetup y herramientas\nBases binarias y representación de datos\nModelo de registros RISC-V\nInstrucciones base RV64I\nPrimer programa mínimo",
     "crumbs": [
-      "Debugging",
-      "Depuración: ARM nativo y VS Code"
+      "RISC-V",
+      "Inicio del curso"
     ]
   },
   {
-    "objectID": "guides/debugging/native-vscode.html#qué-cambia-frente-a-qemu",
-    "href": "guides/debugging/native-vscode.html#qué-cambia-frente-a-qemu",
-    "title": "Depuración: ARM nativo y VS Code",
-    "section": "Qué cambia frente a QEMU",
-    "text": "Qué cambia frente a QEMU\n\n\n\nTema\nQEMU en x86_64\nARM nativo\n\n\n\n\nEjecución\nqemu-aarch64\nDirecta\n\n\nDebugger\ngdb-multiarch\ngdb\n\n\nConexión\nlocalhost:1234\nLaunch local\n\n\nMakefile\nMakefile\nMakefile.arm64\n\n\n\n\n\n\n\n\n\nTipMisma idea, menos capas\n\n\n\nLos registros, syscalls y flujo del programa son los mismos. Lo que cambia es la forma en que el proceso llega a ejecutarse.",
+    "objectID": "courses/riscv/index.html#siguiente-paso",
+    "href": "courses/riscv/index.html#siguiente-paso",
+    "title": "Ruta RISC-V",
+    "section": "Siguiente paso",
+    "text": "Siguiente paso\nCrear la unidad “Setup y herramientas”.",
     "crumbs": [
-      "Debugging",
-      "Depuración: ARM nativo y VS Code"
+      "RISC-V",
+      "Inicio del curso"
     ]
   },
   {
-    "objectID": "guides/debugging/native-vscode.html#errores-visuales-comunes",
-    "href": "guides/debugging/native-vscode.html#errores-visuales-comunes",
-    "title": "Depuración: ARM nativo y VS Code",
-    "section": "Errores visuales comunes",
-    "text": "Errores visuales comunes\nEn ARM nativo también puede parecer que GDB salta líneas. Esto ocurre porque GDB puede avanzar por líneas fuente, mientras el procesador ejecuta instrucciones. Para assembly, usa comandos por instrucción en la Debug Console:\nstepi\nnexti\nbreak _start\nbreak printString\nbreak readIntFromConsole\ninfo registers x0 x1 x2 x8 pc\nx/6i $pc\nsvc #0 entra al kernel. No esperes ver por dentro la syscall como si fuera una función de tu código.\n\n\n\n\n\n\nTipBreakpoints por etiqueta\n\n\n\nbreak nombreEtiqueta funciona si el símbolo existe en el binario. Con .include, la etiqueta queda en el mismo ensamblado; con .extern, debe venir de otro objeto enlazado.",
-    "crumbs": [
-      "Debugging",
-      "Depuración: ARM nativo y VS Code"
-    ]
-  },
-  {
-    "objectID": "guides/setup/docker.html",
-    "href": "guides/setup/docker.html",
-    "title": "Setup: Docker",
+    "objectID": "guides/debugging/qemu-vscode.html",
+    "href": "guides/debugging/qemu-vscode.html",
+    "title": "Depuración: QEMU y VS Code",
     "section": "",
-    "text": "Docker ofrece un entorno reproducible para laboratorios, máquinas prestadas o equipos donde instalar toolchains causa demasiada fricción.",
+    "text": "Esta guía conecta VS Code con un binario AArch64 ejecutándose bajo QEMU. Es la ruta correcta cuando tu máquina anfitriona es x86_64.",
     "crumbs": [
-      "Entorno",
-      "Setup: Docker"
+      "Debugging",
+      "Depuración: QEMU y VS Code"
     ]
   },
   {
-    "objectID": "guides/setup/docker.html#construir-imagen",
-    "href": "guides/setup/docker.html#construir-imagen",
-    "title": "Setup: Docker",
-    "section": "Construir imagen",
-    "text": "Construir imagen\nDesde la raíz del repo:\ndocker build -t arm-riscv-lab -f tooling/docker/Dockerfile .",
+    "objectID": "guides/debugging/qemu-vscode.html#compila-el-ejemplo",
+    "href": "guides/debugging/qemu-vscode.html#compila-el-ejemplo",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "1. Compila el ejemplo",
+    "text": "1. Compila el ejemplo\ncd 00-hello-minimo\ncd src\nmake",
     "crumbs": [
-      "Entorno",
-      "Setup: Docker"
+      "Debugging",
+      "Depuración: QEMU y VS Code"
     ]
   },
   {
-    "objectID": "guides/setup/docker.html#usar-contenedor",
-    "href": "guides/setup/docker.html#usar-contenedor",
-    "title": "Setup: Docker",
-    "section": "Usar contenedor",
-    "text": "Usar contenedor\ndocker run --rm -it -v \"$PWD\":/workspace -w /workspace arm-riscv-lab\nDentro del contenedor:\ncd 00-hello-minimo\nmake -C src\nmake -C src run",
+    "objectID": "guides/debugging/qemu-vscode.html#arranca-qemu-con-gdb-server",
+    "href": "guides/debugging/qemu-vscode.html#arranca-qemu-con-gdb-server",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "2. Arranca QEMU con GDB server",
+    "text": "2. Arranca QEMU con GDB server\nmake gdb\nDeja esa terminal abierta. El programa está esperando al debugger. En el Makefile de QEMU, este target usa -singlestep para reducir saltos visuales:\ngdb: $(TARGET)\n    $(QEMU) -g 1234 -singlestep $(TARGET)",
     "crumbs": [
-      "Entorno",
-      "Setup: Docker"
+      "Debugging",
+      "Depuración: QEMU y VS Code"
     ]
   },
   {
-    "objectID": "guides/setup/docker.html#depurar-desde-vs-code",
-    "href": "guides/setup/docker.html#depurar-desde-vs-code",
-    "title": "Setup: Docker",
-    "section": "Depurar desde VS Code",
-    "text": "Depurar desde VS Code\nExpón el puerto del GDB server:\ndocker run --rm -it -p 1234:1234 -v \"$PWD\":/workspace -w /workspace arm-riscv-lab\nDentro del contenedor:\ncd 00-hello-minimo\nmake -C src gdb\nEn el host, conecta VS Code a localhost:1234.\n\n\n\n\n\n\nAdvertenciaRutas dentro y fuera del contenedor\n\n\n\nEl proyecto vive como /workspace dentro del contenedor. Si una configuración de debugging no encuentra el binario, revisa que VS Code esté abierto en la raíz del repo en el host.",
+    "objectID": "guides/debugging/qemu-vscode.html#conecta-vs-code",
+    "href": "guides/debugging/qemu-vscode.html#conecta-vs-code",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "3. Conecta VS Code",
+    "text": "3. Conecta VS Code\nInstala estas extensiones:\n\n\n\nExtensión\nID\n\n\n\n\nC/C++\nms-vscode.cpptools\n\n\nMakefile Tools\nms-vscode.makefile-tools\n\n\nARM64 Assembly (GNU AS)\nFelipenguim.vscode-arm64-assembly\n\n\nStackScope\nEightLayerStudio.StackScope\n\n\n\nEn VS Code usa la configuración Debug ARM64 (QEMU).\nConfig completa para copiar en .vscode/launch.json:\n{\n  \"version\": \"0.2.0\",\n  \"configurations\": [\n    {\n      \"name\": \"Debug ARM64 (QEMU)\",\n      \"type\": \"cppdbg\",\n      \"request\": \"launch\",\n      \"program\": \"${workspaceFolder}/src/build/main\",\n      \"cwd\": \"${workspaceFolder}/src\",\n      \"MIMode\": \"gdb\",\n      \"miDebuggerPath\": \"/usr/bin/gdb-multiarch\",\n      \"miDebuggerServerAddress\": \"localhost:1234\",\n      \"stopAtEntry\": true,\n      \"sourceFileMap\": {\n        \"${workspaceFolder}/src\": \"${workspaceFolder}/src\"\n      },\n      \"setupCommands\": [\n        { \"text\": \"-enable-pretty-printing\" },\n        { \"text\": \"set architecture aarch64\" },\n        { \"text\": \"set disassemble-next-line on\" },\n        { \"text\": \"set step-mode on\" },\n        { \"text\": \"set pagination off\" },\n        { \"text\": \"set breakpoint auto-hw on\" }\n      ]\n    }\n  ]\n}\n\n\n\n\n\n\nNotaSi usas otra carpeta\n\n\n\nAbre 00-hello-minimo/ como workspace. Así VS Code encuentra ${workspaceFolder}/src/build/main.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html#debug-console",
+    "href": "guides/debugging/qemu-vscode.html#debug-console",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "4. Debug Console",
+    "text": "4. Debug Console\nEn la Debug Console de VS Code puedes forzar depuración por instrucción:\nstepi\nnexti\nbreak _start\nbreak printString\nbreak readIntFromConsole\ninfo registers x0 x1 x2 x8 pc\nx/6i $pc\nsvc #0 entra al kernel. GDB no entra a depurar internamente esa llamada como si fuera una función de tu archivo .s; observa registros antes y después.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/debugging/qemu-vscode.html#qué-observar-primero",
+    "href": "guides/debugging/qemu-vscode.html#qué-observar-primero",
+    "title": "Depuración: QEMU y VS Code",
+    "section": "Qué observar primero",
+    "text": "Qué observar primero\n\n\npc\nDirección de la instrucción actual.\n\n\nx0 a x2\nArgumentos de write y exit.\n\n\nx8\nNúmero de syscall.\n\n\nMemoria\nDirección del mensaje apuntada por x1.\n\n\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nSi VS Code dice que no puede conectar, casi siempre make gdb no está corriendo o el puerto 1234 ya está ocupado.\n\n\n\n\n\n\n\n\nTipBreakpoints por etiqueta\n\n\n\nbreak nombreEtiqueta funciona si el símbolo existe en el binario. Con .include, la etiqueta queda en el mismo ensamblado; con .extern, debe venir de otro objeto enlazado.",
+    "crumbs": [
+      "Debugging",
+      "Depuración: QEMU y VS Code"
+    ]
+  },
+  {
+    "objectID": "guides/setup/index.html",
+    "href": "guides/setup/index.html",
+    "title": "Setup",
+    "section": "",
+    "text": "El setup del curso tiene una ruta principal y dos alternativas. La decisión depende de tu máquina, no de tu nivel.",
     "crumbs": [
       "Entorno",
-      "Setup: Docker"
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "guides/setup/index.html#elige-una-ruta",
+    "href": "guides/setup/index.html#elige-una-ruta",
+    "title": "Setup",
+    "section": "Elige una ruta",
+    "text": "Elige una ruta\n\n\n\nRuta\nÚsala si…\nComandos principales\n\n\n\n\nQEMU en x86_64\nTu laptop o PC no es ARM64\nmake, make run, make gdb\n\n\nARM nativo\nEstás en Linux ARM64 real\nmake, make run, make gdb\n\n\nDocker\nNecesitas entorno reproducible\ndocker build, docker run\n\n\n\n\n\n\n\n\n\nTipRecomendación para empezar\n\n\n\nSi no sabes cuál elegir, usa QEMU en x86_64. Es la ruta que permite trabajar desde una computadora común sin hardware ARM.\n\n\n\n\n\n\n\n\nAdvertenciaQEMU no convierte tu máquina en ARM\n\n\n\nQEMU ejecuta el binario AArch64 en user mode. Tu sistema sigue siendo x86_64, por eso necesitas gdb-multiarch para depurar.",
+    "crumbs": [
+      "Entorno",
+      "Setup"
+    ]
+  },
+  {
+    "objectID": "guides/setup/index.html#resultado-esperado",
+    "href": "guides/setup/index.html#resultado-esperado",
+    "title": "Setup",
+    "section": "Resultado esperado",
+    "text": "Resultado esperado\nAl terminar esta sección debes poder ejecutar:\ncd 00-hello-minimo\ncd src\nmake\nmake run\nY para depurar:\nmake gdb\nLuego sigue con Depuración: QEMU y VS Code o con Depuración: ARM nativo y VS Code, según tu ruta.\nPara elegir el Makefile correcto, revisa Makefiles ARM64.",
+    "crumbs": [
+      "Entorno",
+      "Setup"
     ]
   },
   {
@@ -1440,7 +1617,7 @@
     "href": "guides/setup/native-aarch64.html#ejecución",
     "title": "Setup: ARM nativo",
     "section": "Ejecución",
-    "text": "Ejecución\ncd 00-hello-minimo\nmake -C src -f Makefile.arm64\nmake -C src -f Makefile.arm64 run\nmake -C src -f Makefile.arm64 gdb",
+    "text": "Ejecución\nAntes de compilar, usa el template ARM64 nativo como src/Makefile. Después los comandos son iguales que en QEMU.\ncd 00-hello-minimo\ncd src\nmake\nmake run\nmake gdb",
     "crumbs": [
       "Entorno",
       "Setup: ARM nativo"
@@ -1495,7 +1672,7 @@
     "href": "guides/troubleshooting.html#vs-code-no-conecta-a-gdb",
     "title": "Troubleshooting",
     "section": "VS Code no conecta a GDB",
-    "text": "VS Code no conecta a GDB\nVerifica que make -C src gdb siga corriendo y que el puerto sea 1234.\nss -ltn | grep 1234\n\n\n\n\n\n\nAdvertenciaNo cierres la terminal de QEMU\n\n\n\nEn la ruta x86_64, make -C src gdb debe quedarse vivo mientras VS Code se conecta. Si esa terminal termina, el puerto desaparece.",
+    "text": "VS Code no conecta a GDB\nVerifica que make gdb siga corriendo y que el puerto sea 1234.\nss -ltn | grep 1234\n\n\n\n\n\n\nAdvertenciaNo cierres la terminal de QEMU\n\n\n\nEn la ruta x86_64, make gdb debe quedarse vivo mientras VS Code se conecta. Si esa terminal termina, el puerto desaparece.",
     "crumbs": [
       "Troubleshooting",
       "Troubleshooting"
@@ -1506,7 +1683,7 @@
     "href": "guides/troubleshooting.html#el-binario-no-corre-fuera-de-qemu-en-x86_64",
     "title": "Troubleshooting",
     "section": "El binario no corre fuera de QEMU en x86_64",
-    "text": "El binario no corre fuera de QEMU en x86_64\nEs esperado. El binario es AArch64 y tu sistema anfitrión no lo ejecuta directamente. Usa:\nmake -C src run\nNo uses:\n./src/build/main",
+    "text": "El binario no corre fuera de QEMU en x86_64\nEs esperado. El binario es AArch64 y tu sistema anfitrión no lo ejecuta directamente. Usa:\nmake run\nNo uses:\n./build/main",
     "crumbs": [
       "Troubleshooting",
       "Troubleshooting"
@@ -1528,7 +1705,7 @@
     "href": "guides/troubleshooting.html#localhost1234-ya-está-ocupado",
     "title": "Troubleshooting",
     "section": "localhost:1234 ya está ocupado",
-    "text": "localhost:1234 ya está ocupado\nOtro proceso está usando el puerto del GDB server.\nss -ltnp | grep 1234\nCierra la sesión anterior de QEMU/GDB o cambia el puerto en el Makefile de la lección si sabes lo que estás haciendo.\n\n\n\n\n\n\nPrecauciónMantén una sola sesión de debug\n\n\n\nPara la primera lección, usa una terminal con make -C src gdb y una conexión desde VS Code. Varias sesiones simultáneas hacen más difícil entender el error.",
+    "text": "localhost:1234 ya está ocupado\nOtro proceso está usando el puerto del GDB server.\nss -ltnp | grep 1234\nCierra la sesión anterior de QEMU/GDB o cambia el puerto en el Makefile de la lección si sabes lo que estás haciendo.\n\n\n\n\n\n\nPrecauciónMantén una sola sesión de debug\n\n\n\nPara la primera lección, usa una terminal con make gdb y una conexión desde VS Code. Varias sesiones simultáneas hacen más difícil entender el error.",
     "crumbs": [
       "Troubleshooting",
       "Troubleshooting"

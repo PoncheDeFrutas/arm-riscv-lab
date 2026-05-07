@@ -158,6 +158,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../../../guides/setup/makefiles.html">
+ <span class="dropdown-text">Makefiles</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
@@ -269,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.qmd" class="sidebar-item-text sidebar-link">
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
@@ -339,10 +343,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">`</span><span class="ex">-</span> settings.json</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="at">-</span> src/</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile.arm64</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Entra a la carpeta:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="código-mínimo" class="level2">
 <h2 class="anchored" data-anchor-id="código-mínimo">Código mínimo</h2>
@@ -395,21 +399,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="compilar" class="level2">
 <h2 class="anchored" data-anchor-id="compilar">Compilar</h2>
-<p>Ruta x86_64 con QEMU:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ruta Raspberry Pi ARM64:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src <span class="at">-f</span> Makefile.arm64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Usa el Makefile correcto para tu entorno y compila:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resultado esperado:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">src/build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="ejecutar" class="level2">
 <h2 class="anchored" data-anchor-id="ejecutar">Ejecutar</h2>
-<p>Ruta x86_64 con QEMU:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ruta Raspberry Pi ARM64:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src <span class="at">-f</span> Makefile.arm64 run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Salida esperada:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> ARM64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> ARM64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-simple callout-tip callout-titled" title="Por qué usamos make">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -420,15 +419,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>make</code> evita escribir comandos largos. En x86_64 usas <code>Makefile</code>; en Raspberry Pi ARM64 real usas <code>Makefile.arm64</code>.</p>
+<p><code>make</code> evita escribir comandos largos. QEMU y Raspberry Pi usan comandos iguales; lo que cambia es el contenido de <code>src/Makefile</code>.</p>
 </div>
 </div>
 </section>
 <section id="comandos-útiles" class="level2">
 <h2 class="anchored" data-anchor-id="comandos-útiles">Comandos útiles</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src info</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src clean</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>make -C src info</code> muestra ayuda del Makefile actual. <code>make -C src clean</code> borra <code>src/build/</code> para reconstruir desde cero.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> info</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> clean</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>make info</code> muestra ayuda del Makefile actual. <code>make clean</code> borra <code>build/</code> para reconstruir desde cero.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
@@ -457,8 +456,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Revisa longitud del mensaje y syscall <code>write</code></td>
 </tr>
 <tr class="even">
-<td>Usaste <code>Makefile.arm64</code> en x86_64</td>
-<td>Ese Makefile es solo para ARM64 real</td>
+<td>Copiaste template equivocado</td>
+<td>Revisa la guía de Makefiles según tu máquina</td>
 </tr>
 </tbody>
 </table>
@@ -467,9 +466,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
 <li><label><input type="checkbox">Entré a la carpeta del ejemplo.</label></li>
-<li><label><input type="checkbox"><code>make -C src</code> generó <code>src/build/main</code>.</label></li>
-<li><label><input type="checkbox"><code>make -C src run</code> imprimió <code>Hola ARM64</code>.</label></li>
-<li><label><input type="checkbox">Puedo limpiar con <code>make -C src clean</code>.</label></li>
+<li><label><input type="checkbox">Entré a <code>src/</code>.</label></li>
+<li><label><input type="checkbox"><code>make</code> generó <code>build/main</code>.</label></li>
+<li><label><input type="checkbox"><code>make run</code> imprimió <code>Hola ARM64</code>.</label></li>
+<li><label><input type="checkbox">Puedo limpiar con <code>make clean</code>.</label></li>
 <li><label><input type="checkbox">Entiendo que todavía no estamos estudiando syscalls a fondo.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html">Inspección del binario</a>.</p>

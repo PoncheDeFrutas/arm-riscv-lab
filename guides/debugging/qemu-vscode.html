@@ -158,6 +158,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../../guides/setup/makefiles.html">
+ <span class="dropdown-text">Makefiles</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
@@ -220,6 +224,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../guides/setup/native-aarch64.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Setup: ARM nativo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../guides/setup/makefiles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Makefiles ARM64</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -332,11 +342,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="compila-el-ejemplo" class="level2">
 <h2 class="anchored" data-anchor-id="compila-el-ejemplo">1. Compila el ejemplo</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="arranca-qemu-con-gdb-server" class="level2">
 <h2 class="anchored" data-anchor-id="arranca-qemu-con-gdb-server">2. Arranca QEMU con GDB server</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Deja esa terminal abierta. El programa está esperando al debugger. En el Makefile de QEMU, este target usa <code>-singlestep</code> para reducir saltos visuales:</p>
 <pre class="make"><code>gdb: $(TARGET)
     $(QEMU) -g 1234 -singlestep $(TARGET)</code></pre>
@@ -455,7 +466,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si VS Code dice que no puede conectar, casi siempre <code>make -C src gdb</code> no está corriendo o el puerto <code>1234</code> ya está ocupado.</p>
+<p>Si VS Code dice que no puede conectar, casi siempre <code>make gdb</code> no está corriendo o el puerto <code>1234</code> ya está ocupado.</p>
 </div>
 </div>
 <div class="callout callout-style-simple callout-tip callout-titled" title="Breakpoints por etiqueta">

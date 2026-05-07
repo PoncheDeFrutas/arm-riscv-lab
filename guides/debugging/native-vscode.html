@@ -158,6 +158,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../../guides/setup/makefiles.html">
+ <span class="dropdown-text">Makefiles</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
@@ -220,6 +224,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../guides/setup/native-aarch64.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Setup: ARM nativo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../guides/setup/makefiles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Makefiles ARM64</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -331,11 +341,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="compila" class="level2">
 <h2 class="anchored" data-anchor-id="compila">Compila</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src <span class="at">-f</span> Makefile.arm64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="lanza-gdb" class="level2">
 <h2 class="anchored" data-anchor-id="lanza-gdb">Lanza GDB</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src <span class="at">-f</span> Makefile.arm64 gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En VS Code usa la configuración <code>Debug ARM64 (nativo)</code>.</p>
 <p>Instala estas extensiones:</p>
 <table class="caption-top table">
@@ -391,6 +402,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-cambia-frente-a-qemu" class="level2">
 <h2 class="anchored" data-anchor-id="qué-cambia-frente-a-qemu">Qué cambia frente a QEMU</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Tema</th>
@@ -415,9 +431,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Launch local</td>
 </tr>
 <tr class="even">
-<td>Makefile</td>
-<td><code>Makefile</code></td>
-<td><code>Makefile.arm64</code></td>
+<td>Makefile activo</td>
+<td>Template QEMU copiado como <code>Makefile</code></td>
+<td>Template ARM64 copiado como <code>Makefile</code></td>
 </tr>
 </tbody>
 </table>

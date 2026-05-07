@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Portal educativo para estudiar arquitectura de computadores, ARM64, RISC-V y programación de bajo nivel.">
+<meta name="description" content="Organización base de lecciones, proyectos y templates de Makefile.">
 
-<title>ARM RISC-V Lab</title>
+<title>01.6 · Estructura del repositorio – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -59,23 +59,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" rel="prev">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -106,14 +107,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-sidebar docked nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">ARM RISC-V Lab</span>
     </a>
   </div>
@@ -124,7 +125,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Inicio</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -133,17 +134,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-cursos">    
         <li>
-    <a class="dropdown-item" href="./courses/aarch64/index.html">
+    <a class="dropdown-item" href="../../../courses/aarch64/index.html">
  <span class="dropdown-text">Ruta AArch64</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./courses/riscv/index.html">
+    <a class="dropdown-item" href="../../../courses/riscv/index.html">
  <span class="dropdown-text">Ruta RISC-V</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./courses/aarch64/roadmap.html"> 
+    <a class="nav-link active" href="../../../courses/aarch64/roadmap.html" aria-current="page"> 
 <span class="menu-text">Roadmap</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -152,23 +153,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-guías">    
         <li>
-    <a class="dropdown-item" href="./guides/setup/index.html">
+    <a class="dropdown-item" href="../../../guides/setup/index.html">
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./guides/setup/makefiles.html">
+    <a class="dropdown-item" href="../../../guides/setup/makefiles.html">
  <span class="dropdown-text">Makefiles</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./guides/debugging/qemu-vscode.html">
+    <a class="dropdown-item" href="../../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./guides/debugging/native-vscode.html">
+    <a class="dropdown-item" href="../../../guides/debugging/native-vscode.html">
  <span class="dropdown-text">Debugging nativo ARM</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./guides/troubleshooting.html">
+    <a class="dropdown-item" href="../../../guides/troubleshooting.html">
  <span class="dropdown-text">Troubleshooting</span></a>
   </li>  
     </ul>
@@ -180,24 +181,135 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">AArch64</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio del curso</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Contexto, historia y objetivos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Entorno Linux ARM64</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Instalación toolchain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Primer programa</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inspección del binario</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Debugging mínimo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Estructura del repositorio</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link active" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
+  <li><a href="#flujo-único" id="toc-flujo-único" class="nav-link" data-scroll-target="#flujo-único">Flujo único</a></li>
+  <li><a href="#templates-disponibles" id="toc-templates-disponibles" class="nav-link" data-scroll-target="#templates-disponibles">Templates disponibles</a></li>
+  <li><a href="#carpetas-del-curso" id="toc-carpetas-del-curso" class="nav-link" data-scroll-target="#carpetas-del-curso">Carpetas del curso</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">ARM RISC-V Lab</h1>
-<p class="subtitle lead">Laboratorio de arquitectura de computadores y programación de bajo nivel.</p>
+<h1 class="title">01.6 · Estructura del repositorio</h1>
+<p class="subtitle lead">Carpetas mínimas para ejemplos, proyectos, VS Code y Makefiles.</p>
 </div>
 
 <div>
   <div class="description">
-    Portal educativo para estudiar arquitectura de computadores, ARM64, RISC-V y programación de bajo nivel.
+    Organización base de lecciones, proyectos y templates de Makefile.
   </div>
 </div>
 
@@ -214,45 +326,153 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="home-portal">
-<div class="hero-lab portal-hero">
-<p>Aprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.</p>
-<div class="hero-actions">
-<p><a href="./courses/aarch64/index.html" class="lab-button">Entrar a AArch64</a> <a href="./courses/riscv/index.html" class="lab-button secondary">Entrar a RISC-V</a></p>
+<div class="breadcrumb-lite">
+<p>Cursos &gt; AArch64 &gt; Laboratorio &gt; Estructura del repositorio</p>
+</div>
+<div class="hero-lab">
+<p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas. Cada ejemplo pequeño puede vivir como una carpeta simple con <code>.vscode/</code> y <code>src/</code>.</p>
+</div>
+<section id="proyecto-mínimo" class="level2">
+<h2 class="anchored" data-anchor-id="proyecto-mínimo">Proyecto mínimo</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> .vscode/</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">|</span><span class="ex">-</span> launch.json</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">`</span><span class="ex">-</span> settings.json</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="at">-</span> src/</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En <code>src/</code> solo necesitas dos archivos para empezar:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Archivo</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>main.s</code></td>
+<td>Código assembly</td>
+</tr>
+<tr class="even">
+<td><code>Makefile</code></td>
+<td>Flujo activo: QEMU o ARM64 nativo</td>
+</tr>
+</tbody>
+</table>
+<p>El binario generado queda en <code>src/build/main</code> visto desde VS Code, y en <code>build/main</code> cuando ya estás dentro de <code>src/</code>.</p>
+</section>
+<section id="flujo-único" class="level2">
+<h2 class="anchored" data-anchor-id="flujo-único">Flujo único</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como <code>src/Makefile</code>.</p>
+</section>
+<section id="templates-disponibles" class="level2">
+<h2 class="anchored" data-anchor-id="templates-disponibles">Templates disponibles</h2>
+<p>Los templates viven en:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Template</th>
+<th>Cuándo usarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Makefile.qemu.single</code></td>
+<td>x86_64 + QEMU, un <code>main.s</code></td>
+</tr>
+<tr class="even">
+<td><code>Makefile.qemu.multi</code></td>
+<td>x86_64 + QEMU, varios <code>.s</code></td>
+</tr>
+<tr class="odd">
+<td><code>Makefile.arm64.single</code></td>
+<td>Raspberry Pi / ARM64 real, un <code>main.s</code></td>
+</tr>
+<tr class="even">
+<td><code>Makefile.arm64.multi</code></td>
+<td>Raspberry Pi / ARM64 real, varios <code>.s</code></td>
+</tr>
+</tbody>
+</table>
+<p>Para copiar y entender cada uno, usa la guía <a href="../../../guides/setup/makefiles.html">Makefiles ARM64</a>.</p>
+<div class="callout callout-style-simple callout-tip callout-titled" title="Regla docente">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Regla docente
 </div>
 </div>
-<section id="qué-aprenderás" class="level2">
-<h2 class="anchored" data-anchor-id="qué-aprenderás">Qué aprenderás</h2>
-<p>Representación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware.</p>
-</section>
-<section id="rutas-disponibles" class="level2">
-<h2 class="anchored" data-anchor-id="rutas-disponibles">Rutas disponibles</h2>
-<div class="course-grid">
-<section id="aarch64-arm64" class="level3 course-card active">
-<h3 class="anchored" data-anchor-id="aarch64-arm64">AArch64 / ARM64</h3>
-<p>Ruta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.</p>
-<p><a href="./courses/aarch64/index.html">Entrar a AArch64</a></p>
-</section>
-<section id="risc-v" class="level3 course-card">
-<h3 class="anchored" data-anchor-id="risc-v">RISC-V</h3>
-<p>Ruta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.</p>
-<p><a href="./courses/riscv/index.html">Entrar a RISC-V</a></p>
-</section>
+<div class="callout-body-container callout-body">
+<p>No uses banderas especiales de <code>make</code> en las prácticas iniciales. Cambia el contenido de <code>src/Makefile</code> y conserva los comandos.</p>
+</div>
 </div>
 </section>
-<section id="por-dónde-empezar" class="level2">
-<h2 class="anchored" data-anchor-id="por-dónde-empezar">Por dónde empezar</h2>
-<p>Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.</p>
+<section id="carpetas-del-curso" class="level2">
+<h2 class="anchored" data-anchor-id="carpetas-del-curso">Carpetas del curso</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Carpeta</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>courses/</code></td>
+<td>Páginas Quarto del curso</td>
+</tr>
+<tr class="even">
+<td><code>guides/</code></td>
+<td>Setup, Makefiles, debugging y troubleshooting</td>
+</tr>
+<tr class="odd">
+<td><code>lessons/</code></td>
+<td>Ejemplos ejecutables</td>
+</tr>
+<tr class="even">
+<td><code>exercises/</code></td>
+<td>Prácticas</td>
+</tr>
+<tr class="odd">
+<td><code>projects/</code></td>
+<td>Estructuras mínimas de proyecto</td>
+</tr>
+<tr class="even">
+<td><code>slides/</code></td>
+<td>Presentaciones Slidev</td>
+</tr>
+<tr class="odd">
+<td><code>tooling/</code></td>
+<td>Templates y soporte técnico</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="cómo-se-organiza-el-aprendizaje" class="level2">
-<h2 class="anchored" data-anchor-id="cómo-se-organiza-el-aprendizaje">Cómo se organiza el aprendizaje</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode txt code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Fundamentos -&gt; Programas mínimos -&gt; Memoria y control de flujo -&gt;</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Funciones y ABI -&gt; Binarios y debugging -&gt; Sistemas avanzados</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Cada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio.</p>
-</section>
-</div>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Mi ejemplo tiene <code>.vscode/</code> y <code>src/</code>.</label></li>
+<li><label><input type="checkbox"><code>src/</code> solo necesita <code>Makefile</code> y <code>main.s</code> para empezar.</label></li>
+<li><label><input type="checkbox">Uso <code>make</code>, <code>make run</code> y <code>make gdb</code>.</label></li>
+<li><label><input type="checkbox">Si cambio de entorno, reemplazo <code>src/Makefile</code>.</label></li>
+<li><label><input type="checkbox">VS Code apunta a <code>src/build/main</code>.</label></li>
+</ul>
 
 
+</section>
 
 <a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Volver arriba</a></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -657,6 +877,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="pagination-link" aria-label="Debugging mínimo">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Debugging mínimo</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">

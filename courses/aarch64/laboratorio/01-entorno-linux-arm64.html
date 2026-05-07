@@ -158,6 +158,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../../../guides/setup/makefiles.html">
+ <span class="dropdown-text">Makefiles</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../../../guides/debugging/qemu-vscode.html">
  <span class="dropdown-text">Debugging con QEMU</span></a>
   </li>  
@@ -269,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.qmd" class="sidebar-item-text sidebar-link">
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
@@ -359,7 +363,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Compila</strong> <code>gcc</code>, <code>as</code>, <code>ld</code></p>
 </div>
 <div class="lab-step">
-<p><strong>Ejecuta</strong> <code>./src/build/main</code></p>
+<p><strong>Ejecuta</strong> <code>./build/main</code></p>
 </div>
 <div class="lab-step">
 <p><strong>Depura</strong> <code>gdb</code></p>
@@ -378,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Compila</strong> <code>aarch64-linux-gnu-gcc</code></p>
 </div>
 <div class="lab-step">
-<p><strong>Ejecuta</strong> <code>qemu-aarch64 ./src/build/main</code></p>
+<p><strong>Ejecuta</strong> <code>qemu-aarch64 ./build/main</code></p>
 </div>
 <div class="lab-step">
 <p><strong>Depura</strong> <code>qemu-aarch64 -g 1234</code> + <code>gdb-multiarch</code></p>
@@ -394,7 +398,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si tu host es <code>x86_64</code>, <code>./src/build/main</code> no es el comando correcto para el binario AArch64. Usa <code>make -C src run</code>.</p>
+<p>Si tu host es <code>x86_64</code>, <code>./build/main</code> no es el comando correcto para el binario AArch64. Entra a <code>src/</code> y usa <code>make run</code>.</p>
 </div>
 </div>
 </section>
@@ -433,7 +437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si solo quieres correr <code>src/build/main</code>, usa QEMU user mode. Si necesitas arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más adelante.</p>
+<p>Si solo quieres correr <code>build/main</code>, usa QEMU user mode. Si necesitas arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más adelante.</p>
 </div>
 </div>
 </section>

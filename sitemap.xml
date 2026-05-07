@@ -6,27 +6,31 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/qemu-x86_64.html</loc>
-    <lastmod>2026-05-06T23:15:14.075Z</lastmod>
+    <lastmod>2026-05-06T23:47:30.231Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/index.html</loc>
-    <lastmod>2026-05-06T23:15:49.727Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/makefiles.html</loc>
+    <lastmod>2026-05-06T23:49:34.035Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/qemu-vscode.html</loc>
-    <lastmod>2026-05-06T23:15:14.359Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/docker.html</loc>
+    <lastmod>2026-05-06T23:47:30.391Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/riscv/index.html</loc>
-    <lastmod>2026-05-03T21:32:47.013Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/native-vscode.html</loc>
+    <lastmod>2026-05-06T23:47:30.551Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/index.html</loc>
-    <lastmod>2026-05-06T23:16:22.031Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/roadmap.html</loc>
+    <lastmod>2026-05-06T22:11:06.588Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/06-estructura-repositorio.html</loc>
+    <lastmod>2026-05-07T00:01:46.931Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/04-inspeccion-binario.html</loc>
-    <lastmod>2026-05-06T23:15:13.463Z</lastmod>
+    <lastmod>2026-05-06T23:48:02.831Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/02-instalacion-toolchain.html</loc>
@@ -42,34 +46,38 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/01-entorno-linux-arm64.html</loc>
-    <lastmod>2026-05-06T23:15:49.467Z</lastmod>
+    <lastmod>2026-05-06T23:49:15.875Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/03-primer-programa.html</loc>
-    <lastmod>2026-05-06T23:15:49.551Z</lastmod>
+    <lastmod>2026-05-06T23:48:02.751Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/05-debugging-minimo.html</loc>
-    <lastmod>2026-05-06T23:15:13.555Z</lastmod>
+    <lastmod>2026-05-06T23:48:02.923Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/roadmap.html</loc>
-    <lastmod>2026-05-06T22:11:06.588Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/index.html</loc>
+    <lastmod>2026-05-06T23:49:15.955Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/native-vscode.html</loc>
-    <lastmod>2026-05-06T23:15:14.451Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/riscv/index.html</loc>
+    <lastmod>2026-05-03T21:32:47.013Z</lastmod>
   </url>
   <url>
-    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/docker.html</loc>
-    <lastmod>2026-05-06T23:15:14.271Z</lastmod>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/debugging/qemu-vscode.html</loc>
+    <lastmod>2026-05-06T23:47:30.475Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/index.html</loc>
+    <lastmod>2026-05-06T23:47:30.151Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/setup/native-aarch64.html</loc>
-    <lastmod>2026-05-06T23:15:14.175Z</lastmod>
+    <lastmod>2026-05-06T23:47:30.311Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/guides/troubleshooting.html</loc>
-    <lastmod>2026-05-06T23:15:14.547Z</lastmod>
+    <lastmod>2026-05-06T23:49:16.035Z</lastmod>
   </url>
 </urlset>
