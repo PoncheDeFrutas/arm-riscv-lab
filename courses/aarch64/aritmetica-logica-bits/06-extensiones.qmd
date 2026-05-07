@@ -1,0 +1,176 @@
+---
+title: "07.6 · Extensiones"
+subtitle: "Agrandar un valor pequeño puede cambiar su interpretación."
+description: "sxtb, sxth, sxtw, uxtb, uxth y uxtw en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Extensiones
+:::
+
+::: {.hero-lab}
+Un registro puede tener 64 bits, pero muchas veces el dato real ocupa 8, 16 o
+32 bits. Antes de operar, debes decidir cómo agrandar ese dato: rellenando con
+ceros o copiando el bit de signo.
+:::
+
+## Mismo byte, dos lecturas
+
+```bash
+8 bits:
+0xFF = 11111111
+```
+
+| Interpretación | Valor |
+|---|---|
+| unsigned de 8 bits | `255` |
+| signed de 8 bits | `-1` |
+
+Los bits no cambian. Cambia la forma de extenderlos.
+
+## Zero extension
+
+Zero extension rellena con ceros hacia la izquierda.
+
+```bash
+0xFF de 8 a 32 bits:
+0x000000FF
+```
+
+Instrucciones:
+
+```asm
+mov  w0, #0xFF
+uxtb w1, w0
+uxth w2, w0
+uxtw x3, w0
+```
+
+| Instrucción | Qué toma | Cómo rellena |
+|---|---|---|
+| `uxtb` | 8 bits bajos | ceros |
+| `uxth` | 16 bits bajos | ceros |
+| `uxtw` | 32 bits bajos | ceros hacia 64 |
+
+## Sign extension
+
+Sign extension copia el bit de signo hacia la izquierda.
+
+```bash
+0xFF de 8 a 32 bits con signo:
+0xFFFFFFFF
+```
+
+Instrucciones:
+
+```asm
+mov  w0, #0xFF
+sxtb w1, w0
+sxth w2, w0
+sxtw x3, w1
+```
+
+| Instrucción | Bit de signo que mira | Resultado con `0xFF` |
+|---|---|---|
+| `sxtb` | bit 7 | `0xFFFFFFFF` en `w1` |
+| `sxth` | bit 15 | `0x000000FF` en `w2` si el valor era `0x00FF` |
+| `sxtw` | bit 31 | extiende hacia `xN` |
+
+## Caso importante: `0x80`
+
+```asm
+mov  w0, #0x80
+uxtb w1, w0
+sxtb w2, w0
+```
+
+Resultado mental:
+
+```bash
+uxtb: 0x00000080 = 128
+sxtb: 0xFFFFFF80 = -128 si lo lees signed
+```
+
+`0x80` tiene encendido el bit 7, que es el bit de signo para un signed de 8
+bits.
+
+## Relación con `Wn` y `Xn`
+
+Escribir en `Wn` limpia la mitad alta de `Xn`.
+
+```asm
+movn x0, #0       // x0 = 0xFFFFFFFFFFFFFFFF
+mov  w0, #1       // x0 = 0x0000000000000001
+```
+
+Eso equivale a una extensión con ceros desde 32 a 64 bits. Si lo que necesitas
+es conservar signo desde 32 a 64 bits, usa `sxtw`.
+
+```asm
+mov  w0, #0xFFFFFFFF
+sxtw x1, w0       // x1 = 0xFFFFFFFFFFFFFFFF
+uxtw x2, w0       // x2 = 0x00000000FFFFFFFF
+```
+
+## Extensiones dentro de operaciones
+
+Algunas instrucciones permiten extender un operando mientras operan.
+
+```asm
+mov  x0, #100
+mov  w1, #0xFF
+add  x2, x0, w1, uxtb
+add  x3, x0, w1, sxtb
+```
+
+Lectura:
+
+```bash
+uxtb: suma 255
+sxtb: suma -1
+```
+
+Mismo `w1`, dos resultados distintos porque la extensión cambia la
+interpretación.
+
+## Cuándo usar cada forma
+
+| Situación | Forma |
+|---|---|
+| Byte representa cantidad, tamaño, índice | `uxtb` |
+| Byte representa número signed pequeño | `sxtb` |
+| Halfword unsigned | `uxth` |
+| Halfword signed | `sxth` |
+| Pasar signed de 32 a 64 bits | `sxtw` |
+| Pasar unsigned de 32 a 64 bits | `uxtw` o escritura en `Wn` según caso |
+
+## Mini ejercicios
+
+1. Lee:
+
+```asm
+mov  w0, #0x80
+uxtb w1, w0
+sxtb w2, w0
+```
+
+- ¿Qué valor unsigned representa `w1`?
+- ¿Qué valor signed representa `w2`?
+
+2. Lee:
+
+```asm
+mov  w0, #0xFFFFFFFF
+sxtw x1, w0
+uxtw x2, w0
+```
+
+- ¿Qué queda en `x1`?
+- ¿Qué queda en `x2`?
+- ¿Por qué los bits originales no cambiaron?
+
+## Cierre
+
+Extender es declarar intención. Si el dato pequeño representa cantidad, usa
+ceros. Si representa signed, conserva signo. Esa decisión aparece todo el tiempo
+al mezclar `Wn`, `Xn`, bytes y palabras.

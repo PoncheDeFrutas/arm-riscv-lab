@@ -1,0 +1,174 @@
+---
+title: "07.4 · Lógica y máscaras"
+subtitle: "Usa bits como interruptores: selecciona, enciende, apaga, alterna y prueba."
+description: "and, orr, eor, bic, orn, mvn, tst y máscaras en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Lógica y máscaras
+:::
+
+::: {.hero-lab}
+Las operaciones lógicas trabajan bit por bit. No preguntan si el número es
+signed o unsigned. Toman dos patrones de bits y aplican una regla simple a cada
+posición.
+:::
+
+## Máscara como herramienta
+
+Una máscara es un patrón de bits que indica qué posiciones te importan.
+
+```bash
+valor:    10101100
+máscara:  00001111
+```
+
+Según la instrucción, esa máscara puede conservar, encender, apagar, alternar o
+probar bits.
+
+| Acción | Instrucción típica |
+|---|---|
+| conservar bits | `and` |
+| encender bits | `orr` |
+| alternar bits | `eor` |
+| apagar bits | `bic` |
+| probar bits sin guardar resultado | `tst` |
+
+## AND: conservar bits
+
+```asm
+mov x0, #0b10101100
+and x1, x0, #0b00001111
+```
+
+Resultado:
+
+```bash
+  10101100
+& 00001111
+----------
+  00001100
+```
+
+`and` conserva solo las posiciones donde la máscara tiene `1`.
+
+## ORR: encender bits
+
+```asm
+mov x0, #0b1000
+orr x0, x0, #0b0010
+```
+
+Resultado:
+
+```bash
+1000 OR 0010 = 1010
+```
+
+Usa `orr` cuando quieres asegurar que ciertos bits queden en `1` sin tocar los
+demás.
+
+## EOR: alternar bits
+
+```asm
+mov x0, #0b1010
+eor x0, x0, #0b0010
+```
+
+Resultado:
+
+```bash
+1010 XOR 0010 = 1000
+```
+
+Donde la máscara tiene `1`, el bit cambia. Donde tiene `0`, queda igual.
+
+## BIC: apagar bits
+
+```asm
+mov x0, #0b1111
+bic x0, x0, #0b0100
+```
+
+Resultado:
+
+```bash
+1111 con bit 2 apagado = 1011
+```
+
+`bic x0, x0, máscara` equivale a:
+
+```bash
+x0 = x0 AND NOT(máscara)
+```
+
+## MVN y ORN: invertir operandos
+
+`mvn` invierte bits y guarda el resultado.
+
+```asm
+mvn x1, x0
+```
+
+`orn` hace OR con el segundo operando invertido:
+
+```asm
+orn x2, x0, x1
+```
+
+Lectura:
+
+```bash
+x2 = x0 OR NOT(x1)
+```
+
+No son instrucciones para memoria. Son lógica pura sobre registros.
+
+## TST: probar bits sin cambiar el valor
+
+```asm
+tst x0, #1
+```
+
+`tst` actualiza flags como si hiciera:
+
+```asm
+ands xzr, x0, #1
+```
+
+No guarda resultado visible. Si el bit 0 está apagado, el AND da cero y `Z`
+queda activo.
+
+::: {.callout-note title="Idea clave"}
+`tst` es para preguntar. `and` es para guardar. Ambos usan una máscara, pero no
+tienen la misma intención.
+:::
+
+## Recetas comunes
+
+| Necesidad | Código |
+|---|---|
+| Probar bit 0 | `tst x0, #1` |
+| Encender bit 3 | `orr x0, x0, #0b1000` |
+| Apagar bit 3 | `bic x0, x0, #0b1000` |
+| Alternar bit 3 | `eor x0, x0, #0b1000` |
+| Conservar byte bajo | `and x1, x0, #0xFF` |
+
+## Mini ejercicios
+
+Partiendo de:
+
+```asm
+mov x0, #0b0101
+```
+
+- ¿Qué instrucción enciende el bit 1?
+- ¿Qué instrucción apaga el bit 2?
+- ¿Qué instrucción alterna el bit 0?
+- ¿Qué instrucción prueba si el bit 0 está encendido sin cambiar `x0`?
+
+## Cierre
+
+Máscaras son vocabulario básico de bajo nivel. Aparecen en permisos, parsing,
+formatos binarios, flags compactos y registros de hardware. No memorices solo
+el mnemónico: aprende la intención de cada máscara.

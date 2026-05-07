@@ -164,6 +164,26 @@ website:
                   href: courses/aarch64/memoria-direccionamiento/06-arrays-recorrido-memoria.qmd
                 - text: "Lectura guiada de memoria"
                   href: courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.qmd
+            - section: "07 · Aritmética, lógica y bits"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/aritmetica-logica-bits/index.qmd
+                - text: "Movimiento de constantes"
+                  href: courses/aarch64/aritmetica-logica-bits/01-movimiento-constantes.qmd
+                - text: "Aritmética y flags"
+                  href: courses/aarch64/aritmetica-logica-bits/02-aritmetica-flags.qmd
+                - text: "Multiplicación y división"
+                  href: courses/aarch64/aritmetica-logica-bits/03-multiplicacion-division.qmd
+                - text: "Lógica y máscaras"
+                  href: courses/aarch64/aritmetica-logica-bits/04-logica-mascaras.qmd
+                - text: "Shifts y rotates"
+                  href: courses/aarch64/aritmetica-logica-bits/05-shifts-rotates.qmd
+                - text: "Extensiones"
+                  href: courses/aarch64/aritmetica-logica-bits/06-extensiones.qmd
+                - text: "Bit manipulation"
+                  href: courses/aarch64/aritmetica-logica-bits/07-bit-manipulation.qmd
+                - text: "Lectura guiada de operaciones"
+                  href: courses/aarch64/aritmetica-logica-bits/08-lectura-guiada-operaciones.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

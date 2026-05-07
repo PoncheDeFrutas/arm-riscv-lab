@@ -1,0 +1,219 @@
+---
+title: "07.8 · Lectura guiada de operaciones"
+subtitle: "Un archivo corto para separar constantes, aritmética, flags, máscaras y campos de bits."
+description: "Lectura guiada de un programa AArch64 con operaciones sobre registros y bits."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Lectura guiada
+:::
+
+::: {.hero-lab}
+Esta página junta la unidad en un solo archivo. La meta no es aprender una
+instrucción nueva, sino leer intención: construir valores, operar registros,
+generar flags, probar bits, extender valores y extraer campos.
+:::
+
+## Cómo leer este archivo
+
+No lo leas como una lista de líneas. Léelo en bloques:
+
+| Bloque | Pregunta |
+|---|---|
+| Constantes | ¿Qué valores se preparan? |
+| Aritmética | ¿Qué resultados se calculan? |
+| Flags | ¿Qué instrucción actualiza `NZCV`? |
+| Máscaras | ¿Qué bits se encienden, borran o prueban? |
+| Shifts | ¿Qué valor se escala o se mueve? |
+| Extensiones | ¿El valor pequeño se lee signed o unsigned? |
+| Bitfields | ¿Qué campo se extrae del registro? |
+
+## Programa completo
+
+Guarda este archivo como `operaciones.s`.
+
+```asm
+.text
+.global _start
+_start:
+    movz x0, #0x5678
+    movk x0, #0x1234, lsl #16
+
+    mov  x1, #10
+    add  x2, x1, #5
+    subs x3, x2, x1
+    cmp  x2, x3
+
+    mov  x4, #0b1010
+    orr  x4, x4, #0b0100
+    bic  x5, x4, #0b0010
+    tst  x5, #1
+
+    lsl  x6, x1, #3
+    lsr  x7, x6, #1
+
+    mov  w8, #0xFF
+    uxtb w9, w8
+    sxtb w10, w8
+
+    mov  x11, #0x3C00
+    ubfx x12, x11, #10, #4
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+## Construir y ejecutar
+
+```bash
+$ aarch64-linux-gnu-as operaciones.s -o operaciones.o
+$ aarch64-linux-gnu-ld operaciones.o -o operaciones
+$ qemu-aarch64 ./operaciones
+$ echo $?
+0
+```
+
+El programa no imprime. Sirve para practicar lectura mental o abrirlo en GDB y
+mirar registros después de avanzar instrucción por instrucción.
+
+## Primera lectura: constantes
+
+```asm
+movz x0, #0x5678
+movk x0, #0x1234, lsl #16
+```
+
+Paso a paso:
+
+```bash
+movz:
+x0 = 0x0000000000005678
+
+movk:
+x0 = 0x0000000012345678
+```
+
+`movz` crea una base limpia. `movk` reemplaza un bloque de 16 bits sin borrar el
+resto.
+
+## Segunda lectura: aritmética y flags
+
+```asm
+mov  x1, #10
+add  x2, x1, #5
+subs x3, x2, x1
+cmp  x2, x3
+```
+
+Tabla:
+
+| Línea | Resultado | Flags |
+|---|---|---|
+| `mov x1, #10` | `x1 = 10` | no importa aquí |
+| `add x2, x1, #5` | `x2 = 15` | no actualiza `NZCV` |
+| `subs x3, x2, x1` | `x3 = 5` | sí actualiza `NZCV` |
+| `cmp x2, x3` | no guarda resultado | actualiza `NZCV` como `15 - 5` |
+
+Después de `cmp`, los flags pertenecen a la comparación, no al `subs` anterior.
+
+## Tercera lectura: máscaras
+
+```asm
+mov  x4, #0b1010
+orr  x4, x4, #0b0100
+bic  x5, x4, #0b0010
+tst  x5, #1
+```
+
+Lectura:
+
+```bash
+x4 inicial: 1010
+orr 0100:   1110
+bic 0010:   1100
+tst 0001:   prueba bit 0; no guarda resultado
+```
+
+`tst` deja flags. Como `1100 AND 0001 = 0`, `Z` queda activo.
+
+## Cuarta lectura: shifts
+
+```asm
+lsl x6, x1, #3
+lsr x7, x6, #1
+```
+
+Con `x1 = 10`:
+
+```bash
+x6 = 10 << 3 = 80
+x7 = 80 >> 1 = 40
+```
+
+Aquí `lsl` se lee como escala por 8 y `lsr` como división unsigned por 2.
+
+## Quinta lectura: extensiones
+
+```asm
+mov  w8, #0xFF
+uxtb w9, w8
+sxtb w10, w8
+```
+
+Mismos bits bajos:
+
+| Instrucción | Resultado mental |
+|---|---|
+| `uxtb w9, w8` | `0x000000FF`, unsigned `255` |
+| `sxtb w10, w8` | `0xFFFFFFFF`, signed `-1` |
+
+El byte no cambió. Cambió la extensión.
+
+## Sexta lectura: campo de bits
+
+```asm
+mov  x11, #0x3C00
+ubfx x12, x11, #10, #4
+```
+
+`0x3C00` contiene bits encendidos en la zona que vamos a mirar. `ubfx` toma 4
+bits desde el bit 10 y los pone en los bits bajos de `x12`.
+
+```bash
+posición inicial = 10
+ancho = 4 bits
+extensión = ceros
+memoria = no se toca
+```
+
+## Mapa final de registros
+
+| Registro | Qué representa al final |
+|---|---|
+| `x0` | código de salida antes de `svc #0` |
+| `x1` | constante `10` |
+| `x2` | resultado `15` |
+| `x3` | resultado `5` |
+| `x4` | máscara después de `orr` |
+| `x5` | máscara después de `bic` |
+| `x6` | `10 << 3` |
+| `x7` | `x6 >> 1` |
+| `w9` | `0xFF` extendido con ceros |
+| `w10` | `0xFF` extendido con signo |
+| `x12` | campo extraído con `ubfx` |
+
+## Preguntas de cierre
+
+- ¿Qué instrucciones construyen una constante grande?
+- ¿Cuál operación actualiza flags: `add` o `subs`?
+- ¿Por qué `cmp` reemplaza los flags del `subs` anterior?
+- ¿Qué instrucción apaga bits?
+- ¿Qué diferencia hay entre `uxtb` y `sxtb`?
+- ¿Por qué `ubfx` no usa offset de memoria?
+
+## Cierre
+
+Después de esta unidad, los flags ya no son una idea aislada. Son consecuencia
+de operaciones sobre registros. Las máscaras, shifts, extensiones y bitfields
+son formas distintas de mirar y transformar esos mismos bits.

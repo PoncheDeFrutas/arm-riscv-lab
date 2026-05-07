@@ -1,0 +1,186 @@
+---
+title: "07.5 · Shifts y rotates"
+subtitle: "Desplazar bits no es lo mismo que rotarlos."
+description: "lsl, lsr, asr, ror y extr en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Shifts y rotates
+:::
+
+::: {.hero-lab}
+Los shifts mueven bits y descartan los que salen. Las rotaciones mueven bits y
+los reinsertan por el otro lado. Esa diferencia importa cuando calculas offsets,
+lees campos de bits o manipulas formatos binarios.
+:::
+
+## Desplazar a la izquierda con `lsl`
+
+```asm
+mov x0, #1
+lsl x1, x0, #3
+```
+
+Resultado:
+
+```bash
+x0 = 0001
+x1 = 1000
+```
+
+`lsl #3` mueve bits tres posiciones a la izquierda y mete ceros por la derecha.
+Si no se pierden bits importantes, esto se parece a multiplicar por `2^3`.
+
+```bash
+1 << 3 = 8
+5 << 3 = 40
+```
+
+En memoria y arrays ya viste `lsl #2` y `lsl #3` para convertir índices a
+bytes.
+
+## Desplazar a la derecha con `lsr`
+
+```asm
+mov x0, #0b1000
+lsr x1, x0, #1
+```
+
+Resultado:
+
+```bash
+1000 >> 1 = 0100
+```
+
+`lsr` mete ceros por la izquierda. Es natural para unsigned y campos de bits.
+
+## `asr`: shift aritmético
+
+`asr` también desplaza a la derecha, pero conserva el bit de signo.
+
+```asm
+movn x0, #0       // x0 = 0xFFFFFFFFFFFFFFFF
+lsr  x1, x0, #1
+asr  x2, x0, #1
+```
+
+Lectura:
+
+| Instrucción | Qué entra por la izquierda | Uso mental |
+|---|---|---|
+| `lsr` | ceros | unsigned, campos |
+| `asr` | copia del bit de signo | signed |
+
+Para un patrón negativo en complemento a dos, `asr` conserva la forma de número
+negativo. `lsr` lo convierte en un patrón positivo grande si lo lees unsigned.
+
+::: {.callout-warning title="Error común"}
+No uses `lsr` esperando preservar signo. Para valores signed, piensa primero si
+necesitas `asr`.
+:::
+
+## Shifts dentro de operaciones
+
+AArch64 permite desplazar un operando dentro de algunas instrucciones.
+
+```asm
+mov x0, #10
+mov x1, #3
+add x2, x0, x1, lsl #2
+```
+
+Lectura:
+
+```bash
+x2 = x0 + (x1 << 2)
+x2 = 10 + 12
+x2 = 22
+```
+
+Esto evita una instrucción separada:
+
+```asm
+lsl x9, x1, #2
+add x2, x0, x9
+```
+
+La versión integrada es común en cálculo de offsets.
+
+## Rotar con `ror`
+
+`ror` rota a la derecha. Los bits que salen por la derecha regresan por la
+izquierda.
+
+```asm
+mov x0, #0x12
+ror x1, x0, #4
+```
+
+Lectura general:
+
+```bash
+shift:  bits salen y se pierden
+rotate: bits salen y regresan por el otro lado
+```
+
+Para valores grandes, `ror` permite mover grupos de bits sin descartarlos.
+
+## `extr`: ventana entre dos registros
+
+`extr` concatena dos registros, desplaza y toma una parte del resultado.
+
+```asm
+mov  x0, #0x11
+mov  x1, #0x22
+extr x2, x1, x0, #8
+```
+
+Lectura:
+
+```bash
+forma una ventana con x1:x0
+desplaza esa ventana 8 bits
+toma el tamaño del destino
+```
+
+No necesitas dominar todos sus usos todavía. Basta con reconocer que no accede
+a memoria y que trabaja con bits de registros.
+
+## Cuándo usar cada uno
+
+| Necesidad | Instrucción |
+|---|---|
+| Multiplicar por potencia de dos | `lsl` |
+| Dividir unsigned por potencia de dos | `lsr` |
+| Dividir signed por potencia de dos | `asr` |
+| Reacomodar bits sin perderlos | `ror` |
+| Tomar bits desde dos registros concatenados | `extr` |
+
+## Mini ejercicios
+
+1. Lee:
+
+```asm
+mov x0, #5
+lsl x1, x0, #3
+```
+
+- ¿Qué valor queda en `x1`?
+- ¿Por qué `lsl #3` se relaciona con multiplicar por 8?
+
+2. Explica:
+
+```asm
+lsr x1, x0, #1
+asr x2, x0, #1
+```
+
+- ¿Cuál mete ceros?
+- ¿Cuál conserva signo?
+- ¿Cuál usarías para campos de bits?
+
+## Cierre
+
+Shifts son herramientas de escala y selección. Rotates son herramientas de
+reordenamiento sin pérdida. En ambos casos, sigues trabajando dentro de
+registros.

@@ -1,0 +1,217 @@
+---
+title: "07.2 · Aritmética y flags"
+subtitle: "Sumar, restar y comparar dejando señales en NZCV cuando hace falta."
+description: "add, adds, sub, subs, neg, cmp, cmn y flags NZCV en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Aritmética y flags
+:::
+
+::: {.hero-lab}
+La aritmética en AArch64 parece sencilla hasta que aparecen los flags. La idea
+principal es separar dos decisiones: si quieres guardar un resultado y si
+quieres actualizar `NZCV` para una comparación o salto futuro.
+:::
+
+## Operar registros
+
+Estas instrucciones no leen memoria. Trabajan con registros e inmediatos.
+
+```asm
+mov x0, #10
+mov x1, #3
+
+add x2, x0, x1    // x2 = 13
+sub x3, x0, x1    // x3 = 7
+neg x4, x1        // x4 = -3
+```
+
+Lectura:
+
+| Instrucción | Operación |
+|---|---|
+| `add x2, x0, x1` | `x2 = x0 + x1` |
+| `sub x3, x0, x1` | `x3 = x0 - x1` |
+| `neg x4, x1` | `x4 = 0 - x1` |
+
+## Resultado vs flags
+
+No todas las instrucciones aritméticas actualizan flags. En AArch64 lo eliges
+con la forma de la instrucción.
+
+| No actualiza flags | Actualiza `NZCV` | Lectura |
+|---|---|---|
+| `add` | `adds` | suma |
+| `sub` | `subs` | resta |
+| `neg` | `negs` | negación |
+
+```asm
+add  x2, x0, x1    // guarda resultado, no toca NZCV
+adds x3, x0, x1    // guarda resultado y actualiza NZCV
+```
+
+::: {.callout-warning title="Error común"}
+Si usas `add` y luego esperas que `b.eq`, `b.cs` o cualquier condición vea
+flags nuevos, tu razonamiento falla. Para actualizar flags usa `adds`, `subs`,
+`cmp`, `cmn` o instrucciones lógicas con `s` como `ands`.
+:::
+
+## Qué significa `NZCV`
+
+| Flag | Nombre | Pregunta útil |
+|---|---|---|
+| `N` | Negative | ¿El resultado tiene bit de signo encendido? |
+| `Z` | Zero | ¿El resultado fue cero? |
+| `C` | Carry | ¿Hubo carry o no borrow en unsigned? |
+| `V` | Overflow | ¿Hubo overflow signed? |
+
+Piensa en `NZCV` como una foto pequeña del último resultado que decidió
+actualizarlos. No dura para siempre: otra instrucción que actualice flags borra
+esa foto.
+
+## `subs` como resta que deja señales
+
+```asm
+mov  x0, #8
+mov  x1, #8
+subs x2, x0, x1
+```
+
+Resultado:
+
+```bash
+x2 = 0
+Z = 1 porque resultado fue cero
+```
+
+Otro caso:
+
+```asm
+mov  x0, #3
+mov  x1, #8
+subs x2, x0, x1
+```
+
+`x2` contiene el resultado en complemento a dos. Para signed, el resultado es
+negativo; por eso `N` ayuda a leer el bit de signo. Para unsigned, interesa la
+idea de borrow/no borrow, reflejada en `C`.
+
+## `cmp` es `subs` sin guardar resultado
+
+```asm
+cmp x0, x1
+```
+
+Lectura correcta:
+
+```bash
+actualiza NZCV como si hiciera x0 - x1
+no guarda x0 - x1 en un registro general
+```
+
+Equivalencia mental:
+
+```asm
+subs xzr, x0, x1
+```
+
+`xzr` descarta el resultado. Los flags quedan.
+
+## `cmn` es `adds` sin guardar resultado
+
+```asm
+cmn x0, x1
+```
+
+Lectura:
+
+```bash
+actualiza NZCV como si hiciera x0 + x1
+no guarda la suma en un registro general
+```
+
+Equivalencia mental:
+
+```asm
+adds xzr, x0, x1
+```
+
+`cmn` aparece menos al inicio, pero es útil cuando quieres flags de una suma sin
+conservar la suma.
+
+## Carry unsigned no es overflow signed
+
+Con unsigned, importa si salió un carry fuera del tamaño disponible.
+
+```asm
+mov  x0, #0xFFFFFFFFFFFFFFFF
+adds x1, x0, #1
+```
+
+Lectura:
+
+```bash
+resultado visible = 0
+carry unsigned = sí
+```
+
+Con signed, importa si el resultado matemático no cabe en el rango signed.
+
+```asm
+mov  w0, #0x7FFFFFFF
+adds w1, w0, #1
+```
+
+Lectura:
+
+```bash
+0x7FFFFFFF = 2147483647 signed
+sumar 1 produce 0x80000000
+eso representa overflow signed
+```
+
+::: {.callout-note title="Idea clave"}
+`C` y `V` pueden contar historias distintas sobre los mismos bits. `C` ayuda en
+aritmética unsigned. `V` ayuda en aritmética signed.
+:::
+
+## Preparación para control de flujo
+
+```asm
+cmp x0, x1
+b.eq iguales
+```
+
+La siguiente unidad estudiará `b.eq` y demás condiciones. Aquí solo debes
+entender que `cmp` prepara `NZCV` y el branch consulta esos flags.
+
+## Mini ejercicios
+
+1. Lee:
+
+```asm
+mov  x0, #5
+mov  x1, #5
+subs x2, x0, x1
+```
+
+- ¿Qué valor queda en `x2`?
+- ¿Qué pasa con `Z`?
+
+2. Lee:
+
+```asm
+cmp x0, x1
+```
+
+- ¿Dónde se guarda el resultado de `x0 - x1`?
+- ¿Qué sí queda actualizado?
+
+3. Explica con tus palabras por qué `C` y `V` no significan lo mismo.
+
+## Cierre
+
+La pregunta no es solo “cuánto da”. También es “quiero flags o no”. Esa
+decisión separa `add/sub` de `adds/subs`, y convierte `cmp` en una herramienta
+central para la unidad de control de flujo.

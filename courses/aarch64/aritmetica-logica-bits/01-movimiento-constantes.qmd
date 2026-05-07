@@ -1,0 +1,246 @@
+---
+title: "07.1 · Movimiento de constantes"
+subtitle: "Poner valores en registros no siempre significa leer memoria."
+description: "mov, movz, movk, movn y construcción de constantes en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Movimiento de constantes
+:::
+
+::: {.hero-lab}
+Antes de sumar, comparar o aplicar una máscara necesitas operandos. A veces el
+operando viene de memoria con `ldr`. Otras veces lo construyes directamente en
+un registro. Esta lección separa esas dos ideas y muestra por qué AArch64 tiene
+varias formas de crear constantes.
+:::
+
+## Tres formas de obtener un valor
+
+No todas las instrucciones que ponen algo en un registro hacen lo mismo.
+
+```asm
+mov x0, #42       // x0 recibe una constante pequeña
+ldr x1, =dato     // x1 recibe la dirección de dato o un literal elegido por el assembler
+ldr x2, [x1]      // x2 recibe contenido leído desde la dirección guardada en x1
+```
+
+| Forma | Pregunta que responde | Resultado |
+|---|---|---|
+| `mov x0, #42` | ¿Puedo poner esta constante directa? | `x0 = 42` |
+| `ldr x1, =dato` | ¿Dónde está este símbolo o literal? | `x1 = dirección` o literal materializado |
+| `ldr x2, [x1]` | ¿Qué bytes hay en esa dirección? | `x2 = contenido de memoria` |
+
+::: {.callout-warning title="Error común"}
+`mov` no entra a memoria. `ldr x0, =dato` normalmente prepara una dirección o
+literal. `ldr x0, [x1]` sí lee contenido desde memoria porque usa corchetes.
+:::
+
+## Por qué no basta con un solo `mov`
+
+Una instrucción A64 ocupa 32 bits. Dentro de esos 32 bits deben caber el opcode,
+los registros y el valor inmediato. Por eso no cualquier constante de 64 bits
+cabe completa como inmediato de una sola instrucción real.
+
+Para valores pequeños, el assembler puede aceptar una forma cómoda:
+
+```asm
+mov x0, #42
+```
+
+Pero para constantes grandes conviene pensar en bloques. AArch64 ofrece
+instrucciones que escriben piezas de 16 bits dentro del registro.
+
+```bash
+Registro X0 de 64 bits dividido en cuatro bloques de 16 bits:
+
+[ bits 63..48 ][ bits 47..32 ][ bits 31..16 ][ bits 15..0 ]
+```
+
+## `mov` como forma cómoda
+
+En código de curso verás `mov` para constantes pequeñas porque es legible.
+
+```asm
+.text
+.global _start
+_start:
+    mov x0, #42
+    mov x1, #7
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Lectura:
+
+| Línea | Lectura mental |
+|---|---|
+| `mov x0, #42` | `x0` recibe el valor 42 |
+| `mov x1, #7` | `x1` recibe el valor 7 |
+| `mov x8, #93` | `x8` recibe número de syscall `exit` |
+
+No hay memoria involucrada. Solo constantes inmediatas.
+
+## `movz`: mover y limpiar
+
+`movz` significa mover con ceros. Escribe un bloque de 16 bits y rellena el
+resto del registro con ceros.
+
+```asm
+movz x0, #0x1234
+```
+
+Resultado:
+
+```bash
+x0 = 0x0000000000001234
+```
+
+Con desplazamiento:
+
+```asm
+movz x0, #0x1234, lsl #16
+```
+
+Resultado:
+
+```bash
+x0 = 0x0000000012340000
+```
+
+`lsl #16` indica en qué bloque de 16 bits se coloca el valor.
+
+## `movk`: mover y conservar
+
+`movk` escribe 16 bits en una posición, pero conserva los demás bits del
+registro. La `k` ayuda a recordarlo como keep.
+
+```asm
+movz x0, #0x5678
+movk x0, #0x1234, lsl #16
+```
+
+Paso a paso:
+
+```bash
+Después de movz:
+x0 = 0x0000000000005678
+
+Después de movk con lsl #16:
+x0 = 0x0000000012345678
+```
+
+`movk` no suma. No desplaza todo el registro. Solo reemplaza un bloque de 16
+bits en la posición indicada.
+
+## Construir una constante de 64 bits
+
+Para construir `0x1122334455667788`, piensa en cuatro bloques:
+
+```bash
+0x1122 3344 5566 7788
+   ^    ^    ^    ^
+  48   32   16    0
+```
+
+Código:
+
+```asm
+movz x0, #0x7788
+movk x0, #0x5566, lsl #16
+movk x0, #0x3344, lsl #32
+movk x0, #0x1122, lsl #48
+```
+
+Tabla de lectura:
+
+| Paso | Valor de `x0` |
+|---|---|
+| `movz #0x7788` | `0x0000000000007788` |
+| `movk #0x5566, lsl #16` | `0x0000000055667788` |
+| `movk #0x3344, lsl #32` | `0x0000334455667788` |
+| `movk #0x1122, lsl #48` | `0x1122334455667788` |
+
+## `movn`: mover e invertir
+
+`movn` escribe un bloque de 16 bits y luego invierte todos los bits del
+resultado. Es útil para constantes con muchos bits en `1`.
+
+```asm
+movn x0, #0
+```
+
+Resultado:
+
+```bash
+x0 = 0xFFFFFFFFFFFFFFFF
+```
+
+Otro ejemplo:
+
+```asm
+movn x1, #0xFF
+```
+
+Lectura mental:
+
+```bash
+base antes de invertir: 0x00000000000000FF
+después de invertir:   0xFFFFFFFFFFFFFF00
+```
+
+## `Wn` y constantes de 32 bits
+
+Si escribes en `w0`, se actualizan los 32 bits bajos y se limpian los 32 bits
+altos de `x0`.
+
+```asm
+movn x0, #0       // x0 = 0xFFFFFFFFFFFFFFFF
+mov  w0, #42      // x0 = 0x000000000000002A
+```
+
+Esto viene de Unidad 03: `Wn` no es otro registro separado; es la vista baja de
+32 bits de `Xn`.
+
+## Cuándo usar cada forma
+
+| Necesidad | Forma práctica |
+|---|---|
+| Valor pequeño y legible | `mov x0, #42` |
+| Empezar una constante por bloques | `movz` |
+| Completar o corregir bloques de 16 bits | `movk` |
+| Crear valores con muchos `1` | `movn` |
+| Obtener dirección de símbolo | `ldr x0, =simbolo` o `adr` |
+| Leer contenido desde memoria | `ldr x0, [x1]` |
+
+## Mini ejercicios
+
+1. Construye mentalmente:
+
+```asm
+movz x1, #0x00FF
+movk x1, #0xAA00, lsl #16
+```
+
+- ¿Qué valor queda en `x1`?
+- ¿Qué bloque reemplazó `movk`?
+- ¿Por qué esto no leyó memoria?
+
+2. Lee este caso:
+
+```asm
+ldr x0, =valor
+ldr x1, [x0]
+```
+
+- ¿Cuál registro contiene dirección?
+- ¿Cuál contiene contenido?
+- ¿Por qué esto no es equivalente a `mov x1, #valor`?
+
+## Cierre
+
+Movimiento de constantes es preparación de operandos. Si la constante es simple,
+`mov` basta como forma legible. Si el valor es grande, piensa en bloques de 16
+bits con `movz` y `movk`. Si hay muchos `1`, `movn` puede ser más directo.

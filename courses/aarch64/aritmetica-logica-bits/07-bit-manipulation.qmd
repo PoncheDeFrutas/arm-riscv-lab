@@ -1,0 +1,192 @@
+---
+title: "07.7 · Bit manipulation"
+subtitle: "Contar, invertir, cambiar orden, extraer e insertar campos de bits."
+description: "clz, cls, rbit, rev, bfi, bfxil, ubfx y sbfx en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Bit manipulation
+:::
+
+::: {.hero-lab}
+Además de máscaras y shifts, AArch64 tiene instrucciones para tareas frecuentes
+con bits: contar ceros, invertir orden, cambiar bytes, extraer campos e
+insertar campos dentro de un registro.
+:::
+
+## Operar dentro del registro
+
+Estas instrucciones no recorren memoria. Trabajan con el patrón de bits que ya
+está en un registro.
+
+```asm
+mov x0, #0x10
+clz x1, x0
+rbit x2, x0
+rev x3, x0
+```
+
+| Instrucción | Qué hace |
+|---|---|
+| `clz` | cuenta ceros iniciales |
+| `cls` | cuenta bits de signo iniciales |
+| `rbit` | invierte orden de bits |
+| `rev` | invierte orden de bytes |
+
+## `clz` y `cls`
+
+`clz` cuenta cuántos ceros hay antes del primer `1` desde el bit más alto.
+
+```asm
+mov x0, #1
+clz x1, x0
+```
+
+En 64 bits, `1` tiene un solo bit bajo encendido; antes de ese bit hay muchos
+ceros iniciales.
+
+`cls` cuenta bits iniciales iguales al bit de signo. Es útil para razonar qué
+tanto espacio tiene un valor signed antes de cambiar de signo, aunque en esta
+unidad basta reconocer su propósito.
+
+## `rbit` y `rev`
+
+`rbit` invierte bits:
+
+```asm
+rbit x1, x0
+```
+
+`rev` invierte bytes:
+
+```asm
+rev x2, x0
+```
+
+::: {.callout-warning title="Error común"}
+`rev` no cambia el endianness global del sistema. Solo reordena bytes dentro del
+registro destino.
+:::
+
+## Campo de bits: posición y ancho
+
+Un campo de bits se define por dos datos:
+
+```bash
+posición inicial: desde qué bit empieza
+ancho: cuántos bits toma
+```
+
+Ejemplo visual:
+
+```bash
+x0:      [ ... ][ campo ][ ... ]
+bit:             11..8
+ancho:           4 bits
+```
+
+## Extraer campo unsigned con `ubfx`
+
+```asm
+ubfx x1, x0, #8, #4
+```
+
+Lectura:
+
+```bash
+toma 4 bits desde el bit 8 de x0
+los coloca en x1
+rellena con ceros
+```
+
+Si el campo era `1111`, `ubfx` lo deja como `15`.
+
+## Extraer campo signed con `sbfx`
+
+```asm
+sbfx x2, x0, #8, #4
+```
+
+`sbfx` extrae el mismo tipo de campo, pero extiende con signo. Si el bit alto
+del campo está encendido, el resultado puede representar un negativo.
+
+| Campo de 4 bits | `ubfx` | `sbfx` |
+|---|---:|---:|
+| `0111` | `7` | `7` |
+| `1111` | `15` | `-1` |
+| `1000` | `8` | `-8` |
+
+## Insertar con `bfi`
+
+```asm
+mov x0, #0
+mov x3, #0xAB
+bfi x0, x3, #16, #8
+```
+
+Lectura:
+
+```bash
+toma 8 bits bajos de x3
+los inserta en x0 desde el bit 16
+conserva el resto de x0
+```
+
+Resultado:
+
+```bash
+x0 = 0x0000000000AB0000
+```
+
+## Insertar con `bfxil`
+
+```asm
+bfxil x4, x5, #0, #8
+```
+
+Lectura:
+
+```bash
+extrae 8 bits desde x5 empezando en bit 0
+los inserta en los bits bajos de x4
+conserva el resto de x4
+```
+
+`bfxil` se lee como bitfield extract and insert low.
+
+## Campos de bits no son offsets de memoria
+
+```asm
+ubfx x1, x0, #8, #4
+```
+
+`#8` no significa “dirección `x0 + 8`”. Significa “bit 8 dentro del registro
+`x0`”.
+
+::: {.callout-note title="Idea clave"}
+En load/store, offsets mueven direcciones. En bitfield, posiciones mueven la
+mirada dentro de un registro.
+:::
+
+## Mini ejercicios
+
+1. Lee:
+
+```asm
+mov x0, #0x0000000000003C00
+ubfx x1, x0, #10, #4
+```
+
+- ¿Desde qué bit empieza el campo?
+- ¿Cuántos bits extrae?
+- ¿La operación lee memoria?
+
+2. Explica cuándo usarías `sbfx` en lugar de `ubfx`.
+
+3. Explica por qué `rev` no cambia cómo el sistema guarda memoria.
+
+## Cierre
+
+Bit manipulation prepara lectura de formatos compactos, permisos, headers
+binarios y registros de hardware. La idea central: no estás leyendo memoria,
+estás reorganizando bits dentro de registros.

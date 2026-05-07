@@ -1,0 +1,215 @@
+---
+title: "07.3 · Multiplicación y división"
+subtitle: "Productos, multiply-add y cocientes signed/unsigned."
+description: "mul, madd, msub, smaddl, umaddl, sdiv y udiv en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética y bits > Multiplicación y división
+:::
+
+::: {.hero-lab}
+Multiplicar y dividir también es operar registros. La parte importante para el
+curso no es memorizar variantes, sino leer qué tamaño usan los operandos, si hay
+acumulación y si el valor se interpreta como signed o unsigned.
+:::
+
+## Multiplicación simple con `mul`
+
+```asm
+mov x0, #6
+mov x1, #7
+mul x2, x0, x1
+```
+
+Resultado:
+
+```bash
+x2 = 42
+```
+
+`mul` toma dos registros y guarda el producto bajo del tamaño usado. Para
+programas iniciales, léelo como una multiplicación directa entre registros.
+
+| Instrucción | Lectura |
+|---|---|
+| `mul x2, x0, x1` | `x2 = x0 * x1` |
+| `mul w2, w0, w1` | `w2 = w0 * w1` en 32 bits |
+
+## Por qué existe `madd`
+
+Muchos cálculos hacen “multiplica y suma”. Por ejemplo:
+
+```bash
+base + indice * tamaño
+```
+
+`madd` junta multiplicación y suma:
+
+```asm
+mov  x0, #6
+mov  x1, #7
+mov  x2, #5
+madd x3, x0, x1, x2
+```
+
+Lectura:
+
+```bash
+x3 = x0 * x1 + x2
+x3 = 6 * 7 + 5
+x3 = 47
+```
+
+No es una syscall ni una llamada a función. Es una instrucción aritmética.
+
+## `msub`: multiplicar y restar desde acumulador
+
+```asm
+mov  x0, #6
+mov  x1, #7
+mov  x2, #50
+msub x3, x0, x1, x2
+```
+
+Lectura:
+
+```bash
+x3 = x2 - x0 * x1
+x3 = 50 - 42
+x3 = 8
+```
+
+`msub` no significa `x0 * x1 - x2`; el acumulador va al final y se usa como
+base de la resta.
+
+::: {.callout-warning title="Error común"}
+En `madd` y `msub`, el cuarto operando participa en la suma/resta. No es un
+registro temporal ni destino extra.
+:::
+
+## Multiplicar 32 bits y acumular en 64 bits
+
+`umaddl` y `smaddl` toman operandos de 32 bits (`Wn`) y producen resultado de
+64 bits (`Xn`) sumando un acumulador de 64 bits.
+
+```asm
+mov    w0, #100
+mov    w1, #3
+mov    x2, #5
+umaddl x3, w0, w1, x2
+smaddl x4, w0, w1, x2
+```
+
+Con estos valores positivos:
+
+```bash
+x3 = 100 * 3 + 5 = 305
+x4 = 100 * 3 + 5 = 305
+```
+
+La diferencia aparece cuando el bit de signo está encendido.
+
+```asm
+mov    w0, #0xFFFFFFFF
+mov    w1, #2
+mov    x2, #0
+umaddl x3, w0, w1, x2
+smaddl x4, w0, w1, x2
+```
+
+Lectura:
+
+| Instrucción | Interpretación de `w0` | Resultado mental |
+|---|---|---|
+| `umaddl` | `4294967295` unsigned | número grande por 2 |
+| `smaddl` | `-1` signed | `-2` |
+
+Mismos bits. Interpretación distinta.
+
+## División unsigned con `udiv`
+
+```asm
+mov  x0, #42
+mov  x1, #6
+udiv x2, x0, x1
+```
+
+Resultado:
+
+```bash
+x2 = 7
+```
+
+`udiv` interpreta los operandos como unsigned.
+
+## División signed con `sdiv`
+
+```asm
+movn x0, #5        // x0 = -6 si se interpreta signed
+mov  x1, #2
+sdiv x2, x0, x1
+```
+
+Resultado signed:
+
+```bash
+x2 = -3
+```
+
+Si usaras `udiv`, el patrón de bits de `x0` se leería como un unsigned enorme.
+El resultado no tendría la misma intención.
+
+## División por cero
+
+En AArch64, dividir entre cero con `sdiv` o `udiv` produce `0`. No imprime error
+por sí solo y no entra al kernel.
+
+```asm
+mov  x0, #10
+mov  x1, #0
+udiv x2, x0, x1
+```
+
+Resultado:
+
+```bash
+x2 = 0
+```
+
+En un programa real, si dividir entre cero no tiene sentido para tu lógica, debes
+probar el divisor antes. Esa prueba usará comparaciones y branches en la unidad
+siguiente.
+
+## Mini ejercicios
+
+1. Lee:
+
+```asm
+mov  x0, #4
+mov  x1, #5
+mov  x2, #6
+madd x3, x0, x1, x2
+```
+
+- ¿Qué valor queda en `x3`?
+- ¿Qué operación evita escribir dos instrucciones?
+
+2. Lee:
+
+```asm
+mov  x0, #50
+mov  x1, #8
+udiv x2, x0, x1
+```
+
+- ¿Qué pasa con el residuo?
+- ¿Dónde queda el cociente?
+
+3. Explica por qué `sdiv` y `udiv` pueden diferir aunque los bits sean iguales.
+
+## Cierre
+
+Multiplicar y dividir no introduce memoria nueva. Introduce intención: producto
+simple, producto acumulado, signed o unsigned. Esa intención debe verse en la
+instrucción elegida.
