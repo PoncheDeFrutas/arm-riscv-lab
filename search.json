@@ -723,7 +723,7 @@
     "href": "courses/aarch64/index.html#primer-bloque-recomendado",
     "title": "Ruta AArch64",
     "section": "Primer bloque recomendado",
-    "text": "Primer bloque recomendado\n\nFundamentos de computación y ARM64\nEn este bloque se construye la base para entender cómo se ejecuta un programa AArch64 antes de entrar en programas más grandes.\n\n\n00 · Contexto, historia y objetivos\n01 · Laboratorio ARM64 reproducible\nBases binarias y representación de datos\nModelo ARMv8-A / AArch64\nGNU Assembly, directivas y pseudo-instrucciones\nPrimer programa mínimo",
+    "text": "Primer bloque recomendado\n\nFundamentos de computación y ARM64\nEn este bloque se construye la base para entender cómo se ejecuta un programa AArch64 antes de entrar en programas más grandes.\n\n\n00 · Contexto, historia y objetivos\n01 · Laboratorio ARM64 reproducible\n02 · Bases binarias y representación de datos\nModelo ARMv8-A / AArch64\nGNU Assembly, directivas y pseudo-instrucciones\nPrimer programa mínimo",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -740,6 +740,903 @@
       "Roadmap",
       "AArch64",
       "Inicio del curso"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html",
+    "href": "courses/aarch64/bases-binarias/index.html",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias y representación de datos",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#mapa-rápido",
+    "href": "courses/aarch64/bases-binarias/index.html#mapa-rápido",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Mapa rápido",
+    "text": "Mapa rápido\n\n\n1. Tamaños Bits, bytes, nibbles, words y doublewords.\n\n\n2. Bases Decimal, binario y hexadecimal como formas de escribir el mismo valor.\n\n\n3. Enteros Unsigned, signed, rangos y complemento a dos.\n\n\n4. Efectos Carry, borrow, overflow, zero extension y sign extension.\n\n\n5. Memoria Texto, endianness, alineación, direcciones y punteros.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#preguntas-que-responde-esta-unidad",
+    "href": "courses/aarch64/bases-binarias/index.html#preguntas-que-responde-esta-unidad",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Preguntas que responde esta unidad",
+    "text": "Preguntas que responde esta unidad\n\n\n\n\n\n\n\nPregunta\nDónde aparece\n\n\n\n\n¿Qué significa que x0 tenga 64 bits?\nTamaños, registros Xn y doublewords\n\n\n¿Por qué 0xFF puede ser 255 o -1?\nSigned, unsigned y complemento a dos\n\n\n¿Qué diferencia hay entre carry y overflow?\nAritmética sin signo y con signo\n\n\n¿Por qué importa el orden de bytes en memoria?\nEndianness\n\n\n¿Una dirección también es un número?\nDirecciones y punteros\n\n\n¿Qué diferencia hay entre valor, dirección y contenido?\nInterpretación de memoria",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#tamaños-que-usarás-en-aarch64",
+    "href": "courses/aarch64/bases-binarias/index.html#tamaños-que-usarás-en-aarch64",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Tamaños que usarás en AArch64",
+    "text": "Tamaños que usarás en AArch64\n\n\n\nNombre\nBits\nBytes\nRelación en el curso\n\n\n\n\nbit\n1\n-\nUnidad mínima de información\n\n\nnibble\n4\n1/2\nUn dígito hexadecimal\n\n\nbyte\n8\n1\nUnidad mínima direccionable en memoria\n\n\nhalfword\n16\n2\nCargas y stores de 16 bits\n\n\nword\n32\n4\nRegistros w0-w30\n\n\ndoubleword\n64\n8\nRegistros x0-x30\n\n\n\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nEn AArch64, x0 representa un registro de 64 bits. w0 representa los 32 bits bajos de ese mismo registro. Esta relación aparece muchas veces cuando se mezclan datos de 32 y 64 bits.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#lecciones-de-esta-unidad",
+    "href": "courses/aarch64/bases-binarias/index.html#lecciones-de-esta-unidad",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Lecciones de esta unidad",
+    "text": "Lecciones de esta unidad\n\n\nBits, bytes y bases\nTamaños básicos, decimal, binario, hexadecimal y conversiones pequeñas.\nAbrir\n\n\nEnteros, signo y rangos\nUnsigned, signed, rangos de n bits y complemento a dos.\nAbrir\n\n\nOverflow y extensiones\nCarry, borrow, overflow, zero extension y sign extension.\nAbrir\n\n\nBytes y texto\nASCII, UTF-8 básico y diferencia entre carácter, byte y código.\nAbrir\n\n\nEndianness y alineación\nOrden de bytes en memoria y alineación conceptual de datos.\nAbrir\n\n\nDirecciones y punteros\nDirecciones como números, punteros y lectura de contenido en memoria.\nAbrir",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#modelo-mental-de-la-unidad",
+    "href": "courses/aarch64/bases-binarias/index.html#modelo-mental-de-la-unidad",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Modelo mental de la unidad",
+    "text": "Modelo mental de la unidad\nregistro o dirección\n        |\n        v\nbytes guardados\n        |\n        v\ninterpretación elegida\n        |\n        +--&gt; unsigned\n        +--&gt; signed\n        +--&gt; texto\n        +--&gt; dirección\n        `--&gt; bytes sin interpretar\nEl depurador y las herramientas muestran registros, direcciones y memoria. El programador debe saber qué tamaño leer y qué interpretación aplicar.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#qué-no-estudiaremos-todavía",
+    "href": "courses/aarch64/bases-binarias/index.html#qué-no-estudiaremos-todavía",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Qué no estudiaremos todavía",
+    "text": "Qué no estudiaremos todavía\n\n\n\n\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nELF completo\nPrimero hay que entender bytes y direcciones\n\n\nABI/AAPCS64\nAntes se necesita entender registros y tamaños\n\n\nStack frames\nPrimero se separan dirección, contenido y valor\n\n\nMMU y páginas\nLa unidad solo usa direcciones como modelo inicial\n\n\nGDB avanzado\nAquí solo se prepara la lectura de registros y memoria\n\n\nNEON/SIMD\nNo es necesario para representación básica",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#preparación-para-presentación",
+    "href": "courses/aarch64/bases-binarias/index.html#preparación-para-presentación",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Preparación para presentación",
+    "text": "Preparación para presentación\nLa página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nslides/aarch64/bases-binarias/overview/slides.md\nEsa presentación debe resumir y practicar la unidad, no reemplazarla.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#para-investigar-más",
+    "href": "courses/aarch64/bases-binarias/index.html#para-investigar-más",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Para investigar más",
+    "text": "Para investigar más\n\n\n\n\n\n\n\nFuente\nQué buscar\n\n\n\n\nLarry D. Pyeatt, ARM 64-Bit Assembly Language\nDatos de computadora, memoria, bases numéricas y primeros ejemplos AArch64\n\n\nWilliam Hohl y Christopher Hinds, ARM Assembly Language: Fundamentals and Techniques\nSistemas de numeración, representación de números y caracteres\n\n\nArm, Learn the Architecture - A64 Instruction Set Architecture Guide\nRegistros AArch64, relación entre Xn y Wn, tamaños de operandos\n\n\nStephen Smith, Raspberry Pi Assembly Language Programming\nNúmeros, memoria y datos desde ejemplos introductorios\n\n\nman ascii\nTabla ASCII local del sistema\n\n\nman xxd y man hexdump\nFormas de inspeccionar bytes\n\n\nman objdump y man readelf\nPrimeras herramientas para mirar binarios más adelante",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#checklist-de-cierre",
+    "href": "courses/aarch64/bases-binarias/index.html#checklist-de-cierre",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Checklist de cierre",
+    "text": "Checklist de cierre\n\nPuedo explicar bit, byte, nibble, word y doubleword.\nPuedo convertir valores pequeños entre decimal, binario y hexadecimal.\nPuedo explicar por qué 0xFF puede interpretarse como 255 o -1.\nPuedo calcular rangos unsigned y signed de n bits.\nPuedo distinguir carry, borrow y overflow.\nPuedo explicar zero extension y sign extension.\nPuedo reconocer bytes ASCII y UTF-8 básico.\nPuedo explicar little endian con un valor de 32 bits.\nPuedo distinguir dirección, contenido y valor interpretado.\nPuedo conectar estas ideas con registros Wn y Xn de AArch64.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/index.html#siguiente-paso",
+    "href": "courses/aarch64/bases-binarias/index.html#siguiente-paso",
+    "title": "02 · Bases binarias y representación de datos",
+    "section": "Siguiente paso",
+    "text": "Siguiente paso\nEmpieza por Bits, bytes y bases. Si ya dominas bases numéricas, avanza a Enteros, signo y rangos.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Mapa de la unidad"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias &gt; Endianness y alineación",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#un-valor-de-varios-bytes",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#un-valor-de-varios-bytes",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Un valor de varios bytes",
+    "text": "Un valor de varios bytes\nUn valor de 32 bits ocupa 4 bytes.\nValor de 32 bits:\n0x12345678\nLos bytes que lo forman son:\n12 34 56 78\nLa pregunta es en qué orden se guardan en memoria.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#big-endian",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#big-endian",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Big endian",
+    "text": "Big endian\nBig endian guarda primero el byte más significativo.\nValor de 32 bits: 0x12345678\n\nBig endian en memoria:\n12 34 56 78",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#little-endian",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#little-endian",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Little endian",
+    "text": "Little endian\nLittle endian guarda primero el byte menos significativo.\nValor de 32 bits: 0x12345678\n\nLittle endian en memoria:\n78 56 34 12\nMuchas plataformas ARM64 usadas con Linux trabajan en little endian. Para el curso, esta será la forma práctica principal al leer memoria y dumps.\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nEl valor lógico puede ser 0x12345678, pero los bytes en memoria little endian aparecen como 78 56 34 12.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#ejemplo-aarch64",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#ejemplo-aarch64",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Ejemplo AArch64",
+    "text": "Ejemplo AArch64\n.section .data\nnumero:\n    .word 0x12345678\nSi inspeccionas la sección de datos en un entorno AArch64 little endian, debes esperar ver los bytes:\n78 56 34 12\nEso no significa que el valor haya cambiado. Significa que estás viendo su representación byte por byte en memoria.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#direcciones-consecutivas",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#direcciones-consecutivas",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Direcciones consecutivas",
+    "text": "Direcciones consecutivas\nDirección      Byte\n0x400080       78\n0x400081       56\n0x400082       34\n0x400083       12\nSi lees un word desde 0x400080 en little endian, el valor interpretado es:\n0x12345678",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#alineación-conceptual",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#alineación-conceptual",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Alineación conceptual",
+    "text": "Alineación conceptual\nAlineación significa ubicar datos en direcciones convenientes para su tamaño.\nUn dato de 4 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 4.\nUn dato de 8 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 8.\n\n\n\nTamaño\nDirección conveniente\n\n\n\n\n2 bytes\nmúltiplo de 2\n\n\n4 bytes\nmúltiplo de 4\n\n\n8 bytes\nmúltiplo de 8\n\n\n\nNo estudiaremos penalizaciones, excepciones ni ABI todavía. Por ahora basta con entender que el tamaño del dato influye en dónde conviene colocarlo.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#error-común",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#error-común",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Error común",
+    "text": "Error común\n\n\n\n\n\n\nAdvertenciaNo inviertas el número completo\n\n\n\nLittle endian cambia el orden de los bytes en memoria. No significa leer cada byte al revés bit por bit.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#mini-ejercicios",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#mini-ejercicios",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Mini ejercicios",
+    "text": "Mini ejercicios\n\nEscribe los bytes little endian de 0xAABBCCDD.\nEscribe los bytes big endian de 0xAABBCCDD.\nExplica por qué 0x12345678 puede verse como 78 56 34 12.\nDi si 0x400084 está alineada para un dato de 4 bytes.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#checklist",
+    "href": "courses/aarch64/bases-binarias/05-endianness-alineacion.html#checklist",
+    "title": "02.5 · Endianness y alineación conceptual",
+    "section": "Checklist",
+    "text": "Checklist\n\nPuedo explicar big endian.\nPuedo explicar little endian.\nPuedo leer un word little endian desde bytes en memoria.\nSé que AArch64 Linux normalmente se estudia aquí como little endian.\nPuedo explicar alineación sin entrar todavía en ABI o rendimiento.\n\nSiguiente: Direcciones, punteros y memoria.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Endianness y alineación"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias &gt; Overflow y extensiones",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#resultado-limitado-por-tamaño",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#resultado-limitado-por-tamaño",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Resultado limitado por tamaño",
+    "text": "Resultado limitado por tamaño\nCon 8 bits solo puedes guardar 8 bits. Si una suma produce más, el resultado visible conserva los bits bajos.\n8 bits unsigned:\n255 + 1 = 256\n\nPero 256 no cabe en 8 bits.\n\n0xFF + 0x01 = 0x00 con carry = 1",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#carry",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#carry",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Carry",
+    "text": "Carry\nCarry importa en suma unsigned. Indica que hubo acarreo fuera del bit más alto.\n  11111111\n+ 00000001\n----------\n1 00000000\nResultado visible de 8 bits:\n00000000\nCarry:\n1",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#borrow",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#borrow",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Borrow",
+    "text": "Borrow\nBorrow importa en resta unsigned. Indica que la resta necesitó pedir prestado porque el minuendo no alcanzaba en ese tamaño.\n8 bits unsigned:\n0 - 1 = 255 con borrow\n\n0x00 - 0x01 = 0xFF\nEl patrón final es 0xFF. Si lo interpretas unsigned de 8 bits, es 255.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#overflow",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#overflow",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Overflow",
+    "text": "Overflow\nOverflow importa en aritmética signed. Ocurre cuando el resultado matemático no cabe en el rango signed del tamaño usado.\n8 bits signed:\n127 + 1 = 128\n\nPero 128 no cabe en signed de 8 bits.\n\n0x7F + 0x01 = 0x80\n0x80 interpretado signed de 8 bits = -128\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nCarry y overflow no significan lo mismo. Carry ayuda a razonar operaciones unsigned; overflow ayuda a razonar operaciones signed.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#zero-extension",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#zero-extension",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Zero extension",
+    "text": "Zero extension\nZero extension agranda un valor rellenando con ceros a la izquierda.\n8 bits:\n0xFF\n\nZero extend a 32 bits:\n0x000000FF = 255",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#sign-extension",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#sign-extension",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Sign extension",
+    "text": "Sign extension\nSign extension agranda un valor copiando el bit de signo hacia la izquierda.\n8 bits:\n0xFF\n\nSign extend a 32 bits:\n0xFFFFFFFF\n\nSi se interpreta signed de 32 bits:\n-1\n\n\n\nValor original\nZero extend a 32 bits\nSign extend a 32 bits\n\n\n\n\n0x7F\n0x0000007F\n0x0000007F\n\n\n0x80\n0x00000080\n0xFFFFFF80\n\n\n0xFF\n0x000000FF\n0xFFFFFFFF",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#relación-con-wn-y-xn",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#relación-con-wn-y-xn",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Relación con Wn y Xn",
+    "text": "Relación con Wn y Xn\nEn AArch64, escribir en un registro Wn actualiza los 32 bits bajos y limpia los 32 bits altos del registro Xn correspondiente.\nmov x0, -1      // x0 = 0xFFFFFFFFFFFFFFFF\nmov w0, #42     // x0 = 0x000000000000002A\nEsto prepara una idea clave: muchas instrucciones AArch64 controlan si un valor pequeño se extiende con ceros o con signo antes de operar en un tamaño mayor.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#límite-de-esta-unidad",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#límite-de-esta-unidad",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Límite de esta unidad",
+    "text": "Límite de esta unidad\n\n\n\n\n\n\nNotaTodavía no estudiaremos NZCV\n\n\n\nMás adelante veremos flags como N, Z, C y V. Aquí solo construimos el modelo mental: C se relaciona con carry/borrow unsigned y V con overflow signed.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#mini-ejercicios",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#mini-ejercicios",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Mini ejercicios",
+    "text": "Mini ejercicios\n\nExplica qué ocurre con 0xFF + 0x01 en 8 bits.\nExplica por qué 127 + 1 causa overflow signed de 8 bits.\nZero extend 0x80 de 8 a 32 bits.\nSign extend 0x80 de 8 a 32 bits.\nExplica qué pasa con x5 si escribes en w5.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#checklist",
+    "href": "courses/aarch64/bases-binarias/03-overflow-extensiones.html#checklist",
+    "title": "02.3 · Overflow, carry, borrow y extensiones",
+    "section": "Checklist",
+    "text": "Checklist\n\nPuedo explicar carry en suma unsigned.\nPuedo explicar borrow en resta unsigned.\nPuedo explicar overflow en signed.\nPuedo distinguir zero extension de sign extension.\nSé que escribir en Wn limpia los bits altos de Xn.\n\nSiguiente: Bytes y texto.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Overflow y extensiones"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias &gt; Bits, bytes y bases",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#bit-byte-y-nibble",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#bit-byte-y-nibble",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Bit, byte y nibble",
+    "text": "Bit, byte y nibble\nUn bit puede valer 0 o 1. Un byte agrupa 8 bits. Un nibble agrupa 4 bits y por eso coincide con un dígito hexadecimal.\n\n\n\nUnidad\nTamaño\nEjemplo\n\n\n\n\nbit\n1 bit\n1\n\n\nnibble\n4 bits\n1010\n\n\nbyte\n8 bits\n00101010\n\n\n\n1 byte = 8 bits\n1 nibble = 4 bits\n1 byte = 2 nibbles\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nHexadecimal es cómodo en bajo nivel porque cada dígito hexadecimal representa exactamente 4 bits.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#word-y-doubleword-en-aarch64",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#word-y-doubleword-en-aarch64",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Word y doubleword en AArch64",
+    "text": "Word y doubleword en AArch64\nEn este curso usaremos los nombres de tamaño como aparecen en documentación y herramientas ARM64.\n\n\n\nNombre\nBits\nBytes\nUso frecuente\n\n\n\n\nbyte\n8\n1\nCaracteres, buffers, memoria cruda\n\n\nhalfword\n16\n2\nDatos pequeños\n\n\nword\n32\n4\nRegistros w0-w30\n\n\ndoubleword\n64\n8\nRegistros x0-x30 y direcciones\n\n\n\nmov w0, #42     // valor de 32 bits en W0\nmov x1, #42     // valor de 64 bits en X1\nw0 y x0 no son registros completamente separados. w0 es la vista baja de 32 bits de x0.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#decimal-binario-y-hexadecimal",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#decimal-binario-y-hexadecimal",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Decimal, binario y hexadecimal",
+    "text": "Decimal, binario y hexadecimal\nEstas tres escrituras pueden referirse a la misma cantidad.\nDecimal:     42\nBinario:     0b00101010\nHexadecimal: 0x2A\n\n\n\n\n\n\n\n\nBase\nDígitos\nUso\n\n\n\n\nDecimal\n0 a 9\nLectura humana común\n\n\nBinario\n0 y 1\nForma directa de hablar de bits\n\n\nHexadecimal\n0 a 9, A a F\nForma compacta para bytes y direcciones",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#leer-hexadecimal-como-bits",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#leer-hexadecimal-como-bits",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Leer hexadecimal como bits",
+    "text": "Leer hexadecimal como bits\nCada dígito hexadecimal equivale a 4 bits.\n\n\n\nHex\nBinario\n\n\n\n\n0\n0000\n\n\n1\n0001\n\n\n2\n0010\n\n\nA\n1010\n\n\nF\n1111\n\n\n\nPor eso:\n0x2A\n  2    A\n0010 1010",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#conversión-rápida-con-terminal",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#conversión-rápida-con-terminal",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Conversión rápida con terminal",
+    "text": "Conversión rápida con terminal\nEstos comandos son apoyo para verificar valores pequeños. No reemplazan la comprensión manual.\nprintf \"%d\\n\" 0x2A\nprintf \"0x%X\\n\" 42\nprintf \"%08x\\n\" 42\nSalida esperada:\n42\n0x2A\n0000002a",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#relación-con-registros",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#relación-con-registros",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Relación con registros",
+    "text": "Relación con registros\nCuando escribes un inmediato en un registro, el ensamblador codifica ese valor en una instrucción. Para estudiar esta unidad solo importa el valor visible:\nmov w0, #0x2A\nmov x1, #0x2A\n\n\n\nRegistro\nTamaño visible\nValor escrito\n\n\n\n\nw0\n32 bits\n0x0000002A\n\n\nx1\n64 bits\n0x000000000000002A",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#error-común",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#error-común",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Error común",
+    "text": "Error común\n\n\n\n\n\n\nAdvertenciaNo mezcles tamaño con base\n\n\n\n0x2A no significa “valor de 8 bits”. Solo significa que el valor está escrito en hexadecimal. El tamaño depende de dónde se guarda o cómo se lee: byte, word, doubleword, registro Wn o registro Xn.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#mini-ejercicios",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#mini-ejercicios",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Mini ejercicios",
+    "text": "Mini ejercicios\n\nEscribe 15 en binario de 8 bits.\nEscribe 0b11111111 en hexadecimal.\nExplica cuántos bytes ocupa una doubleword.\nExplica qué relación hay entre w3 y x3.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#checklist",
+    "href": "courses/aarch64/bases-binarias/01-bits-bytes-bases.html#checklist",
+    "title": "02.1 · Bits, bytes y bases numéricas",
+    "section": "Checklist",
+    "text": "Checklist\n\nPuedo explicar qué es un bit.\nPuedo explicar qué es un byte.\nSé por qué un byte se escribe con dos dígitos hexadecimales.\nPuedo leer 0x2A como 00101010.\nPuedo distinguir word de doubleword en AArch64.\n\nSiguiente: Enteros, signo y rangos.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bits, bytes y bases"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias &gt; Enteros, signo y rangos",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#unsigned",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#unsigned",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Unsigned",
+    "text": "Unsigned\nUn entero unsigned usa todos sus bits para representar magnitud no negativa.\n8 bits unsigned:\n00000000 = 0\n00000001 = 1\n11111111 = 255\nRango general:\nUnsigned n bits: 0 a 2^n - 1\n\n\n\nTamaño\nRango unsigned\n\n\n\n\n8 bits\n0 a 255\n\n\n16 bits\n0 a 65535\n\n\n32 bits\n0 a 4294967295\n\n\n64 bits\n0 a 18446744073709551615",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#signed",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#signed",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Signed",
+    "text": "Signed\nUn entero signed reserva interpretación para valores negativos. En los enteros modernos usados por AArch64 y herramientas comunes, esa representación es complemento a dos.\nRango general:\nSigned n bits: -2^(n-1) a 2^(n-1) - 1\n\n\n\nTamaño\nRango signed\n\n\n\n\n8 bits\n-128 a 127\n\n\n16 bits\n-32768 a 32767\n\n\n32 bits\n-2147483648 a 2147483647\n\n\n64 bits\n-9223372036854775808 a 9223372036854775807",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#el-mismo-byte-dos-lecturas",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#el-mismo-byte-dos-lecturas",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "El mismo byte, dos lecturas",
+    "text": "El mismo byte, dos lecturas\n\n\n\nByte\nComo unsigned de 8 bits\nComo signed de 8 bits\n\n\n\n\n0x00\n0\n0\n\n\n0x01\n1\n1\n\n\n0x7F\n127\n127\n\n\n0x80\n128\n-128\n\n\n0xFF\n255\n-1\n\n\n\n\n\n\n\n\n\nNotaIdea clave\n\n\n\n0xFF no cambia. Lo que cambia es la interpretación: unsigned de 8 bits lo lee como 255; signed de 8 bits lo lee como -1.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#complemento-a-dos",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#complemento-a-dos",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Complemento a dos",
+    "text": "Complemento a dos\nPara obtener el negativo de un valor en complemento a dos:\n\nEscribe el valor positivo.\nInvierte los bits.\nSuma 1.\n\nEjemplo con 8 bits:\n+5:\n00000101\n\ninvertir bits:\n11111010\n\nsumar 1:\n11111011\n\n-5:\n11111011\nValores frecuentes:\n+1 = 00000001\n-1 = 11111111\n+5 = 00000101\n-5 = 11111011",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#relación-con-aarch64",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#relación-con-aarch64",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Relación con AArch64",
+    "text": "Relación con AArch64\nAArch64 no necesita registros separados para signed y unsigned. El mismo w0 puede contener un patrón que una instrucción futura trate como unsigned o signed.\nmov w0, #0xFF\n\n\n\n\n\n\n\n\nPatrón en w0\nSi se mira como unsigned\nSi se mira como signed de 8 bits\n\n\n\n\n0x000000FF\n255\ndepende del tamaño que se interprete\n\n\n\nLa parte importante es el tamaño. 0xFF como 8 bits signed es -1; como 32 bits signed es 255, porque el bit de signo de 32 bits no está encendido.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#error-común",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#error-común",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Error común",
+    "text": "Error común\n\n\n\n\n\n\nAdvertenciaEl signo depende del tamaño\n\n\n\nNo digas “0xFF es negativo” sin decir tamaño. 0xFF como signed de 8 bits es -1; 0x000000FF como signed de 32 bits es 255.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#mini-ejercicios",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#mini-ejercicios",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Mini ejercicios",
+    "text": "Mini ejercicios\n\nInterpreta 0x80 como unsigned de 8 bits.\nInterpreta 0x80 como signed de 8 bits.\nCalcula el rango signed de 4 bits.\nObtén -3 en complemento a dos de 8 bits.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#checklist",
+    "href": "courses/aarch64/bases-binarias/02-enteros-signo-rangos.html#checklist",
+    "title": "02.2 · Enteros, signo y rangos",
+    "section": "Checklist",
+    "text": "Checklist\n\nPuedo escribir el rango unsigned de n bits.\nPuedo escribir el rango signed de n bits.\nPuedo explicar por qué 0xFF puede ser 255 o -1.\nPuedo construir un negativo pequeño con complemento a dos.\nPuedo explicar por qué el tamaño cambia la interpretación.\n\nSiguiente: Overflow y extensiones.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Enteros, signo y rangos"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias &gt; Bytes y texto",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#ascii-básico",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#ascii-básico",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "ASCII básico",
+    "text": "ASCII básico\nASCII asigna valores numéricos a caracteres comunes. En ASCII básico, cada carácter ocupa un byte.\n\n\n\nCarácter\nByte hexadecimal\nDecimal\n\n\n\n\nA\n0x41\n65\n\n\nB\n0x42\n66\n\n\nC\n0x43\n67\n\n\na\n0x61\n97\n\n\n0\n0x30\n48\n\n\nnueva línea\n0x0A\n10\n\n\n\n.section .data\nmsg:\n    .byte 0x41, 0x42, 0x43, 0x0A\nLos bytes anteriores pueden leerse como:\nABC\nporque 0x41, 0x42, 0x43 y 0x0A corresponden a A, B, C y nueva línea.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#número-0-carácter-0-y-byte-0x30",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#número-0-carácter-0-y-byte-0x30",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "Número 0, carácter 0 y byte 0x30",
+    "text": "Número 0, carácter 0 y byte 0x30\nNo son la misma idea.\n\n\n\nEscritura\nQué significa\n\n\n\n\n0\nnúmero cero\n\n\n'0'\ncarácter cero\n\n\n0x30\nbyte ASCII que representa el carácter '0'\n\n\n\n.section .data\nnumero_cero:\n    .byte 0x00\n\ncaracter_cero:\n    .byte 0x30\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nEl número 0 no es el mismo byte que el carácter '0'. El carácter '0' se guarda como 0x30 en ASCII.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#ver-bytes-con-herramientas",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#ver-bytes-con-herramientas",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "Ver bytes con herramientas",
+    "text": "Ver bytes con herramientas\nEstos comandos ayudan a observar bytes. Son útiles porque conectan texto con memoria visible.\nprintf 'ABC\\n' | xxd\nprintf 'ABC\\n' | hexdump -C\nprintf 'A' | xxd\nprintf 'a' | xxd\nprintf '0' | xxd\nLa idea no es aprender xxd a fondo. La idea es notar que una herramienta puede mostrar los bytes de un texto.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#utf-8-básico",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#utf-8-básico",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "UTF-8 básico",
+    "text": "UTF-8 básico\nUTF-8 también representa texto como bytes, pero no todos los caracteres ocupan un byte.\nprintf 'á' | xxd\nprintf '€' | xxd\nEn UTF-8:\n\n\n\nCarácter\nBytes frecuentes\n\n\n\n\nA\n41\n\n\ná\nc3 a1\n\n\n€\ne2 82 ac\n\n\n\nNo necesitas memorizar estas tablas. Solo debes recordar que un carácter puede ocupar más de un byte.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#relación-con-aarch64",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#relación-con-aarch64",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "Relación con AArch64",
+    "text": "Relación con AArch64\nAssembly no impide que pongas bytes de texto directamente en .data.\n.section .data\nascii:\n    .ascii \"ABC\\n\"\n\nbytes:\n    .byte 0x41, 0x42, 0x43, 0x0A\nAmbas formas pueden producir los mismos bytes. La diferencia es cómo lo escribes en el archivo fuente.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#mini-ejercicios",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#mini-ejercicios",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "Mini ejercicios",
+    "text": "Mini ejercicios\n\nExplica qué byte representa el carácter A.\nExplica qué diferencia hay entre 0x00 y 0x30.\nEscribe ABC usando .byte.\nExplica por qué á no debe asumirse como un solo byte en UTF-8.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/04-bytes-texto.html#checklist",
+    "href": "courses/aarch64/bases-binarias/04-bytes-texto.html#checklist",
+    "title": "02.4 · Bytes y texto: ASCII y UTF-8 básico",
+    "section": "Checklist",
+    "text": "Checklist\n\nPuedo explicar ASCII como tabla de bytes.\nPuedo distinguir número 0 de carácter '0'.\nPuedo leer 0x41 0x42 0x43 como ABC.\nSé que UTF-8 puede usar varios bytes por carácter.\nPuedo conectar .ascii y .byte con memoria.\n\nSiguiente: Endianness y alineación.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Bytes y texto"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "",
+    "text": "Cursos &gt; AArch64 &gt; Bases binarias &gt; Direcciones, punteros y memoria",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#dirección-contenido-y-valor",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#dirección-contenido-y-valor",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Dirección, contenido y valor",
+    "text": "Dirección, contenido y valor\nDirección: 0x400080\nContenido: 2A 00 00 00\nValor interpretado como int32 little endian: 42\n\n\n\nIdea\nQué significa\n\n\n\n\nDirección\nNúmero que identifica una ubicación de memoria\n\n\nContenido\nBytes guardados desde esa dirección\n\n\nValor\nInterpretación de esos bytes con tamaño y tipo\n\n\n\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nLa dirección es un número. El contenido son bytes. El valor depende de cómo interpretas esos bytes.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#punteros-como-números",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#punteros-como-números",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Punteros como números",
+    "text": "Punteros como números\nUn puntero es un valor que representa una dirección.\nx vive en una dirección.\nLa dirección de x puede ser 0x400080.\nUn puntero puede guardar 0x400080.\nLeer desde ese puntero permite acceder al contenido.\nEn AArch64, las direcciones de userland se manejan en registros de 64 bits como x0, x1, x2, etc.\n.section .data\nvalor:\n    .word 42\n\n.section .text\n    adr x0, valor     // x0 recibe la dirección de valor\n    ldr w1, [x0]      // w1 recibe el contenido de 32 bits guardado ahí\nLectura mínima:\n\n\n\nInstrucción\nQué idea muestra\n\n\n\n\nadr x0, valor\nGuardar una dirección en un registro\n\n\nldr w1, [x0]\nLeer contenido desde la dirección guardada en x0",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#mismos-bytes-varias-interpretaciones",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#mismos-bytes-varias-interpretaciones",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Mismos bytes, varias interpretaciones",
+    "text": "Mismos bytes, varias interpretaciones\nBytes:\n41 42 43 00\n\n\n\n\n\n\n\nInterpretación\nResultado\n\n\n\n\nASCII\nABC\\0\n\n\nbytes individuales\n0x41, 0x42, 0x43, 0x00\n\n\nuint32 little endian\n0x00434241\n\n\ndirección\nsolo tendría sentido si el programa usa esos bytes como puntero\n\n\n\nEl depurador puede mostrar bytes. El programador decide si esos bytes son texto, entero, dirección, arreglo o datos crudos.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#ejemplo-de-memoria",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#ejemplo-de-memoria",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Ejemplo de memoria",
+    "text": "Ejemplo de memoria\nDirección      Byte\n0x400080       41\n0x400081       42\n0x400082       43\n0x400083       00\nSi lees byte por byte:\n0x41, 0x42, 0x43, 0x00\nSi lees como texto ASCII:\nABC\\0\nSi lees como word little endian:\n0x00434241",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#relación-con-debugging",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#relación-con-debugging",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Relación con debugging",
+    "text": "Relación con debugging\nCuando uses GDB más adelante, verás comandos conceptualmente parecidos a estas preguntas:\n\n\n\nPregunta\nQué necesitas saber\n\n\n\n\n¿Qué hay en x0?\nPuede ser valor normal o dirección\n\n\n¿Qué hay en memoria en esa dirección?\nHay bytes\n\n\n¿Cuántos bytes leo?\nbyte, word, doubleword\n\n\n¿Cómo los interpreto?\nsigned, unsigned, texto, dirección",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#error-común",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#error-común",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Error común",
+    "text": "Error común\n\n\n\n\n\n\nAdvertenciaNo todo número grande es puntero\n\n\n\nUn registro de 64 bits puede contener una dirección, un contador, una máscara, un entero o bytes sin interpretar. El contexto decide si debes tratarlo como puntero.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#mini-ejercicios",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#mini-ejercicios",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Mini ejercicios",
+    "text": "Mini ejercicios\n\nEn el ejemplo 2A 00 00 00, explica el valor como uint32 little endian.\nExplica la diferencia entre adr x0, valor y ldr w1, [x0].\nInterpreta 41 42 43 00 como ASCII.\nInterpreta 41 42 43 00 como uint32 little endian.\nExplica por qué una dirección también es un valor guardado en un registro.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#checklist",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#checklist",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Checklist",
+    "text": "Checklist\n\nPuedo distinguir dirección, contenido y valor.\nPuedo explicar un puntero como dirección guardada en un registro.\nPuedo leer los mismos bytes como texto o entero.\nPuedo explicar por qué el tamaño de lectura importa.\nPuedo conectar registros Xn con direcciones de 64 bits.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#cierre-de-la-unidad",
+    "href": "courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html#cierre-de-la-unidad",
+    "title": "02.6 · Direcciones, punteros y memoria",
+    "section": "Cierre de la unidad",
+    "text": "Cierre de la unidad\nSi puedes mirar bytes y preguntarte “qué tamaño leo” y “qué interpretación aplico”, ya tienes la base mental para estudiar memoria, registros, punteros, stack y debugging en AArch64.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "02 · Bases binarias y representación",
+      "Direcciones y punteros"
     ]
   },
   {

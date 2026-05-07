@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/roadmap.html</loc>
-    <lastmod>2026-05-06T22:11:06.588Z</lastmod>
+    <lastmod>2026-05-07T04:13:33.616Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/laboratorio/06-estructura-repositorio.html</loc>
@@ -38,7 +38,35 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/index.html</loc>
-    <lastmod>2026-05-06T22:11:06.676Z</lastmod>
+    <lastmod>2026-05-07T04:13:33.518Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/index.html</loc>
+    <lastmod>2026-05-07T04:13:46.969Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/05-endianness-alineacion.html</loc>
+    <lastmod>2026-05-07T04:13:18.743Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/03-overflow-extensiones.html</loc>
+    <lastmod>2026-05-07T04:13:18.662Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/01-bits-bytes-bases.html</loc>
+    <lastmod>2026-05-07T04:13:18.576Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/02-enteros-signo-rangos.html</loc>
+    <lastmod>2026-05-07T04:13:18.617Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/04-bytes-texto.html</loc>
+    <lastmod>2026-05-07T04:13:18.702Z</lastmod>
+  </url>
+  <url>
+    <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html</loc>
+    <lastmod>2026-05-07T04:13:18.784Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/fundamentos/contexto-historia-objetivos.html</loc>

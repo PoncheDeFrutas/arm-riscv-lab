@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Organización base de lecciones, proyectos y templates de Makefile.">
+<meta name="description" content="ASCII, UTF-8 básico y diferencia entre número, carácter, byte y código.">
 
-<title>01.6 · Estructura del repositorio – ARM RISC-V Lab</title>
+<title>02.4 · Bytes y texto: ASCII y UTF-8 básico – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
-<link href="../../../courses/aarch64/bases-binarias/index.html" rel="next">
-<link href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" rel="prev">
+<link href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html" rel="next">
+<link href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html" rel="prev">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -187,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">02 · Bases binarias y representación</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html">Bytes y texto</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -228,13 +228,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link">
@@ -273,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
@@ -281,13 +281,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">02 · Bases binarias y representación</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../courses/aarch64/bases-binarias/index.html" class="sidebar-item-text sidebar-link">
@@ -314,7 +314,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Bytes y texto</span></a>
   </div>
 </li>
@@ -344,10 +344,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link active" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
-  <li><a href="#flujo-único" id="toc-flujo-único" class="nav-link" data-scroll-target="#flujo-único">Flujo único</a></li>
-  <li><a href="#templates-disponibles" id="toc-templates-disponibles" class="nav-link" data-scroll-target="#templates-disponibles">Templates disponibles</a></li>
-  <li><a href="#carpetas-del-curso" id="toc-carpetas-del-curso" class="nav-link" data-scroll-target="#carpetas-del-curso">Carpetas del curso</a></li>
+  <li><a href="#ascii-básico" id="toc-ascii-básico" class="nav-link active" data-scroll-target="#ascii-básico">ASCII básico</a></li>
+  <li><a href="#número-0-carácter-0-y-byte-0x30" id="toc-número-0-carácter-0-y-byte-0x30" class="nav-link" data-scroll-target="#número-0-carácter-0-y-byte-0x30">Número 0, carácter 0 y byte 0x30</a></li>
+  <li><a href="#ver-bytes-con-herramientas" id="toc-ver-bytes-con-herramientas" class="nav-link" data-scroll-target="#ver-bytes-con-herramientas">Ver bytes con herramientas</a></li>
+  <li><a href="#utf-8-básico" id="toc-utf-8-básico" class="nav-link" data-scroll-target="#utf-8-básico">UTF-8 básico</a></li>
+  <li><a href="#relación-con-aarch64" id="toc-relación-con-aarch64" class="nav-link" data-scroll-target="#relación-con-aarch64">Relación con AArch64</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -355,15 +357,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">02 · Bases binarias y representación</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html">Bytes y texto</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">01.6 · Estructura del repositorio</h1>
-<p class="subtitle lead">Carpetas mínimas para ejemplos, proyectos, VS Code y Makefiles.</p>
+<h1 class="title">02.4 · Bytes y texto: ASCII y UTF-8 básico</h1>
+<p class="subtitle lead">Texto también son bytes, pero no todos los caracteres ocupan un byte.</p>
 </div>
 
 <div>
   <div class="description">
-    Organización base de lecciones, proyectos y templates de Makefile.
+    ASCII, UTF-8 básico y diferencia entre número, carácter, byte y código.
   </div>
 </div>
 
@@ -381,149 +383,177 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div class="breadcrumb-lite">
-<p>Cursos &gt; AArch64 &gt; Laboratorio &gt; Estructura del repositorio</p>
+<p>Cursos &gt; AArch64 &gt; Bases binarias &gt; Bytes y texto</p>
 </div>
 <div class="hero-lab">
-<p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas. Cada ejemplo pequeño puede vivir como una carpeta simple con <code>.vscode/</code> y <code>src/</code>.</p>
+<p>Cuando un programa imprime texto, en memoria no guarda letras como ideas abstractas. Guarda bytes. Esta lección muestra cómo interpretar bytes como texto sin perder de vista que siguen siendo datos binarios.</p>
 </div>
-<section id="proyecto-mínimo" class="level2">
-<h2 class="anchored" data-anchor-id="proyecto-mínimo">Proyecto mínimo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> .vscode/</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">|</span><span class="ex">-</span> launch.json</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">`</span><span class="ex">-</span> settings.json</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="at">-</span> src/</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En <code>src/</code> solo necesitas dos archivos para empezar:</p>
+<section id="ascii-básico" class="level2">
+<h2 class="anchored" data-anchor-id="ascii-básico">ASCII básico</h2>
+<p>ASCII asigna valores numéricos a caracteres comunes. En ASCII básico, cada carácter ocupa un byte.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Archivo</th>
-<th>Uso</th>
+<th>Carácter</th>
+<th style="text-align: right;">Byte hexadecimal</th>
+<th style="text-align: right;">Decimal</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>main.s</code></td>
-<td>Código assembly</td>
+<td><code>A</code></td>
+<td style="text-align: right;"><code>0x41</code></td>
+<td style="text-align: right;"><code>65</code></td>
 </tr>
 <tr class="even">
-<td><code>Makefile</code></td>
-<td>Flujo activo: QEMU o ARM64 nativo</td>
+<td><code>B</code></td>
+<td style="text-align: right;"><code>0x42</code></td>
+<td style="text-align: right;"><code>66</code></td>
+</tr>
+<tr class="odd">
+<td><code>C</code></td>
+<td style="text-align: right;"><code>0x43</code></td>
+<td style="text-align: right;"><code>67</code></td>
+</tr>
+<tr class="even">
+<td><code>a</code></td>
+<td style="text-align: right;"><code>0x61</code></td>
+<td style="text-align: right;"><code>97</code></td>
+</tr>
+<tr class="odd">
+<td><code>0</code></td>
+<td style="text-align: right;"><code>0x30</code></td>
+<td style="text-align: right;"><code>48</code></td>
+</tr>
+<tr class="even">
+<td>nueva línea</td>
+<td style="text-align: right;"><code>0x0A</code></td>
+<td style="text-align: right;"><code>10</code></td>
 </tr>
 </tbody>
 </table>
-<p>El binario generado queda en <code>src/build/main</code> visto desde VS Code, y en <code>build/main</code> cuando ya estás dentro de <code>src/</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">msg:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x41</span><span class="op">,</span> <span class="bn">0x42</span><span class="op">,</span> <span class="bn">0x43</span><span class="op">,</span> <span class="bn">0x0A</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Los bytes anteriores pueden leerse como:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ABC</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>porque <code>0x41</code>, <code>0x42</code>, <code>0x43</code> y <code>0x0A</code> corresponden a <code>A</code>, <code>B</code>, <code>C</code> y nueva línea.</p>
 </section>
-<section id="flujo-único" class="level2">
-<h2 class="anchored" data-anchor-id="flujo-único">Flujo único</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como <code>src/Makefile</code>.</p>
-</section>
-<section id="templates-disponibles" class="level2">
-<h2 class="anchored" data-anchor-id="templates-disponibles">Templates disponibles</h2>
-<p>Los templates viven en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="número-0-carácter-0-y-byte-0x30" class="level2">
+<h2 class="anchored" data-anchor-id="número-0-carácter-0-y-byte-0x30">Número 0, carácter 0 y byte 0x30</h2>
+<p>No son la misma idea.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Template</th>
-<th>Cuándo usarlo</th>
+<th>Escritura</th>
+<th>Qué significa</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>Makefile.qemu.single</code></td>
-<td>x86_64 + QEMU, un <code>main.s</code></td>
+<td><code>0</code></td>
+<td>número cero</td>
 </tr>
 <tr class="even">
-<td><code>Makefile.qemu.multi</code></td>
-<td>x86_64 + QEMU, varios <code>.s</code></td>
+<td><code>'0'</code></td>
+<td>carácter cero</td>
 </tr>
 <tr class="odd">
-<td><code>Makefile.arm64.single</code></td>
-<td>Raspberry Pi / ARM64 real, un <code>main.s</code></td>
-</tr>
-<tr class="even">
-<td><code>Makefile.arm64.multi</code></td>
-<td>Raspberry Pi / ARM64 real, varios <code>.s</code></td>
+<td><code>0x30</code></td>
+<td>byte ASCII que representa el carácter <code>'0'</code></td>
 </tr>
 </tbody>
 </table>
-<p>Para copiar y entender cada uno, usa la guía <a href="../../../guides/setup/makefiles.html">Makefiles ARM64</a>.</p>
-<div class="callout callout-style-simple callout-tip callout-titled" title="Regla docente">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">numero_cero:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x00</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">caracter_cero:</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x30</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-warning callout-titled" title="Error común">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Regla docente
+<span class="screen-reader-only">Advertencia</span>Error común
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>No uses banderas especiales de <code>make</code> en las prácticas iniciales. Cambia el contenido de <code>src/Makefile</code> y conserva los comandos.</p>
+<p>El número <code>0</code> no es el mismo byte que el carácter <code>'0'</code>. El carácter <code>'0'</code> se guarda como <code>0x30</code> en ASCII.</p>
 </div>
 </div>
 </section>
-<section id="carpetas-del-curso" class="level2">
-<h2 class="anchored" data-anchor-id="carpetas-del-curso">Carpetas del curso</h2>
+<section id="ver-bytes-con-herramientas" class="level2">
+<h2 class="anchored" data-anchor-id="ver-bytes-con-herramientas">Ver bytes con herramientas</h2>
+<p>Estos comandos ayudan a observar bytes. Son útiles porque conectan texto con memoria visible.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'ABC\n'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'ABC\n'</span> <span class="kw">|</span> <span class="fu">hexdump</span> <span class="at">-C</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'A'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'a'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'0'</span> <span class="kw">|</span> <span class="ex">xxd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La idea no es aprender <code>xxd</code> a fondo. La idea es notar que una herramienta puede mostrar los bytes de un texto.</p>
+</section>
+<section id="utf-8-básico" class="level2">
+<h2 class="anchored" data-anchor-id="utf-8-básico">UTF-8 básico</h2>
+<p>UTF-8 también representa texto como bytes, pero no todos los caracteres ocupan un byte.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'á'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'€'</span> <span class="kw">|</span> <span class="ex">xxd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En UTF-8:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Carpeta</th>
-<th>Uso</th>
+<th>Carácter</th>
+<th>Bytes frecuentes</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>courses/</code></td>
-<td>Páginas Quarto del curso</td>
+<td><code>A</code></td>
+<td><code>41</code></td>
 </tr>
 <tr class="even">
-<td><code>guides/</code></td>
-<td>Setup, Makefiles, debugging y troubleshooting</td>
+<td><code>á</code></td>
+<td><code>c3 a1</code></td>
 </tr>
 <tr class="odd">
-<td><code>lessons/</code></td>
-<td>Ejemplos ejecutables</td>
-</tr>
-<tr class="even">
-<td><code>exercises/</code></td>
-<td>Prácticas</td>
-</tr>
-<tr class="odd">
-<td><code>projects/</code></td>
-<td>Estructuras mínimas de proyecto</td>
-</tr>
-<tr class="even">
-<td><code>slides/</code></td>
-<td>Presentaciones Slidev</td>
-</tr>
-<tr class="odd">
-<td><code>tooling/</code></td>
-<td>Templates y soporte técnico</td>
+<td><code>€</code></td>
+<td><code>e2 82 ac</code></td>
 </tr>
 </tbody>
 </table>
+<p>No necesitas memorizar estas tablas. Solo debes recordar que un carácter puede ocupar más de un byte.</p>
+</section>
+<section id="relación-con-aarch64" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-aarch64">Relación con AArch64</h2>
+<p>Assembly no impide que pongas bytes de texto directamente en <code>.data</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ascii:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"ABC\n"</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">bytes:</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x41</span><span class="op">,</span> <span class="bn">0x42</span><span class="op">,</span> <span class="bn">0x43</span><span class="op">,</span> <span class="bn">0x0A</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ambas formas pueden producir los mismos bytes. La diferencia es cómo lo escribes en el archivo fuente.</p>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<ol type="1">
+<li>Explica qué byte representa el carácter <code>A</code>.</li>
+<li>Explica qué diferencia hay entre <code>0x00</code> y <code>0x30</code>.</li>
+<li>Escribe <code>ABC</code> usando <code>.byte</code>.</li>
+<li>Explica por qué <code>á</code> no debe asumirse como un solo byte en UTF-8.</li>
+</ol>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Mi ejemplo tiene <code>.vscode/</code> y <code>src/</code>.</label></li>
-<li><label><input type="checkbox"><code>src/</code> solo necesita <code>Makefile</code> y <code>main.s</code> para empezar.</label></li>
-<li><label><input type="checkbox">Uso <code>make</code>, <code>make run</code> y <code>make gdb</code>.</label></li>
-<li><label><input type="checkbox">Si cambio de entorno, reemplazo <code>src/Makefile</code>.</label></li>
-<li><label><input type="checkbox">VS Code apunta a <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar ASCII como tabla de bytes.</label></li>
+<li><label><input type="checkbox">Puedo distinguir número <code>0</code> de carácter <code>'0'</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer <code>0x41 0x42 0x43</code> como <code>ABC</code>.</label></li>
+<li><label><input type="checkbox">Sé que UTF-8 puede usar varios bytes por carácter.</label></li>
+<li><label><input type="checkbox">Puedo conectar <code>.ascii</code> y <code>.byte</code> con memoria.</label></li>
 </ul>
+<p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html">Endianness y alineación</a>.</p>
 
 
 </section>
@@ -933,13 +963,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="pagination-link" aria-label="Debugging mínimo">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Debugging mínimo</span>
+      <a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html" class="pagination-link" aria-label="Overflow y extensiones">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Overflow y extensiones</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../../courses/aarch64/bases-binarias/index.html" class="pagination-link" aria-label="Mapa de la unidad">
-        <span class="nav-page-text">Mapa de la unidad</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html" class="pagination-link" aria-label="Endianness y alineación">
+        <span class="nav-page-text">Endianness y alineación</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

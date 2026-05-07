@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Organización base de lecciones, proyectos y templates de Makefile.">
+<meta name="description" content="Carry, borrow, overflow, zero extension y sign extension como base para AArch64.">
 
-<title>01.6 · Estructura del repositorio – ARM RISC-V Lab</title>
+<title>02.3 · Overflow, carry, borrow y extensiones – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
-<link href="../../../courses/aarch64/bases-binarias/index.html" rel="next">
-<link href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" rel="prev">
+<link href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html" rel="next">
+<link href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html" rel="prev">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -187,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">02 · Bases binarias y representación</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html">Overflow y extensiones</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -228,13 +228,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link">
@@ -273,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
@@ -281,13 +281,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">02 · Bases binarias y representación</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../courses/aarch64/bases-binarias/index.html" class="sidebar-item-text sidebar-link">
@@ -308,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Overflow y extensiones</span></a>
   </div>
 </li>
@@ -344,10 +344,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link active" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
-  <li><a href="#flujo-único" id="toc-flujo-único" class="nav-link" data-scroll-target="#flujo-único">Flujo único</a></li>
-  <li><a href="#templates-disponibles" id="toc-templates-disponibles" class="nav-link" data-scroll-target="#templates-disponibles">Templates disponibles</a></li>
-  <li><a href="#carpetas-del-curso" id="toc-carpetas-del-curso" class="nav-link" data-scroll-target="#carpetas-del-curso">Carpetas del curso</a></li>
+  <li><a href="#resultado-limitado-por-tamaño" id="toc-resultado-limitado-por-tamaño" class="nav-link active" data-scroll-target="#resultado-limitado-por-tamaño">Resultado limitado por tamaño</a></li>
+  <li><a href="#carry" id="toc-carry" class="nav-link" data-scroll-target="#carry">Carry</a></li>
+  <li><a href="#borrow" id="toc-borrow" class="nav-link" data-scroll-target="#borrow">Borrow</a></li>
+  <li><a href="#overflow" id="toc-overflow" class="nav-link" data-scroll-target="#overflow">Overflow</a></li>
+  <li><a href="#zero-extension" id="toc-zero-extension" class="nav-link" data-scroll-target="#zero-extension">Zero extension</a></li>
+  <li><a href="#sign-extension" id="toc-sign-extension" class="nav-link" data-scroll-target="#sign-extension">Sign extension</a></li>
+  <li><a href="#relación-con-wn-y-xn" id="toc-relación-con-wn-y-xn" class="nav-link" data-scroll-target="#relación-con-wn-y-xn">Relación con <code>Wn</code> y <code>Xn</code></a></li>
+  <li><a href="#límite-de-esta-unidad" id="toc-límite-de-esta-unidad" class="nav-link" data-scroll-target="#límite-de-esta-unidad">Límite de esta unidad</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -355,15 +360,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">02 · Bases binarias y representación</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html">Overflow y extensiones</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">01.6 · Estructura del repositorio</h1>
-<p class="subtitle lead">Carpetas mínimas para ejemplos, proyectos, VS Code y Makefiles.</p>
+<h1 class="title">02.3 · Overflow, carry, borrow y extensiones</h1>
+<p class="subtitle lead">Antes de estudiar flags e instrucciones aritméticas, conviene separar unsigned, signed y tamaño.</p>
 </div>
 
 <div>
   <div class="description">
-    Organización base de lecciones, proyectos y templates de Makefile.
+    Carry, borrow, overflow, zero extension y sign extension como base para AArch64.
   </div>
 </div>
 
@@ -381,149 +386,156 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div class="breadcrumb-lite">
-<p>Cursos &gt; AArch64 &gt; Laboratorio &gt; Estructura del repositorio</p>
+<p>Cursos &gt; AArch64 &gt; Bases binarias &gt; Overflow y extensiones</p>
 </div>
 <div class="hero-lab">
-<p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas. Cada ejemplo pequeño puede vivir como una carpeta simple con <code>.vscode/</code> y <code>src/</code>.</p>
+<p>Cuando el resultado no cabe en el tamaño disponible, los bits visibles se recortan. Para entender lo que ocurrió hay que saber si la operación se pensaba como unsigned o signed.</p>
 </div>
-<section id="proyecto-mínimo" class="level2">
-<h2 class="anchored" data-anchor-id="proyecto-mínimo">Proyecto mínimo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> .vscode/</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">|</span><span class="ex">-</span> launch.json</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">`</span><span class="ex">-</span> settings.json</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="at">-</span> src/</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En <code>src/</code> solo necesitas dos archivos para empezar:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Archivo</th>
-<th>Uso</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>main.s</code></td>
-<td>Código assembly</td>
-</tr>
-<tr class="even">
-<td><code>Makefile</code></td>
-<td>Flujo activo: QEMU o ARM64 nativo</td>
-</tr>
-</tbody>
-</table>
-<p>El binario generado queda en <code>src/build/main</code> visto desde VS Code, y en <code>build/main</code> cuando ya estás dentro de <code>src/</code>.</p>
+<section id="resultado-limitado-por-tamaño" class="level2">
+<h2 class="anchored" data-anchor-id="resultado-limitado-por-tamaño">Resultado limitado por tamaño</h2>
+<p>Con 8 bits solo puedes guardar 8 bits. Si una suma produce más, el resultado visible conserva los bits bajos.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span> bits unsigned:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">255</span> + 1 = 256</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Pero</span> 256 no cabe en 8 bits.</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0xFF</span> + 0x01 = 0x00 con carry = 1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="flujo-único" class="level2">
-<h2 class="anchored" data-anchor-id="flujo-único">Flujo único</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como <code>src/Makefile</code>.</p>
+<section id="carry" class="level2">
+<h2 class="anchored" data-anchor-id="carry">Carry</h2>
+<p>Carry importa en suma unsigned. Indica que hubo acarreo fuera del bit más alto.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  <span class="ex">11111111</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">+</span> 00000001</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">----------</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">1</span> 00000000</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resultado visible de 8 bits:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00000000</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Carry:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="templates-disponibles" class="level2">
-<h2 class="anchored" data-anchor-id="templates-disponibles">Templates disponibles</h2>
-<p>Los templates viven en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Template</th>
-<th>Cuándo usarlo</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>Makefile.qemu.single</code></td>
-<td>x86_64 + QEMU, un <code>main.s</code></td>
-</tr>
-<tr class="even">
-<td><code>Makefile.qemu.multi</code></td>
-<td>x86_64 + QEMU, varios <code>.s</code></td>
-</tr>
-<tr class="odd">
-<td><code>Makefile.arm64.single</code></td>
-<td>Raspberry Pi / ARM64 real, un <code>main.s</code></td>
-</tr>
-<tr class="even">
-<td><code>Makefile.arm64.multi</code></td>
-<td>Raspberry Pi / ARM64 real, varios <code>.s</code></td>
-</tr>
-</tbody>
-</table>
-<p>Para copiar y entender cada uno, usa la guía <a href="../../../guides/setup/makefiles.html">Makefiles ARM64</a>.</p>
-<div class="callout callout-style-simple callout-tip callout-titled" title="Regla docente">
+<section id="borrow" class="level2">
+<h2 class="anchored" data-anchor-id="borrow">Borrow</h2>
+<p>Borrow importa en resta unsigned. Indica que la resta necesitó pedir prestado porque el minuendo no alcanzaba en ese tamaño.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span> bits unsigned:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> <span class="at">-</span> 1 = 255 con borrow</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">0x00</span> <span class="at">-</span> 0x01 = 0xFF</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El patrón final es <code>0xFF</code>. Si lo interpretas unsigned de 8 bits, es <code>255</code>.</p>
+</section>
+<section id="overflow" class="level2">
+<h2 class="anchored" data-anchor-id="overflow">Overflow</h2>
+<p>Overflow importa en aritmética signed. Ocurre cuando el resultado matemático no cabe en el rango signed del tamaño usado.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span> bits signed:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">127</span> + 1 = 128</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Pero</span> 128 no cabe en signed de 8 bits.</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0x7F</span> + 0x01 = 0x80</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">0x80</span> interpretado signed de 8 bits = <span class="at">-128</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Regla docente
+<span class="screen-reader-only">Nota</span>Idea clave
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>No uses banderas especiales de <code>make</code> en las prácticas iniciales. Cambia el contenido de <code>src/Makefile</code> y conserva los comandos.</p>
+<p>Carry y overflow no significan lo mismo. Carry ayuda a razonar operaciones unsigned; overflow ayuda a razonar operaciones signed.</p>
 </div>
 </div>
 </section>
-<section id="carpetas-del-curso" class="level2">
-<h2 class="anchored" data-anchor-id="carpetas-del-curso">Carpetas del curso</h2>
+<section id="zero-extension" class="level2">
+<h2 class="anchored" data-anchor-id="zero-extension">Zero extension</h2>
+<p>Zero extension agranda un valor rellenando con ceros a la izquierda.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span> bits:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0xFF</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Zero</span> extend a 32 bits:</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0x000000FF</span> = 255</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="sign-extension" class="level2">
+<h2 class="anchored" data-anchor-id="sign-extension">Sign extension</h2>
+<p>Sign extension agranda un valor copiando el bit de signo hacia la izquierda.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span> bits:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0xFF</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Sign</span> extend a 32 bits:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0xFFFFFFFF</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Si</span> se interpreta signed de 32 bits:</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">-1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Carpeta</th>
-<th>Uso</th>
+<th>Valor original</th>
+<th>Zero extend a 32 bits</th>
+<th>Sign extend a 32 bits</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>courses/</code></td>
-<td>Páginas Quarto del curso</td>
+<td><code>0x7F</code></td>
+<td><code>0x0000007F</code></td>
+<td><code>0x0000007F</code></td>
 </tr>
 <tr class="even">
-<td><code>guides/</code></td>
-<td>Setup, Makefiles, debugging y troubleshooting</td>
+<td><code>0x80</code></td>
+<td><code>0x00000080</code></td>
+<td><code>0xFFFFFF80</code></td>
 </tr>
 <tr class="odd">
-<td><code>lessons/</code></td>
-<td>Ejemplos ejecutables</td>
-</tr>
-<tr class="even">
-<td><code>exercises/</code></td>
-<td>Prácticas</td>
-</tr>
-<tr class="odd">
-<td><code>projects/</code></td>
-<td>Estructuras mínimas de proyecto</td>
-</tr>
-<tr class="even">
-<td><code>slides/</code></td>
-<td>Presentaciones Slidev</td>
-</tr>
-<tr class="odd">
-<td><code>tooling/</code></td>
-<td>Templates y soporte técnico</td>
+<td><code>0xFF</code></td>
+<td><code>0x000000FF</code></td>
+<td><code>0xFFFFFFFF</code></td>
 </tr>
 </tbody>
 </table>
 </section>
+<section id="relación-con-wn-y-xn" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-wn-y-xn">Relación con <code>Wn</code> y <code>Xn</code></h2>
+<p>En AArch64, escribir en un registro <code>Wn</code> actualiza los 32 bits bajos y limpia los 32 bits altos del registro <code>Xn</code> correspondiente.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">-</span><span class="dv">1</span>      <span class="op">//</span> x0 <span class="op">=</span> <span class="bn">0xFFFFFFFFFFFFFFFF</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> w0<span class="op">,</span> <span class="op">#</span><span class="dv">42</span>     <span class="op">//</span> x0 <span class="op">=</span> <span class="bn">0x000000000000002A</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esto prepara una idea clave: muchas instrucciones AArch64 controlan si un valor pequeño se extiende con ceros o con signo antes de operar en un tamaño mayor.</p>
+</section>
+<section id="límite-de-esta-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="límite-de-esta-unidad">Límite de esta unidad</h2>
+<div class="callout callout-style-simple callout-note callout-titled" title="Todavía no estudiaremos NZCV">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Todavía no estudiaremos NZCV
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Más adelante veremos flags como <code>N</code>, <code>Z</code>, <code>C</code> y <code>V</code>. Aquí solo construimos el modelo mental: <code>C</code> se relaciona con carry/borrow unsigned y <code>V</code> con overflow signed.</p>
+</div>
+</div>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<ol type="1">
+<li>Explica qué ocurre con <code>0xFF + 0x01</code> en 8 bits.</li>
+<li>Explica por qué <code>127 + 1</code> causa overflow signed de 8 bits.</li>
+<li>Zero extend <code>0x80</code> de 8 a 32 bits.</li>
+<li>Sign extend <code>0x80</code> de 8 a 32 bits.</li>
+<li>Explica qué pasa con <code>x5</code> si escribes en <code>w5</code>.</li>
+</ol>
+</section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Mi ejemplo tiene <code>.vscode/</code> y <code>src/</code>.</label></li>
-<li><label><input type="checkbox"><code>src/</code> solo necesita <code>Makefile</code> y <code>main.s</code> para empezar.</label></li>
-<li><label><input type="checkbox">Uso <code>make</code>, <code>make run</code> y <code>make gdb</code>.</label></li>
-<li><label><input type="checkbox">Si cambio de entorno, reemplazo <code>src/Makefile</code>.</label></li>
-<li><label><input type="checkbox">VS Code apunta a <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar carry en suma unsigned.</label></li>
+<li><label><input type="checkbox">Puedo explicar borrow en resta unsigned.</label></li>
+<li><label><input type="checkbox">Puedo explicar overflow en signed.</label></li>
+<li><label><input type="checkbox">Puedo distinguir zero extension de sign extension.</label></li>
+<li><label><input type="checkbox">Sé que escribir en <code>Wn</code> limpia los bits altos de <code>Xn</code>.</label></li>
 </ul>
+<p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html">Bytes y texto</a>.</p>
 
 
 </section>
@@ -933,13 +945,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="pagination-link" aria-label="Debugging mínimo">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Debugging mínimo</span>
+      <a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html" class="pagination-link" aria-label="Enteros, signo y rangos">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Enteros, signo y rangos</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../../courses/aarch64/bases-binarias/index.html" class="pagination-link" aria-label="Mapa de la unidad">
-        <span class="nav-page-text">Mapa de la unidad</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html" class="pagination-link" aria-label="Bytes y texto">
+        <span class="nav-page-text">Bytes y texto</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

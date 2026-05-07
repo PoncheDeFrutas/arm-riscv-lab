@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Organización base de lecciones, proyectos y templates de Makefile.">
+<meta name="description" content="Página principal de la Unidad 02 de la ruta AArch64.">
 
-<title>01.6 · Estructura del repositorio – ARM RISC-V Lab</title>
+<title>02 · Bases binarias y representación de datos – ARM RISC-V Lab</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
-<link href="../../../courses/aarch64/bases-binarias/index.html" rel="next">
-<link href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" rel="prev">
+<link href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html" rel="next">
+<link href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" rel="prev">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -187,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">02 · Bases binarias y representación</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">Mapa de la unidad</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -228,13 +228,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link">
@@ -273,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Estructura del repositorio</span></a>
   </div>
 </li>
@@ -281,16 +281,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">02 · Bases binarias y representación</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar sección">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../courses/aarch64/bases-binarias/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../courses/aarch64/bases-binarias/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Mapa de la unidad</span></a>
   </div>
 </li>
@@ -344,26 +344,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link active" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
-  <li><a href="#flujo-único" id="toc-flujo-único" class="nav-link" data-scroll-target="#flujo-único">Flujo único</a></li>
-  <li><a href="#templates-disponibles" id="toc-templates-disponibles" class="nav-link" data-scroll-target="#templates-disponibles">Templates disponibles</a></li>
-  <li><a href="#carpetas-del-curso" id="toc-carpetas-del-curso" class="nav-link" data-scroll-target="#carpetas-del-curso">Carpetas del curso</a></li>
-  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#preguntas-que-responde-esta-unidad" id="toc-preguntas-que-responde-esta-unidad" class="nav-link" data-scroll-target="#preguntas-que-responde-esta-unidad">Preguntas que responde esta unidad</a></li>
+  <li><a href="#tamaños-que-usarás-en-aarch64" id="toc-tamaños-que-usarás-en-aarch64" class="nav-link" data-scroll-target="#tamaños-que-usarás-en-aarch64">Tamaños que usarás en AArch64</a></li>
+  <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#modelo-mental-de-la-unidad" id="toc-modelo-mental-de-la-unidad" class="nav-link" data-scroll-target="#modelo-mental-de-la-unidad">Modelo mental de la unidad</a></li>
+  <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
+  <li><a href="#preparación-para-presentación" id="toc-preparación-para-presentación" class="nav-link" data-scroll-target="#preparación-para-presentación">Preparación para presentación</a></li>
+  <li><a href="#para-investigar-más" id="toc-para-investigar-más" class="nav-link" data-scroll-target="#para-investigar-más">Para investigar más</a></li>
+  <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
+  <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html">Estructura del repositorio</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">02 · Bases binarias y representación</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/bases-binarias/index.html">Mapa de la unidad</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">01.6 · Estructura del repositorio</h1>
-<p class="subtitle lead">Carpetas mínimas para ejemplos, proyectos, VS Code y Makefiles.</p>
+<h1 class="title">02 · Bases binarias y representación de datos</h1>
+<p class="subtitle lead">Bits, bytes, enteros, texto, endianness y direcciones como base para memoria, registros, punteros y debugging.</p>
 </div>
 
 <div>
   <div class="description">
-    Organización base de lecciones, proyectos y templates de Makefile.
+    Página principal de la Unidad 02 de la ruta AArch64.
   </div>
 </div>
 
@@ -381,149 +386,298 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div class="breadcrumb-lite">
-<p>Cursos &gt; AArch64 &gt; Laboratorio &gt; Estructura del repositorio</p>
+<p>Cursos &gt; AArch64 &gt; Bases binarias y representación de datos</p>
 </div>
 <div class="hero-lab">
-<p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas. Cada ejemplo pequeño puede vivir como una carpeta simple con <code>.vscode/</code> y <code>src/</code>.</p>
+<p>Esta unidad enseña a mirar datos como los mira una computadora: patrones de bits guardados en registros o memoria. La meta no es memorizar tablas, sino entender por qué los mismos bytes pueden representar un número sin signo, un número con signo, texto, una dirección o datos sin interpretar.</p>
 </div>
-<section id="proyecto-mínimo" class="level2">
-<h2 class="anchored" data-anchor-id="proyecto-mínimo">Proyecto mínimo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> .vscode/</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">|</span><span class="ex">-</span> launch.json</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">`</span><span class="ex">-</span> settings.json</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="at">-</span> src/</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En <code>src/</code> solo necesitas dos archivos para empezar:</p>
+<section id="mapa-rápido" class="level2">
+<h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
+<div class="lab-flow">
+<div class="lab-step">
+<p><strong>1. Tamaños</strong> Bits, bytes, nibbles, words y doublewords.</p>
+</div>
+<div class="lab-step">
+<p><strong>2. Bases</strong> Decimal, binario y hexadecimal como formas de escribir el mismo valor.</p>
+</div>
+<div class="lab-step">
+<p><strong>3. Enteros</strong> Unsigned, signed, rangos y complemento a dos.</p>
+</div>
+<div class="lab-step">
+<p><strong>4. Efectos</strong> Carry, borrow, overflow, zero extension y sign extension.</p>
+</div>
+<div class="lab-step">
+<p><strong>5. Memoria</strong> Texto, endianness, alineación, direcciones y punteros.</p>
+</div>
+</div>
+</section>
+<section id="preguntas-que-responde-esta-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="preguntas-que-responde-esta-unidad">Preguntas que responde esta unidad</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Archivo</th>
-<th>Uso</th>
+<th>Pregunta</th>
+<th>Dónde aparece</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>main.s</code></td>
-<td>Código assembly</td>
+<td>¿Qué significa que <code>x0</code> tenga 64 bits?</td>
+<td>Tamaños, registros <code>Xn</code> y doublewords</td>
 </tr>
 <tr class="even">
-<td><code>Makefile</code></td>
-<td>Flujo activo: QEMU o ARM64 nativo</td>
+<td>¿Por qué <code>0xFF</code> puede ser <code>255</code> o <code>-1</code>?</td>
+<td>Signed, unsigned y complemento a dos</td>
+</tr>
+<tr class="odd">
+<td>¿Qué diferencia hay entre carry y overflow?</td>
+<td>Aritmética sin signo y con signo</td>
+</tr>
+<tr class="even">
+<td>¿Por qué importa el orden de bytes en memoria?</td>
+<td>Endianness</td>
+</tr>
+<tr class="odd">
+<td>¿Una dirección también es un número?</td>
+<td>Direcciones y punteros</td>
+</tr>
+<tr class="even">
+<td>¿Qué diferencia hay entre valor, dirección y contenido?</td>
+<td>Interpretación de memoria</td>
 </tr>
 </tbody>
 </table>
-<p>El binario generado queda en <code>src/build/main</code> visto desde VS Code, y en <code>build/main</code> cuando ya estás dentro de <code>src/</code>.</p>
 </section>
-<section id="flujo-único" class="level2">
-<h2 class="anchored" data-anchor-id="flujo-único">Flujo único</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como <code>src/Makefile</code>.</p>
-</section>
-<section id="templates-disponibles" class="level2">
-<h2 class="anchored" data-anchor-id="templates-disponibles">Templates disponibles</h2>
-<p>Los templates viven en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="tamaños-que-usarás-en-aarch64" class="level2">
+<h2 class="anchored" data-anchor-id="tamaños-que-usarás-en-aarch64">Tamaños que usarás en AArch64</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Template</th>
-<th>Cuándo usarlo</th>
+<th>Nombre</th>
+<th style="text-align: right;">Bits</th>
+<th style="text-align: right;">Bytes</th>
+<th>Relación en el curso</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>Makefile.qemu.single</code></td>
-<td>x86_64 + QEMU, un <code>main.s</code></td>
+<td>bit</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-</td>
+<td>Unidad mínima de información</td>
 </tr>
 <tr class="even">
-<td><code>Makefile.qemu.multi</code></td>
-<td>x86_64 + QEMU, varios <code>.s</code></td>
+<td>nibble</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1/2</td>
+<td>Un dígito hexadecimal</td>
 </tr>
 <tr class="odd">
-<td><code>Makefile.arm64.single</code></td>
-<td>Raspberry Pi / ARM64 real, un <code>main.s</code></td>
+<td>byte</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td>Unidad mínima direccionable en memoria</td>
 </tr>
 <tr class="even">
-<td><code>Makefile.arm64.multi</code></td>
-<td>Raspberry Pi / ARM64 real, varios <code>.s</code></td>
+<td>halfword</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">2</td>
+<td>Cargas y stores de 16 bits</td>
+</tr>
+<tr class="odd">
+<td>word</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">4</td>
+<td>Registros <code>w0</code>-<code>w30</code></td>
+</tr>
+<tr class="even">
+<td>doubleword</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">8</td>
+<td>Registros <code>x0</code>-<code>x30</code></td>
 </tr>
 </tbody>
 </table>
-<p>Para copiar y entender cada uno, usa la guía <a href="../../../guides/setup/makefiles.html">Makefiles ARM64</a>.</p>
-<div class="callout callout-style-simple callout-tip callout-titled" title="Regla docente">
+<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Regla docente
+<span class="screen-reader-only">Nota</span>Idea clave
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>No uses banderas especiales de <code>make</code> en las prácticas iniciales. Cambia el contenido de <code>src/Makefile</code> y conserva los comandos.</p>
+<p>En AArch64, <code>x0</code> representa un registro de 64 bits. <code>w0</code> representa los 32 bits bajos de ese mismo registro. Esta relación aparece muchas veces cuando se mezclan datos de 32 y 64 bits.</p>
 </div>
 </div>
 </section>
-<section id="carpetas-del-curso" class="level2">
-<h2 class="anchored" data-anchor-id="carpetas-del-curso">Carpetas del curso</h2>
+<section id="lecciones-de-esta-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="lecciones-de-esta-unidad">Lecciones de esta unidad</h2>
+<div class="resource-grid">
+<section id="bits-bytes-y-bases" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="bits-bytes-y-bases">Bits, bytes y bases</h3>
+<p>Tamaños básicos, decimal, binario, hexadecimal y conversiones pequeñas.</p>
+<p><a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="enteros-signo-y-rangos" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="enteros-signo-y-rangos">Enteros, signo y rangos</h3>
+<p>Unsigned, signed, rangos de n bits y complemento a dos.</p>
+<p><a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="overflow-y-extensiones" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="overflow-y-extensiones">Overflow y extensiones</h3>
+<p>Carry, borrow, overflow, zero extension y sign extension.</p>
+<p><a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="bytes-y-texto" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="bytes-y-texto">Bytes y texto</h3>
+<p>ASCII, UTF-8 básico y diferencia entre carácter, byte y código.</p>
+<p><a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="endianness-y-alineación" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="endianness-y-alineación">Endianness y alineación</h3>
+<p>Orden de bytes en memoria y alineación conceptual de datos.</p>
+<p><a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html" class="resource-action">Abrir</a></p>
+</section>
+<section id="direcciones-y-punteros" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="direcciones-y-punteros">Direcciones y punteros</h3>
+<p>Direcciones como números, punteros y lectura de contenido en memoria.</p>
+<p><a href="../../../courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html" class="resource-action">Abrir</a></p>
+</section>
+</div>
+</section>
+<section id="modelo-mental-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-mental-de-la-unidad">Modelo mental de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registro</span> o dirección</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bytes</span> guardados</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">interpretación</span> elegida</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> unsigned</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> signed</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> texto</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> dirección</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">`</span><span class="ex">--</span><span class="op">&gt;</span> bytes sin interpretar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El depurador y las herramientas muestran registros, direcciones y memoria. El programador debe saber qué tamaño leer y qué interpretación aplicar.</p>
+</section>
+<section id="qué-no-estudiaremos-todavía" class="level2">
+<h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Carpeta</th>
-<th>Uso</th>
+<th>Tema</th>
+<th>Por qué queda fuera</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>courses/</code></td>
-<td>Páginas Quarto del curso</td>
+<td>ELF completo</td>
+<td>Primero hay que entender bytes y direcciones</td>
 </tr>
 <tr class="even">
-<td><code>guides/</code></td>
-<td>Setup, Makefiles, debugging y troubleshooting</td>
+<td>ABI/AAPCS64</td>
+<td>Antes se necesita entender registros y tamaños</td>
 </tr>
 <tr class="odd">
-<td><code>lessons/</code></td>
-<td>Ejemplos ejecutables</td>
+<td>Stack frames</td>
+<td>Primero se separan dirección, contenido y valor</td>
 </tr>
 <tr class="even">
-<td><code>exercises/</code></td>
-<td>Prácticas</td>
+<td>MMU y páginas</td>
+<td>La unidad solo usa direcciones como modelo inicial</td>
 </tr>
 <tr class="odd">
-<td><code>projects/</code></td>
-<td>Estructuras mínimas de proyecto</td>
+<td>GDB avanzado</td>
+<td>Aquí solo se prepara la lectura de registros y memoria</td>
 </tr>
 <tr class="even">
-<td><code>slides/</code></td>
-<td>Presentaciones Slidev</td>
-</tr>
-<tr class="odd">
-<td><code>tooling/</code></td>
-<td>Templates y soporte técnico</td>
+<td>NEON/SIMD</td>
+<td>No es necesario para representación básica</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="checklist" class="level2">
-<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<section id="preparación-para-presentación" class="level2">
+<h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
+<p>La página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/bases-binarias/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esa presentación debe resumir y practicar la unidad, no reemplazarla.</p>
+</section>
+<section id="para-investigar-más" class="level2">
+<h2 class="anchored" data-anchor-id="para-investigar-más">Para investigar más</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Fuente</th>
+<th>Qué buscar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Larry D. Pyeatt, <em>ARM 64-Bit Assembly Language</em></td>
+<td>Datos de computadora, memoria, bases numéricas y primeros ejemplos AArch64</td>
+</tr>
+<tr class="even">
+<td>William Hohl y Christopher Hinds, <em>ARM Assembly Language: Fundamentals and Techniques</em></td>
+<td>Sistemas de numeración, representación de números y caracteres</td>
+</tr>
+<tr class="odd">
+<td>Arm, <em>Learn the Architecture - A64 Instruction Set Architecture Guide</em></td>
+<td>Registros AArch64, relación entre <code>Xn</code> y <code>Wn</code>, tamaños de operandos</td>
+</tr>
+<tr class="even">
+<td>Stephen Smith, <em>Raspberry Pi Assembly Language Programming</em></td>
+<td>Números, memoria y datos desde ejemplos introductorios</td>
+</tr>
+<tr class="odd">
+<td><code>man ascii</code></td>
+<td>Tabla ASCII local del sistema</td>
+</tr>
+<tr class="even">
+<td><code>man xxd</code> y <code>man hexdump</code></td>
+<td>Formas de inspeccionar bytes</td>
+</tr>
+<tr class="odd">
+<td><code>man objdump</code> y <code>man readelf</code></td>
+<td>Primeras herramientas para mirar binarios más adelante</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="checklist-de-cierre" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-cierre">Checklist de cierre</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Mi ejemplo tiene <code>.vscode/</code> y <code>src/</code>.</label></li>
-<li><label><input type="checkbox"><code>src/</code> solo necesita <code>Makefile</code> y <code>main.s</code> para empezar.</label></li>
-<li><label><input type="checkbox">Uso <code>make</code>, <code>make run</code> y <code>make gdb</code>.</label></li>
-<li><label><input type="checkbox">Si cambio de entorno, reemplazo <code>src/Makefile</code>.</label></li>
-<li><label><input type="checkbox">VS Code apunta a <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar bit, byte, nibble, word y doubleword.</label></li>
+<li><label><input type="checkbox">Puedo convertir valores pequeños entre decimal, binario y hexadecimal.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué <code>0xFF</code> puede interpretarse como <code>255</code> o <code>-1</code>.</label></li>
+<li><label><input type="checkbox">Puedo calcular rangos unsigned y signed de n bits.</label></li>
+<li><label><input type="checkbox">Puedo distinguir carry, borrow y overflow.</label></li>
+<li><label><input type="checkbox">Puedo explicar zero extension y sign extension.</label></li>
+<li><label><input type="checkbox">Puedo reconocer bytes ASCII y UTF-8 básico.</label></li>
+<li><label><input type="checkbox">Puedo explicar little endian con un valor de 32 bits.</label></li>
+<li><label><input type="checkbox">Puedo distinguir dirección, contenido y valor interpretado.</label></li>
+<li><label><input type="checkbox">Puedo conectar estas ideas con registros <code>Wn</code> y <code>Xn</code> de AArch64.</label></li>
 </ul>
+</section>
+<section id="siguiente-paso" class="level2">
+<h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
+<p>Empieza por <a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html">Bits, bytes y bases</a>. Si ya dominas bases numéricas, avanza a <a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html">Enteros, signo y rangos</a>.</p>
 
 
 </section>
@@ -933,13 +1087,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="pagination-link" aria-label="Debugging mínimo">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Debugging mínimo</span>
+      <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="pagination-link" aria-label="Estructura del repositorio">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Estructura del repositorio</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../../courses/aarch64/bases-binarias/index.html" class="pagination-link" aria-label="Mapa de la unidad">
-        <span class="nav-page-text">Mapa de la unidad</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html" class="pagination-link" aria-label="Bits, bytes y bases">
+        <span class="nav-page-text">Bits, bytes y bases</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
