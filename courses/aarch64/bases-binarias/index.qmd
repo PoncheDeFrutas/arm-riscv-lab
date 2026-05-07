@@ -1,0 +1,198 @@
+---
+title: "02 · Bases binarias y representación de datos"
+subtitle: "Bits, bytes, enteros, texto, endianness y direcciones como base para memoria, registros, punteros y debugging."
+description: "Página principal de la Unidad 02 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias y representación de datos
+:::
+
+::: {.hero-lab}
+Esta unidad enseña a mirar datos como los mira una computadora: patrones de bits
+guardados en registros o memoria. La meta no es memorizar tablas, sino entender
+por qué los mismos bytes pueden representar un número sin signo, un número con
+signo, texto, una dirección o datos sin interpretar.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Tamaños**
+Bits, bytes, nibbles, words y doublewords.
+:::
+
+::: {.lab-step}
+**2. Bases**
+Decimal, binario y hexadecimal como formas de escribir el mismo valor.
+:::
+
+::: {.lab-step}
+**3. Enteros**
+Unsigned, signed, rangos y complemento a dos.
+:::
+
+::: {.lab-step}
+**4. Efectos**
+Carry, borrow, overflow, zero extension y sign extension.
+:::
+
+::: {.lab-step}
+**5. Memoria**
+Texto, endianness, alineación, direcciones y punteros.
+:::
+:::
+
+## Preguntas que responde esta unidad
+
+| Pregunta | Dónde aparece |
+|---|---|
+| ¿Qué significa que `x0` tenga 64 bits? | Tamaños, registros `Xn` y doublewords |
+| ¿Por qué `0xFF` puede ser `255` o `-1`? | Signed, unsigned y complemento a dos |
+| ¿Qué diferencia hay entre carry y overflow? | Aritmética sin signo y con signo |
+| ¿Por qué importa el orden de bytes en memoria? | Endianness |
+| ¿Una dirección también es un número? | Direcciones y punteros |
+| ¿Qué diferencia hay entre valor, dirección y contenido? | Interpretación de memoria |
+
+## Tamaños que usarás en AArch64
+
+| Nombre | Bits | Bytes | Relación en el curso |
+|---|---:|---:|---|
+| bit | 1 | - | Unidad mínima de información |
+| nibble | 4 | 1/2 | Un dígito hexadecimal |
+| byte | 8 | 1 | Unidad mínima direccionable en memoria |
+| halfword | 16 | 2 | Cargas y stores de 16 bits |
+| word | 32 | 4 | Registros `w0`-`w30` |
+| doubleword | 64 | 8 | Registros `x0`-`x30` |
+
+::: {.callout-note title="Idea clave"}
+En AArch64, `x0` representa un registro de 64 bits. `w0` representa los 32 bits
+bajos de ese mismo registro. Esta relación aparece muchas veces cuando se
+mezclan datos de 32 y 64 bits.
+:::
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Bits, bytes y bases
+
+Tamaños básicos, decimal, binario, hexadecimal y conversiones pequeñas.
+
+[Abrir](01-bits-bytes-bases.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Enteros, signo y rangos
+
+Unsigned, signed, rangos de n bits y complemento a dos.
+
+[Abrir](02-enteros-signo-rangos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Overflow y extensiones
+
+Carry, borrow, overflow, zero extension y sign extension.
+
+[Abrir](03-overflow-extensiones.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Bytes y texto
+
+ASCII, UTF-8 básico y diferencia entre carácter, byte y código.
+
+[Abrir](04-bytes-texto.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Endianness y alineación
+
+Orden de bytes en memoria y alineación conceptual de datos.
+
+[Abrir](05-endianness-alineacion.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Direcciones y punteros
+
+Direcciones como números, punteros y lectura de contenido en memoria.
+
+[Abrir](06-direcciones-punteros-memoria.qmd){.resource-action}
+:::
+:::
+
+## Modelo mental de la unidad
+
+```bash
+registro o dirección
+        |
+        v
+bytes guardados
+        |
+        v
+interpretación elegida
+        |
+        +--> unsigned
+        +--> signed
+        +--> texto
+        +--> dirección
+        `--> bytes sin interpretar
+```
+
+El depurador y las herramientas muestran registros, direcciones y memoria. El
+programador debe saber qué tamaño leer y qué interpretación aplicar.
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| ELF completo | Primero hay que entender bytes y direcciones |
+| ABI/AAPCS64 | Antes se necesita entender registros y tamaños |
+| Stack frames | Primero se separan dirección, contenido y valor |
+| MMU y páginas | La unidad solo usa direcciones como modelo inicial |
+| GDB avanzado | Aquí solo se prepara la lectura de registros y memoria |
+| NEON/SIMD | No es necesario para representación básica |
+
+## Preparación para presentación
+
+La página Quarto es la fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+slides/aarch64/bases-binarias/overview/slides.md
+```
+
+Esa presentación debe resumir y practicar la unidad, no reemplazarla.
+
+## Para investigar más
+
+| Fuente | Qué buscar |
+|---|---|
+| Larry D. Pyeatt, *ARM 64-Bit Assembly Language* | Datos de computadora, memoria, bases numéricas y primeros ejemplos AArch64 |
+| William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques* | Sistemas de numeración, representación de números y caracteres |
+| Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide* | Registros AArch64, relación entre `Xn` y `Wn`, tamaños de operandos |
+| Stephen Smith, *Raspberry Pi Assembly Language Programming* | Números, memoria y datos desde ejemplos introductorios |
+| `man ascii` | Tabla ASCII local del sistema |
+| `man xxd` y `man hexdump` | Formas de inspeccionar bytes |
+| `man objdump` y `man readelf` | Primeras herramientas para mirar binarios más adelante |
+
+## Checklist de cierre
+
+- [ ] Puedo explicar bit, byte, nibble, word y doubleword.
+- [ ] Puedo convertir valores pequeños entre decimal, binario y hexadecimal.
+- [ ] Puedo explicar por qué `0xFF` puede interpretarse como `255` o `-1`.
+- [ ] Puedo calcular rangos unsigned y signed de n bits.
+- [ ] Puedo distinguir carry, borrow y overflow.
+- [ ] Puedo explicar zero extension y sign extension.
+- [ ] Puedo reconocer bytes ASCII y UTF-8 básico.
+- [ ] Puedo explicar little endian con un valor de 32 bits.
+- [ ] Puedo distinguir dirección, contenido y valor interpretado.
+- [ ] Puedo conectar estas ideas con registros `Wn` y `Xn` de AArch64.
+
+## Siguiente paso
+
+Empieza por [Bits, bytes y bases](01-bits-bytes-bases.qmd). Si ya dominas bases
+numéricas, avanza a [Enteros, signo y rangos](02-enteros-signo-rangos.qmd).

@@ -1,0 +1,158 @@
+---
+title: "02.3 · Overflow, carry, borrow y extensiones"
+subtitle: "Antes de estudiar flags e instrucciones aritméticas, conviene separar unsigned, signed y tamaño."
+description: "Carry, borrow, overflow, zero extension y sign extension como base para AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias > Overflow y extensiones
+:::
+
+::: {.hero-lab}
+Cuando el resultado no cabe en el tamaño disponible, los bits visibles se
+recortan. Para entender lo que ocurrió hay que saber si la operación se pensaba
+como unsigned o signed.
+:::
+
+## Resultado limitado por tamaño
+
+Con 8 bits solo puedes guardar 8 bits. Si una suma produce más, el resultado
+visible conserva los bits bajos.
+
+```bash
+8 bits unsigned:
+255 + 1 = 256
+
+Pero 256 no cabe en 8 bits.
+
+0xFF + 0x01 = 0x00 con carry = 1
+```
+
+## Carry
+
+Carry importa en suma unsigned. Indica que hubo acarreo fuera del bit más alto.
+
+```bash
+  11111111
++ 00000001
+----------
+1 00000000
+```
+
+Resultado visible de 8 bits:
+
+```bash
+00000000
+```
+
+Carry:
+
+```bash
+1
+```
+
+## Borrow
+
+Borrow importa en resta unsigned. Indica que la resta necesitó pedir prestado
+porque el minuendo no alcanzaba en ese tamaño.
+
+```bash
+8 bits unsigned:
+0 - 1 = 255 con borrow
+
+0x00 - 0x01 = 0xFF
+```
+
+El patrón final es `0xFF`. Si lo interpretas unsigned de 8 bits, es `255`.
+
+## Overflow
+
+Overflow importa en aritmética signed. Ocurre cuando el resultado matemático no
+cabe en el rango signed del tamaño usado.
+
+```bash
+8 bits signed:
+127 + 1 = 128
+
+Pero 128 no cabe en signed de 8 bits.
+
+0x7F + 0x01 = 0x80
+0x80 interpretado signed de 8 bits = -128
+```
+
+::: {.callout-note title="Idea clave"}
+Carry y overflow no significan lo mismo. Carry ayuda a razonar operaciones
+unsigned; overflow ayuda a razonar operaciones signed.
+:::
+
+## Zero extension
+
+Zero extension agranda un valor rellenando con ceros a la izquierda.
+
+```bash
+8 bits:
+0xFF
+
+Zero extend a 32 bits:
+0x000000FF = 255
+```
+
+## Sign extension
+
+Sign extension agranda un valor copiando el bit de signo hacia la izquierda.
+
+```bash
+8 bits:
+0xFF
+
+Sign extend a 32 bits:
+0xFFFFFFFF
+
+Si se interpreta signed de 32 bits:
+-1
+```
+
+| Valor original | Zero extend a 32 bits | Sign extend a 32 bits |
+|---|---|---|
+| `0x7F` | `0x0000007F` | `0x0000007F` |
+| `0x80` | `0x00000080` | `0xFFFFFF80` |
+| `0xFF` | `0x000000FF` | `0xFFFFFFFF` |
+
+## Relación con `Wn` y `Xn`
+
+En AArch64, escribir en un registro `Wn` actualiza los 32 bits bajos y limpia
+los 32 bits altos del registro `Xn` correspondiente.
+
+```asm
+mov x0, -1      // x0 = 0xFFFFFFFFFFFFFFFF
+mov w0, #42     // x0 = 0x000000000000002A
+```
+
+Esto prepara una idea clave: muchas instrucciones AArch64 controlan si un valor
+pequeño se extiende con ceros o con signo antes de operar en un tamaño mayor.
+
+## Límite de esta unidad
+
+::: {.callout-note title="Todavía no estudiaremos NZCV"}
+Más adelante veremos flags como `N`, `Z`, `C` y `V`. Aquí solo construimos el
+modelo mental: `C` se relaciona con carry/borrow unsigned y `V` con overflow
+signed.
+:::
+
+## Mini ejercicios
+
+1. Explica qué ocurre con `0xFF + 0x01` en 8 bits.
+2. Explica por qué `127 + 1` causa overflow signed de 8 bits.
+3. Zero extend `0x80` de 8 a 32 bits.
+4. Sign extend `0x80` de 8 a 32 bits.
+5. Explica qué pasa con `x5` si escribes en `w5`.
+
+## Checklist
+
+- [ ] Puedo explicar carry en suma unsigned.
+- [ ] Puedo explicar borrow en resta unsigned.
+- [ ] Puedo explicar overflow en signed.
+- [ ] Puedo distinguir zero extension de sign extension.
+- [ ] Sé que escribir en `Wn` limpia los bits altos de `Xn`.
+
+Siguiente: [Bytes y texto](04-bytes-texto.qmd).

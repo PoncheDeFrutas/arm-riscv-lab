@@ -82,6 +82,22 @@ website:
                   href: courses/aarch64/laboratorio/05-debugging-minimo.qmd
                 - text: "Estructura del repositorio"
                   href: courses/aarch64/laboratorio/06-estructura-repositorio.qmd
+            - section: "02 · Bases binarias y representación"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/bases-binarias/index.qmd
+                - text: "Bits, bytes y bases"
+                  href: courses/aarch64/bases-binarias/01-bits-bytes-bases.qmd
+                - text: "Enteros, signo y rangos"
+                  href: courses/aarch64/bases-binarias/02-enteros-signo-rangos.qmd
+                - text: "Overflow y extensiones"
+                  href: courses/aarch64/bases-binarias/03-overflow-extensiones.qmd
+                - text: "Bytes y texto"
+                  href: courses/aarch64/bases-binarias/04-bytes-texto.qmd
+                - text: "Endianness y alineación"
+                  href: courses/aarch64/bases-binarias/05-endianness-alineacion.qmd
+                - text: "Direcciones y punteros"
+                  href: courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

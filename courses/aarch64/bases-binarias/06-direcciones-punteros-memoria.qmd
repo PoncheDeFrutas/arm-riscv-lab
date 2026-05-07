@@ -1,0 +1,152 @@
+---
+title: "02.6 · Direcciones, punteros y memoria"
+subtitle: "Una dirección es un número; el contenido son bytes; el valor depende de la interpretación."
+description: "Direcciones como números, punteros, contenido e interpretación de memoria en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias > Direcciones, punteros y memoria
+:::
+
+::: {.hero-lab}
+Esta lección cierra la unidad con la distinción más importante para debugging:
+dirección, contenido y valor no son lo mismo. Si entiendes esa separación,
+podrás mirar registros y memoria sin confundir lo que estás viendo.
+:::
+
+## Dirección, contenido y valor
+
+```bash
+Dirección: 0x400080
+Contenido: 2A 00 00 00
+Valor interpretado como int32 little endian: 42
+```
+
+| Idea | Qué significa |
+|---|---|
+| Dirección | Número que identifica una ubicación de memoria |
+| Contenido | Bytes guardados desde esa dirección |
+| Valor | Interpretación de esos bytes con tamaño y tipo |
+
+::: {.callout-note title="Idea clave"}
+La dirección es un número. El contenido son bytes. El valor depende de cómo
+interpretas esos bytes.
+:::
+
+## Punteros como números
+
+Un puntero es un valor que representa una dirección.
+
+```bash
+x vive en una dirección.
+La dirección de x puede ser 0x400080.
+Un puntero puede guardar 0x400080.
+Leer desde ese puntero permite acceder al contenido.
+```
+
+En AArch64, las direcciones de userland se manejan en registros de 64 bits como
+`x0`, `x1`, `x2`, etc.
+
+```asm
+.section .data
+valor:
+    .word 42
+
+.section .text
+    adr x0, valor     // x0 recibe la dirección de valor
+    ldr w1, [x0]      // w1 recibe el contenido de 32 bits guardado ahí
+```
+
+Lectura mínima:
+
+| Instrucción | Qué idea muestra |
+|---|---|
+| `adr x0, valor` | Guardar una dirección en un registro |
+| `ldr w1, [x0]` | Leer contenido desde la dirección guardada en `x0` |
+
+## Mismos bytes, varias interpretaciones
+
+```bash
+Bytes:
+41 42 43 00
+```
+
+| Interpretación | Resultado |
+|---|---|
+| ASCII | `ABC\0` |
+| bytes individuales | `0x41`, `0x42`, `0x43`, `0x00` |
+| uint32 little endian | `0x00434241` |
+| dirección | solo tendría sentido si el programa usa esos bytes como puntero |
+
+El depurador puede mostrar bytes. El programador decide si esos bytes son texto,
+entero, dirección, arreglo o datos crudos.
+
+## Ejemplo de memoria
+
+```bash
+Dirección      Byte
+0x400080       41
+0x400081       42
+0x400082       43
+0x400083       00
+```
+
+Si lees byte por byte:
+
+```bash
+0x41, 0x42, 0x43, 0x00
+```
+
+Si lees como texto ASCII:
+
+```bash
+ABC\0
+```
+
+Si lees como `word` little endian:
+
+```bash
+0x00434241
+```
+
+## Relación con debugging
+
+Cuando uses GDB más adelante, verás comandos conceptualmente parecidos a estas
+preguntas:
+
+| Pregunta | Qué necesitas saber |
+|---|---|
+| ¿Qué hay en `x0`? | Puede ser valor normal o dirección |
+| ¿Qué hay en memoria en esa dirección? | Hay bytes |
+| ¿Cuántos bytes leo? | byte, word, doubleword |
+| ¿Cómo los interpreto? | signed, unsigned, texto, dirección |
+
+## Error común
+
+::: {.callout-warning title="No todo número grande es puntero"}
+Un registro de 64 bits puede contener una dirección, un contador, una máscara,
+un entero o bytes sin interpretar. El contexto decide si debes tratarlo como
+puntero.
+:::
+
+## Mini ejercicios
+
+1. En el ejemplo `2A 00 00 00`, explica el valor como `uint32` little endian.
+2. Explica la diferencia entre `adr x0, valor` y `ldr w1, [x0]`.
+3. Interpreta `41 42 43 00` como ASCII.
+4. Interpreta `41 42 43 00` como `uint32` little endian.
+5. Explica por qué una dirección también es un valor guardado en un registro.
+
+## Checklist
+
+- [ ] Puedo distinguir dirección, contenido y valor.
+- [ ] Puedo explicar un puntero como dirección guardada en un registro.
+- [ ] Puedo leer los mismos bytes como texto o entero.
+- [ ] Puedo explicar por qué el tamaño de lectura importa.
+- [ ] Puedo conectar registros `Xn` con direcciones de 64 bits.
+
+## Cierre de la unidad
+
+Si puedes mirar bytes y preguntarte "qué tamaño leo" y "qué interpretación
+aplico", ya tienes la base mental para estudiar memoria, registros, punteros,
+stack y debugging en AArch64.

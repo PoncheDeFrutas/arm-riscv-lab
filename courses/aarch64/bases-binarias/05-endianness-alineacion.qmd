@@ -1,0 +1,138 @@
+---
+title: "02.5 · Endianness y alineación conceptual"
+subtitle: "El orden de bytes en memoria afecta cómo lees valores de varios bytes."
+description: "Little endian, big endian conceptual y alineación inicial de datos."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias > Endianness y alineación
+:::
+
+::: {.hero-lab}
+Un byte ocupa una dirección. Un valor de 32 o 64 bits ocupa varias direcciones.
+Endianness explica en qué orden aparecen esos bytes cuando el valor está en
+memoria.
+:::
+
+## Un valor de varios bytes
+
+Un valor de 32 bits ocupa 4 bytes.
+
+```bash
+Valor de 32 bits:
+0x12345678
+```
+
+Los bytes que lo forman son:
+
+```bash
+12 34 56 78
+```
+
+La pregunta es en qué orden se guardan en memoria.
+
+## Big endian
+
+Big endian guarda primero el byte más significativo.
+
+```bash
+Valor de 32 bits: 0x12345678
+
+Big endian en memoria:
+12 34 56 78
+```
+
+## Little endian
+
+Little endian guarda primero el byte menos significativo.
+
+```bash
+Valor de 32 bits: 0x12345678
+
+Little endian en memoria:
+78 56 34 12
+```
+
+Muchas plataformas ARM64 usadas con Linux trabajan en little endian. Para el
+curso, esta será la forma práctica principal al leer memoria y dumps.
+
+::: {.callout-note title="Idea clave"}
+El valor lógico puede ser `0x12345678`, pero los bytes en memoria little endian
+aparecen como `78 56 34 12`.
+:::
+
+## Ejemplo AArch64
+
+```asm
+.section .data
+numero:
+    .word 0x12345678
+```
+
+Si inspeccionas la sección de datos en un entorno AArch64 little endian, debes
+esperar ver los bytes:
+
+```bash
+78 56 34 12
+```
+
+Eso no significa que el valor haya cambiado. Significa que estás viendo su
+representación byte por byte en memoria.
+
+## Direcciones consecutivas
+
+```bash
+Dirección      Byte
+0x400080       78
+0x400081       56
+0x400082       34
+0x400083       12
+```
+
+Si lees un `word` desde `0x400080` en little endian, el valor interpretado es:
+
+```bash
+0x12345678
+```
+
+## Alineación conceptual
+
+Alineación significa ubicar datos en direcciones convenientes para su tamaño.
+
+```bash
+Un dato de 4 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 4.
+Un dato de 8 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 8.
+```
+
+| Tamaño | Dirección conveniente |
+|---|---|
+| 2 bytes | múltiplo de 2 |
+| 4 bytes | múltiplo de 4 |
+| 8 bytes | múltiplo de 8 |
+
+No estudiaremos penalizaciones, excepciones ni ABI todavía. Por ahora basta con
+entender que el tamaño del dato influye en dónde conviene colocarlo.
+
+## Error común
+
+::: {.callout-warning title="No inviertas el número completo"}
+Little endian cambia el orden de los bytes en memoria. No significa leer cada
+byte al revés bit por bit.
+:::
+
+## Mini ejercicios
+
+1. Escribe los bytes little endian de `0xAABBCCDD`.
+2. Escribe los bytes big endian de `0xAABBCCDD`.
+3. Explica por qué `0x12345678` puede verse como `78 56 34 12`.
+4. Di si `0x400084` está alineada para un dato de 4 bytes.
+
+## Checklist
+
+- [ ] Puedo explicar big endian.
+- [ ] Puedo explicar little endian.
+- [ ] Puedo leer un `word` little endian desde bytes en memoria.
+- [ ] Sé que AArch64 Linux normalmente se estudia aquí como little endian.
+- [ ] Puedo explicar alineación sin entrar todavía en ABI o rendimiento.
+
+Siguiente: [Direcciones, punteros y memoria](06-direcciones-punteros-memoria.qmd).

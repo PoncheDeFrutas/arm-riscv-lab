@@ -1,0 +1,152 @@
+---
+title: "02.1 · Bits, bytes y bases numéricas"
+subtitle: "La misma cantidad puede escribirse en decimal, binario o hexadecimal."
+description: "Bits, bytes, nibbles, words, doublewords y conversión entre bases."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias > Bits, bytes y bases
+:::
+
+::: {.hero-lab}
+Todo dato visible para un programa termina representado como bits. En esta
+lección solo construiremos el vocabulario mínimo: tamaños y bases numéricas. Ese
+vocabulario permite leer registros, memoria e instrucciones sin adivinar.
+:::
+
+## Bit, byte y nibble
+
+Un bit puede valer `0` o `1`. Un byte agrupa 8 bits. Un nibble agrupa 4 bits y
+por eso coincide con un dígito hexadecimal.
+
+| Unidad | Tamaño | Ejemplo |
+|---|---:|---|
+| bit | 1 bit | `1` |
+| nibble | 4 bits | `1010` |
+| byte | 8 bits | `00101010` |
+
+```bash
+1 byte = 8 bits
+1 nibble = 4 bits
+1 byte = 2 nibbles
+```
+
+::: {.callout-note title="Idea clave"}
+Hexadecimal es cómodo en bajo nivel porque cada dígito hexadecimal representa
+exactamente 4 bits.
+:::
+
+## Word y doubleword en AArch64
+
+En este curso usaremos los nombres de tamaño como aparecen en documentación y
+herramientas ARM64.
+
+| Nombre | Bits | Bytes | Uso frecuente |
+|---|---:|---:|---|
+| byte | 8 | 1 | Caracteres, buffers, memoria cruda |
+| halfword | 16 | 2 | Datos pequeños |
+| word | 32 | 4 | Registros `w0`-`w30` |
+| doubleword | 64 | 8 | Registros `x0`-`x30` y direcciones |
+
+```asm
+mov w0, #42     // valor de 32 bits en W0
+mov x1, #42     // valor de 64 bits en X1
+```
+
+`w0` y `x0` no son registros completamente separados. `w0` es la vista baja de
+32 bits de `x0`.
+
+## Decimal, binario y hexadecimal
+
+Estas tres escrituras pueden referirse a la misma cantidad.
+
+```bash
+Decimal:     42
+Binario:     0b00101010
+Hexadecimal: 0x2A
+```
+
+| Base | Dígitos | Uso |
+|---|---|---|
+| Decimal | `0` a `9` | Lectura humana común |
+| Binario | `0` y `1` | Forma directa de hablar de bits |
+| Hexadecimal | `0` a `9`, `A` a `F` | Forma compacta para bytes y direcciones |
+
+## Leer hexadecimal como bits
+
+Cada dígito hexadecimal equivale a 4 bits.
+
+| Hex | Binario |
+|---|---|
+| `0` | `0000` |
+| `1` | `0001` |
+| `2` | `0010` |
+| `A` | `1010` |
+| `F` | `1111` |
+
+Por eso:
+
+```bash
+0x2A
+  2    A
+0010 1010
+```
+
+## Conversión rápida con terminal
+
+Estos comandos son apoyo para verificar valores pequeños. No reemplazan la
+comprensión manual.
+
+```bash
+printf "%d\n" 0x2A
+printf "0x%X\n" 42
+printf "%08x\n" 42
+```
+
+Salida esperada:
+
+```bash
+42
+0x2A
+0000002a
+```
+
+## Relación con registros
+
+Cuando escribes un inmediato en un registro, el ensamblador codifica ese valor
+en una instrucción. Para estudiar esta unidad solo importa el valor visible:
+
+```asm
+mov w0, #0x2A
+mov x1, #0x2A
+```
+
+| Registro | Tamaño visible | Valor escrito |
+|---|---:|---|
+| `w0` | 32 bits | `0x0000002A` |
+| `x1` | 64 bits | `0x000000000000002A` |
+
+## Error común
+
+::: {.callout-warning title="No mezcles tamaño con base"}
+`0x2A` no significa "valor de 8 bits". Solo significa que el valor está escrito
+en hexadecimal. El tamaño depende de dónde se guarda o cómo se lee: byte, word,
+doubleword, registro `Wn` o registro `Xn`.
+:::
+
+## Mini ejercicios
+
+1. Escribe `15` en binario de 8 bits.
+2. Escribe `0b11111111` en hexadecimal.
+3. Explica cuántos bytes ocupa una doubleword.
+4. Explica qué relación hay entre `w3` y `x3`.
+
+## Checklist
+
+- [ ] Puedo explicar qué es un bit.
+- [ ] Puedo explicar qué es un byte.
+- [ ] Sé por qué un byte se escribe con dos dígitos hexadecimales.
+- [ ] Puedo leer `0x2A` como `00101010`.
+- [ ] Puedo distinguir `word` de `doubleword` en AArch64.
+
+Siguiente: [Enteros, signo y rangos](02-enteros-signo-rangos.qmd).

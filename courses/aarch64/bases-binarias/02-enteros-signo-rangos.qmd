@@ -1,0 +1,146 @@
+---
+title: "02.2 · Enteros, signo y rangos"
+subtitle: "Los bits no cambian; cambia la regla con la que los interpretas."
+description: "Enteros sin signo, enteros con signo, rangos de n bits y complemento a dos."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias > Enteros, signo y rangos
+:::
+
+::: {.hero-lab}
+Un patrón de bits no trae una etiqueta que diga "soy positivo", "soy negativo"
+o "soy texto". El programa decide cómo interpretarlo. Esta lección separa el
+patrón guardado de la lectura signed o unsigned.
+:::
+
+## Unsigned
+
+Un entero unsigned usa todos sus bits para representar magnitud no negativa.
+
+```bash
+8 bits unsigned:
+00000000 = 0
+00000001 = 1
+11111111 = 255
+```
+
+Rango general:
+
+```bash
+Unsigned n bits: 0 a 2^n - 1
+```
+
+| Tamaño | Rango unsigned |
+|---|---:|
+| 8 bits | `0` a `255` |
+| 16 bits | `0` a `65535` |
+| 32 bits | `0` a `4294967295` |
+| 64 bits | `0` a `18446744073709551615` |
+
+## Signed
+
+Un entero signed reserva interpretación para valores negativos. En los enteros
+modernos usados por AArch64 y herramientas comunes, esa representación es
+complemento a dos.
+
+Rango general:
+
+```bash
+Signed n bits: -2^(n-1) a 2^(n-1) - 1
+```
+
+| Tamaño | Rango signed |
+|---|---:|
+| 8 bits | `-128` a `127` |
+| 16 bits | `-32768` a `32767` |
+| 32 bits | `-2147483648` a `2147483647` |
+| 64 bits | `-9223372036854775808` a `9223372036854775807` |
+
+## El mismo byte, dos lecturas
+
+| Byte | Como unsigned de 8 bits | Como signed de 8 bits |
+|---|---:|---:|
+| `0x00` | `0` | `0` |
+| `0x01` | `1` | `1` |
+| `0x7F` | `127` | `127` |
+| `0x80` | `128` | `-128` |
+| `0xFF` | `255` | `-1` |
+
+::: {.callout-note title="Idea clave"}
+`0xFF` no cambia. Lo que cambia es la interpretación: unsigned de 8 bits lo
+lee como `255`; signed de 8 bits lo lee como `-1`.
+:::
+
+## Complemento a dos
+
+Para obtener el negativo de un valor en complemento a dos:
+
+1. Escribe el valor positivo.
+2. Invierte los bits.
+3. Suma 1.
+
+Ejemplo con 8 bits:
+
+```bash
++5:
+00000101
+
+invertir bits:
+11111010
+
+sumar 1:
+11111011
+
+-5:
+11111011
+```
+
+Valores frecuentes:
+
+```bash
++1 = 00000001
+-1 = 11111111
++5 = 00000101
+-5 = 11111011
+```
+
+## Relación con AArch64
+
+AArch64 no necesita registros separados para signed y unsigned. El mismo `w0`
+puede contener un patrón que una instrucción futura trate como unsigned o signed.
+
+```asm
+mov w0, #0xFF
+```
+
+| Patrón en `w0` | Si se mira como unsigned | Si se mira como signed de 8 bits |
+|---|---:|---:|
+| `0x000000FF` | `255` | depende del tamaño que se interprete |
+
+La parte importante es el tamaño. `0xFF` como 8 bits signed es `-1`; como 32
+bits signed es `255`, porque el bit de signo de 32 bits no está encendido.
+
+## Error común
+
+::: {.callout-warning title="El signo depende del tamaño"}
+No digas "`0xFF` es negativo" sin decir tamaño. `0xFF` como signed de 8 bits es
+`-1`; `0x000000FF` como signed de 32 bits es `255`.
+:::
+
+## Mini ejercicios
+
+1. Interpreta `0x80` como unsigned de 8 bits.
+2. Interpreta `0x80` como signed de 8 bits.
+3. Calcula el rango signed de 4 bits.
+4. Obtén `-3` en complemento a dos de 8 bits.
+
+## Checklist
+
+- [ ] Puedo escribir el rango unsigned de n bits.
+- [ ] Puedo escribir el rango signed de n bits.
+- [ ] Puedo explicar por qué `0xFF` puede ser `255` o `-1`.
+- [ ] Puedo construir un negativo pequeño con complemento a dos.
+- [ ] Puedo explicar por qué el tamaño cambia la interpretación.
+
+Siguiente: [Overflow y extensiones](03-overflow-extensiones.qmd).

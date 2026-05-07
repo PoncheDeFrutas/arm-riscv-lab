@@ -1,0 +1,138 @@
+---
+title: "02.4 · Bytes y texto: ASCII y UTF-8 básico"
+subtitle: "Texto también son bytes, pero no todos los caracteres ocupan un byte."
+description: "ASCII, UTF-8 básico y diferencia entre número, carácter, byte y código."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Bases binarias > Bytes y texto
+:::
+
+::: {.hero-lab}
+Cuando un programa imprime texto, en memoria no guarda letras como ideas
+abstractas. Guarda bytes. Esta lección muestra cómo interpretar bytes como texto
+sin perder de vista que siguen siendo datos binarios.
+:::
+
+## ASCII básico
+
+ASCII asigna valores numéricos a caracteres comunes. En ASCII básico, cada
+carácter ocupa un byte.
+
+| Carácter | Byte hexadecimal | Decimal |
+|---|---:|---:|
+| `A` | `0x41` | `65` |
+| `B` | `0x42` | `66` |
+| `C` | `0x43` | `67` |
+| `a` | `0x61` | `97` |
+| `0` | `0x30` | `48` |
+| nueva línea | `0x0A` | `10` |
+
+```asm
+.section .data
+msg:
+    .byte 0x41, 0x42, 0x43, 0x0A
+```
+
+Los bytes anteriores pueden leerse como:
+
+```bash
+ABC
+```
+
+porque `0x41`, `0x42`, `0x43` y `0x0A` corresponden a `A`, `B`, `C` y nueva
+línea.
+
+## Número 0, carácter 0 y byte 0x30
+
+No son la misma idea.
+
+| Escritura | Qué significa |
+|---|---|
+| `0` | número cero |
+| `'0'` | carácter cero |
+| `0x30` | byte ASCII que representa el carácter `'0'` |
+
+```asm
+.section .data
+numero_cero:
+    .byte 0x00
+
+caracter_cero:
+    .byte 0x30
+```
+
+::: {.callout-warning title="Error común"}
+El número `0` no es el mismo byte que el carácter `'0'`. El carácter `'0'` se
+guarda como `0x30` en ASCII.
+:::
+
+## Ver bytes con herramientas
+
+Estos comandos ayudan a observar bytes. Son útiles porque conectan texto con
+memoria visible.
+
+```bash
+printf 'ABC\n' | xxd
+printf 'ABC\n' | hexdump -C
+printf 'A' | xxd
+printf 'a' | xxd
+printf '0' | xxd
+```
+
+La idea no es aprender `xxd` a fondo. La idea es notar que una herramienta puede
+mostrar los bytes de un texto.
+
+## UTF-8 básico
+
+UTF-8 también representa texto como bytes, pero no todos los caracteres ocupan
+un byte.
+
+```bash
+printf 'á' | xxd
+printf '€' | xxd
+```
+
+En UTF-8:
+
+| Carácter | Bytes frecuentes |
+|---|---|
+| `A` | `41` |
+| `á` | `c3 a1` |
+| `€` | `e2 82 ac` |
+
+No necesitas memorizar estas tablas. Solo debes recordar que un carácter puede
+ocupar más de un byte.
+
+## Relación con AArch64
+
+Assembly no impide que pongas bytes de texto directamente en `.data`.
+
+```asm
+.section .data
+ascii:
+    .ascii "ABC\n"
+
+bytes:
+    .byte 0x41, 0x42, 0x43, 0x0A
+```
+
+Ambas formas pueden producir los mismos bytes. La diferencia es cómo lo escribes
+en el archivo fuente.
+
+## Mini ejercicios
+
+1. Explica qué byte representa el carácter `A`.
+2. Explica qué diferencia hay entre `0x00` y `0x30`.
+3. Escribe `ABC` usando `.byte`.
+4. Explica por qué `á` no debe asumirse como un solo byte en UTF-8.
+
+## Checklist
+
+- [ ] Puedo explicar ASCII como tabla de bytes.
+- [ ] Puedo distinguir número `0` de carácter `'0'`.
+- [ ] Puedo leer `0x41 0x42 0x43` como `ABC`.
+- [ ] Sé que UTF-8 puede usar varios bytes por carácter.
+- [ ] Puedo conectar `.ascii` y `.byte` con memoria.
+
+Siguiente: [Endianness y alineación](05-endianness-alineacion.qmd).
