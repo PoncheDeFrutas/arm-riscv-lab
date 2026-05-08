@@ -1,0 +1,155 @@
+---
+title: "15.5 · Assembly llamado desde C"
+subtitle: "C puede llamar una función assembly si el símbolo, el prototipo y la ABI coinciden."
+description: "Funciones assembly exportadas, prototipos extern, .global, .type, .size y GCC."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > Assembly desde C
+:::
+
+::: {.hero-lab}
+Este es el primer caso de interoperabilidad real: C prepara argumentos, ejecuta
+una llamada y recibe el resultado desde una función escrita en GNU Assembly.
+:::
+
+## Contrato mínimo
+
+Para que C llame assembly, hacen falta tres piezas:
+
+```bash
+C
+  declara prototipo extern
+
+assembly
+  exporta símbolo global
+
+ABI
+  ambos usan x0-x7 y retorno en x0
+```
+
+Archivo `sumar.s`:
+
+```asm
+.global sumar
+.type sumar, %function
+
+sumar:
+    add x0, x0, x1
+    ret
+
+.size sumar, . - sumar
+```
+
+Archivo `main.c`:
+
+```c
+#include <stdio.h>
+
+extern long sumar(long a, long b);
+
+int main(void) {
+    long r = sumar(2, 3);
+    printf("resultado = %ld\n", r);
+    return r == 5 ? 0 : 1;
+}
+```
+
+## Lectura del flujo
+
+```bash
+main llama sumar(2, 3)
+  C coloca 2 en x0
+  C coloca 3 en x1
+  bl sumar
+
+sumar
+  add x0, x0, x1
+  ret
+
+main
+  lee retorno desde x0
+```
+
+La función assembly no sabe que fue llamada por C. Solo ve registros. C no sabe
+cómo está escrita la función. Solo confía en la ABI.
+
+## Compilar con GCC
+
+```bash
+$ aarch64-linux-gnu-gcc main.c sumar.s -o app
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu ./app
+resultado = 5
+$ echo $?
+0
+```
+
+Práctica completa:
+
+```bash
+$ cd lessons/aarch64/15-abi-aapcs64/00-sumar-desde-c/src
+$ make
+$ make run
+resultado = 5
+$ echo $?
+0
+```
+
+## Por qué usar `.type` y `.size`
+
+`.global` hace visible el símbolo para el linker.
+
+`.type` marca el símbolo como función. `.size` marca su tamaño. El programa
+puede enlazar sin ellas en casos simples, pero ayudan a herramientas como GDB,
+objdump y diagnósticos.
+
+```asm
+.type sumar, %function
+.size sumar, . - sumar
+```
+
+En esta unidad conviene escribirlas siempre en funciones exportadas.
+
+## Prototipo C
+
+El prototipo debe coincidir con lo que hace la función:
+
+```c
+extern long sumar(long a, long b);
+```
+
+Si C cree que la función recibe dos `long`, pondrá argumentos como dos enteros
+de 64 bits. Si assembly interpreta otra cosa, el error no lo detecta el
+procesador.
+
+## Objetos separados
+
+También puede compilarse en pasos:
+
+```bash
+$ aarch64-linux-gnu-gcc -c main.c -o main.o
+$ aarch64-linux-gnu-gcc -c sumar.s -o sumar.o
+$ aarch64-linux-gnu-gcc main.o sumar.o -o app
+```
+
+Usa `gcc` para el enlace final porque el programa usa `printf` y runtime de C.
+
+## Errores comunes
+
+- Olvidar `.global sumar`.
+- Escribir un prototipo C que no coincide.
+- Retornar en `x1`.
+- Destruir `x19` dentro de la función assembly.
+- Enlazar con `ld` directo aunque el programa usa `printf`.
+- Creer que `.type` y `.size` son instrucciones.
+
+## Checklist
+
+- [ ] Puedo escribir una función assembly exportada.
+- [ ] Puedo declarar `extern` en C.
+- [ ] Puedo explicar cómo C pasa argumentos.
+- [ ] Puedo compilar `.c` y `.s` juntos con GCC.
+- [ ] Puedo explicar por qué el retorno está en `x0`.
+
+Siguiente: [C desde assembly y printf](06-c-desde-assembly-printf.qmd).
+

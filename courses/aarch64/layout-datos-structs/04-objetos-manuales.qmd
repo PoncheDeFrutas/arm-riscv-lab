@@ -1,0 +1,253 @@
+---
+title: "14.4 · Objetos manuales"
+subtitle: "Constructor, destructor, métodos y self pointer sin runtime."
+description: "Objetos manuales como bloques de memoria con funciones y self en x0."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > Objetos manuales
+:::
+
+::: {.hero-lab}
+Un objeto manual es un bloque de memoria con layout conocido y funciones que lo
+manipulan. `self` no es palabra especial: es un puntero, normalmente en `x0`.
+:::
+
+## Objeto como bloque
+
+```bash
+objeto Buffer
+  data
+  len
+  cap
+```
+
+En memoria:
+
+```bash
+self + 0   data
+self + 8   len
+self + 16  cap
+```
+
+La palabra `self` solo significa “puntero al objeto actual”.
+
+## Objeto no es clase
+
+En esta unidad, “objeto” no significa C++ ni Java. Significa:
+
+```bash
+memoria con layout
+funciones que operan sobre esa memoria
+reglas de ownership
+```
+
+No hay runtime que busque métodos. No hay constructor automático. No hay
+destructor automático. Si quieres esas ideas, las escribes como funciones y las
+llamas en el orden correcto.
+
+## `self` en `x0`
+
+Convención:
+
+```bash
+x0 = self
+x1 = argumento 1
+x2 = argumento 2
+...
+```
+
+Ejemplo:
+
+```asm
+// x0 = self
+// w1 = byte
+bl buffer_push_byte
+```
+
+Dentro de `buffer_push_byte`, `x0` se usa como base para offsets. Si la función
+llama a otra función que sobrescribe `x0`, debe guardar `self` en otro registro
+o en stack.
+
+Lectura mental:
+
+```bash
+buffer_push_byte(self, byte)
+  self llega en x0
+  byte llega en w1
+  campos se acceden como [x0 + offset]
+```
+
+`self` no vive protegido. Como `x0` también es registro de retorno, cualquier
+llamada interna puede cambiarlo.
+
+## Constructor manual
+
+Constructor no crea magia. Inicializa campos para dejar objeto válido.
+
+```asm
+// x0 = self, puntero a Buffer
+// x1 = data
+// x2 = cap
+buffer_init:
+    str x1, [x0, #BUF_DATA]
+    str xzr, [x0, #BUF_LEN]
+    str x2, [x0, #BUF_CAP]
+    ret
+```
+
+Después de `buffer_init`:
+
+```bash
+data = puntero recibido
+len  = 0
+cap  = capacidad recibida
+```
+
+Si el constructor olvida un campo, el objeto arranca con basura o estado viejo.
+
+## Constructor deja estado válido
+
+Constructor no solo “llena campos”. Debe dejar invariantes listas:
+
+| Campo | Valor inicial | Razón |
+|---|---|---|
+| `data` | puntero recibido | bloque donde escribir |
+| `len` | `0` | nada usado todavía |
+| `cap` | capacidad recibida | límite para validar |
+
+Si `len` no arranca en cero, `push_byte` puede escribir más adelante de lo
+esperado. Si `cap` queda sin inicializar, comparación de límites no significa
+nada.
+
+## Destructor manual
+
+Destructor libera recursos asociados o deja estado cerrado. Si el objeto solo
+apunta a memoria estática, quizá no libera memoria. Si posee región `mmap`, debe
+llamar `munmap`. Si posee fd, debe llamar `close`.
+
+Destructor conceptual:
+
+```bash
+buffer_destroy
+  si buffer posee data dinámica:
+    liberar data
+  len = 0
+  cap = 0
+  data = 0
+```
+
+No implementamos allocator completo aquí. Lo importante es saber qué recurso
+pertenece al objeto y quién lo libera.
+
+## Destructor depende de ownership
+
+No todo puntero dentro de un objeto debe liberarse. Pregunta:
+
+```bash
+¿este objeto posee el recurso?
+```
+
+| Caso | Destructor |
+|---|---|
+| `data` apunta a `.bss` global | normalmente no libera `data` |
+| `data` vino de `mmap` y objeto es dueño | llama `munmap` |
+| `fd` fue abierto por wrapper | llama `close` |
+| puntero prestado por otro objeto | no libera, solo olvida |
+
+Destructor correcto necesita ownership claro. Sin eso, aparecen leaks o double
+free.
+
+## Método manual
+
+Método manual = función normal + convención de `self`.
+
+```asm
+// x0 = self, puntero a Buffer
+buffer_clear:
+    str xzr, [x0, #BUF_LEN]
+    ret
+```
+
+`buffer_clear` no borra bytes del bloque. Cambia el estado lógico: ya no hay
+bytes usados. Capacidad y puntero siguen iguales.
+
+## Ciclo de vida
+
+```bash
+reservar memoria para objeto
+constructor inicializa campos
+operaciones usan self
+destructor libera recursos asociados
+memoria del objeto deja de usarse o se reutiliza
+```
+
+Separar memoria del objeto y recursos internos evita confusión. Un descriptor
+puede vivir en `.data`, pero su campo `data` puede apuntar a bloque dinámico.
+
+## Función no hoja y `self`
+
+Si un método llama otra función:
+
+```asm
+buffer_method:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    // si necesitas conservar self, guárdalo antes de otra llamada
+    mov x19, x0
+    bl helper
+
+    // x0 pudo cambiar; x19 conserva self
+    str xzr, [x19, #BUF_LEN]
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+Esto conecta con Unidad 11: `x0` es argumento y retorno. No lo trates como
+puntero eterno.
+
+## Cuándo usar stack
+
+En métodos pequeños, puedes guardar `self` en `x19` como ejemplo didáctico. Si
+la función necesita preservar varios valores o cumplir ABI futura, usará stack
+frame y guardará registros.
+
+```bash
+método hoja simple
+  puede usar x0 directo
+
+método que llama helper
+  guardar self antes de bl
+
+método grande
+  usar prólogo/epílogo y stack
+```
+
+La idea no es memorizar todos los registros ahora. Es reconocer que `self` es
+solo un valor en un registro y puede perderse.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| creer que método es especial | pierdes modelo real |
+| no inicializar todos los campos | estado inválido |
+| destructor no libera recurso | leak |
+| destructor libera recurso ajeno | double free o cierre incorrecto |
+| perder `self` tras llamada interna | escribes en dirección equivocada |
+| confundir descriptor y bloque apuntado | limpias lo incorrecto |
+
+## Mini ejercicios
+
+1. ¿Qué significa `self` en esta unidad?
+2. ¿Por qué `buffer_init` escribe `len = 0`?
+3. ¿Qué debe hacer un destructor?
+4. ¿Por qué `buffer_clear` no necesita borrar todos los bytes?
+5. ¿Por qué conviene guardar `self` si llamas otra función?
+
+## Cierre
+
+Objetos manuales no agregan instrucciones nuevas. Agregan disciplina: layout,
+constructor, operaciones, destructor y manejo correcto de `self`.

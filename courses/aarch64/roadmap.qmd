@@ -67,8 +67,8 @@ seguridad, virtualización y proyectos.
 <div class="unit-card"><strong><a href="stack-funciones-frames/index.qmd">11. Stack, funciones y stack frames</a></strong><p>Caller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.</p></div>
 <div class="unit-card"><strong><a href="heap-memoria-dinamica/index.qmd">12. Heap y memoria dinámica</a></strong><p>Stack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.</p></div>
 <div class="unit-card"><strong><a href="mmap-paginas-permisos/index.qmd">13. mmap, munmap, mprotect, páginas y permisos</a></strong><p>Memoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.</p></div>
-<div class="unit-card"><strong>14. Layout de datos, structs, ADTs y objetos manuales</strong><p>Offsets, size, alignment, padding, invariantes, self pointer y descriptores propios.</p></div>
-<div class="unit-card"><strong>15. ABI, AAPCS64 e interoperabilidad con C</strong><p>Calling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.</p></div>
+<div class="unit-card"><strong><a href="layout-datos-structs/index.qmd">14. Layout de datos, structs, ADTs y objetos manuales</a></strong><p>Offsets, size, alignment, padding, invariantes, self pointer y descriptores propios.</p></div>
+<div class="unit-card"><strong><a href="abi-aapcs64-c/index.qmd">15. ABI, AAPCS64 e interoperabilidad con C</a></strong><p>Calling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.</p></div>
 <div class="unit-card"><strong>16. ELF, linking, loading y binarios</strong><p>Objetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT y GOT.</p></div>
 <div class="unit-card"><strong>17. Debugging con GDB, QEMU y strace</strong><p>Breakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.</p></div>
 </div>

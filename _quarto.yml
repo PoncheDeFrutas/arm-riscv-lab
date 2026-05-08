@@ -282,6 +282,44 @@ website:
                   href: courses/aarch64/mmap-paginas-permisos/06-errores-y-diagnostico.qmd
                 - text: "Programa guiado"
                   href: courses/aarch64/mmap-paginas-permisos/07-programa-guiado.qmd
+            - section: "14 · Layout de datos y structs"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/layout-datos-structs/index.qmd
+                - text: "Structs y layout"
+                  href: courses/aarch64/layout-datos-structs/01-structs-layout.qmd
+                - text: "Acceso a campos"
+                  href: courses/aarch64/layout-datos-structs/02-acceso-campos-punteros.qmd
+                - text: "ADTs e invariantes"
+                  href: courses/aarch64/layout-datos-structs/03-adts-invariantes.qmd
+                - text: "Objetos manuales"
+                  href: courses/aarch64/layout-datos-structs/04-objetos-manuales.qmd
+                - text: "Descriptores"
+                  href: courses/aarch64/layout-datos-structs/05-descriptores.qmd
+                - text: "Buffer, String y Matrix"
+                  href: courses/aarch64/layout-datos-structs/06-buffer-string-matrix.qmd
+                - text: "File wrapper y arena"
+                  href: courses/aarch64/layout-datos-structs/07-file-wrapper-arena.qmd
+                - text: "Lectura guiada"
+                  href: courses/aarch64/layout-datos-structs/08-lectura-guiada.qmd
+            - section: "15 · ABI, AAPCS64 e interoperabilidad con C"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/abi-aapcs64-c/index.qmd
+                - text: "ABI, AAPCS64 y registros"
+                  href: courses/aarch64/abi-aapcs64-c/01-abi-aapcs64-registros.qmd
+                - text: "Argumentos y retornos"
+                  href: courses/aarch64/abi-aapcs64-c/02-argumentos-retornos-stack.qmd
+                - text: "Caller y callee"
+                  href: courses/aarch64/abi-aapcs64-c/03-caller-callee-saved.qmd
+                - text: "main, _start y libc"
+                  href: courses/aarch64/abi-aapcs64-c/04-main-start-libc-runtime.qmd
+                - text: "Assembly desde C"
+                  href: courses/aarch64/abi-aapcs64-c/05-assembly-desde-c.qmd
+                - text: "C desde assembly y printf"
+                  href: courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.qmd
+                - text: "Librerías y lectura guiada"
+                  href: courses/aarch64/abi-aapcs64-c/07-librerias-y-lectura-guiada.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

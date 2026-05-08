@@ -1,0 +1,154 @@
+---
+title: "15.4 · main, _start, libc y runtime"
+subtitle: "Con libc, el programa no empieza en main desde el kernel: hay arranque antes."
+description: "Diferencia entre _start, main, runtime de C, libc, printf, scanf y errno."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > main, _start y libc
+:::
+
+::: {.hero-lab}
+Hasta ahora muchos programas entraban por `_start` y usaban syscalls directas.
+Cuando usas C y `libc`, el programa tiene más capas: runtime, `main`, funciones
+de biblioteca y salida ordenada.
+:::
+
+## `_start` en programas mínimos
+
+Cuando enlazas con `ld` directo, puedes escribir tu propia entrada:
+
+```asm
+.global _start
+
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Aquí no hay runtime de C. No hay `main`. No hay `printf`. Tú preparas registros
+y llamas al kernel.
+
+## `main` con runtime de C
+
+En un programa C normal, el kernel no salta “directamente a tu `main`” como
+primera idea útil del curso. Hay código de arranque que prepara entorno y luego
+llama `main`.
+
+```bash
+kernel carga proceso
+  runtime de C inicia
+    prepara argc, argv, entorno y libc
+      llama main
+        main retorna
+      runtime finaliza
+```
+
+Por eso, cuando usas `printf`, compilas con `gcc`:
+
+```bash
+$ aarch64-linux-gnu-gcc main.c sumar.s -o app
+```
+
+GCC no es solo “compilador C” en este flujo. También actúa como driver para
+compilar, enlazar con runtime y resolver `libc`.
+
+## `printf` no es syscall
+
+`printf` es función de biblioteca. Recibe formato y argumentos, interpreta
+texto, puede usar buffering y eventualmente termina usando servicios del
+sistema.
+
+```bash
+printf("x = %ld\n", x)
+  libc formatea
+  libc administra salida
+  libc acaba llamando al kernel cuando necesita escribir
+```
+
+No se llama así:
+
+```asm
+mov x8, #printf
+svc #0
+```
+
+Se llama así:
+
+```asm
+adrp x0, fmt
+add  x0, x0, :lo12:fmt
+mov  x1, #42
+bl printf
+```
+
+## `scanf` solo conceptual
+
+`scanf` también es función de `libc`, no syscall. Además necesita punteros donde
+guardar resultados.
+
+```c
+long x;
+scanf("%ld", &x);
+```
+
+La unidad puede mencionarlo, pero no debe convertirlo en práctica central. Para
+entrada directa ya se vio `read`. Para interoperabilidad, `printf` basta como
+primer caso variadic.
+
+## `errno` con libc
+
+En syscalls directas, viste errores como retornos negativos en `x0`.
+
+Con `libc`, muchas funciones reportan error con valor especial y guardan más
+detalle en `errno`.
+
+```bash
+syscall directa
+  x0 negativo = error visible inmediato
+
+función libc
+  retorna indicador de error
+  errno describe causa
+```
+
+No se estudiará TLS ni implementación real de `errno`. Debe quedar claro que
+`errno` pertenece al mundo de `libc`, no aparece mágicamente cuando haces
+`svc #0` a mano.
+
+## Cuándo usar `ld` y cuándo usar `gcc`
+
+| Caso | Herramienta docente |
+|---|---|
+| programa `_start` sin libc | `as` + `ld` |
+| programa con C o `printf` | `gcc` |
+| objetos separados C + assembly | `gcc -c` y `gcc` para enlazar |
+
+Regla práctica:
+
+```bash
+si aparece C o libc
+  usa gcc para enlazar
+```
+
+## Errores comunes
+
+- Creer que `main` es siempre el símbolo inicial real.
+- Usar `ld` directo para un programa con `printf`.
+- Llamar `printf` como syscall.
+- Esperar que `errno` exista en syscalls directas sin `libc`.
+- Confundir stdout `1` con retorno de `printf`.
+- Meter `scanf` demasiado pronto y confundir punteros de salida.
+
+## Checklist
+
+- [ ] Puedo explicar `_start`.
+- [ ] Puedo explicar `main`.
+- [ ] Puedo explicar qué hace el runtime de C.
+- [ ] Puedo explicar por qué `printf` no es syscall.
+- [ ] Puedo explicar cuándo usar `gcc` para enlazar.
+- [ ] Puedo ubicar `errno` en el mundo `libc`.
+
+Siguiente: [Assembly llamado desde C](05-assembly-desde-c.qmd).
+

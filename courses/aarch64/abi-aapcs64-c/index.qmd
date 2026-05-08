@@ -1,0 +1,240 @@
+---
+title: "15 · ABI, AAPCS64 e interoperabilidad con C"
+subtitle: "Calling convention formal para escribir assembly compatible con C, libc y el linker."
+description: "Página principal de la Unidad 15 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI, AAPCS64 e interoperabilidad con C
+:::
+
+::: {.hero-lab}
+Ya escribiste funciones, stack frames, syscalls y datos complejos. Ahora toca
+usar una regla compartida: qué espera una función antes de ser llamada, qué debe
+preservar y dónde deja el resultado.
+:::
+
+## Qué debe quedar claro
+
+Una ABI no es una instrucción. Es un contrato entre piezas de código.
+
+```bash
+C
+  llama funciones
+
+assembly
+  implementa funciones
+
+ABI
+  define cómo se pasan argumentos, retornos y responsabilidad de registros
+```
+
+Si C llama una función assembly, ambos lados deben estar de acuerdo. C no sabe
+qué registros elegiste por gusto. C espera AAPCS64.
+
+## Problema que resuelve
+
+Sin calling convention formal, cada función tendría que explicar su propio
+formato de llamada:
+
+```bash
+función A
+  argumento en x0
+  resultado en x0
+
+función B
+  argumento en x5
+  resultado en x2
+
+función C
+  destruye x19 sin avisar
+```
+
+Eso no escala. AAPCS64 evita ese caos. Define una base común para que código C,
+assembly, `libc`, objetos `.o` y librerías puedan trabajar juntos.
+
+## Mapa mental de una llamada
+
+```bash
+caller
+  coloca argumentos en x0-x7
+  guarda temporales si los necesita
+  ejecuta bl
+
+callee
+  recibe argumentos
+  preserva registros callee-saved si los usa
+  deja resultado en x0
+  ejecuta ret
+```
+
+La unidad no busca memorizar una tabla aislada. Busca que puedas leer una
+función y responder:
+
+```bash
+¿quién puso este valor aquí?
+¿quién debe conservar este registro?
+¿qué valor verá el caller al regresar?
+```
+
+## Tabla mínima de registros generales
+
+| Registro | Rol AAPCS64 inicial |
+|---|---|
+| `x0`-`x7` | argumentos y valores de retorno |
+| `x8` | indirect result location / uso especial según contexto |
+| `x9`-`x15` | temporales caller-saved |
+| `x16`-`x17` | intra-procedure-call temporaries |
+| `x18` | platform register, tratar con cuidado |
+| `x19`-`x28` | callee-saved |
+| `x29` | frame pointer |
+| `x30` | link register |
+| `sp` | stack pointer, alineado a 16 bytes |
+
+## Tabla mínima de floating/SIMD
+
+| Registro | Rol inicial |
+|---|---|
+| `v0`-`v7` | argumentos y retornos floating/SIMD |
+| `v8`-`v15` | preservación parcial según AAPCS64 |
+| `v16`-`v31` | temporales |
+
+## Caller-saved y callee-saved
+
+| Concepto | Responsable | Idea |
+|---|---|---|
+| caller-saved | caller | si necesita el valor después de llamar, lo guarda |
+| callee-saved | callee | si usa el registro, debe restaurarlo antes de retornar |
+
+Esta tabla es pequeña, pero cambia cómo escribes funciones. Antes podías usar
+registros como espacio temporal local. Ahora debes pensar quién confía en ellos.
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 03: registros `x0`-`x30`, `v0`-`v31`, `sp` | Leer el mapa formal AAPCS64 |
+| Unidad 04: `.global`, `.type`, `.size` | Exportar símbolos para C y linker |
+| Unidad 08: `bl` y `ret` | Convertir llamada en contrato |
+| Unidad 11: stack frames, `x29`, `x30`, alineación | Escribir funciones correctas |
+| Unidad 14: structs y punteros | Pasar datos complejos entre C y assembly |
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### ABI, AAPCS64 y registros
+
+Contrato de llamada, registros generales, SIMD/floating y diferencia con
+instrucciones sueltas.
+
+[Abrir](01-abi-aapcs64-registros.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Argumentos, retornos y stack
+
+`x0`-`x7`, retorno en `x0`, punteros, structs, argumentos por stack y
+alineación de `sp`.
+
+[Abrir](02-argumentos-retornos-stack.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Caller y callee
+
+Registros caller-saved, callee-saved, preservación de `x19` y prólogo correcto.
+
+[Abrir](03-caller-callee-saved.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `main`, `_start` y libc
+
+Runtime de C, `printf`, `errno` y diferencia entre syscall directa y función de
+biblioteca.
+
+[Abrir](04-main-start-libc-runtime.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Assembly desde C
+
+Funciones assembly llamables desde C, prototipos `extern` y compilación mixta
+con GCC.
+
+[Abrir](05-assembly-desde-c.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### C desde assembly
+
+Assembly que llama C, `printf`, funciones variadic y alineación antes de `bl`.
+
+[Abrir](06-c-desde-assembly-printf.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Librerías y lectura guiada
+
+Static library, shared library y programa integrado C + assembly.
+
+[Abrir](07-librerias-y-lectura-guiada.qmd){.resource-action}
+:::
+:::
+
+## Programas de práctica
+
+| Caso | Ruta | Qué valida |
+|---|---|---|
+| C llama assembly | `lessons/aarch64/15-abi-aapcs64/00-sumar-desde-c/src` | argumentos en `x0`, `x1` y retorno en `x0` |
+| Preservar `x19` | `lessons/aarch64/15-abi-aapcs64/01-preservar-x19/src` | callee-saved restaurado |
+| `printf` desde assembly | `lessons/aarch64/15-abi-aapcs64/02-printf-desde-assembly/src` | `main` assembly llama `libc` |
+| C desde assembly | `lessons/aarch64/15-abi-aapcs64/03-c-desde-assembly/src` | `bl funcion_c` desde assembly |
+| Argumentos por stack | `lessons/aarch64/15-abi-aapcs64/04-argumentos-stack/src` | noveno argumento fuera de `x0`-`x7` |
+| Librería estática | `lessons/aarch64/15-abi-aapcs64/05-libreria-estatica/src` | `.a` con función assembly |
+| Librería compartida | `lessons/aarch64/15-abi-aapcs64/06-libreria-compartida/src` | `.so` con función assembly |
+
+Flujo común:
+
+```bash
+$ cd lessons/aarch64/15-abi-aapcs64/00-sumar-desde-c/src
+$ make
+$ make run
+$ echo $?
+0
+```
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+slides/aarch64/abi-aapcs64-c/overview/slides.md
+```
+
+Esa presentación debe visualizar mapa de registros, caller/callee, `main` vs
+`_start`, C llamando assembly, assembly llamando `printf` y librerías. No debe
+reemplazar estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar qué problema resuelve una ABI.
+- [ ] Puedo explicar qué es AAPCS64.
+- [ ] Puedo distinguir calling convention de syscall convention.
+- [ ] Puedo pasar argumentos enteros y punteros en `x0`-`x7`.
+- [ ] Puedo retornar enteros y punteros en `x0`.
+- [ ] Puedo explicar caller-saved y callee-saved.
+- [ ] Puedo preservar `x19`-`x28` si los uso.
+- [ ] Puedo mantener `sp` alineado a 16 bytes.
+- [ ] Puedo escribir assembly llamable desde C.
+- [ ] Puedo llamar C desde assembly.
+- [ ] Puedo llamar `printf` desde assembly con GCC.
+- [ ] Puedo explicar `main` vs `_start`.
+- [ ] Puedo distinguir librería estática y compartida.
+
+## Siguiente paso
+
+Empieza por [ABI, AAPCS64 y registros](01-abi-aapcs64-registros.qmd).
+

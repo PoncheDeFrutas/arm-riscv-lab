@@ -1,0 +1,168 @@
+---
+title: "15.7 · Librerías y lectura guiada"
+subtitle: "Una función assembly ABI-correcta puede vivir en objetos, librerías estáticas o compartidas."
+description: "Static library, shared library, linking básico y lectura guiada C + assembly."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > Librerías
+:::
+
+::: {.hero-lab}
+Cuando una función assembly respeta ABI, puede dejar de ser un ejemplo aislado.
+Puede convertirse en objeto reutilizable, librería estática o librería
+compartida.
+:::
+
+## Del archivo fuente al ejecutable
+
+```bash
+sumar.s
+  -> sumar.o
+    -> app
+```
+
+Con C:
+
+```bash
+main.c + sumar.s
+  -> main.o + sumar.o
+    -> app con runtime de C y libc
+```
+
+GCC puede manejar este flujo:
+
+```bash
+$ aarch64-linux-gnu-gcc main.c sumar.s -o app
+```
+
+## Librería estática
+
+Una librería estática agrupa objetos. El linker copia al ejecutable el código
+necesario.
+
+```bash
+mul.s -> mul.o -> libu15.a
+main.c + libu15.a -> app
+```
+
+Práctica:
+
+```bash
+$ cd lessons/aarch64/15-abi-aapcs64/05-libreria-estatica/src
+$ make
+$ make run
+mul = 42
+$ echo $?
+0
+```
+
+Idea mental:
+
+```bash
+.a
+  paquete de objetos
+  se resuelve al enlazar
+```
+
+## Librería compartida
+
+Una librería compartida queda como archivo `.so`. El ejecutable puede cargarla
+en tiempo de ejecución.
+
+```bash
+triple.s -> triple.o -> libu15shared.so
+main.c + libu15shared.so -> app
+```
+
+Práctica:
+
+```bash
+$ cd lessons/aarch64/15-abi-aapcs64/06-libreria-compartida/src
+$ make
+$ make run
+triple = 21
+$ echo $?
+0
+```
+
+Esta unidad no entra en GOT, PLT ni dynamic linker en profundidad. Solo muestra
+que el mismo contrato ABI permite empaquetar funciones.
+
+## Lectura guiada: C + assembly + printf
+
+Programa:
+
+```c
+#include <stdio.h>
+
+extern long sumar(long a, long b);
+
+int main(void) {
+    long r = sumar(2, 3);
+    printf("resultado = %ld\n", r);
+    return r == 5 ? 0 : 1;
+}
+```
+
+Función assembly:
+
+```asm
+.global sumar
+.type sumar, %function
+
+sumar:
+    add x0, x0, x1
+    ret
+
+.size sumar, . - sumar
+```
+
+Lectura paso a paso:
+
+```bash
+main prepara llamada
+  x0 = 2
+  x1 = 3
+
+sumar calcula
+  x0 = x0 + x1
+  ret
+
+main llama printf
+  x0 = formato
+  x1 = resultado
+```
+
+El estudiante debe poder explicar este programa sin ver C como magia ni
+assembly como bloque separado. Ambos lados hablan por ABI.
+
+## Qué queda para unidad posterior
+
+| Tema | Por qué queda fuera |
+|---|---|
+| ELF completo | Requiere símbolos, secciones y relocations con más detalle |
+| GOT/PLT | Pertenece a linking dinámico profundo |
+| Loader dinámico | Se estudiará con binarios |
+| C++ ABI | Tiene name mangling, vtables y reglas extra |
+| DWARF/unwinding | Pertenece a debugging avanzado |
+
+## Errores comunes
+
+- Creer que `.a` y `.so` son iguales.
+- Creer que una librería compartida copia todo al ejecutable.
+- Crear una función assembly en librería sin `.global`.
+- Romper ABI dentro de una librería y culpar al linker.
+- Esperar que `ld` directo resuelva runtime y `libc` sin configuración.
+- Meter GOT/PLT demasiado pronto.
+
+## Checklist
+
+- [ ] Puedo explicar qué es una librería estática.
+- [ ] Puedo explicar qué es una librería compartida.
+- [ ] Puedo compilar una función assembly dentro de una librería.
+- [ ] Puedo explicar por qué la ABI sigue importando dentro de librerías.
+- [ ] Puedo leer un programa C + assembly + `printf`.
+
+Fin de unidad. Siguiente tema natural: ELF, linking, loading y binarios.
+

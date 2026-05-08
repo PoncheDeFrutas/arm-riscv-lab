@@ -187,6 +187,8 @@ AArch64 antes de entrar en programas más grandes.
 - [11 · Stack, funciones y stack frames](stack-funciones-frames/index.qmd)
 - [12 · Heap y memoria dinámica](heap-memoria-dinamica/index.qmd)
 - [13 · mmap, munmap, mprotect, páginas y permisos](mmap-paginas-permisos/index.qmd)
+- [14 · Layout de datos, structs, ADTs y objetos manuales](layout-datos-structs/index.qmd)
+- [15 · ABI, AAPCS64 e interoperabilidad con C](abi-aapcs64-c/index.qmd)
 :::
 
 ## Siguiente paso

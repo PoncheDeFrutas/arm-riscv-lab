@@ -1,0 +1,237 @@
+---
+title: "14.3 · ADTs e invariantes"
+subtitle: "Un ADT junta layout, operaciones y reglas que deben cumplirse."
+description: "Tipos abstractos de datos manuales, invariantes y funciones que reciben puntero."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > ADTs e invariantes
+:::
+
+::: {.hero-lab}
+Un ADT no es solo un struct. Es un diseño completo: datos, operaciones permitidas
+y reglas que siempre deben cumplirse.
+:::
+
+## Por qué aparece el ADT
+
+Un layout dice dónde están los campos, pero no dice cómo deben cambiar. Puedes
+tener un `Buffer` con `data`, `len` y `cap`, y aun así romperlo con una sola
+escritura incorrecta:
+
+```asm
+mov x1, #999
+str x1, [x0, #BUF_LEN]
+```
+
+Si `cap` era `128`, el layout sigue “correcto”, pero el estado está roto. El ADT
+agrega reglas sobre esos campos.
+
+```bash
+layout
+  dónde están campos
+
+ADT
+  dónde están campos
+  quién puede cambiarlos
+  qué estados son válidos
+```
+
+## De struct a ADT
+
+Un struct responde:
+
+```bash
+¿dónde está cada campo?
+```
+
+Un ADT responde:
+
+```bash
+¿qué operaciones son válidas?
+¿qué reglas protegen el estado?
+¿qué significa que el dato esté bien formado?
+```
+
+Tabla mínima:
+
+| Parte | Significado |
+|---|---|
+| Datos | layout de memoria del objeto |
+| Operaciones | funciones que reciben puntero al objeto |
+| Invariantes | reglas que siempre deben cumplirse |
+
+## Ejemplo: Buffer
+
+Layout:
+
+```asm
+.equ BUF_DATA, 0
+.equ BUF_LEN,  8
+.equ BUF_CAP,  16
+.equ BUF_SIZE, 24
+```
+
+Significado:
+
+| Campo | Qué representa |
+|---|---|
+| `data` | puntero al bloque de bytes |
+| `len` | bytes usados |
+| `cap` | bytes reservados |
+
+Invariantes:
+
+```bash
+0 <= len <= cap
+data apunta a bloque válido si cap > 0
+push solo escribe si len < cap
+```
+
+## Estado válido y estado roto
+
+| Estado | ¿Válido? | Motivo |
+|---|---|---|
+| `data = storage`, `len = 0`, `cap = 128` | sí | buffer vacío con capacidad |
+| `data = storage`, `len = 12`, `cap = 128` | sí | uso dentro de límite |
+| `data = storage`, `len = 129`, `cap = 128` | no | uso supera capacidad |
+| `data = 0`, `len = 5`, `cap = 128` | no | hay bytes usados sin bloque |
+
+El procesador no sabe cuál estado es válido. Tus funciones deben impedir estados
+rotos.
+
+## Por qué las invariantes importan
+
+Sin invariantes, cualquier función puede dejar estado roto:
+
+```bash
+len = 200
+cap = 128
+```
+
+Eso convierte el siguiente `strb` en escritura fuera del bloque. El bug puede
+aparecer lejos de la función que rompió la regla.
+
+Invariante es una promesa entre operaciones. `buffer_push_byte` puede asumir que
+`len <= cap` al entrar porque otras operaciones también respetan esa regla. Si
+una función auxiliar escribe campos sin respetarla, todo el ADT pierde sentido.
+
+## Operación `push_byte`
+
+```asm
+// x0 = puntero a Buffer
+// w1 = byte a agregar
+buffer_push_byte:
+    ldr x2, [x0, #BUF_DATA]
+    ldr x3, [x0, #BUF_LEN]
+    ldr x4, [x0, #BUF_CAP]
+
+    cmp x3, x4
+    b.hs buffer_full
+
+    strb w1, [x2, x3]
+    add x3, x3, #1
+    str x3, [x0, #BUF_LEN]
+
+    mov x0, #0
+    ret
+
+buffer_full:
+    mov x0, #-1
+    ret
+```
+
+Lectura:
+
+| Paso | Regla |
+|---|---|
+| leer `len` y `cap` | conocer estado |
+| `cmp x3, x4` | revisar espacio |
+| `b.hs buffer_full` | no escribir si lleno |
+| `strb` | escribir un byte |
+| actualizar `len` | preservar invariante |
+
+## Funciones que reciben puntero
+
+Un ADT manual usa funciones normales. La convención recomendada:
+
+```bash
+x0 = puntero al objeto
+x1, x2, ... = argumentos extra
+x0 = retorno
+```
+
+Eso se parece a métodos de alto nivel, pero no hay magia. La función recibe una
+dirección y opera sobre campos con offsets.
+
+## Invariante antes y después
+
+Cada operación debe leerse así:
+
+```bash
+precondición
+  objeto tiene estado válido
+
+operación
+  revisa límites
+  modifica campos
+
+postcondición
+  objeto sigue válido
+```
+
+Para `buffer_push_byte`:
+
+```bash
+antes: len <= cap
+si len < cap:
+  escribe byte
+  len = len + 1
+después: len <= cap
+```
+
+## Operaciones públicas y acceso directo
+
+En un lenguaje de alto nivel, podrías ocultar campos. En assembly no hay
+privacidad automática. Cualquier parte del programa puede hacer:
+
+```asm
+str x1, [x0, #BUF_LEN]
+```
+
+La disciplina del ADT dice: modifica campos mediante operaciones acordadas
+cuando el cambio afecte invariantes.
+
+```bash
+bien:
+  buffer_push_byte actualiza bytes y len juntos
+
+riesgoso:
+  función externa cambia len sin escribir datos
+```
+
+No es que “no se pueda” escribir directo. Es que hacerlo rompe el contrato si no
+entiendes todas las reglas.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| modificar `data` sin motivo | pierdes base del bloque |
+| escribir sin revisar `len < cap` | overflow |
+| olvidar actualizar `len` | datos invisibles para operaciones futuras |
+| permitir `len > cap` | ADT queda roto |
+| saltarse operaciones públicas | invariantes se rompen desde afuera |
+
+## Mini ejercicios
+
+1. ¿Qué diferencia hay entre struct y ADT?
+2. ¿Cuál es invariante principal de `Buffer`?
+3. ¿Por qué `push_byte` revisa `len` contra `cap`?
+4. ¿Qué pasa si escribes byte pero no actualizas `len`?
+5. ¿Por qué `x0` puede servir como puntero al ADT?
+
+## Cierre
+
+Un ADT en assembly es disciplina. Layout define dónde están los datos;
+operaciones definen cómo cambiarlos; invariantes definen qué estados son válidos.

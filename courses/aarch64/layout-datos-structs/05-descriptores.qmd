@@ -1,0 +1,211 @@
+---
+title: "14.5 · Descriptores"
+subtitle: "Un descriptor resume un recurso o bloque para operar con reglas claras."
+description: "File descriptor del kernel, descriptores propios, Buffer, String, Matrix y File wrapper."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > Descriptores
+:::
+
+::: {.hero-lab}
+Descriptor significa “algo que describe”. A veces es un entero del kernel, como
+un fd. Otras veces es un struct propio con campos que describen un recurso.
+:::
+
+## Dos sentidos de descriptor
+
+| Tipo | Vive en | Ejemplo |
+|---|---|---|
+| descriptor del kernel | entero retornado por syscall | fd de `openat` |
+| descriptor propio | memoria del programa | `Buffer { data, len, cap }` |
+
+Un file descriptor no es puntero. Es un handle entero que Linux entiende. Un
+descriptor propio sí puede ser un bloque de memoria con offsets.
+
+## Descriptor como metadata
+
+Metadata es dato sobre otro dato o sobre un recurso.
+
+```bash
+storage
+  bytes reales
+
+buffer descriptor
+  data -> storage
+  len
+  cap
+```
+
+El descriptor no contiene necesariamente todos los bytes. Contiene información
+para encontrarlos y usarlos correctamente.
+
+## File descriptor del kernel
+
+```bash
+openat
+  x0 = fd o error
+
+read/write/close
+  x0 = fd
+```
+
+El fd no describe todo en tu programa. Solo identifica recurso abierto frente al
+kernel. Si quieres guardar más estado, diseñas un wrapper.
+
+Comparación:
+
+| Valor | Qué es | Quién lo entiende |
+|---|---|---|
+| `fd = 3` | handle entero | kernel |
+| `FILE_FD = 0` | offset dentro de wrapper | tu programa |
+| `file_wrapper` | struct propio | tu código |
+
+No mezcles esos niveles. `FILE_FD` no es el fd. Es offset del campo que guarda
+el fd.
+
+## Descriptor propio de buffer
+
+```asm
+.equ BUF_DATA, 0
+.equ BUF_LEN,  8
+.equ BUF_CAP,  16
+.equ BUF_SIZE, 24
+```
+
+| Campo | Descripción |
+|---|---|
+| `data` | dónde están los bytes |
+| `len` | cuántos bytes tienen datos válidos |
+| `cap` | cuántos bytes caben |
+
+El descriptor no es los datos. Describe dónde están y cuánto se usa.
+
+Ejemplo mental:
+
+```bash
+buffer_desc está en .data
+storage está en .bss
+
+buffer_desc.data contiene dirección de storage
+buffer_desc.len contiene 0
+buffer_desc.cap contiene 128
+```
+
+Leer `buffer_desc` no es leer bytes almacenados en `storage`. Primero lees
+metadata; luego usas `data` para llegar al bloque.
+
+## Descriptor de string dinámico
+
+```asm
+.equ STR_DATA, 0
+.equ STR_LEN,  8
+.equ STR_CAP,  16
+.equ STR_SIZE, 24
+```
+
+Para esta unidad, string dinámico se lee como bytes + longitud:
+
+```bash
+data -> bytes
+len  -> caracteres/bytes usados
+cap  -> capacidad
+```
+
+No asumimos terminador cero como única fuente de verdad. `len` permite saber
+cuántos bytes son parte del string.
+
+## Descriptor de matriz
+
+```asm
+.equ MAT_DATA, 0
+.equ MAT_ROWS, 8
+.equ MAT_COLS, 16
+.equ MAT_SIZE, 24
+```
+
+Invariantes:
+
+```bash
+rows > 0
+cols > 0
+data apunta a rows * cols elementos
+```
+
+Para matriz row-major con elementos de 8 bytes:
+
+```bash
+offset_elemento = (row * cols + col) * 8
+```
+
+## File wrapper
+
+```asm
+.equ FILE_FD,    0
+.equ FILE_FLAGS, 8
+.equ FILE_SIZE,  16
+```
+
+Un wrapper puede guardar fd y estado propio:
+
+```bash
+fd     entero del kernel
+flags  reglas del wrapper
+```
+
+El wrapper no reemplaza al kernel. Solo organiza cómo tu programa recuerda y
+limpia el recurso.
+
+## Descriptor no es recurso completo
+
+```bash
+Buffer descriptor
+  data -> bloque de bytes
+  len
+  cap
+
+File wrapper
+  fd -> recurso del kernel
+  flags
+```
+
+El descriptor puede vivir en un lugar y el recurso descrito en otro. Por eso el
+destructor debe saber si solo limpia descriptor o también libera recurso.
+
+## Descriptor propio como contrato
+
+Un descriptor bien diseñado responde:
+
+| Pregunta | Ejemplo Buffer |
+|---|---|
+| ¿Dónde están datos reales? | `data` |
+| ¿Cuánto está usado? | `len` |
+| ¿Cuánto cabe? | `cap` |
+| ¿Quién libera? | operación/destructor acordado |
+| ¿Qué estados son inválidos? | `len > cap`, `data = 0` con `len > 0` |
+
+Si el descriptor no responde esas preguntas, todavía no está completo.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| confundir fd con puntero | syscall recibe basura o acceso inválido |
+| confundir descriptor con datos | escribes en metadata en vez de buffer |
+| olvidar `len` | no sabes cuánto hay válido |
+| olvidar `cap` | no puedes validar límites |
+| cerrar fd pero dejar wrapper como activo | estado mentiroso |
+| liberar bloque y dejar `data` viejo | use-after-free futuro |
+
+## Mini ejercicios
+
+1. ¿Por qué fd no es puntero?
+2. ¿Qué campo apunta a bytes en un `Buffer`?
+3. ¿Qué diferencia hay entre `len` y `cap`?
+4. ¿Qué describe `Matrix` además de `data`?
+5. ¿Por qué file wrapper necesita destructor?
+
+## Cierre
+
+Descriptores hacen programas de bajo nivel más legibles. En vez de pasar cinco
+valores sueltos, guardas estado en un layout y operas con reglas.

@@ -1,0 +1,245 @@
+---
+title: "14.1 · Structs y layout manual"
+subtitle: "Un struct en assembly es una convención de offsets dentro de bytes."
+description: "Campos, offsets, tamaño, alignment y padding para structs manuales en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > Structs y layout
+:::
+
+::: {.hero-lab}
+Un struct no aparece por escribir una palabra especial. En assembly, un struct es
+un acuerdo: este bloque de bytes se interpreta con estos campos y estos offsets.
+:::
+
+## Qué problema resuelve
+
+Sin layout, solo tienes memoria:
+
+```bash
+base -> byte byte byte byte ...
+```
+
+Con layout, esos bytes tienen intención:
+
+```bash
+base + 0  -> x
+base + 8  -> y
+```
+
+El procesador no conoce nombres como `x` o `y`. Esos nombres viven en tu código,
+en tus `.equ`, en tus comentarios y en tu disciplina.
+
+## Cómo se diseña un layout
+
+Diseñar layout significa decidir cómo se verán los bytes antes de escribir
+código que los use.
+
+```bash
+1. listar campos
+2. elegir tamaño de cada campo
+3. ordenar campos
+4. asignar offset inicial
+5. insertar padding si hace falta
+6. calcular size total
+```
+
+Ejemplo con `Point`:
+
+| Paso | Decisión |
+|---|---|
+| campos | `x`, `y` |
+| tamaño | ambos son enteros de 64 bits |
+| orden | `x` primero, `y` después |
+| offset de `x` | `0` |
+| offset de `y` | `8` |
+| tamaño total | `16` |
+
+La CPU no valida esta tabla. Tú la respetas con `.equ`, `ldr` y `str`.
+
+## Struct `Point`
+
+| Campo | Offset | Tamaño | Descripción |
+|---|---:|---:|---|
+| `x` | `0` | `8` | coordenada x |
+| `y` | `8` | `8` | coordenada y |
+| `POINT_SIZE` | `16` | - | tamaño total |
+
+```asm
+.equ POINT_X, 0
+.equ POINT_Y, 8
+.equ POINT_SIZE, 16
+```
+
+Diagrama:
+
+```bash
+Point
+  byte 0..7    x
+  byte 8..15   y
+  total        16 bytes
+```
+
+## Campo, offset y size
+
+| Palabra | Lectura práctica |
+|---|---|
+| campo | dato dentro del objeto |
+| offset | distancia desde la base hasta el campo |
+| size | cantidad total de bytes ocupados por el objeto |
+
+Offset no es tamaño. `POINT_Y = 8` no significa que `y` mida 8 por estar ahí;
+significa que `y` empieza 8 bytes después de la base. En este ejemplo, además
+mide 8 porque usamos `.quad`.
+
+## Cálculo de `SIZE`
+
+Tamaño total no sale de contar campos. Sale de la posición final del último
+campo, más padding final si hace falta.
+
+```bash
+POINT_X empieza en 0, mide 8
+POINT_Y empieza en 8, mide 8
+último byte útil termina en 15
+POINT_SIZE = 16
+```
+
+Fórmula mental:
+
+```bash
+size = offset_del_ultimo_campo + tamaño_del_ultimo_campo
+```
+
+Si el objeto completo debe quedar alineado, puede hacer falta padding final.
+Eso importa cuando tienes arrays de structs: cada elemento empieza después de
+`SIZE` bytes.
+
+```bash
+array de Point
+  elemento 0: base + 0 * POINT_SIZE
+  elemento 1: base + 1 * POINT_SIZE
+  elemento 2: base + 2 * POINT_SIZE
+```
+
+## Por qué usar `.equ`
+
+Podrías escribir offsets literales:
+
+```asm
+ldr x1, [x0, #0]
+ldr x2, [x0, #8]
+```
+
+Pero eso es frágil. Con nombres:
+
+```asm
+ldr x1, [x0, #POINT_X]
+ldr x2, [x0, #POINT_Y]
+```
+
+El código dice intención. Si el layout cambia, actualizas offsets en un lugar y
+la lectura sigue clara.
+
+## Alignment
+
+Alignment significa que ciertos datos se colocan mejor en direcciones múltiplo
+de su tamaño natural. Un entero de 8 bytes suele vivir cómodamente en offset
+múltiplo de 8.
+
+| Tamaño de campo | Alignment práctico |
+|---:|---:|
+| 1 byte | 1 |
+| 2 bytes | 2 |
+| 4 bytes | 4 |
+| 8 bytes | 8 |
+
+En AArch64 muchas cargas desalineadas pueden funcionar, pero no conviene enseñar
+layout como si alignment no importara. Alignment hace el diseño más claro,
+compatible y fácil de depurar.
+
+## Padding
+
+Padding son bytes de relleno para que el siguiente campo quede alineado.
+
+Ejemplo conceptual:
+
+```bash
+struct raro
+  offset 0  flag   1 byte
+  offset 1  padding 7 bytes
+  offset 8  value  8 bytes
+```
+
+Tabla:
+
+| Campo | Offset | Tamaño | Nota |
+|---|---:|---:|---|
+| `flag` | `0` | `1` | byte |
+| padding | `1` | `7` | relleno |
+| `value` | `8` | `8` | alineado a 8 |
+| `SIZE` | `16` | - | total |
+
+Padding no es dato útil. No guardes significado ahí si no quieres crear bugs
+difíciles.
+
+## Padding final
+
+Padding también puede aparecer al final para que el siguiente objeto de un array
+empiece alineado.
+
+```bash
+struct pequeño
+  offset 0  value  8 bytes
+  offset 8  flag   1 byte
+  offset 9  padding final 7 bytes
+  size      16 bytes
+```
+
+Sin padding final, el segundo elemento de un array podría empezar en offset 9 y
+su campo de 8 bytes quedaría desalineado.
+
+## Orden de campos
+
+El orden importa. Este layout genera padding:
+
+```bash
+byte flag
+quad value
+byte mode
+```
+
+Un orden más compacto puede reducir relleno:
+
+```bash
+quad value
+byte flag
+byte mode
+padding final
+```
+
+No optimices antes de entender. Primero diseña layout correcto y fácil de leer.
+Luego puedes pensar en compactar.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| creer que struct existe automáticamente | nadie calcula offsets por ti |
+| confundir offset y tamaño | cargas desde lugar equivocado |
+| ignorar padding | campos quedan desalineados o pisados |
+| cambiar layout y no actualizar `.equ` | lecturas viejas sobre datos nuevos |
+| usar número mágico en muchos lugares | mantenimiento difícil |
+
+## Mini ejercicios
+
+1. ¿Cuál es offset de `POINT_Y`?
+2. ¿Cuánto mide `Point` completo?
+3. ¿Por qué `POINT_Y` no es “el valor de y”?
+4. ¿Qué problema resuelve `.equ`?
+5. ¿Por qué aparece padding?
+
+## Cierre
+
+Un struct manual es un contrato. Si el contrato dice `x` en offset 0 y `y` en
+offset 8, todo el código debe respetarlo.

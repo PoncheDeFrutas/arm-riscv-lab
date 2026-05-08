@@ -1,0 +1,174 @@
+---
+title: "15.1 · ABI, AAPCS64 y mapa de registros"
+subtitle: "La calling convention no agrega instrucciones: agrega reglas compartidas."
+description: "ABI, AAPCS64, registros generales, SIMD/floating y responsabilidades iniciales."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > Registros
+:::
+
+::: {.hero-lab}
+Una función assembly puede ser correcta para sí misma y mala para el resto del
+programa. La ABI define qué debe esperar el caller y qué debe respetar el
+callee.
+:::
+
+## ABI no es ISA
+
+La ISA te dice qué instrucciones existen:
+
+```asm
+add x0, x0, x1
+ret
+```
+
+La ABI te dice cómo usar esas instrucciones dentro de un programa compatible:
+
+```bash
+x0 y x1 traen argumentos
+x0 devuelve resultado
+ret usa x30
+sp debe seguir alineado
+```
+
+Esta diferencia importa porque el procesador no impedirá que rompas la ABI. El
+programa puede ensamblar y enlazar igual. El fallo aparece después: valores
+perdidos, retorno incorrecto, `printf` fallando o C recibiendo datos corruptos.
+
+## Qué es AAPCS64
+
+AAPCS64 es el Procedure Call Standard para la arquitectura Arm de 64 bits. En
+esta unidad lo usaremos como el contrato práctico para Linux AArch64 con GCC:
+
+```bash
+cómo pasar argumentos
+cómo devolver resultados
+qué registros son temporales
+qué registros debe preservar una función
+cómo debe estar alineado el stack
+```
+
+No estudiaremos todos los detalles del documento oficial. Primero necesitamos
+las reglas que hacen que C y assembly puedan llamarse bien.
+
+## Registro como responsabilidad
+
+Antes, un registro era “dónde guardo algo”. Ahora también debes preguntar:
+
+```bash
+¿este registro pertenece al caller?
+¿el callee puede destruirlo?
+¿si lo uso debo restaurarlo?
+```
+
+Ejemplo:
+
+```asm
+mov x19, x0
+```
+
+La instrucción es válida. Pero `x19` es callee-saved. Si una función modifica
+`x19`, debe devolverlo como estaba antes de retornar.
+
+## Mapa de registros generales
+
+| Registro | Rol AAPCS64 inicial | Lectura práctica |
+|---|---|---|
+| `x0`-`x7` | argumentos y valores de retorno | primeros datos que cruzan la llamada |
+| `x8` | indirect result location / uso especial según contexto | no asumir que siempre es temporal libre |
+| `x9`-`x15` | temporales caller-saved | el callee puede destruirlos |
+| `x16`-`x17` | intra-procedure-call temporaries | usados por veneers/PLT/linker en algunos casos |
+| `x18` | platform register | tratar con cuidado, no usar como temporal normal |
+| `x19`-`x28` | callee-saved | si el callee los usa, los restaura |
+| `x29` | frame pointer | base del frame cuando se usa |
+| `x30` | link register | dirección de retorno escrita por `bl` |
+| `sp` | stack pointer | debe estar alineado a 16 bytes en llamadas |
+
+## `x8` no significa lo mismo siempre
+
+En syscalls Linux AArch64, `x8` llevaba el número de syscall:
+
+```asm
+mov x8, #64
+svc #0
+```
+
+En llamadas C normales, no usas `x8` para decir “quiero llamar `printf`”. Una
+llamada C usa `bl printf`, argumentos en `x0`-`x7` y retorno en `x0`.
+
+```bash
+syscall
+  x8 = número de servicio del kernel
+
+función C
+  símbolo + bl
+  x0-x7 = argumentos
+```
+
+Esta separación evita uno de los errores más comunes de la unidad.
+
+## Mapa de floating/SIMD
+
+| Registro | Rol inicial | Lectura práctica |
+|---|---|---|
+| `v0`-`v7` | argumentos y retornos floating/SIMD | floats, doubles y algunos vectores |
+| `v8`-`v15` | preservación parcial según AAPCS64 | cuidado si se usan en funciones ABI |
+| `v16`-`v31` | temporales | caller-saved |
+
+La unidad se enfoca en enteros y punteros. Aun así, el estudiante debe saber que
+los argumentos floating no viajan por las mismas rutas que enteros simples.
+
+## Comparación rápida: syscall vs función C
+
+| Caso | Cómo se elige destino | Argumentos | Retorno |
+|---|---|---|---|
+| syscall Linux | `x8` + `svc #0` | `x0`-`x5` | `x0` |
+| función C | símbolo + `bl` | `x0`-`x7` y stack | `x0` / `v0` |
+
+`printf` no es syscall. `scanf` tampoco. Son funciones de `libc`.
+
+## Mini ejemplo mental
+
+```asm
+.global sumar
+.type sumar, %function
+
+sumar:
+    add x0, x0, x1
+    ret
+
+.size sumar, . - sumar
+```
+
+Lectura ABI:
+
+```bash
+x0 = primer argumento
+x1 = segundo argumento
+add deja resultado en x0
+ret vuelve al caller
+```
+
+La función no necesita stack porque es hoja y no usa registros callee-saved.
+
+## Errores comunes
+
+- Creer que AAPCS64 es una instrucción.
+- Creer que todos los registros son temporales libres.
+- Usar `x8` como si llamar C fuera igual que llamar syscall.
+- Tratar `x18` como registro normal.
+- Modificar `x19` sin restaurarlo.
+- Olvidar que `v0`-`v7` participan en argumentos floating/SIMD.
+
+## Checklist
+
+- [ ] Puedo separar ISA de ABI.
+- [ ] Puedo explicar qué problema resuelve AAPCS64.
+- [ ] Puedo ubicar argumentos enteros en `x0`-`x7`.
+- [ ] Puedo distinguir `x9`-`x15` de `x19`-`x28`.
+- [ ] Puedo explicar por qué `x18` se trata con cuidado.
+- [ ] Puedo diferenciar syscall convention de calling convention C.
+
+Siguiente: [Argumentos, retornos y stack](02-argumentos-retornos-stack.qmd).
+
