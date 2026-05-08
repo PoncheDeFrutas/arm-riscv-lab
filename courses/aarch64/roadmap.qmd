@@ -13,8 +13,9 @@ Este roadmap organiza la ruta AArch64 completa. No es una lista de páginas
 activas ni una obligación para estudiar todo de una vez: es el mapa de
 crecimiento del laboratorio.
 
-La publicación del contenido será progresiva. La portada del curso muestra el
-estado actual; esta página conserva la visión completa.
+Las unidades 0-15 ya existen como páginas de estudio. Las unidades 16-44 quedan
+como planificación: aparecen para orientar la ruta, pero no se enlazarán hasta
+que tengan contenido real.
 :::
 
 ## Lectura rápida
@@ -23,15 +24,15 @@ estado actual; esta página conserva la visión completa.
 ::: {.course-meter}
 **Base obligatoria**
 
-Unidades 0-10. Programas ARM64 simples en Linux con registros, memoria,
-control de flujo y syscalls.
+Unidades 0-15. Programas ARM64 en Linux, registros, memoria, control de flujo,
+syscalls, stack, heap, `mmap`, structs y ABI/AAPCS64.
 :::
 
 ::: {.course-meter}
-**Ruta profesional**
+**Ruta posterior**
 
-Unidades 11-44. ABI, ELF, debugging, SIMD, hardware, kernel, reversing,
-seguridad, virtualización y proyectos.
+Unidades 16-44. ELF, debugging avanzado, SIMD, hardware, kernel, reversing,
+seguridad, virtualización y proyectos integradores.
 :::
 :::
 
@@ -135,3 +136,23 @@ seguridad, virtualización y proyectos.
 
 La ruta no enlazará páginas que no existan. Primero se publica una unidad, luego
 aparece en el sidebar y en la navegación del bloque correspondiente.
+
+## Siguiente paso
+
+::: {.resource-grid}
+::: {.resource-card}
+### Siguiente paso
+
+Si empiezas la ruta, no avances por el roadmap completo. Entra por la unidad 00.
+
+[Ir a contexto](fundamentos/contexto-historia-objetivos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Ejemplo
+
+El primer programa público vive en la página de laboratorio, con código copiable.
+
+[Ver `00-hello-minimo`](laboratorio/03-primer-programa.qmd){.resource-action}
+:::
+:::

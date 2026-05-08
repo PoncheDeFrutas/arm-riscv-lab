@@ -27,10 +27,11 @@ arquitectura.
 ## Estado actual
 
 ::: {.course-meter}
-**Base inicial del curso**
+**Unidades 0-15 disponibles**
 
-La ruta ya tiene su estructura de estudio. El contenido se publicará por
-unidades conforme avance el laboratorio.
+La ruta ya contiene las unidades públicas desde contexto inicial hasta ABI,
+AAPCS64 e interoperabilidad con C. Las unidades posteriores siguen en roadmap y
+se enlazarán solo cuando existan como páginas reales.
 :::
 
 ## Cómo se organiza
@@ -57,9 +58,9 @@ Secciones dentro de cada unidad.
 :::
 :::
 
-La regla de navegación será simple: la portada explica la ruta, el roadmap
-muestra los bloques, cada bloque mostrará unidades, y cada unidad desarrollará
-sus temas internos.
+La regla de navegación es simple: la portada resume la ruta, el roadmap muestra
+la visión completa, cada unidad publicada desarrolla sus temas internos, y las
+unidades futuras quedan sin enlace hasta que existan.
 
 ## Niveles de avance
 
@@ -71,11 +72,11 @@ Programas ARM64 simples en Linux usando registros, memoria, saltos,
 aritmética, lógica y syscalls.
 :::
 
-::: {.roadmap-item}
-**Nivel 2 — Programador ARM64 competente**
+::: {.roadmap-item .available}
+**Nivel 2 — Programador ARM64 competente, en curso**
 
-Funciones, stack, ABI, structs, ELF, debugging, arrays, strings y algoritmos
-básicos.
+Funciones, stack, heap, `mmap`, structs y ABI ya están publicados. ELF,
+debugging avanzado, arrays, strings y algoritmos quedan como avance posterior.
 :::
 
 ::: {.roadmap-item}
@@ -193,6 +194,21 @@ AArch64 antes de entrar en programas más grandes.
 
 ## Siguiente paso
 
-Empezar por la unidad "00 · Contexto, historia y objetivos" y mantener el
-roadmap completo como referencia. Después sigue con
-[01 · Laboratorio ARM64 reproducible](laboratorio/index.qmd).
+::: {.resource-grid}
+::: {.resource-card}
+### Siguiente paso
+
+Empieza por la unidad 00 para fijar vocabulario: ARM, ARMv8-A, AArch64 y A64.
+
+[Ir a contexto](fundamentos/contexto-historia-objetivos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Ejemplo
+
+Cuando llegues al laboratorio, compila y ejecuta el ejemplo `00-hello-minimo`
+desde la página.
+
+[Ver primer programa](laboratorio/03-primer-programa.qmd){.resource-action}
+:::
+:::

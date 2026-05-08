@@ -17,6 +17,10 @@ cadena de llamadas.
 ## Prólogo y epílogo
 
 El prólogo prepara el frame al entrar. El epílogo lo deshace antes de retornar.
+En esta unidad usaremos un frame con `x29` porque deja una referencia estable
+para leer variables locales y reconstruir llamadas. En código optimizado, un
+compilador puede omitir `x29`, pero para aprender conviene ver el frame de forma
+explícita.
 
 ```asm
 funcion:
@@ -47,6 +51,10 @@ después:
 
 La instrucción reserva 16 bytes y guarda dos registros de 8 bytes.
 
+En AArch64 cada registro `x` ocupa 8 bytes. Por eso el par `x29`, `x30` ocupa
+exactamente 16 bytes. Ese tamaño también conserva la alineación del stack, que
+debe mantenerse en múltiplos de 16 bytes antes de hacer llamadas.
+
 ## Qué hace `mov x29, sp`
 
 Después de guardar `x29` y `x30`, copiamos `sp` a `x29`.
@@ -57,6 +65,44 @@ mov x29, sp
 
 Desde ese momento, `x29` marca la base del frame actual. Aunque `sp` se mueva
 para variables locales, `x29` queda como referencia estable.
+
+En este patrón, `x29` apunta al registro `x29` guardado del caller. El retorno
+guardado queda 8 bytes después:
+
+| Dirección relativa | Contenido |
+|---|---|
+| `[x29]` | `x29` anterior |
+| `[x29, #8]` | `x30` anterior, es decir, `LR` |
+
+Los datos locales suelen quedar por debajo de ese registro de frame, hacia
+direcciones menores.
+
+## Diagrama del frame
+
+Después del prólogo y de reservar 16 bytes para una variable local, el frame
+didáctico queda así:
+
+```{mermaid}
+%%| label: fig-aarch64-stack-frame
+%%| fig-cap: "Stack frame didáctico en AArch64 con frame pointer, link register y espacio local."
+flowchart TB
+  high["Direcciones altas"]
+  caller["Frame del caller"]
+  saved_fp["[x29] x29 guardado"]
+  saved_lr["[x29 + 8] x30 guardado / LR"]
+  locals["Locales y temporales"]
+  low["Direcciones bajas"]
+  fp["x29 / fp"]
+  sp["sp"]
+
+  high --> caller --> saved_fp --> saved_lr --> locals --> low
+  fp -.->|apunta| saved_fp
+  sp -.->|apunta| locals
+```
+
+El punto importante no es memorizar un dibujo único. El punto es entender dos
+referencias: `x29` se mantiene fijo para ubicar el frame, mientras `sp` puede
+moverse cuando reservas o liberas espacio local.
 
 ## Qué hace `ldp x29, x30, [sp], #16`
 
@@ -76,7 +122,7 @@ después:
 
 Luego `ret` usa el `x30` restaurado.
 
-## Variable local simple
+## Ejemplo de frame con variable local {#sec-frame-variable-local}
 
 ```asm
 .global _start
@@ -118,6 +164,11 @@ En ejemplos simples usamos `[sp]` para la variable local. También se pueden usa
 offsets desde `x29`, pero no conviene mezclar demasiado al inicio. Primero hay
 que entender qué se guarda y cuándo se libera.
 
+La variable local existe solo mientras `funcion` está activa. Cuando `add sp,
+sp, #16` libera el espacio local, ese valor deja de pertenecer a la función. No
+se "borra" necesariamente de memoria; simplemente ya no forma parte de un frame
+válido.
+
 ## Orden correcto al salir
 
 El orden importa:
@@ -136,7 +187,7 @@ Reservar espacio y olvidar liberarlo cambia dónde `ldp` busca `x29` y `x30`.
 Eso puede destruir el retorno.
 :::
 
-## Mini ejercicios
+## Mini ejercicios {#sec-stack-frame-ejercicios}
 
 1. ¿Qué dos registros guarda el prólogo mínimo?
 2. ¿Por qué `stp` reserva 16 bytes?
@@ -148,3 +199,31 @@ Eso puede destruir el retorno.
 
 Un frame es orden. Guarda el frame anterior, guarda retorno, reserva locales y
 deshace todo en orden inverso antes de `ret`.
+
+## Recursos
+
+::: {.resource-grid}
+::: {.resource-card}
+### Ejemplo
+
+Lee el programa mínimo con una variable local y ubica `sp`, `x29` y `x30`.
+
+[Ver ejemplo](#sec-frame-variable-local){.resource-action}
+:::
+
+::: {.resource-card}
+### Ejercicio
+
+Responde las preguntas de comprobación antes de pasar a funciones no hoja.
+
+[Resolver](#sec-stack-frame-ejercicios){.resource-action}
+:::
+
+::: {.resource-card}
+### Siguiente paso
+
+Una función que llama a otra debe proteger su propio retorno.
+
+[Continuar](04-funciones-no-hoja-registros.qmd){.resource-action}
+:::
+:::

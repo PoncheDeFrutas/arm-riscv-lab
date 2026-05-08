@@ -183,4 +183,28 @@ Esa presentación debe visualizar `caller -> bl -> callee -> ret`, `LR`, `SP`,
 
 ## Siguiente paso
 
-Empieza por [Llamadas y retorno](01-llamadas-retorno.qmd).
+::: {.resource-grid}
+::: {.resource-card}
+### Siguiente paso
+
+Empieza por `bl`, `x30/LR` y `ret` antes de construir frames.
+
+[Ir a llamadas y retorno](01-llamadas-retorno.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Ejemplo
+
+Revisa un frame mínimo con `x29`, `x30`, `sp` y una variable local.
+
+[Ver frame con local](03-stack-frames.qmd#sec-frame-variable-local){.resource-action}
+:::
+
+::: {.resource-card}
+### Ejercicio
+
+Comprueba si puedes leer el prólogo, el epílogo y la reserva local.
+
+[Resolver preguntas](03-stack-frames.qmd#sec-stack-frame-ejercicios){.resource-action}
+:::
+:::
