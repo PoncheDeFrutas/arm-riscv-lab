@@ -264,6 +264,24 @@ website:
                   href: courses/aarch64/heap-memoria-dinamica/05-errores-memoria.qmd
                 - text: "De brk a mmap"
                   href: courses/aarch64/heap-memoria-dinamica/06-brk-malloc-mmap.qmd
+            - section: "13 · mmap, munmap, mprotect y permisos"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/mmap-paginas-permisos/index.qmd
+                - text: "Páginas y memoria virtual"
+                  href: courses/aarch64/mmap-paginas-permisos/01-paginas-memoria-virtual.qmd
+                - text: "mmap anónimo privado"
+                  href: courses/aarch64/mmap-paginas-permisos/02-mmap-anonimo-privado.qmd
+                - text: "munmap y ciclo de vida"
+                  href: courses/aarch64/mmap-paginas-permisos/03-munmap-ciclo-vida-region.qmd
+                - text: "mprotect y permisos"
+                  href: courses/aarch64/mmap-paginas-permisos/04-mprotect-permisos.qmd
+                - text: "mmap con archivo"
+                  href: courses/aarch64/mmap-paginas-permisos/05-mmap-con-archivo.qmd
+                - text: "Errores y diagnóstico"
+                  href: courses/aarch64/mmap-paginas-permisos/06-errores-y-diagnostico.qmd
+                - text: "Programa guiado"
+                  href: courses/aarch64/mmap-paginas-permisos/07-programa-guiado.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

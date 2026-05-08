@@ -1,0 +1,228 @@
+---
+title: "13.6 · Errores y diagnóstico"
+subtitle: "Leer fallos de mmap exige revisar retorno, permisos, dirección y ciclo de vida."
+description: "MAP_FAILED, errores negativos, permisos inválidos, uso después de munmap y diagnóstico básico."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > Errores y diagnóstico
+:::
+
+::: {.hero-lab}
+Las syscalls de memoria fallan por razones concretas: argumentos inválidos,
+permisos incorrectos, fd equivocado, rangos mal pensados o uso de regiones que ya
+no existen. Esta lección junta los fallos más importantes.
+:::
+
+## Retorno de error
+
+En C se habla de `MAP_FAILED`, normalmente representado como `(void *) -1`.
+Cuando llamas syscalls directamente en AArch64, también debes pensar en retornos
+negativos como error.
+
+```asm
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+En este curso usaremos esta lectura mínima: si el retorno es negativo, no trates
+`x0` como dirección válida.
+
+::: {.callout-warning title="Error común"}
+No guardes `x0` como puntero antes de revisar si `mmap` falló. Si es negativo,
+no es una dirección usable.
+:::
+
+## Patrón después de cada syscall
+
+La rutina mental debe ser siempre la misma:
+
+```bash
+preparar argumentos
+svc #0
+leer x0
+si x0 < 0:
+  ruta de error
+si x0 >= 0:
+  usar resultado según syscall
+```
+
+Pero el significado de `x0 >= 0` cambia según syscall:
+
+| Syscall | Éxito en `x0` | Qué hacer |
+|---|---|---|
+| `mmap` | dirección virtual | guardar base |
+| `munmap` | `0` | no usar puntero viejo |
+| `mprotect` | `0` | asumir permisos cambiados |
+| `openat` | fd | guardar fd |
+| `close` | `0` | no usar fd viejo |
+
+El error típico es tratar todos los retornos igual. `mmap` devuelve un recurso
+nuevo; `munmap` y `mprotect` solo confirman operación.
+
+## Tabla de fallos típicos
+
+| Síntoma | Causa probable |
+|---|---|
+| `mmap` retorna negativo | flags, permisos, fd, length u offset inválido |
+| `munmap` retorna negativo | dirección o longitud incorrecta |
+| `mprotect` retorna negativo | rango inválido o permisos no aceptados |
+| escritura falla | región sin `PROT_WRITE` |
+| acceso falla después de liberar | uso después de `munmap` |
+
+## `MAP_FAILED` sin wrapper de libc
+
+`MAP_FAILED` es una macro del mundo C. En assembly directo no dependemos de esa
+macro; revisamos retorno.
+
+```bash
+si x0 < 0
+  error
+si x0 >= 0
+  dirección virtual mapeada
+```
+
+No conviertas esta unidad en `errno` completo. Basta saber que el kernel reporta
+fallo y que el programa no debe usar el valor como puntero.
+
+En C se suele escribir contra `MAP_FAILED` porque una función wrapper presenta
+ese contrato. En este curso estamos en assembly directo: no hay macro, no hay
+wrapper y no hay `errno` cómodo. Hay registros y retorno.
+
+```asm
+svc #0              // x0 = retorno crudo de syscall
+cmp x0, #0
+b.lt error          // lectura mínima para este curso
+```
+
+Más adelante se puede estudiar cómo `libc` convierte errores del kernel en
+`errno`. Aquí basta no confundir un retorno negativo con una dirección válida.
+
+## Permisos inválidos
+
+Ejemplo conceptual:
+
+```bash
+región queda solo lectura
+programa intenta strb
+fallo de acceso
+```
+
+No ejecutaremos una escritura incorrecta como prueba normal del curso. La meta es
+que el estudiante pueda predecir el fallo antes de provocarlo.
+
+Preguntas útiles:
+
+| Pregunta | Si respuesta es “no” |
+|---|---|
+| ¿La región existe todavía? | acceso inválido |
+| ¿Tiene `PROT_WRITE`? | `str` / `strb` inválido |
+| ¿Tiene `PROT_READ`? | `ldr` / `ldrb` inválido |
+| ¿Tiene `PROT_EXEC`? | ejecución inválida |
+
+No todos los errores aparecen al momento de llamar `mprotect`. Algunos aparecen
+después, cuando intentas una operación que los permisos ya no permiten.
+
+## Dirección incorrecta
+
+Errores comunes:
+
+```bash
+mmap retorna x19 = base
+programa suma 128 a x19 para recorrer
+munmap usa x19 modificado
+```
+
+Solución: conserva base original.
+
+```bash
+x19 = base original
+x20 = puntero de recorrido
+```
+
+`munmap` debe recibir la región que quieres liberar, no un cursor cualquiera.
+
+La regla práctica:
+
+| Registro | Uso recomendado |
+|---|---|
+| `x19` | base original de región |
+| `x20` | cursor de lectura/escritura |
+| `x21` | tamaño o capacidad |
+| `x22` | bytes usados, si aplica |
+
+No es una regla ABI completa. Es una disciplina local para no perder recursos en
+programas de aprendizaje.
+
+## Longitud incorrecta
+
+Si mapeaste una página, usa la misma longitud al liberar en estos ejemplos:
+
+```asm
+mov x1, #4096
+```
+
+En programas reales puedes mapear varios tamaños, pero siempre debes registrar
+qué rango pertenece a qué región.
+
+Un bug frecuente aparece cuando el programa pide un tamaño y libera otro:
+
+```bash
+mmap length = 4096
+...
+munmap length = 128
+```
+
+Puede parecer lógico si solo usaste 128 bytes, pero `munmap` habla del rango
+mapeado, no de los bytes usados por tu estructura. “Usado” y “mapeado” no son el
+mismo dato.
+
+## Uso después de `munmap`
+
+Después de liberar:
+
+```bash
+munmap(base, 4096)
+base sigue siendo número en x19
+pero región ya no existe para el proceso
+```
+
+Usar ese número como puntero es error grave. Puede terminar en fallo inmediato o
+en comportamiento incorrecto según el estado del proceso.
+
+La forma segura de cerrar una región en ejemplos largos:
+
+```bash
+munmap(base, length)
+base_viva = no
+no acceder más
+```
+
+Assembly no tiene `base_viva`. La variable vive en tu diseño mental y en las
+etiquetas del programa.
+
+## Checklist mental de diagnóstico
+
+Antes de culpar a QEMU, pregunta:
+
+1. ¿`mmap` retornó error?
+2. ¿Guardé la dirección antes de sobrescribir `x0`?
+3. ¿El mapeo tenía permisos correctos?
+4. ¿Estoy usando base original para `munmap`?
+5. ¿La región sigue viva?
+6. ¿`fd` y `offset` tienen sentido para el tipo de mapeo?
+
+## Mini ejercicios
+
+1. ¿Por qué no debes usar `x0` como puntero si es negativo?
+2. ¿Qué error conceptual es escribir después de quitar `PROT_WRITE`?
+3. ¿Por qué conviene separar base y cursor?
+4. ¿Qué significa usar memoria después de `munmap`?
+5. ¿Qué revisarías si `mprotect` retorna negativo?
+
+## Cierre
+
+Diagnosticar memoria virtual no empieza con MMU interna. Empieza con contrato:
+argumentos correctos, permisos correctos, retorno revisado y ciclo de vida
+respetado.

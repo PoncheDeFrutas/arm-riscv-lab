@@ -1,0 +1,262 @@
+---
+title: "13 · mmap, munmap, mprotect, páginas y permisos"
+subtitle: "Memoria virtual en userland antes de MMU y bare metal."
+description: "Página principal de la Unidad 13 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap, munmap, mprotect, páginas y permisos
+:::
+
+::: {.hero-lab}
+En la Unidad 12 viste heap como idea: bloques, ownership, errores y vida útil.
+Ahora usaremos Linux como API del kernel para pedir regiones reales de memoria
+virtual con `mmap`, liberar regiones con `munmap` y cambiar permisos con
+`mprotect`.
+:::
+
+## Qué debe quedar claro
+
+Esta unidad no trata de memorizar tres syscalls. Trata de cambiar el modelo
+mental de memoria:
+
+| Antes | Ahora |
+|---|---|
+| memoria en `.bss` | espacio fijo preparado al cargar el programa |
+| memoria en stack | espacio temporal ligado a llamadas |
+| heap conceptual | bloques con vida útil controlada por el programa |
+| `mmap` | regiones virtuales pedidas al kernel |
+| `munmap` | fin explícito de una región |
+| `mprotect` | cambio explícito de permisos |
+
+La idea importante es que una región mapeada es un recurso. Tiene inicio,
+tamaño, permisos y ciclo de vida. Si pierdes la dirección base, si usas mal el
+tamaño o si accedes después de liberarla, el problema no es “assembly raro”: es
+un contrato de memoria roto.
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Página**
+Memoria se organiza en bloques de tamaño fijo.
+:::
+
+::: {.lab-step}
+**2. Mapea**
+`mmap` crea región virtual.
+:::
+
+::: {.lab-step}
+**3. Usa**
+Lees y escribes con punteros normales.
+:::
+
+::: {.lab-step}
+**4. Protege**
+`mprotect` cambia permisos.
+:::
+
+::: {.lab-step}
+**5. Libera**
+`munmap` cierra ciclo.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 06: punteros y bytes | Acceder a regiones con `str`, `ldr`, `strb`, `ldrb` |
+| Unidad 10: syscalls y cleanup | Tratar regiones como recursos que deben liberarse |
+| Unidad 12: heap y ownership | Entender `mmap -> usar -> munmap` como ciclo de vida |
+
+## Idea central
+
+```bash
+mmap
+  pide al kernel una región virtual
+  retorna dirección en x0
+
+uso
+  x19 guarda dirección
+  ldr/str leen y escriben bytes
+
+mprotect
+  cambia permisos de la región
+
+munmap
+  libera región
+  puntero viejo queda inválido
+```
+
+`mmap` no te entrega “memoria física” para manipular directamente. Te entrega
+una dirección virtual dentro del proceso. Linux y la MMU se encargan de que esa
+dirección tenga respaldo y permisos.
+
+Piensa en tres capas:
+
+| Capa | Pregunta |
+|---|---|
+| Programa | ¿Qué dirección guardé en un registro? |
+| Kernel | ¿Qué región virtual existe para este proceso? |
+| MMU | ¿Ese acceso se permite y cómo se traduce? |
+
+Desde userland solo trabajas con la primera capa de forma directa. Las otras dos
+aparecen como efectos visibles: `mmap` funciona o falla, `strb` puede escribir o
+fallar, `munmap` libera una región y un acceso posterior deja de ser válido.
+
+## Tabla mínima de syscalls
+
+| Syscall | Número AArch64 | Uso |
+|---|---:|---|
+| `mmap` | `222` | crear mapeo de memoria |
+| `munmap` | `215` | liberar mapeo |
+| `mprotect` | `226` | cambiar permisos |
+| `openat` | `56` | abrir archivo para mapeo con fd |
+| `close` | `57` | cerrar fd |
+| `write` | `64` | escribir mensajes o salida |
+| `exit` | `93` | terminar proceso |
+
+La forma de llamada sigue el patrón de unidades anteriores: argumentos en
+`x0`-`x5`, número en `x8`, entrada al kernel con `svc #0` y retorno en `x0`.
+La novedad no es el mecanismo de syscall. La novedad es que el valor de retorno
+puede ser una dirección virtual que debes conservar.
+
+## Permisos y flags básicos
+
+```asm
+.equ PROT_NONE,  0
+.equ PROT_READ,  1
+.equ PROT_WRITE, 2
+.equ PROT_EXEC,  4
+
+.equ MAP_SHARED,    1
+.equ MAP_PRIVATE,   2
+.equ MAP_ANONYMOUS, 32
+```
+
+| Permiso | Significado |
+|---|---|
+| `PROT_READ` | se puede leer |
+| `PROT_WRITE` | se puede escribir |
+| `PROT_EXEC` | se puede ejecutar |
+
+::: {.callout-note title="Idea clave"}
+Permisos no cambian los bytes. Cambian qué tipo de acceso permite el kernel y
+la MMU sobre esa región.
+:::
+
+## Tres estados que no son lo mismo
+
+| Estado | Ejemplo | Qué significa |
+|---|---|---|
+| reservada | “quiero 4096 bytes para buffer” | intención del programa |
+| mapeada | `mmap` retornó dirección válida | Linux creó región virtual |
+| usada | escribí 20 bytes reales | el programa ya puso datos ahí |
+
+Esta diferencia evita confusiones. Pedir 4096 bytes no significa que tengas una
+estructura de 4096 bytes “llena”. Igual que en Unidad 12, capacidad y uso siguen
+separados.
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Páginas y memoria virtual
+
+Page size, dirección virtual, regiones, permisos y puente hacia MMU futura.
+
+[Abrir](01-paginas-memoria-virtual.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `mmap` anónimo privado
+
+Contrato completo de `mmap`, registros `x0`-`x5`, retorno y primer uso.
+
+[Abrir](02-mmap-anonimo-privado.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `munmap` y ciclo de vida
+
+Liberar región, ownership, cleanup y acceso inválido después de liberar.
+
+[Abrir](03-munmap-ciclo-vida-region.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `mprotect` y permisos
+
+Cambiar permisos, `R/W/X`, W^X y errores al acceder mal.
+
+[Abrir](04-mprotect-permisos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `mmap` con archivo
+
+`openat`, `fd`, `offset`, `MAP_PRIVATE`, `MAP_SHARED`, `close` y `munmap`.
+
+[Abrir](05-mmap-con-archivo.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Errores y diagnóstico
+
+`MAP_FAILED`, retornos negativos, permisos inválidos y fallos de ciclo de vida.
+
+[Abrir](06-errores-y-diagnostico.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Programa guiado
+
+Programa completo con `mmap`, escritura, `mprotect`, `munmap` y errores.
+
+[Abrir](07-programa-guiado.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| MMU completa | Aquí solo userland |
+| Tablas de páginas | Vienen después con sistema y bare metal |
+| TLB avanzado | Requiere arquitectura más profunda |
+| Page faults en kernel | Solo veremos efecto visible desde userland |
+| JIT completo | `PROT_EXEC` se explica sin construir JIT |
+| Exploits y bypass de W^X | Seguridad avanzada queda para después |
+| `msync`, `madvise`, `mremap` | No hacen falta para base mental |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+slides/aarch64/mmap-paginas-permisos/overview/slides.md
+```
+
+No crear presentación todavía. Debe servir como apoyo visual, no reemplazo de
+estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar page size.
+- [ ] Puedo explicar dirección virtual.
+- [ ] Puedo usar `mmap` anónimo privado.
+- [ ] Puedo guardar dirección retornada por `mmap`.
+- [ ] Puedo liberar con `munmap`.
+- [ ] Puedo cambiar permisos con `mprotect`.
+- [ ] Puedo explicar `PROT_READ`, `PROT_WRITE`, `PROT_EXEC`.
+- [ ] Puedo explicar W^X.
+- [ ] Puedo distinguir `MAP_PRIVATE`, `MAP_SHARED`, `MAP_ANONYMOUS`.
+- [ ] Puedo reconocer error de `mmap`.
+- [ ] Puedo explicar por qué usar memoria después de `munmap` está mal.
+
+## Siguiente paso
+
+Empieza por [Páginas y memoria virtual](01-paginas-memoria-virtual.qmd).

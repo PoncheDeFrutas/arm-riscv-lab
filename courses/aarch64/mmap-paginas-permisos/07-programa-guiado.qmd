@@ -1,0 +1,264 @@
+---
+title: "13.7 · Programa guiado"
+subtitle: "mmap, escritura, mprotect, munmap y errores mínimos en un flujo completo."
+description: "Programa AArch64 completo con mmap anónimo, mprotect, munmap y manejo de error."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > Programa guiado
+:::
+
+::: {.hero-lab}
+Esta lección junta la unidad en un programa seguro: mapea una página anónima,
+escribe un byte, cambia permisos a solo lectura, libera la región y sale.
+También tiene rutas de error separadas.
+:::
+
+## Qué debes mirar
+
+El programa no busca imprimir algo visible. Busca que puedas seguir el estado de
+una región:
+
+```bash
+sin región
+  mmap
+región RW viva
+  escribir byte
+mprotect
+región R viva
+  no escribir más
+munmap
+sin región
+  exit
+```
+
+Mientras lees, sigue tres datos:
+
+| Dato | Dónde aparece | Por qué importa |
+|---|---|---|
+| base | `x19` | dirección original para acceder y liberar |
+| tamaño | `4096` | longitud usada en `mmap`, `mprotect`, `munmap` |
+| estado | etiquetas de flujo | decide si hace falta cleanup |
+
+## Programa completo
+
+Guarda como `mmap-demo.s`.
+
+```asm
+.equ PROT_READ,  1
+.equ PROT_WRITE, 2
+.equ MAP_PRIVATE,   2
+.equ MAP_ANONYMOUS, 32
+
+.global _start
+
+.text
+_start:
+    mov x0, #0
+    mov x1, #4096
+    mov x2, #(PROT_READ | PROT_WRITE)
+    mov x3, #(MAP_PRIVATE | MAP_ANONYMOUS)
+    mov x4, #-1
+    mov x5, #0
+    mov x8, #222
+    svc #0
+    cmp x0, #0
+    b.lt error_sin_region
+
+    mov x19, x0
+
+    mov w1, #'A'
+    strb w1, [x19]
+
+    mov x0, x19
+    mov x1, #4096
+    mov x2, #PROT_READ
+    mov x8, #226
+    svc #0
+    cmp x0, #0
+    b.lt cleanup
+
+    mov x0, x19
+    mov x1, #4096
+    mov x8, #215
+    svc #0
+    cmp x0, #0
+    b.lt error_sin_region
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+cleanup:
+    mov x0, x19
+    mov x1, #4096
+    mov x8, #215
+    svc #0
+
+error_sin_region:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+```
+
+## Construir y ejecutar
+
+```bash
+$ aarch64-linux-gnu-as mmap-demo.s -o mmap-demo.o
+$ aarch64-linux-gnu-ld mmap-demo.o -o mmap-demo
+$ qemu-aarch64 ./mmap-demo
+$ echo $?
+0
+```
+
+No imprime nada. El resultado esperado es código de salida `0`.
+
+Si obtienes `1`, no significa que “QEMU no entiende mmap”. Significa que alguna
+syscall tomó ruta de error. La primera lectura debe ser revisar qué syscall pudo
+retornar negativo y qué argumentos recibió.
+
+## Lectura por bloques
+
+| Bloque | Acción | Resultado esperado |
+|---|---|---|
+| `mmap` | pide página RW anónima privada | `x0 = dirección` |
+| revisar | `cmp x0, #0` | error si negativo |
+| guardar | `mov x19, x0` | conserva base |
+| escribir | `strb w1, [x19]` | guarda `A` |
+| `mprotect` | cambia RW -> R | región queda solo lectura |
+| `munmap` | libera región | región deja de existir |
+| `exit` | termina proceso | código `0` |
+
+## Lectura con registros
+
+| Momento | `x0` | `x19` | Lectura |
+|---|---|---|---|
+| antes de `mmap` | `0` | sin uso | `x0` es argumento `addr` |
+| después de `mmap` | dirección o error | sin uso | `x0` es retorno |
+| después de revisar | dirección válida | dirección válida | base queda guardada |
+| antes de `mprotect` | dirección base | dirección base | `x0` vuelve a ser argumento |
+| después de `mprotect` | `0` o error | dirección base | `x19` conserva región |
+| antes de `munmap` | dirección base | dirección base | se libera mismo rango |
+| después de `munmap` | `0` o error | número viejo | no acceder más con `x19` |
+
+Esta tabla muestra por qué no basta “saber que `x0` existe”. El rol de `x0`
+cambia muchas veces. La base se guarda en `x19` para que el programa no pierda
+su recurso.
+
+## Fases del programa
+
+### Fase 1: pedir región
+
+```asm
+mov x0, #0
+mov x1, #4096
+mov x2, #(PROT_READ | PROT_WRITE)
+mov x3, #(MAP_PRIVATE | MAP_ANONYMOUS)
+mov x4, #-1
+mov x5, #0
+mov x8, #222
+svc #0
+```
+
+Aquí todavía no hay memoria segura hasta revisar retorno. `svc #0` cruza al
+kernel; el kernel decide si puede crear región.
+
+### Fase 2: validar y guardar
+
+```asm
+cmp x0, #0
+b.lt error_sin_region
+
+mov x19, x0
+```
+
+Si `mmap` falla, no hay nada que liberar. Si funciona, `x19` se vuelve la base
+estable de la región.
+
+### Fase 3: usar como memoria normal
+
+```asm
+mov w1, #'A'
+strb w1, [x19]
+```
+
+El acceso usa instrucciones normales de memoria. `mmap` no crea instrucciones
+nuevas; crea una región donde `strb` puede operar.
+
+### Fase 4: cambiar permisos
+
+```asm
+mov x0, x19
+mov x1, #4096
+mov x2, #PROT_READ
+mov x8, #226
+svc #0
+cmp x0, #0
+b.lt cleanup
+```
+
+Si falla, la región ya existe; por eso se salta a `cleanup`, no a
+`error_sin_region`.
+
+### Fase 5: liberar
+
+```asm
+mov x0, x19
+mov x1, #4096
+mov x8, #215
+svc #0
+```
+
+Después de esta fase, `x19` ya no debe usarse como puntero. Puede seguir
+conteniendo un número, pero la región ya no pertenece al proceso.
+
+## Por qué no escribimos después de `mprotect`
+
+Después de:
+
+```asm
+mov x2, #PROT_READ
+mov x8, #226
+svc #0
+```
+
+la región queda solo lectura. Escribir después sería un ejemplo de acceso
+inválido. Esta unidad busca que lo puedas predecir, no que provoques crash como
+práctica principal.
+
+## Por qué hay `cleanup`
+
+Si `mprotect` falla, la región ya existe. Hay que liberarla:
+
+```bash
+mmap funcionó
+mprotect falló
+cleanup hace munmap
+exit 1
+```
+
+Si `mmap` falla, no hay región. Por eso va directo a `error_sin_region`.
+
+## Qué no hace este programa
+
+| Tema | Motivo |
+|---|---|
+| no imprime el byte | syscall `write` no ayuda al concepto central |
+| no usa archivo | eso se explicó como patrón separado |
+| no prueba escritura inválida | evitar crash intencional |
+| no usa `PROT_EXEC` | no estamos construyendo código ejecutable |
+| no implementa allocator | Unidad 12 explicó por qué queda fuera |
+
+## Mini ejercicios
+
+1. Cambia `PROT_READ` final por `PROT_READ | PROT_WRITE` y explica la diferencia.
+2. Explica por qué `x19` debe conservar base original.
+3. Explica qué ruta se toma si `mmap` falla.
+4. Explica qué ruta se toma si `mprotect` falla.
+5. Explica por qué `munmap` usa `4096`.
+
+## Cierre
+
+Este programa muestra el ciclo completo de una región virtual: pedir, usar,
+proteger, liberar. Ese ciclo prepara temas futuros de MMU, permisos, loaders,
+seguridad y memoria dinámica real.

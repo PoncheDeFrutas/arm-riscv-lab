@@ -1,0 +1,249 @@
+---
+title: "13.1 · Páginas y memoria virtual"
+subtitle: "Userland ve direcciones virtuales organizadas en páginas."
+description: "Page size, memoria virtual, direcciones virtuales y permisos de página en Linux AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > Páginas y memoria virtual
+:::
+
+::: {.hero-lab}
+Antes de usar `mmap`, hay que entender qué entrega Linux. El proceso trabaja con
+direcciones virtuales. Esas direcciones se agrupan en páginas, y cada página o
+región tiene permisos.
+:::
+
+## Qué es una página
+
+Una página es una unidad de memoria virtual de tamaño fijo. En muchos sistemas
+Linux AArch64 una página común mide 4096 bytes, aunque no debes convertir ese
+número en ley universal.
+
+```bash
+página típica
+  tamaño: 4096 bytes
+  rango:  dirección_base ... dirección_base + 4095
+```
+
+El kernel administra memoria en unidades de página. Tú puedes pedir 1 byte, pero
+el mapeo real se piensa con granularidad de página.
+
+Una página no es una variable ni un arreglo declarado por el programador. Es una
+pieza del mapa de memoria virtual del proceso. Si una región mide una página,
+puedes usar sus bytes como buffer, pero el permiso de esa región se piensa al
+nivel de página o rango de páginas, no al nivel de “esta variable sí, esta otra
+no”.
+
+```bash
+dirección base
+  byte 0
+  byte 1
+  ...
+  byte 4095
+
+toda la página comparte permisos del mapeo
+```
+
+## Page size
+
+En esta unidad usaremos 4096 bytes como tamaño típico para ejemplos:
+
+```asm
+mov x1, #4096
+```
+
+En sistemas reales, el tamaño se puede consultar con herramientas o llamadas de
+biblioteca. Aquí no vamos a depender de `libc`; solo necesitamos una página
+típica para practicar el contrato de `mmap`.
+
+::: {.callout-note title="Idea clave"}
+`length` se pasa en bytes, pero la memoria virtual se administra por páginas.
+Por eso los ejemplos usan 4096 bytes.
+:::
+
+Si pides un tamaño que no cae justo en páginas, el kernel igual debe administrar
+la región con granularidad de página. Para aprender, usar una página completa
+evita mezclar dos ideas a la vez: contrato de syscall y redondeo interno de
+regiones.
+
+| Tamaño pedido | Lectura para esta unidad |
+|---:|---|
+| `1` byte | demasiado pequeño para explicar páginas |
+| `64` bytes | útil para buffers, pero oculta granularidad real |
+| `4096` bytes | muestra una página típica completa |
+| `8192` bytes | dos páginas típicas |
+
+No memorices `4096` como regla de arquitectura. Memoriza la idea: `length` está
+en bytes, pero el sistema protege y administra memoria en páginas.
+
+## Dirección virtual
+
+Una dirección virtual es un número que tiene sentido dentro del proceso.
+
+```bash
+proceso A
+  0x400000 puede apuntar a su código
+
+proceso B
+  0x400000 puede apuntar a otro contenido
+```
+
+No significa “dirección física de RAM”. Linux y la MMU traducen direcciones
+virtuales a recursos físicos o respaldos de archivo cuando corresponde.
+
+En assembly verás la dirección como un número en un registro:
+
+```asm
+mov x19, x0
+strb w1, [x19]
+```
+
+Eso no convierte a `x19` en “RAM física”. `x19` solo guarda una dirección que el
+proceso puede usar. Al ejecutar `strb`, el procesador intenta acceder a esa
+dirección virtual. Si la región existe y permite escritura, el acceso continúa.
+Si no existe o no tiene permiso, el acceso falla.
+
+| Pregunta | Respuesta corta |
+|---|---|
+| ¿El registro guarda una dirección física? | No, guarda dirección virtual |
+| ¿La misma dirección vale igual en otro proceso? | No necesariamente |
+| ¿Quién decide si el acceso se permite? | Kernel configura; MMU aplica |
+| ¿Qué ve el programa? | Éxito, retorno de error o fallo de acceso |
+
+## Mapa mental de un proceso
+
+```bash
+Direcciones bajas
+
+.text        código del programa
+.rodata      constantes
+.data/.bss   datos del programa
+heap         memoria dinámica de biblioteca
+mmap         regiones mapeadas por el proceso
+...
+stack        frames activos
+
+Direcciones altas
+```
+
+El orden exacto puede cambiar por sistema, ASLR, linker y opciones. La idea útil
+es que el proceso tiene varias regiones virtuales con permisos y propósitos
+distintos.
+
+## Permisos de página
+
+Una región puede permitir lectura, escritura o ejecución.
+
+| Permiso | Lectura práctica |
+|---|---|
+| `R` | leer bytes |
+| `W` | escribir bytes |
+| `X` | ejecutar instrucciones |
+
+Ejemplos:
+
+| Región | Permisos típicos |
+|---|---|
+| `.text` | lectura + ejecución |
+| `.rodata` | lectura |
+| `.data` / `.bss` | lectura + escritura |
+| stack | lectura + escritura |
+| mapeo anónimo para buffer | lectura + escritura |
+
+No toda memoria debe ser ejecutable. De hecho, dar ejecución por costumbre es
+mala práctica.
+
+Los permisos forman parte del mapa de memoria. Por eso dos regiones pueden tener
+direcciones válidas, pero permitir operaciones distintas:
+
+```bash
+región A: R--
+  ldr válido
+  str inválido
+
+región B: RW-
+  ldr válido
+  str válido
+
+región C: R-X
+  lectura válida
+  ejecución válida
+  escritura inválida
+```
+
+El estudiante debe separar “dirección válida” de “operación válida”. Una
+dirección puede existir y aun así rechazar escritura.
+
+## Reservada, mapeada y usada
+
+Tres palabras distintas:
+
+| Concepto | Significado |
+|---|---|
+| reservada | el programa quiere espacio para cierto uso |
+| mapeada | Linux creó una región virtual válida |
+| usada | el programa escribió o leyó datos reales ahí |
+
+Un `mmap` puede crear una región de 4096 bytes. Eso no significa que los 4096
+bytes contengan datos válidos de tu estructura. Igual que en Unidad 12, capacidad
+y uso siguen siendo conceptos separados.
+
+Ejemplo mental:
+
+```bash
+mmap 4096 bytes
+  capacidad de región: 4096
+  bytes usados ahora: 0
+
+strb 'A', [base]
+  capacidad de región: 4096
+  bytes usados por mi dato: 1
+```
+
+El kernel no sabe que tu “string” mide 1 byte o que tu estructura ocupa 24. Solo
+sabe que existe una región virtual de cierto tamaño y permisos. Controlar cuánto
+usas dentro de esa región sigue siendo responsabilidad del programa.
+
+## Relación con MMU futura
+
+Esta unidad no configurará tablas de páginas. Solo observa memoria virtual desde
+userland:
+
+```bash
+programa pide región
+kernel decide dirección virtual
+programa usa puntero
+kernel/MMU aplica permisos
+```
+
+Más adelante, en bare metal o sistema, se estudiará cómo se configuran esas
+traducciones.
+
+## Errores comunes
+
+::: {.callout-warning title="Error común"}
+No digas “mmap me dio memoria física”. `mmap` te devuelve una dirección virtual
+usable dentro del proceso.
+:::
+
+| Error | Corrección |
+|---|---|
+| dirección virtual = física | no, hay traducción |
+| página = variable | no, es unidad de memoria |
+| mapeado = usado | no, primero hay región; luego datos |
+| permisos = contenido | no, permisos controlan acceso |
+
+## Mini ejercicios
+
+1. ¿Por qué usamos 4096 en los ejemplos?
+2. ¿Una dirección virtual vale igual en todos los procesos?
+3. ¿Qué diferencia hay entre región mapeada y bytes usados?
+4. ¿Qué permiso necesitas para escribir?
+5. ¿Por qué no toda memoria debe tener `X`?
+
+## Cierre
+
+`mmap` se entiende mejor si primero ves el terreno: páginas, direcciones
+virtuales y permisos. La syscall no crea variables; crea regiones virtuales que
+tu programa puede usar como memoria.

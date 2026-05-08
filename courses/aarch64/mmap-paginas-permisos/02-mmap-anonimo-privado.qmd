@@ -1,0 +1,250 @@
+---
+title: "13.2 · mmap anónimo privado"
+subtitle: "Pedir memoria virtual al kernel para usarla como bloque dinámico."
+description: "mmap anónimo privado, argumentos x0-x5, retorno en x0 y ejemplo AArch64 completo."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > mmap anónimo privado
+:::
+
+::: {.hero-lab}
+El primer uso práctico de `mmap` será pedir una página anónima y privada. Anónima
+porque no viene de un archivo. Privada porque será una región propia del proceso.
+:::
+
+## Qué problema resuelve
+
+Con `.bss` debes fijar tamaño al escribir el programa. Con stack, la vida está
+atada a una llamada. Con `mmap`, el proceso pide al kernel una región virtual en
+tiempo de ejecución.
+
+```bash
+necesito memoria dinámica real
+  mmap
+  guardar puntero
+  usar bytes
+  munmap
+```
+
+Esto conecta con Unidad 12: `mmap` puede ser el mecanismo que entrega el bloque.
+
+## Anónimo y privado
+
+Las dos palabras describen de dónde viene la región y cómo se comparte.
+
+| Palabra | Significado en esta lección |
+|---|---|
+| anónimo | la región no está respaldada por un archivo |
+| privado | la región pertenece al proceso para este uso |
+
+En un mapeo anónimo, `fd` no apunta a archivo. Por eso se pasa `-1` en `x4` y se
+usa `MAP_ANONYMOUS` en `x3`. Si olvidas `MAP_ANONYMOUS`, el kernel intentará
+interpretar `fd` como descriptor real, y `-1` ya no tiene el mismo sentido.
+
+```bash
+MAP_ANONYMOUS presente
+  fd = -1
+  offset = 0
+  región no viene de archivo
+```
+
+`MAP_PRIVATE` aquí no debe leerse como “se copió algo”. En este caso no hay
+archivo que copiar. La lectura útil es: región privada para el proceso, adecuada
+para datos temporales, buffers o bloques dinámicos simples.
+
+## Constantes
+
+```asm
+.equ PROT_READ,  1
+.equ PROT_WRITE, 2
+.equ MAP_PRIVATE,   2
+.equ MAP_ANONYMOUS, 32
+```
+
+`PROT_READ | PROT_WRITE` permite leer y escribir. `MAP_PRIVATE |
+MAP_ANONYMOUS` pide una región privada que no depende de archivo.
+
+Estas constantes no son instrucciones AArch64. Son valores que Linux espera en
+los argumentos de la syscall. Assembly solo mueve números a registros; el
+significado aparece cuando el kernel interpreta esos números durante `svc #0`.
+
+## Contrato de `mmap`
+
+| Registro | Argumento | Significado |
+|---|---|---|
+| `x0` | `addr` | dirección sugerida, normalmente `0` |
+| `x1` | `length` | tamaño en bytes |
+| `x2` | `prot` | permisos |
+| `x3` | `flags` | tipo de mapeo |
+| `x4` | `fd` | fd o `-1` si es anónimo |
+| `x5` | `offset` | desplazamiento dentro de archivo |
+| `x8` | syscall | `222` para `mmap` |
+| `x0` | retorno | dirección mapeada o error |
+
+Antes de `svc #0`, `x0` es argumento. Después de `svc #0`, `x0` deja de ser
+argumento y pasa a ser retorno. Ese cambio de rol es una de las fuentes de error
+más comunes.
+
+```bash
+antes de svc:
+  x0 = addr sugerida
+
+después de svc:
+  x0 = dirección mapeada o error
+```
+
+## Significado de cada argumento
+
+| Argumento | En el ejemplo | Lectura | Error típico |
+|---|---|---|---|
+| `addr` | `0` | kernel elige dirección | creer que mapea en cero |
+| `length` | `4096` | una página típica | pedir tamaño sin saber cuánto usarás |
+| `prot` | `READ | WRITE` | buffer modificable | olvidar `WRITE` y luego escribir |
+| `flags` | `PRIVATE | ANONYMOUS` | región privada sin archivo | omitir `ANONYMOUS` |
+| `fd` | `-1` | no hay archivo | poner `0` pensando en stdin |
+| `offset` | `0` | no aplica para anónimo | inventar offset sin archivo |
+
+::: {.callout-note title="Idea clave"}
+`addr = 0` no significa “mapear en dirección cero”. Significa “kernel, elige una
+dirección adecuada”.
+:::
+
+## Estado esperado de registros
+
+Antes de llamar al kernel:
+
+| Registro | Valor | Lectura |
+|---|---:|---|
+| `x0` | `0` | no sugerir dirección |
+| `x1` | `4096` | tamaño pedido |
+| `x2` | `3` | `READ | WRITE` |
+| `x3` | `34` | `PRIVATE | ANONYMOUS` |
+| `x4` | `-1` | sin archivo |
+| `x5` | `0` | offset cero |
+| `x8` | `222` | syscall `mmap` |
+
+Después de `svc #0`, solo hay una pregunta urgente: ¿`x0` es negativo?
+
+```asm
+cmp x0, #0
+b.lt error
+```
+
+Si es negativo, no tienes región. Si no es negativo, `x0` es la dirección base
+del mapeo y debes guardarla antes de que otra syscall la sobrescriba.
+
+## Programa completo
+
+Guarda como `mmap-anonimo.s`.
+
+```asm
+.equ PROT_READ,  1
+.equ PROT_WRITE, 2
+.equ MAP_PRIVATE,   2
+.equ MAP_ANONYMOUS, 32
+
+.global _start
+
+.text
+_start:
+    mov x0, #0
+    mov x1, #4096
+    mov x2, #(PROT_READ | PROT_WRITE)
+    mov x3, #(MAP_PRIVATE | MAP_ANONYMOUS)
+    mov x4, #-1
+    mov x5, #0
+    mov x8, #222
+    svc #0
+
+    cmp x0, #0
+    b.lt error
+
+    mov x19, x0
+
+    mov w1, #'A'
+    strb w1, [x19]
+
+    mov x0, x19
+    mov x1, #4096
+    mov x8, #215
+    svc #0
+    cmp x0, #0
+    b.lt error
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+```
+
+## Construir y ejecutar
+
+```bash
+$ aarch64-linux-gnu-as mmap-anonimo.s -o mmap-anonimo.o
+$ aarch64-linux-gnu-ld mmap-anonimo.o -o mmap-anonimo
+$ qemu-aarch64 ./mmap-anonimo
+$ echo $?
+0
+```
+
+El programa no imprime nada. Si termina con `0`, pudo mapear, escribir un byte,
+liberar y salir.
+
+Si termina con `1`, la ruta de error fue tomada. En esta etapa no imprimimos
+`errno` ni mensajes detallados porque distraería del contrato principal:
+preparar registros, revisar retorno, guardar base y liberar región.
+
+## Lectura paso a paso
+
+| Bloque | Qué ocurre |
+|---|---|
+| `mov x0, #0` | no sugerimos dirección |
+| `mov x1, #4096` | pedimos una página |
+| `mov x2, #(PROT_READ | PROT_WRITE)` | región legible y escribible |
+| `mov x3, #(MAP_PRIVATE | MAP_ANONYMOUS)` | región privada sin archivo |
+| `svc #0` con `x8=222` | kernel intenta crear mapeo |
+| `cmp x0, #0` | revisa error negativo |
+| `mov x19, x0` | guarda dirección antes de sobrescribir `x0` |
+| `strb w1, [x19]` | usa región como memoria normal |
+| `munmap` | libera región |
+
+## Por qué guardar en `x19`
+
+Después de `mmap`, `x0` contiene dirección. Pero `munmap` también usa `x0` como
+argumento y otras operaciones pueden sobrescribirlo. Si pierdes esa dirección,
+no puedes liberar correctamente.
+
+```bash
+mmap -> x0 = dirección
+guardar -> x19 = dirección
+usar -> [x19]
+munmap -> x0 = x19
+```
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| no guardar `x0` | pierdes dirección |
+| usar `fd = 0` en anónimo | no representa anónimo |
+| olvidar `MAP_ANONYMOUS` | kernel interpreta `fd` como archivo |
+| pedir `PROT_READ` solamente | luego escribir falla |
+| creer que 4096 bytes están “llenos” | solo están mapeados |
+
+## Mini ejercicios
+
+1. ¿Por qué `fd` vale `-1`?
+2. ¿Qué permiso permite `strb`?
+3. ¿Qué contiene `x0` después de `mmap` si funciona?
+4. ¿Por qué se copia `x0` a `x19`?
+5. ¿Qué syscall usa `x8 = 215`?
+
+## Cierre
+
+`mmap` anónimo privado es el primer puente entre heap conceptual y memoria real
+desde Linux: pedir región, guardar dirección, usar bytes, liberar región.

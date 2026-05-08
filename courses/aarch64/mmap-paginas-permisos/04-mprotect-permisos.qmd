@@ -1,0 +1,187 @@
+---
+title: "13.4 · mprotect, permisos y W^X"
+subtitle: "mprotect cambia qué accesos son válidos sobre una región."
+description: "mprotect, PROT_READ, PROT_WRITE, PROT_EXEC, permisos de página y W^X."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > mprotect y permisos
+:::
+
+::: {.hero-lab}
+Una región de memoria no solo tiene dirección y tamaño. También tiene permisos.
+`mprotect` permite cambiar esos permisos mientras la región sigue mapeada.
+:::
+
+## Permisos
+
+```asm
+.equ PROT_NONE,  0
+.equ PROT_READ,  1
+.equ PROT_WRITE, 2
+.equ PROT_EXEC,  4
+```
+
+| Permiso | Permite |
+|---|---|
+| `PROT_NONE` | ningún acceso normal |
+| `PROT_READ` | leer |
+| `PROT_WRITE` | escribir |
+| `PROT_EXEC` | ejecutar instrucciones |
+
+Los permisos se combinan con OR:
+
+```asm
+mov x2, #(PROT_READ | PROT_WRITE)
+```
+
+## Permisos pertenecen a regiones
+
+`mprotect` no protege una variable aislada. Trabaja sobre un rango de memoria.
+Ese rango debe corresponder a páginas o a una región que el kernel pueda
+modificar como mapeo.
+
+```bash
+base = dirección de región
+length = tamaño del rango
+prot = nueva política de acceso
+```
+
+Si dentro de una página tienes diez datos distintos, `mprotect` no sabe cuál es
+“la variable importante”. Solo ve direcciones, tamaño y permisos.
+
+## Contrato de `mprotect`
+
+| Registro | Argumento | Significado |
+|---|---|---|
+| `x0` | `addr` | inicio de región |
+| `x1` | `length` | tamaño |
+| `x2` | `prot` | nuevos permisos |
+| `x8` | syscall | `226` para `mprotect` |
+| `x0` | retorno | `0` si funciona, negativo si falla |
+
+Ejemplo RW -> R:
+
+```asm
+.equ PROT_READ, 1
+
+mov x0, x19
+mov x1, #4096
+mov x2, #PROT_READ
+mov x8, #226
+svc #0
+```
+
+Después del `svc #0`, revisa retorno:
+
+```asm
+cmp x0, #0
+b.lt error
+```
+
+Si `mprotect` falla, no asumas que los permisos cambiaron. La región queda con
+su estado anterior o con el estado que el kernel haya mantenido según el fallo.
+Para esta unidad, la regla práctica es simple: si retorna negativo, salta a
+cleanup o error.
+
+## Qué cambia y qué no cambia
+
+`mprotect` no cambia los bytes ya guardados. Cambia qué operaciones se permiten.
+
+```bash
+antes:
+  región RW
+  puedes leer
+  puedes escribir
+
+mprotect -> R
+
+después:
+  puedes leer
+  escribir es inválido
+```
+
+::: {.callout-note title="Idea clave"}
+Permiso no es contenido. Un byte puede seguir siendo `0x41`, pero ya no puedes
+escribir encima si quitaste `PROT_WRITE`.
+:::
+
+## Transiciones comunes
+
+| Transición | Uso docente |
+|---|---|
+| `RW -> R` | construir datos y luego congelarlos |
+| `NONE -> RW` | región reservada que luego se habilita |
+| `RW -> RX` | idea futura para código generado |
+| `RWX` permanente | evitar como regla general |
+
+En esta unidad usaremos `RW -> R` porque es fácil de leer: primero escribimos un
+byte, luego quitamos escritura. No hace falta ejecutar nada para entender que el
+permiso cambió.
+
+## W^X
+
+W^X significa write xor execute: una región no debería ser escribible y
+ejecutable al mismo tiempo.
+
+```bash
+RW  para construir datos
+RX  para ejecutar código
+RWX evitar como regla de seguridad
+```
+
+Esta unidad no construye JIT ni shellcode. Solo enseña la regla mental: si una
+región necesita ejecutarse, normalmente no debería quedar escribible al mismo
+tiempo.
+
+## `PROT_EXEC` no es default
+
+No uses `PROT_EXEC` por costumbre. Para buffers, strings, arrays y estructuras,
+necesitas lectura/escritura, no ejecución.
+
+| Uso | Permisos razonables |
+|---|---|
+| buffer de datos | `READ | WRITE` |
+| tabla constante generada y luego protegida | `READ` |
+| código generado en tema futuro | transiciones controladas, no RWX permanente |
+
+`PROT_EXEC` aparece aquí para que lo reconozcas, no para usarlo en buffers. En
+programas normales, datos y código tienen propósitos distintos. Marcar datos
+como ejecutables sin necesidad aumenta superficie de ataque y confunde la
+lectura del mapa de memoria.
+
+## Error al escribir sin `PROT_WRITE`
+
+Después de quitar escritura:
+
+```asm
+// Región ya quedó solo lectura.
+// Este patrón es incorrecto y puede terminar en fallo.
+
+// strb w1, [x19]
+```
+
+No ejecutamos ese patrón en ejemplos seguros. Lo usamos para explicar permisos.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| creer que `mprotect` borra datos | no borra; cambia permisos |
+| quitar `WRITE` y luego escribir | acceso inválido |
+| usar `EXEC` por costumbre | superficie innecesaria |
+| pasar dirección no correspondiente | `mprotect` puede fallar |
+| olvidar revisar retorno | error silencioso en tu lectura mental |
+
+## Mini ejercicios
+
+1. ¿Qué permiso necesitas para `strb`?
+2. ¿Qué permiso necesitas para ejecutar instrucciones?
+3. ¿`mprotect` cambia bytes existentes?
+4. ¿Qué significa W^X?
+5. ¿Por qué `PROT_EXEC` no debe usarse por defecto?
+
+## Cierre
+
+`mprotect` enseña que memoria no es solo dirección. También es política de
+acceso. Esa idea será clave para seguridad, loaders, JIT y MMU futura.

@@ -1,0 +1,214 @@
+---
+title: "13.5 · mmap con archivo"
+subtitle: "Un archivo puede aparecer como región de memoria virtual."
+description: "mmap con archivo, fd, offset, MAP_PRIVATE, MAP_SHARED, openat, close y munmap."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > mmap con archivo
+:::
+
+::: {.hero-lab}
+`mmap` no solo sirve para memoria anónima. También puede mapear un archivo para
+leerlo como memoria. El archivo se abre con `openat`, el fd se pasa a `mmap`, y
+la región se libera con `munmap`.
+:::
+
+## Flujo general
+
+```bash
+openat
+  -> fd
+
+mmap con fd
+  -> dirección virtual
+
+usar memoria
+  -> leer bytes del archivo desde la región
+
+close fd
+  -> cierra descriptor si ya no se necesita
+
+munmap
+  -> libera región
+```
+
+Cerrar el `fd` no deshace automáticamente la región ya mapeada. `munmap` sigue
+siendo necesario para liberar el mapeo.
+
+## Diferencia con mapeo anónimo
+
+| Tipo | `fd` | `offset` | Uso típico |
+|---|---|---|---|
+| anónimo | `-1` | `0` | memoria dinámica sin archivo |
+| con archivo | fd real | posición dentro del archivo | leer o compartir contenido de archivo |
+
+El mapeo anónimo crea una región sin contenido de archivo detrás. El mapeo con
+archivo conecta una parte del archivo con una región virtual. El programa accede
+a direcciones, pero el origen de esos bytes es distinto.
+
+```bash
+mmap anónimo
+  bytes vienen de región nueva
+
+mmap con archivo
+  bytes vienen de archivo abierto
+```
+
+## Contrato de `mmap` con archivo
+
+| Registro | Argumento | En mapeo con archivo |
+|---|---|---|
+| `x0` | `addr` | normalmente `0` |
+| `x1` | `length` | bytes a mapear |
+| `x2` | `prot` | permisos, por ejemplo `PROT_READ` |
+| `x3` | `flags` | `MAP_PRIVATE` o `MAP_SHARED` |
+| `x4` | `fd` | descriptor del archivo |
+| `x5` | `offset` | desplazamiento dentro del archivo |
+| `x8` | syscall | `222` |
+
+Para archivo, `fd` no es `-1`. Debe venir de `openat`.
+
+Secuencia mínima:
+
+```asm
+mov x8, #56         // openat
+svc #0              // x0 = fd o error
+cmp x0, #0
+b.lt error
+
+mov x19, x0         // guardar fd
+```
+
+Después, `x19` puede pasar a `x4` para `mmap`. Igual que con direcciones, no
+conviene dejar un recurso importante solo en `x0`, porque la siguiente syscall
+también escribirá su retorno ahí.
+
+## `offset`
+
+`offset` indica desde qué posición del archivo empieza el mapeo.
+
+```bash
+offset = 0
+  mapear desde inicio
+
+offset = 4096
+  mapear desde segunda página típica
+```
+
+En la práctica, offsets para `mmap` deben respetar alineación de página. En esta
+unidad usaremos `0` para no mezclar demasiadas reglas.
+
+`offset` no es un índice dentro del buffer después del mapeo. Es el punto del
+archivo desde donde empieza la región. Si `offset = 0`, la dirección base
+corresponde al inicio del archivo mapeado. Si `offset = 4096`, la base
+corresponde a una posición posterior del archivo.
+
+```bash
+archivo:
+  byte 0 ... byte 4095 | byte 4096 ...
+
+offset 0:
+  base apunta al byte 0 del archivo
+
+offset 4096:
+  base apunta al byte 4096 del archivo
+```
+
+## `MAP_PRIVATE` vs `MAP_SHARED`
+
+| Flag | Lectura inicial |
+|---|---|
+| `MAP_PRIVATE` | cambios no se escriben directamente al archivo como edición compartida |
+| `MAP_SHARED` | cambios pueden compartirse con el archivo u otros mapeos según reglas |
+
+`MAP_PRIVATE` no significa “copiar todo el archivo inmediatamente”. Significa
+que el mapeo es privado para escrituras. Detalles como copy-on-write quedan para
+unidades posteriores.
+
+`MAP_SHARED` no crea variables globales mágicas. Solo define una relación de
+compartición del mapeo. Sin sincronización y reglas claras, no es un modelo de
+comunicación completo.
+
+Para esta unidad, la lectura segura es:
+
+| Si quieres... | Usa como idea inicial |
+|---|---|
+| leer archivo sin modificarlo | `MAP_PRIVATE` + `PROT_READ` |
+| estudiar cambios compartidos | `MAP_SHARED`, pero no profundizar aún |
+
+No conviertas `MAP_SHARED` en tema central todavía. Más adelante, memoria
+compartida, sincronización y coherencia tendrán su propio contexto.
+
+## Estructura básica en assembly
+
+```asm
+.equ AT_FDCWD, -100
+.equ O_RDONLY,  0
+.equ PROT_READ, 1
+.equ MAP_PRIVATE, 2
+
+// 1. openat retorna fd en x0
+// 2. guardar fd
+// 3. mmap usa fd en x4
+// 4. close cierra fd
+// 5. munmap libera región
+```
+
+No siempre conviene mostrar un programa largo aquí. El programa guiado de la
+unidad integra el patrón completo.
+
+## Por qué cerrar fd si hay mapeo
+
+Después de un `mmap` exitoso, el mapeo tiene su propio ciclo de vida. El fd ya no
+siempre necesita permanecer abierto para leer la región mapeada. Aun así, el
+mapeo sigue vivo hasta `munmap`.
+
+```bash
+fd abierto
+  mmap exitoso
+  close fd
+  región sigue viva
+  munmap región
+```
+
+La idea importante: fd y mapeo son recursos relacionados, pero no idénticos.
+
+## Tamaño de archivo y tamaño de mapeo
+
+`length` sigue siendo tamaño en bytes de la región. Si mapeas archivo, ese
+tamaño debe tener sentido con el archivo y con el uso esperado.
+
+| Caso | Lectura |
+|---|---|
+| `length` menor que archivo | mapeas solo parte |
+| `length` igual a archivo | mapeas contenido completo conocido |
+| `length` mayor que archivo | puede fallar o producir accesos problemáticos según caso |
+
+En esta unidad no construiremos un lector robusto con `fstat`. Basta entender
+que `mmap` no adivina mágicamente cuánto querías leer. Tú pasas `length`.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar `fd = -1` sin `MAP_ANONYMOUS` | archivo necesita fd real |
+| olvidar `close` | fuga de fd |
+| olvidar `munmap` | fuga de región |
+| asumir copia inmediata con `MAP_PRIVATE` | no es la lectura correcta |
+| asumir comunicación automática con `MAP_SHARED` | requiere reglas adicionales |
+| usar offset arbitrario | debe respetar reglas de página |
+
+## Mini ejercicios
+
+1. ¿Qué syscall produce el `fd` para mapear archivo?
+2. ¿Qué argumento de `mmap` recibe el `fd`?
+3. ¿Qué significa `offset = 0`?
+4. ¿Cerrar fd libera la región mapeada?
+5. ¿Qué syscall libera la región?
+
+## Cierre
+
+`mmap` con archivo une dos ideas: fd como recurso de Linux y memoria virtual como
+forma de acceso. El fd abre la puerta; la región mapeada se administra con
+`munmap`.

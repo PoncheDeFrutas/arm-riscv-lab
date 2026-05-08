@@ -1,0 +1,210 @@
+---
+title: "13.3 · munmap y ciclo de vida de una región"
+subtitle: "Una región mapeada también tiene ownership y cleanup."
+description: "munmap, addr, length, liberar región, cleanup y uso después de munmap."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > mmap > munmap y ciclo de vida
+:::
+
+::: {.hero-lab}
+`mmap` abre una región virtual. `munmap` la libera. Después de eso, cualquier
+puntero viejo hacia esa región debe tratarse como inválido.
+:::
+
+## Ciclo de vida
+
+```bash
+mmap
+  -> región viva
+  -> puntero válido
+
+uso
+  -> leer/escribir según permisos
+
+munmap
+  -> región liberada
+  -> puntero viejo inválido
+```
+
+Esto es ownership de memoria virtual. Si tu código pidió la región, tu código
+debe tener una ruta clara para liberarla.
+
+Ownership aquí no significa una regla del lenguaje. Assembly no impide que
+pierdas el puntero, liberes dos veces o uses memoria vieja. Ownership significa
+que tú decides qué registro o variable conserva la dirección base y qué ruta del
+programa será responsable de llamar `munmap`.
+
+```bash
+dueño de región
+  conserva base
+  conserva tamaño
+  libera una vez
+  no usa después de liberar
+```
+
+Si no puedes responder “¿dónde está la base?” y “¿quién libera?”, la región está
+mal administrada.
+
+## Contrato de `munmap`
+
+| Registro | Argumento | Significado |
+|---|---|---|
+| `x0` | `addr` | dirección retornada por `mmap` |
+| `x1` | `length` | tamaño de la región |
+| `x8` | syscall | `215` para `munmap` |
+| `x0` | retorno | `0` si funciona, negativo si falla |
+
+Ejemplo:
+
+```asm
+mov x0, x19
+mov x1, #4096
+mov x8, #215
+svc #0
+```
+
+## Dirección y longitud deben corresponder
+
+`munmap` necesita saber qué rango liberar.
+
+```bash
+addr   = inicio de región
+length = tamaño a liberar
+```
+
+Si mapeaste 4096 bytes y guardaste la dirección en `x19`, usa esos mismos datos
+para liberar. No inventes otra dirección ni otra longitud sin entender el rango.
+
+## Base y cursor
+
+Cuando recorres una región, suele aparecer otro puntero:
+
+```bash
+x19 = base original para munmap
+x20 = cursor para recorrer bytes
+```
+
+El cursor puede avanzar:
+
+```asm
+add x20, x20, #1
+```
+
+La base no debe avanzar si luego la necesitas para liberar. Si usas el cursor
+modificado como argumento de `munmap`, ya no estás describiendo el mismo rango
+que creó `mmap`.
+
+::: {.callout-warning title="Error común"}
+No llames `munmap` con un puntero movido dentro de la región como si fuera la
+base. Guarda la dirección original retornada por `mmap`.
+:::
+
+## Acceso después de `munmap`
+
+Después de `munmap`, la región ya no pertenece al proceso.
+
+```asm
+// Después de munmap, la región ya no pertenece al proceso.
+// Este patrón es incorrecto.
+
+// strb w1, [x19]
+```
+
+`x19` puede conservar el número de dirección, pero el contrato terminó. Usarlo
+es el equivalente conceptual de use-after-free.
+
+Una forma segura de leerlo:
+
+```bash
+antes de munmap
+  x19 = dirección válida
+
+después de munmap
+  x19 = número viejo
+  no es permiso para acceder
+```
+
+El registro no se borra solo. La invalidez está en el mapa de memoria del
+proceso, no en el valor aritmético guardado en el registro.
+
+## Cleanup con región mapeada
+
+Si algo falla después de `mmap`, debes liberar antes de salir:
+
+```bash
+mmap funciona
+  usar región
+  si falla algo:
+    munmap
+    exit 1
+  si todo bien:
+    munmap
+    exit 0
+```
+
+Estructura conceptual:
+
+```asm
+cleanup:
+    mov x0, x19
+    mov x1, #4096
+    mov x8, #215
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+```
+
+## Dos rutas de error
+
+| Ruta | Cuándo usar |
+|---|---|
+| `error_sin_region` | `mmap` falló, no hay región |
+| `cleanup` | `mmap` funcionó, región debe liberarse |
+
+No intentes liberar si nunca se mapeó. Sí libera si el mapeo ya existe y algo
+posterior falla.
+
+## `munmap` también puede fallar
+
+En ejemplos pequeños solemos salir después de `munmap`, pero el retorno sigue
+importando:
+
+```asm
+mov x0, x19
+mov x1, #4096
+mov x8, #215
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+Un fallo de `munmap` suele indicar que el rango no era válido: dirección
+incorrecta, longitud incoherente o región ya no existente. La solución no es
+ignorar el retorno; es revisar qué rango estás entregando al kernel.
+
+## Relación con Unidad 12
+
+| Unidad 12 | En esta unidad |
+|---|---|
+| allocation conceptual | `mmap` |
+| deallocation conceptual | `munmap` |
+| use-after-free | acceso después de `munmap` |
+| ownership | quién debe llamar `munmap` |
+
+## Mini ejercicios
+
+1. ¿Qué argumento recibe `munmap` en `x0`?
+2. ¿Por qué debes conservar dirección original?
+3. ¿Qué pasa si usas `x19` después de `munmap`?
+4. ¿Cuándo saltas a `error_sin_region`?
+5. ¿Cuándo saltas a `cleanup`?
+
+## Cierre
+
+`munmap` completa la mitad que `mmap` empezó. Una región mapeada sin ruta de
+liberación es un recurso mal administrado.
