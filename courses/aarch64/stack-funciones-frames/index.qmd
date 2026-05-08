@@ -1,0 +1,186 @@
+---
+title: "11 · Stack, funciones y stack frames"
+subtitle: "Cómo existen las funciones a nivel máquina en AArch64."
+description: "Página principal de la Unidad 11 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames
+:::
+
+::: {.hero-lab}
+Hasta ahora has usado etiquetas, saltos y syscalls. En esta unidad vamos a
+construir la idea de función real: una llamada guarda dónde volver, el stack
+guarda contexto, el frame organiza datos temporales y GDB puede reconstruir la
+cadena de llamadas.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Llama**
+`bl` salta y guarda retorno en `x30`.
+:::
+
+::: {.lab-step}
+**2. Protege**
+Función no hoja guarda `LR`.
+:::
+
+::: {.lab-step}
+**3. Reserva**
+`sp` baja para abrir espacio.
+:::
+
+::: {.lab-step}
+**4. Ordena**
+`x29` marca frame actual.
+:::
+
+::: {.lab-step}
+**5. Vuelve**
+Epílogo restaura y `ret` regresa.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 03: `SP`, `x29/FP`, `x30/LR` | Entender registros especiales de función |
+| Unidad 06: memoria, `ldr`, `str`, `stp`, `ldp` | Guardar datos y registros en stack |
+| Unidad 08: `b`, `bl`, `br`, `blr`, `ret` | Convertir salto con retorno en función |
+| Unidad 09: `_start` y `exit` | Cerrar programas completos de ejemplo |
+| Unidad 10: rutas de error y cleanup | Leer flujos con etiquetas claras |
+
+## Registros clave
+
+| Registro | Nombre común | Uso inicial en esta unidad |
+|---|---|---|
+| `sp` | Stack Pointer | apunta al tope actual del stack |
+| `x29` | FP | frame pointer, base del frame actual cuando se usa |
+| `x30` | LR | link register, dirección de retorno de `bl` |
+
+::: {.callout-note title="Idea clave"}
+`bl` escribe en `x30`. Si una función llama a otra con `bl`, el valor anterior
+de `x30` se pierde si no se guardó antes.
+:::
+
+## Vocabulario mínimo
+
+| Concepto | Quién lo hace | Idea |
+|---|---|---|
+| caller | función que llama | prepara llamada y continúa después |
+| callee | función llamada | ejecuta trabajo y retorna |
+| función hoja | callee sin llamadas internas | puede no guardar `LR` si no lo modifica |
+| función no hoja | callee que llama a otra función | debe proteger `LR` si necesita retornar bien |
+
+## Forma general de un frame
+
+```bash
+direcciones altas
+  frame anterior
+  x29 guardado
+  x30 guardado
+  variables locales
+direcciones bajas
+```
+
+El stack crece hacia direcciones menores. Reservar espacio normalmente resta a
+`sp`; liberar espacio suma a `sp`.
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Llamadas y retorno
+
+Subrutinas, caller/callee, `b` vs `bl`, `LR`, `ret` y función hoja.
+
+[Abrir](01-llamadas-retorno.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Stack básico
+
+LIFO, crecimiento hacia abajo, `SP`, alineación de 16 bytes, reservar y liberar.
+
+[Abrir](02-stack-basico.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Stack frames
+
+Prólogo, epílogo, `FP`, `LR`, variables locales y lectura del frame.
+
+[Abrir](03-stack-frames.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Funciones no hoja
+
+Guardar `LR`, llamadas anidadas y preservación introductoria de registros.
+
+[Abrir](04-funciones-no-hoja-registros.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Recursión básica
+
+Cada llamada necesita su propio frame y su propio retorno.
+
+[Abrir](05-recursion-basica.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Debugging con GDB
+
+Ver `sp`, `x29`, `x30`, frames, backtrace y corrupción conceptual.
+
+[Abrir](06-debugging-frames-gdb.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| ABI/AAPCS64 completo | Aquí usamos reglas mínimas para entender funciones |
+| Tabla exhaustiva caller/callee-saved | Primero importa entender por qué se preserva |
+| Varargs | Requiere reglas ABI más amplias |
+| DWARF y unwinding avanzado | GDB se usará de forma básica |
+| Tail calls y optimización | Pueden ocultar frames y confundir al inicio |
+| Interoperabilidad completa con C | Será una unidad posterior |
+| Stack canaries y exploits | Seguridad queda fuera de esta base |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+slides/aarch64/stack-funciones-frames/overview/slides.md
+```
+
+Esa presentación debe visualizar `caller -> bl -> callee -> ret`, `LR`, `SP`,
+`FP`, prólogo, epílogo y backtrace. No debe reemplazar estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar qué es una subrutina.
+- [ ] Puedo distinguir `b` y `bl`.
+- [ ] Puedo explicar que `bl` guarda retorno en `x30/LR`.
+- [ ] Puedo explicar que `ret` vuelve usando `LR`.
+- [ ] Puedo distinguir función hoja y no hoja.
+- [ ] Puedo explicar por qué guardar `LR`.
+- [ ] Puedo explicar stack LIFO y crecimiento hacia abajo.
+- [ ] Puedo mantener alineación de 16 bytes.
+- [ ] Puedo reconocer prólogo y epílogo.
+- [ ] Puedo explicar `x29/FP` como base de frame.
+- [ ] Puedo ubicar variables locales simples.
+- [ ] Puedo ver frames básicos con GDB.
+
+## Siguiente paso
+
+Empieza por [Llamadas y retorno](01-llamadas-retorno.qmd).

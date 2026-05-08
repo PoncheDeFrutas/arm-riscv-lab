@@ -57,14 +57,14 @@ seguridad, virtualización y proyectos.
 <div class="unit-card"><strong><a href="aritmetica-logica-bits/index.qmd">7. Aritmética, lógica, flags y bits</a></strong><p>Operaciones enteras, NZCV, shifts, extensiones, máscaras y manipulación de campos de bits.</p></div>
 <div class="unit-card"><strong><a href="control-flujo/index.qmd">8. Control de flujo y programación estructurada</a></strong><p>Branches, condiciones, loops, compare-and-branch, test-bit-and-branch y conditional select.</p></div>
 <div class="unit-card"><strong><a href="syscalls-esenciales/index.qmd">9. Syscalls esenciales</a></strong><p>Contrato con Linux, x8, argumentos en x0-x5, retorno en x0, errores, exit, read, write, openat y close.</p></div>
-<div class="unit-card"><strong>10. Linux como API del kernel</strong><p>File descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.</p></div>
+<div class="unit-card"><strong><a href="linux-api-kernel/index.qmd">10. Linux como API del kernel</a></strong><p>File descriptors, archivos, errores, recursos, procesos y tiempo sin depender todavía de libc.</p></div>
 </div>
 </details>
 
 <details class="roadmap-accordion">
 <summary>Bloque C — Funciones, memoria dinámica, ABI y binarios</summary>
 <div class="unit-list">
-<div class="unit-card"><strong>11. Stack, funciones y stack frames</strong><p>Caller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.</p></div>
+<div class="unit-card"><strong><a href="stack-funciones-frames/index.qmd">11. Stack, funciones y stack frames</a></strong><p>Caller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.</p></div>
 <div class="unit-card"><strong>12. Heap y memoria dinámica</strong><p>Stack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.</p></div>
 <div class="unit-card"><strong>13. mmap, munmap, mprotect, páginas y permisos</strong><p>Memoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.</p></div>
 <div class="unit-card"><strong>14. Layout de datos, structs, ADTs y objetos manuales</strong><p>Offsets, size, alignment, padding, invariantes, self pointer y descriptores propios.</p></div>

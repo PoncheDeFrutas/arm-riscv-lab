@@ -1,0 +1,130 @@
+---
+title: "10.5 · Procesos y tiempo"
+subtitle: "El mismo contrato de syscall sirve para servicios más allá de archivos."
+description: "Mapa inicial de getpid, execve, wait4, clock_gettime y nanosleep en Linux AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Linux como API del kernel > Procesos y tiempo
+:::
+
+::: {.hero-lab}
+Linux como API del kernel no termina en archivos. También ofrece información del
+proceso, ejecución de programas y servicios de tiempo. Aquí solo construiremos
+un mapa inicial para reconocer estas syscalls cuando aparezcan después.
+:::
+
+## Misma forma, otro servicio
+
+El contrato no cambia:
+
+```bash
+poner argumentos en x0-x5
+poner número en x8
+svc #0
+leer retorno en x0
+```
+
+Lo que cambia es el servicio pedido.
+
+## `getpid`
+
+`getpid` devuelve el identificador del proceso.
+
+```asm
+mov x8, #172        // getpid
+svc #0              // x0 = pid
+```
+
+No necesita argumentos. Después de la syscall, `x0` contiene el PID.
+
+## `nanosleep`
+
+`nanosleep` pausa el proceso durante un tiempo. Recibe un puntero a una
+estructura `timespec`:
+
+```bash
+timespec
+  tv_sec  -> segundos
+  tv_nsec -> nanosegundos
+```
+
+Ejemplo conceptual:
+
+```asm
+ldr x0, =req        // tiempo solicitado
+mov x1, #0          // rem = NULL
+mov x8, #101        // nanosleep
+svc #0
+
+.data
+req:
+    .quad 1         // tv_sec
+    .quad 0         // tv_nsec
+```
+
+Aquí el punto importante es que el kernel lee una estructura desde memoria. No
+estamos llamando una función de biblioteca; estamos pasando una dirección.
+
+## `clock_gettime`
+
+`clock_gettime` pide al kernel escribir la hora de un reloj en una estructura
+`timespec`.
+
+```asm
+.equ CLOCK_MONOTONIC, 1
+
+mov x0, #CLOCK_MONOTONIC
+ldr x1, =ts
+mov x8, #113        // clock_gettime
+svc #0
+
+.bss
+ts:
+    .skip 16
+```
+
+El buffer debe ser escribible porque el kernel colocará ahí `tv_sec` y
+`tv_nsec`.
+
+## `execve` conceptual
+
+`execve` reemplaza el programa actual por otro. No crea un proceso nuevo por sí
+solo; carga otro programa sobre el proceso actual si funciona.
+
+| Registro | Uso básico |
+|---|---|
+| `x0` | ruta del programa |
+| `x1` | arreglo `argv` |
+| `x2` | arreglo `envp` |
+| `x8` | `221` |
+
+No implementaremos `execve` completo aquí, porque requiere preparar arreglos de
+punteros terminados en cero y entender mejor layout de memoria.
+
+## `wait4` conceptual
+
+`wait4` espera cambios en un proceso hijo. Aparece junto con procesos creados
+por otras syscalls como `fork` o `clone`, que no estudiaremos todavía.
+
+| Syscall | Número | Papel en esta unidad |
+|---|---:|---|
+| `getpid` | `172` | obtener PID |
+| `execve` | `221` | mapa conceptual |
+| `wait4` | `260` | mapa conceptual |
+| `clock_gettime` | `113` | obtener tiempo |
+| `nanosleep` | `101` | dormir proceso |
+
+## Mini ejercicios
+
+1. ¿Qué syscall no necesita argumentos para devolver el PID?
+2. ¿Por qué `nanosleep` necesita una dirección?
+3. ¿Qué escribe `clock_gettime` en memoria?
+4. ¿Por qué `execve` no se desarrolla completo todavía?
+5. ¿Qué tienen en común archivos, tiempo y procesos a nivel de syscall?
+
+## Cierre
+
+Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de
+syscall, `svc #0`, retorno. Esta unidad no busca cubrir todo Linux; busca que
+reconozcas el patrón cuando el servicio cambia.

@@ -1,0 +1,132 @@
+---
+title: "10.4 · Posición y metadatos"
+subtitle: "Los archivos tienen posición actual y datos que el kernel puede consultar."
+description: "Introducción a lseek, fstat, statx y getdents64 en Linux AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Linux como API del kernel > Posición y metadatos
+:::
+
+::: {.hero-lab}
+Leer y escribir no son las únicas operaciones sobre archivos. Un fd puede tener
+posición actual, y el kernel también puede entregar metadatos del recurso:
+tamaño, tipo, permisos y tiempos.
+:::
+
+## Posición dentro de un archivo
+
+Cuando lees desde un archivo regular, el kernel mantiene una posición asociada
+al fd. Después de leer bytes, esa posición avanza.
+
+```bash
+posición inicial: 0
+read 16 bytes -> posición 16
+read 16 bytes -> posición 32
+lseek a 0     -> posición 0 otra vez
+```
+
+Esto no aplica igual a todos los fd. Un archivo regular suele permitir seek. Un
+pipe, una terminal o algunos dispositivos pueden rechazarlo.
+
+## `lseek`
+
+`lseek` cambia la posición actual del fd.
+
+| Registro | Uso |
+|---|---|
+| `x0` | fd |
+| `x1` | offset |
+| `x2` | origen |
+| `x8` | `62` |
+| retorno `x0` | nueva posición o error negativo |
+
+Constantes básicas de origen:
+
+| Valor | Nombre común | Idea |
+|---:|---|---|
+| `0` | `SEEK_SET` | desde inicio |
+| `1` | `SEEK_CUR` | desde posición actual |
+| `2` | `SEEK_END` | desde final |
+
+```asm
+mov x0, x19         // fd
+mov x1, #0          // offset
+mov x2, #0          // SEEK_SET
+mov x8, #62         // lseek
+svc #0
+cmp x0, #0
+b.lt cleanup
+```
+
+Este ejemplo regresa al inicio del archivo.
+
+## Metadatos: `fstat`
+
+`fstat` consulta información usando un fd ya abierto. El kernel escribe una
+estructura en un buffer que tú preparas.
+
+```asm
+mov x0, x19
+ldr x1, =statbuf
+mov x8, #80         // fstat
+svc #0
+cmp x0, #0
+b.lt cleanup
+
+.bss
+statbuf:
+    .skip 256
+```
+
+En esta unidad no vamos a interpretar todos los campos de `struct stat`. La idea
+importante es la dirección: el programa reserva memoria, pasa un puntero y el
+kernel escribe ahí el resultado.
+
+## Metadatos: `statx`
+
+`statx` es una syscall más nueva y explícita para consultar metadatos. Puede
+trabajar con directorio base, ruta, flags, máscara de campos y buffer destino.
+
+```asm
+.equ AT_FDCWD, -100
+.equ STATX_BASIC_STATS, 0x000007ff
+
+mov x0, #AT_FDCWD
+ldr x1, =nombre
+mov x2, #0
+mov x3, #STATX_BASIC_STATS
+ldr x4, =statxbuf
+mov x8, #291        // statx
+svc #0
+```
+
+No necesitamos aprender todos los campos todavía. Basta con reconocer que Linux
+puede devolver información del archivo en una estructura de memoria.
+
+## `getdents64` como mención
+
+`getdents64` permite leer entradas de un directorio. Es útil para construir algo
+parecido a `ls`, pero su buffer contiene estructuras variables. Por eso no será
+tema central ahora.
+
+| Syscall | Número | En esta unidad |
+|---|---:|---|
+| `lseek` | `62` | mover posición en fd |
+| `fstat` | `80` | metadatos desde fd |
+| `statx` | `291` | metadatos desde ruta o fd |
+| `getdents64` | `61` | mención para directorios |
+
+## Mini ejercicios
+
+1. ¿Qué syscall usarías para volver al inicio de un archivo?
+2. ¿Por qué `lseek` puede fallar en algunos fd?
+3. ¿Qué diferencia hay entre pasar un fd a `fstat` y una ruta a `statx`?
+4. ¿Por qué `statbuf` debe estar en memoria escribible?
+5. ¿Por qué `getdents64` queda como tema opcional?
+
+## Cierre
+
+Un fd no solo sirve para leer y escribir. También puede tener posición y
+metadatos asociados. La regla sigue siendo la misma: preparar registros, pasar
+punteros válidos cuando hagan falta, ejecutar `svc #0` y revisar retorno.

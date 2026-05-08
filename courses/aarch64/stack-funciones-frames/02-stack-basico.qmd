@@ -1,0 +1,145 @@
+---
+title: "11.2 · Stack básico"
+subtitle: "El stack guarda datos temporales siguiendo disciplina LIFO."
+description: "Stack, SP, LIFO, crecimiento hacia abajo, alineación de 16 bytes, reservar y liberar espacio."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames > Stack básico
+:::
+
+::: {.hero-lab}
+El stack es una región de memoria usada para guardar contexto temporal: retornos,
+registros preservados, variables locales y datos extra. Su regla principal es
+disciplina: lo último que reservas debe ser lo primero que liberas.
+:::
+
+## LIFO
+
+LIFO significa last in, first out: último en entrar, primero en salir.
+
+```bash
+push A
+push B
+pop  B
+pop  A
+```
+
+En AArch64 no usamos una instrucción `push` universal como concepto principal.
+Usamos instrucciones de memoria y actualizamos `sp`.
+
+## `SP`
+
+`sp` apunta al tope actual del stack.
+
+```bash
+direcciones altas
+  datos antiguos
+  ...
+sp -> tope actual
+direcciones bajas
+```
+
+Cuando reservas espacio, `sp` baja:
+
+```asm
+sub sp, sp, #16
+```
+
+Cuando liberas espacio, `sp` sube:
+
+```asm
+add sp, sp, #16
+```
+
+## Crecimiento hacia abajo
+
+El stack crece hacia direcciones menores.
+
+```bash
+antes de reservar
+  0x7ffffff0  <- sp
+
+sub sp, sp, #16
+
+después de reservar
+  0x7fffffe0  <- sp
+```
+
+No significa que los datos se lean al revés. Significa que el puntero se mueve a
+direcciones más bajas para abrir espacio.
+
+## Alineación de 16 bytes
+
+En AArch64, el stack debe mantenerse alineado a 16 bytes en los puntos donde se
+usa como stack de función. Para esta unidad, mantendremos reservas en múltiplos
+de 16.
+
+```asm
+sub sp, sp, #16      // correcto para un espacio pequeño
+add sp, sp, #16
+```
+
+Evita reservas como:
+
+```asm
+sub sp, sp, #8       // no lo uses como patrón de función aquí
+```
+
+::: {.callout-warning title="Error común"}
+No trates `sp` como registro general. Si lo mueves y no lo restauras, puedes
+romper retornos, variables locales o llamadas futuras.
+:::
+
+## Guardar un valor local
+
+```asm
+.global _start
+
+.text
+_start:
+    sub sp, sp, #16
+
+    mov x0, #123
+    str x0, [sp]
+    ldr x1, [sp]
+
+    add sp, sp, #16
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Lectura:
+
+| Paso | Estado |
+|---|---|
+| `sub sp, sp, #16` | reserva 16 bytes |
+| `str x0, [sp]` | guarda 8 bytes en el espacio reservado |
+| `ldr x1, [sp]` | recupera el valor |
+| `add sp, sp, #16` | libera espacio |
+
+## Reservar no inicializa
+
+Reservar stack solo cambia `sp`. No limpia memoria.
+
+```bash
+sub sp, sp, #16
+```
+
+Después de reservar, tú decides qué escribir. No asumas que el espacio contiene
+cero.
+
+## Mini ejercicios
+
+1. ¿Hacia qué lado crece el stack en AArch64?
+2. ¿Qué instrucción reserva 16 bytes en el ejemplo?
+3. ¿Qué instrucción libera esos 16 bytes?
+4. ¿Por qué no conviene dejar `sp` modificado al salir?
+5. ¿Reservar stack escribe ceros automáticamente?
+
+## Cierre
+
+El stack no es una pila abstracta separada de la memoria. Es memoria normal con
+una regla fuerte: `sp` marca el tope y tu código debe dejarlo como lo encontró.

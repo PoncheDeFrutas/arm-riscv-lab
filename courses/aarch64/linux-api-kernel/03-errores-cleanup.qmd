@@ -1,0 +1,164 @@
+---
+title: "10.3 · Errores y cleanup"
+subtitle: "Una ruta de error debe saber qué recursos ya están abiertos."
+description: "Retornos negativos, errno conceptual, etiquetas de error y cleanup en programas AArch64 con syscalls Linux."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Linux como API del kernel > Errores y cleanup
+:::
+
+::: {.hero-lab}
+Cuando una syscall falla, el programa no debería caer al siguiente bloque como
+si nada hubiera pasado. Debe revisar el retorno, decidir si hay que cerrar algo
+y salir por una ruta clara.
+:::
+
+## Retorno negativo
+
+Muchas syscalls devuelven:
+
+| Retorno en `x0` | Significado |
+|---:|---|
+| `>= 0` | resultado válido |
+| `< 0` | error |
+
+El patrón mínimo es:
+
+```asm
+cmp x0, #0
+b.lt error
+```
+
+Esto no traduce el error a texto ni consulta `errno`. Solo separa ruta correcta
+de ruta fallida.
+
+## `errno` conceptual
+
+Cuando usas funciones de `libc`, como `open` o `read`, normalmente se habla de
+`errno`. Esa variable pertenece al entorno de `libc`.
+
+Aquí no llamamos `libc`. Llamamos al kernel directamente con `svc #0`. Por eso
+vemos el retorno negativo en `x0` y el programa decide qué hacer.
+
+::: {.callout-note title="Idea clave"}
+No esperes que `errno` aparezca solo. En assembly sin `libc`, tu primer contrato
+es el valor que vuelve en `x0`.
+:::
+
+## Por qué existe `cleanup`
+
+Imagina este flujo:
+
+```bash
+openat funciona -> fd abierto
+read falla      -> no debo saltar directo a exit
+close           -> liberar fd
+exit 1          -> terminar con error
+```
+
+Si algo falla antes de abrir el archivo, no hay nada que cerrar. Si falla
+después de abrirlo, sí hay un recurso vivo.
+
+## Patrón con `cleanup`
+
+```asm
+.equ AT_FDCWD, -100
+.equ O_RDONLY, 0
+
+.global _start
+
+.text
+_start:
+    mov x0, #AT_FDCWD
+    ldr x1, =nombre
+    mov x2, #O_RDONLY
+    mov x3, #0
+    mov x8, #56
+    svc #0
+    cmp x0, #0
+    b.lt error_sin_fd
+
+    mov x19, x0
+
+    mov x0, x19
+    ldr x1, =buffer
+    mov x2, #64
+    mov x8, #63
+    svc #0
+    cmp x0, #0
+    b.lt cleanup
+
+    mov x0, x19
+    mov x8, #57
+    svc #0
+    cmp x0, #0
+    b.lt error_sin_fd
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+cleanup:
+    mov x0, x19
+    mov x8, #57
+    svc #0
+
+error_sin_fd:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+.section .rodata
+nombre:
+    .asciz "entrada.txt"
+
+.bss
+buffer:
+    .skip 64
+```
+
+## Dos rutas de error
+
+| Etiqueta | Cuándo usarla |
+|---|---|
+| `error_sin_fd` | todavía no hay fd abierto o ya se intentó cerrar |
+| `cleanup` | hay fd guardado en `x19` y debe cerrarse antes de salir |
+
+Este patrón evita cerrar basura. También evita perder el cierre cuando una
+syscall intermedia falla.
+
+## Inicializar o separar rutas
+
+Otra forma común en programas más grandes es inicializar el fd con un valor
+inválido, por ejemplo `-1`, y revisar antes de cerrar. En esta unidad usaremos
+algo más directo: dos rutas claras. Si el archivo nunca se abrió, no saltamos a
+`cleanup`.
+
+## Mensaje mínimo a stderr
+
+Puedes escribir un error simple en `stderr` antes de salir:
+
+```asm
+mov x0, #2
+ldr x1, =msg_error
+mov x2, #msg_error_len
+mov x8, #64
+svc #0
+```
+
+`stderr` es fd `2`. No lo confundas con `exit 2`; son usos distintos del número.
+
+## Mini ejercicios
+
+1. ¿Por qué `read` fallido debe saltar a `cleanup` y no directo a `exit`?
+2. ¿Qué valor debe existir en `x19` antes de ejecutar `cleanup`?
+3. ¿Qué representa un retorno negativo en `x0`?
+4. ¿Por qué no hablamos todavía de `errno` real?
+5. ¿Qué problema aparece si intentas cerrar un fd que nunca se abrió?
+
+## Cierre
+
+Manejar errores en bajo nivel no es añadir un bloque al final. Es saber qué
+recursos existen en cada punto del programa y salir por una ruta que los deje en
+estado razonable.

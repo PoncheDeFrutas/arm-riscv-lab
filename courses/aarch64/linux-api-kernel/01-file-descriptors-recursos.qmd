@@ -1,0 +1,145 @@
+---
+title: "10.1 · File descriptors y recursos"
+subtitle: "Un fd es un número que representa un recurso abierto del kernel."
+description: "File descriptors, recursos, stdin, stdout, stderr y ciclo de vida básico en Linux AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Linux como API del kernel > File descriptors y recursos
+:::
+
+::: {.hero-lab}
+Un programa Linux no escribe directamente en pantalla ni manipula archivos por
+cuenta propia. Pide recursos al kernel. Cuando el kernel abre uno, devuelve un
+file descriptor: un entero pequeño que el proceso usa como handle.
+:::
+
+## Qué es un file descriptor
+
+Un file descriptor, o `fd`, es un número entero dentro del proceso. Ese número
+no contiene el archivo ni apunta al buffer. Solo identifica un recurso que el
+kernel mantiene abierto para ese proceso.
+
+```bash
+proceso
+  fd 0 -> stdin
+  fd 1 -> stdout
+  fd 2 -> stderr
+  fd 3 -> archivo abierto por openat
+```
+
+Los tres primeros ya existen cuando el programa inicia:
+
+| fd | Nombre común | Uso |
+|---:|---|---|
+| `0` | stdin | entrada estándar |
+| `1` | stdout | salida estándar |
+| `2` | stderr | salida de error |
+
+Cuando abres otro archivo, Linux normalmente devuelve otro número, por ejemplo
+`3`. No debes depender de que siempre sea `3`; debes usar el valor real que
+vuelve en `x0`.
+
+::: {.callout-warning title="Error común"}
+Un `fd` no es puntero. No puedes hacer `ldr x1, [x0]` pensando que `x0` apunta
+al archivo. Si `x0` contiene un `fd`, ese número se pasa como argumento a otra
+syscall.
+:::
+
+## Ciclo de vida de un recurso
+
+| Momento | Qué pasa |
+|---|---|
+| abrir | `openat` pide al kernel abrir un recurso |
+| usar | `read`, `write` u otra syscall reciben el `fd` |
+| cerrar | `close` libera el recurso |
+| error | si algo falla, el programa decide cómo salir y qué cerrar |
+
+Este ciclo parece simple, pero cambia cómo se escribe assembly. Ya no basta con
+ejecutar instrucciones en orden. Hay que cuidar qué valores sobreviven entre
+syscalls.
+
+## Guardar el fd retornado por `openat`
+
+`openat` devuelve el `fd` en `x0`. El problema es que `x0` también se usa como
+argumento y retorno en otras syscalls. Si no guardas el `fd`, lo perderás.
+
+```asm
+.equ AT_FDCWD, -100
+.equ O_RDONLY, 0
+
+.global _start
+
+.text
+_start:
+    mov x0, #AT_FDCWD
+    ldr x1, =nombre
+    mov x2, #O_RDONLY
+    mov x3, #0
+    mov x8, #56         // openat
+    svc #0              // x0 = fd o error negativo
+
+    cmp x0, #0
+    b.lt error
+
+    mov x19, x0         // guardar fd para usarlo y cerrarlo después
+
+    mov x0, x19
+    mov x8, #57         // close
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+.section .rodata
+nombre:
+    .asciz "entrada.txt"
+```
+
+## Lectura del ejemplo
+
+| Línea | Idea |
+|---|---|
+| `mov x8, #56` | selecciona `openat` |
+| `svc #0` | entra al kernel |
+| `cmp x0, #0` | revisa retorno |
+| `b.lt error` | negativo significa fallo |
+| `mov x19, x0` | conserva el `fd` |
+| `mov x8, #57` | selecciona `close` |
+
+`x19` se usa aquí como registro de trabajo para que el ejemplo sea claro. Más
+adelante estudiaremos qué registros deben preservarse al llamar funciones según
+ABI. En estos programas `_start` no llama funciones externas.
+
+## Por qué cerrar
+
+Si el proceso termina, Linux limpia sus recursos. Aun así, cerrar explícitamente
+enseña el hábito correcto. En programas más largos, no cerrar un `fd` puede
+agotar recursos o dejar rutas de error difíciles de entender.
+
+```asm
+mov x0, x19
+mov x8, #57
+svc #0
+```
+
+`close` no recibe una dirección de archivo. Recibe el número `fd`.
+
+## Mini ejercicios
+
+1. ¿Qué contiene `x0` después de `openat` si funciona?
+2. ¿Qué contiene `x0` después de `openat` si falla?
+3. ¿Por qué el ejemplo copia `x0` hacia `x19`?
+4. ¿Qué pasaría si `write` se ejecutara antes de guardar el `fd`?
+5. Explica por qué `fd 1` y código de salida `1` no significan lo mismo.
+
+## Cierre
+
+Pensar en Linux como API del kernel empieza por esta idea: el kernel abre un
+recurso, entrega un número y espera que el proceso use ese número correctamente.

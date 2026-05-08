@@ -1,0 +1,160 @@
+---
+title: "11.1 · Llamadas y retorno"
+subtitle: "Una función empieza como un salto que recuerda dónde volver."
+description: "Subrutinas, caller, callee, b vs bl, LR y ret en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames > Llamadas y retorno
+:::
+
+::: {.hero-lab}
+Una función no es una construcción mágica. A nivel máquina es una zona de código
+a la que se salta, con una forma de regresar al punto correcto. En AArch64 ese
+regreso empieza con `bl`, `x30/LR` y `ret`.
+:::
+
+## Caller y callee
+
+| Rol | Significado |
+|---|---|
+| caller | código que llama a otra función |
+| callee | código llamado |
+
+```bash
+caller
+  bl callee
+  continúa aquí después del retorno
+
+callee
+  ejecuta trabajo
+  ret
+```
+
+El caller necesita continuar después de la llamada. Por eso una llamada no puede
+ser solo un salto normal.
+
+## `b` vs `bl`
+
+`b` cambia el flujo, pero no guarda retorno.
+
+```asm
+b destino
+```
+
+`bl` cambia el flujo y guarda la dirección de retorno en `x30`, también llamado
+`LR`.
+
+```asm
+bl funcion
+```
+
+| Instrucción | Salta | Guarda retorno |
+|---|---|---|
+| `b etiqueta` | sí | no |
+| `bl etiqueta` | sí | sí, en `x30/LR` |
+
+::: {.callout-warning title="Error común"}
+`bl` no es un `b` con otro nombre. `bl` modifica `x30`. Si ese valor se pierde,
+`ret` no sabrá volver al lugar correcto.
+:::
+
+## `ret`
+
+La forma común:
+
+```asm
+ret
+```
+
+Lee la dirección de retorno desde `x30/LR` y vuelve ahí. Si `LR` contiene basura
+o fue sobrescrito por otra llamada, el flujo se rompe.
+
+## Programa completo: función simple
+
+Guarda como `funcion-simple.s`.
+
+```asm
+.global _start
+
+.text
+_start:
+    bl funcion_simple
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+funcion_simple:
+    mov x1, #42
+    ret
+```
+
+Construir y ejecutar:
+
+```bash
+$ aarch64-linux-gnu-as funcion-simple.s -o funcion-simple.o
+$ aarch64-linux-gnu-ld funcion-simple.o -o funcion-simple
+$ qemu-aarch64 ./funcion-simple
+$ echo $?
+0
+```
+
+## Lectura del flujo
+
+```bash
+_start
+  bl funcion_simple
+    x30 = dirección después de bl
+    PC salta a funcion_simple
+
+funcion_simple
+  mov x1, #42
+  ret
+    PC vuelve a dirección en x30
+
+_start
+  exit(0)
+```
+
+## Función hoja
+
+Una función hoja no llama a otra función. Por eso puede ser muy simple si no
+necesita stack ni preservar registros.
+
+```asm
+sumar_simple:
+    add x0, x0, x1
+    ret
+```
+
+Aquí `x0` y `x1` entran como valores de trabajo, y `x0` queda como resultado.
+Todavía no estamos explicando ABI completo; solo usamos una convención mínima
+para ejemplos pequeños.
+
+## Cuándo esto deja de ser suficiente
+
+El ejemplo simple funciona porque `funcion_simple` no ejecuta otro `bl`. Si una
+función llama a otra, ese nuevo `bl` sobrescribe `x30`.
+
+```bash
+caller -> bl funcion_a
+funcion_a -> bl funcion_b
+```
+
+En ese caso `funcion_a` debe guardar su propio retorno antes de llamar a
+`funcion_b`. Para eso aparece el stack frame.
+
+## Mini ejercicios
+
+1. ¿Qué guarda `bl` que `b` no guarda?
+2. ¿Qué registro se conoce como `LR`?
+3. ¿Qué usa `ret` para volver?
+4. ¿Por qué `sumar_simple` es función hoja?
+5. ¿Qué riesgo aparece si una función ejecuta otro `bl`?
+
+## Cierre
+
+Una función empieza como control de flujo disciplinado: saltar, recordar dónde
+volver y retornar. El stack aparece cuando ese retorno debe sobrevivir a más
+trabajo.

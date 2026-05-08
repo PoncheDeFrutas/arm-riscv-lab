@@ -1,0 +1,165 @@
+---
+title: "11.6 · Debugging de frames con GDB"
+subtitle: "GDB permite observar SP, FP, LR y la cadena de llamadas."
+description: "Backtrace básico, registros sp x29 x30, frames y stack corruption conceptual con GDB en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames > Debugging con GDB
+:::
+
+::: {.hero-lab}
+Los frames no solo sirven para escribir funciones. También ayudan a depurar.
+Cuando un programa se detiene, GDB puede mostrar registros, stack y una cadena
+de llamadas para ubicar cómo llegaste a ese punto.
+:::
+
+## Programa para observar frames
+
+Guarda como `frames.s`.
+
+```asm
+.global _start
+
+.text
+_start:
+    bl funcion_a
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+funcion_a:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    bl funcion_b
+
+    ldp x29, x30, [sp], #16
+    ret
+
+funcion_b:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    mov x0, #42
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+Construir:
+
+```bash
+$ aarch64-linux-gnu-as -g frames.s -o frames.o
+$ aarch64-linux-gnu-ld frames.o -o frames
+```
+
+Ejecutar con QEMU esperando a GDB:
+
+```bash
+$ qemu-aarch64 -g 1234 ./frames
+```
+
+En otra terminal:
+
+```bash
+$ gdb-multiarch ./frames
+(gdb) target remote :1234
+(gdb) break funcion_b
+(gdb) continue
+(gdb) info registers sp x29 x30
+(gdb) bt
+```
+
+## Qué mirar
+
+| Comando | Qué muestra |
+|---|---|
+| `info registers sp x29 x30` | stack pointer, frame pointer y link register |
+| `bt` | backtrace o cadena de llamadas |
+| `x/4gx $sp` | palabras de 8 bytes desde el stack actual |
+| `disassemble funcion_b` | instrucciones de la función |
+
+```bash
+(gdb) x/4gx $sp
+```
+
+La salida cambia según direcciones reales, pero la idea es buscar valores
+guardados cerca de `sp`: frame anterior y retorno.
+
+## Backtrace básico
+
+Un backtrace responde:
+
+```bash
+¿Dónde estoy?
+¿Quién me llamó?
+¿Quién llamó a quien me llamó?
+```
+
+Ejemplo mental:
+
+```bash
+funcion_b
+funcion_a
+_start
+```
+
+No significa que el programa esté ejecutando las tres funciones a la vez en el
+sentido de instrucciones simultáneas. Significa que hay llamadas activas en la
+cadena.
+
+## Por qué `x29` ayuda
+
+Cuando usamos:
+
+```asm
+stp x29, x30, [sp, #-16]!
+mov x29, sp
+```
+
+dejamos una cadena de frames más fácil de seguir. `x29` apunta al frame actual y
+el frame guarda el `x29` anterior.
+
+En código optimizado, un compilador puede omitir frame pointer. Esta unidad no
+entra en esa optimización. Aquí lo usamos porque enseña y ayuda a depurar.
+
+## Stack corruption conceptual
+
+Stack corruption ocurre cuando el contenido o la forma del stack se daña. Puede
+pasar por:
+
+| Error | Consecuencia |
+|---|---|
+| no restaurar `sp` | epílogo carga desde dirección incorrecta |
+| sobrescribir `[sp]` por error | se pierde `x29` guardado |
+| sobrescribir `[sp, #8]` por error | se pierde `x30` guardado |
+| usar offset incorrecto | variable local pisa retorno |
+
+Ejemplo peligroso:
+
+```asm
+str x0, [sp, #8]    // puede pisar x30 guardado si estás en el frame mínimo
+```
+
+No lo uses como patrón. Sirve para entender por qué offsets importan.
+
+::: {.callout-warning title="Error común"}
+Backtrace no es ejecución paso a paso. Es una reconstrucción de la cadena de
+llamadas activa cuando el programa está detenido.
+:::
+
+## Mini ejercicios
+
+1. ¿Qué registro muestra el tope del stack?
+2. ¿Qué registro guarda retorno de `bl`?
+3. ¿Qué comando muestra `sp`, `x29` y `x30`?
+4. ¿Qué responde `bt`?
+5. ¿Por qué sobrescribir `[sp, #8]` puede ser peligroso en un frame mínimo?
+
+## Cierre
+
+GDB convierte stack frames en evidencia visible. Si sabes qué hacen `SP`, `FP`,
+`LR`, prólogo y epílogo, un backtrace deja de ser una lista misteriosa y se
+vuelve una lectura del camino que siguió el programa.

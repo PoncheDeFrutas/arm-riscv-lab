@@ -1,0 +1,150 @@
+---
+title: "11.3 · Stack frames"
+subtitle: "Un frame organiza retorno, frame anterior y espacio local."
+description: "Prólogo, epílogo, x29, x30, stp, ldp y variables locales en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames > Stack frames
+:::
+
+::: {.hero-lab}
+Un stack frame es la porción de stack que una función usa mientras está viva.
+Guarda contexto para volver, ayuda a ubicar datos locales y hace más legible la
+cadena de llamadas.
+:::
+
+## Prólogo y epílogo
+
+El prólogo prepara el frame al entrar. El epílogo lo deshace antes de retornar.
+
+```asm
+funcion:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    // cuerpo de la función
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+## Qué hace `stp x29, x30, [sp, #-16]!`
+
+`stp` guarda un par de registros. La forma con `!` usa pre-index: primero ajusta
+`sp`, luego guarda.
+
+```bash
+antes:
+  sp -> frame anterior
+
+stp x29, x30, [sp, #-16]!
+
+después:
+  sp -> x29 guardado
+        x30 guardado
+```
+
+La instrucción reserva 16 bytes y guarda dos registros de 8 bytes.
+
+## Qué hace `mov x29, sp`
+
+Después de guardar `x29` y `x30`, copiamos `sp` a `x29`.
+
+```asm
+mov x29, sp
+```
+
+Desde ese momento, `x29` marca la base del frame actual. Aunque `sp` se mueva
+para variables locales, `x29` queda como referencia estable.
+
+## Qué hace `ldp x29, x30, [sp], #16`
+
+Esta forma usa post-index: primero carga los registros desde `[sp]`, luego suma
+16 a `sp`.
+
+```bash
+antes:
+  sp -> x29 guardado
+        x30 guardado
+
+ldp x29, x30, [sp], #16
+
+después:
+  sp -> frame anterior
+```
+
+Luego `ret` usa el `x30` restaurado.
+
+## Variable local simple
+
+```asm
+.global _start
+
+.text
+_start:
+    bl funcion
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+funcion:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    sub sp, sp, #16
+    mov x0, #123
+    str x0, [sp]
+    ldr x1, [sp]
+
+    add sp, sp, #16
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+## Lectura del frame
+
+```bash
+direcciones altas
+  frame anterior
+  x29 guardado      <- x29 apunta aquí después del prólogo
+  x30 guardado
+  variable local    <- sp apunta aquí después de sub sp, sp, #16
+direcciones bajas
+```
+
+En ejemplos simples usamos `[sp]` para la variable local. También se pueden usar
+offsets desde `x29`, pero no conviene mezclar demasiado al inicio. Primero hay
+que entender qué se guarda y cuándo se libera.
+
+## Orden correcto al salir
+
+El orden importa:
+
+```asm
+add sp, sp, #16
+ldp x29, x30, [sp], #16
+ret
+```
+
+Primero liberas variables locales. Luego restauras `x29` y `x30`. Si restauras
+desde una dirección incorrecta, `ret` puede saltar a basura.
+
+::: {.callout-warning title="Error común"}
+Reservar espacio y olvidar liberarlo cambia dónde `ldp` busca `x29` y `x30`.
+Eso puede destruir el retorno.
+:::
+
+## Mini ejercicios
+
+1. ¿Qué dos registros guarda el prólogo mínimo?
+2. ¿Por qué `stp` reserva 16 bytes?
+3. ¿Para qué sirve `mov x29, sp`?
+4. ¿Qué restaura `ldp x29, x30, [sp], #16`?
+5. ¿Qué falla si no se ejecuta `add sp, sp, #16` antes del epílogo?
+
+## Cierre
+
+Un frame es orden. Guarda el frame anterior, guarda retorno, reserva locales y
+deshace todo en orden inverso antes de `ret`.

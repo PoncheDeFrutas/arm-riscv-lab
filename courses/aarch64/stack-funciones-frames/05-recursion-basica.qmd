@@ -1,0 +1,143 @@
+---
+title: "11.5 · Recursión básica"
+subtitle: "Cada llamada recursiva necesita su propio frame."
+description: "Introducción visual a recursión, caso base, llamadas repetidas y frames en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames > Recursión básica
+:::
+
+::: {.hero-lab}
+La recursión no es magia. Es una función llamándose a sí misma. Cada llamada
+necesita su propio retorno y su propio estado temporal, por eso el stack frame
+se vuelve visible.
+:::
+
+## Idea base
+
+Una función recursiva necesita:
+
+| Parte | Idea |
+|---|---|
+| caso base | condición para dejar de llamarse |
+| llamada recursiva | llamada a la misma función |
+| frame por llamada | retorno y datos propios |
+
+Sin caso base, el stack sigue creciendo hasta romperse.
+
+## Frames repetidos
+
+```bash
+contador(3)
+  frame n=3
+    contador(2)
+      frame n=2
+        contador(1)
+          frame n=1
+            contador(0)
+              caso base
+```
+
+Cuando termina el caso base, los frames se cierran en orden inverso.
+
+```bash
+contador(0) retorna
+contador(1) retorna
+contador(2) retorna
+contador(3) retorna
+```
+
+## Ejemplo pequeño: cuenta regresiva conceptual
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #3
+    bl cuenta
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+cuenta:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    cmp x0, #0
+    b.eq fin_cuenta
+
+    sub x0, x0, #1
+    bl cuenta
+
+fin_cuenta:
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+Este ejemplo no imprime nada. Su propósito es mostrar frames. Cada `bl cuenta`
+necesita conservar retorno propio.
+
+## Lectura del flujo
+
+```bash
+_start: x0 = 3
+cuenta(3): guarda LR, llama cuenta(2)
+cuenta(2): guarda LR, llama cuenta(1)
+cuenta(1): guarda LR, llama cuenta(0)
+cuenta(0): caso base, retorna
+```
+
+Cada llamada ejecuta su propio prólogo. Cada retorno ejecuta su propio epílogo.
+
+## Por qué no basta una sola copia de `LR`
+
+Cada llamada tiene una dirección de retorno distinta. Si todos usaran el mismo
+`x30` sin guardar, cada llamada recursiva destruiría el retorno anterior.
+
+```bash
+cuenta(3) necesita volver a _start
+cuenta(2) necesita volver dentro de cuenta(3)
+cuenta(1) necesita volver dentro de cuenta(2)
+cuenta(0) necesita volver dentro de cuenta(1)
+```
+
+Por eso cada frame guarda su propio `x30`.
+
+## Stack overflow conceptual
+
+Si la recursión no tiene caso base, o si el caso base nunca se cumple, el stack
+crece sin límite razonable.
+
+```bash
+cuenta(3)
+  cuenta(2)
+    cuenta(1)
+      cuenta(0)
+        cuenta(-1)
+          cuenta(-2)
+            ...
+```
+
+En un sistema real eso termina fallando. Aquí solo necesitamos la idea: stack es
+finito.
+
+::: {.callout-warning title="Error común"}
+No pienses que recursión reutiliza el mismo frame. Cada llamada activa necesita
+su propio contexto hasta que retorna.
+:::
+
+## Mini ejercicios
+
+1. ¿Qué condición detiene el ejemplo?
+2. ¿Por qué `cuenta` guarda `x30`?
+3. ¿Cuántas llamadas activas hay antes de llegar a `cuenta(0)`?
+4. ¿En qué orden se cierran los frames?
+5. ¿Qué pasa si el caso base nunca se cumple?
+
+## Cierre
+
+Recursión convierte stack frames en algo fácil de ver: una llamada encima de
+otra, cada una con su retorno, hasta que el caso base permite deshacer la pila.

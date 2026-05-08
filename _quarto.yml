@@ -216,6 +216,38 @@ website:
                   href: courses/aarch64/syscalls-esenciales/05-errores-minimos.qmd
                 - text: "Programa guiado"
                   href: courses/aarch64/syscalls-esenciales/06-programa-guiado.qmd
+            - section: "10 · Linux como API del kernel"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/linux-api-kernel/index.qmd
+                - text: "File descriptors y recursos"
+                  href: courses/aarch64/linux-api-kernel/01-file-descriptors-recursos.qmd
+                - text: "Archivos con syscalls"
+                  href: courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.qmd
+                - text: "Errores y cleanup"
+                  href: courses/aarch64/linux-api-kernel/03-errores-cleanup.qmd
+                - text: "Posición y metadatos"
+                  href: courses/aarch64/linux-api-kernel/04-posicion-metadatos.qmd
+                - text: "Procesos y tiempo"
+                  href: courses/aarch64/linux-api-kernel/05-procesos-tiempo.qmd
+                - text: "Programa guiado con recursos"
+                  href: courses/aarch64/linux-api-kernel/06-programa-guiado-recursos.qmd
+            - section: "11 · Stack, funciones y stack frames"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/stack-funciones-frames/index.qmd
+                - text: "Llamadas y retorno"
+                  href: courses/aarch64/stack-funciones-frames/01-llamadas-retorno.qmd
+                - text: "Stack básico"
+                  href: courses/aarch64/stack-funciones-frames/02-stack-basico.qmd
+                - text: "Stack frames"
+                  href: courses/aarch64/stack-funciones-frames/03-stack-frames.qmd
+                - text: "Funciones no hoja y registros"
+                  href: courses/aarch64/stack-funciones-frames/04-funciones-no-hoja-registros.qmd
+                - text: "Recursión básica"
+                  href: courses/aarch64/stack-funciones-frames/05-recursion-basica.qmd
+                - text: "Debugging de frames con GDB"
+                  href: courses/aarch64/stack-funciones-frames/06-debugging-frames-gdb.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

@@ -183,6 +183,8 @@ AArch64 antes de entrar en programas más grandes.
 - [07 · Aritmética, lógica, flags y bits](aritmetica-logica-bits/index.qmd)
 - [08 · Control de flujo y programación estructurada](control-flujo/index.qmd)
 - [09 · Syscalls esenciales](syscalls-esenciales/index.qmd)
+- [10 · Linux como API del kernel](linux-api-kernel/index.qmd)
+- [11 · Stack, funciones y stack frames](stack-funciones-frames/index.qmd)
 :::
 
 ## Siguiente paso

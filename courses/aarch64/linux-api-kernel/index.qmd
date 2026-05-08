@@ -1,0 +1,190 @@
+---
+title: "10 · Linux como API del kernel"
+subtitle: "Archivos, errores y recursos usando syscalls AArch64 sin depender de libc."
+description: "Página principal de la Unidad 10 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Linux como API del kernel
+:::
+
+::: {.hero-lab}
+En la Unidad 09 ya viste el contrato básico de syscall. Ahora usaremos ese
+contrato para escribir programas Linux un poco más reales: abrir recursos,
+guardar file descriptors, revisar errores, limpiar antes de salir y usar
+servicios del kernel sin `libc`.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Abrir**
+`openat` entrega un `fd`.
+:::
+
+::: {.lab-step}
+**2. Guardar**
+El `fd` se conserva para usarlo después.
+:::
+
+::: {.lab-step}
+**3. Usar**
+`read`, `write` y otras syscalls reciben ese `fd`.
+:::
+
+::: {.lab-step}
+**4. Revisar**
+Retorno negativo significa error.
+:::
+
+::: {.lab-step}
+**5. Cerrar**
+`close` libera el recurso.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 03: user mode, kernel mode y registros | Entender que el proceso pide servicios al kernel |
+| Unidad 04: `.text`, `.bss`, `.equ`, símbolos | Declarar buffers, nombres de archivo y constantes |
+| Unidad 05: `_start`, `exit`, `write` | Cerrar ejemplos como programas reales |
+| Unidad 06: buffers y punteros | Pasar direcciones de memoria a `read` y `write` |
+| Unidad 08: etiquetas y ramas | Construir rutas `ok`, `error` y `cleanup` |
+| Unidad 09: contrato de syscall | Reutilizar `x8`, `x0`-`x5`, `svc #0` y retorno en `x0` |
+
+## File descriptors iniciales
+
+| fd | Nombre común | Uso |
+|---:|---|---|
+| `0` | stdin | entrada estándar |
+| `1` | stdout | salida estándar |
+| `2` | stderr | salida de error |
+
+Un file descriptor no es una dirección de memoria. Es un número entero que el
+kernel asocia con un recurso abierto. Tu programa guarda ese número y se lo
+devuelve al kernel en llamadas como `read`, `write` o `close`.
+
+## Ciclo mínimo de recurso
+
+| Acción | Syscall | Resultado esperado |
+|---|---|---|
+| abrir | `openat` | retorna un `fd` o error negativo |
+| leer | `read` | usa un `fd`, retorna bytes leídos o error |
+| escribir | `write` | usa un `fd`, retorna bytes escritos o error |
+| cerrar | `close` | libera el `fd`, retorna `0` o error |
+
+::: {.callout-note title="Idea clave"}
+`x0` cambia de papel. Antes de `svc #0` suele ser argumento. Después de
+`svc #0` es retorno. Por eso debes guardar valores importantes, como un `fd`,
+antes de llamar otra syscall.
+:::
+
+## Errores sin libc
+
+Cuando llamas syscalls directamente, no recibes una variable `errno` preparada
+por `libc`. Ves el resultado directo en `x0`.
+
+```asm
+cmp x0, #0
+b.lt error
+```
+
+Si `x0` es negativo, la syscall falló. En esta unidad no construiremos wrappers
+ni mensajes de error detallados. Aprenderemos la ruta mínima: detectar fallo,
+cerrar lo que ya se abrió y salir con código distinto de cero.
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### File descriptors y recursos
+
+`stdin`, `stdout`, `stderr`, `fd` como handle entero y ciclo de vida básico.
+
+[Abrir](01-file-descriptors-recursos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Archivos con syscalls
+
+`openat`, `read`, `write`, `close`, buffers y flujo completo de archivo.
+
+[Abrir](02-archivos-open-read-write-close.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Errores y cleanup
+
+Retornos negativos, `errno` conceptual, etiquetas `error` y `cleanup`.
+
+[Abrir](03-errores-cleanup.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Posición y metadatos
+
+`lseek`, `fstat`, `statx` y una mención controlada de `getdents64`.
+
+[Abrir](04-posicion-metadatos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Procesos y tiempo
+
+`getpid`, `execve`, `wait4`, `clock_gettime` y `nanosleep` como mapa inicial.
+
+[Abrir](05-procesos-tiempo.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Programa guiado
+
+Programa que abre un archivo, lee un bloque, escribe en stdout y limpia.
+
+[Abrir](06-programa-guiado-recursos.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| `libc` completa | Aquí queremos ver el contrato directo con Linux |
+| `errno` real con TLS | Primero basta entender retorno negativo |
+| Buffered I/O | `read` y `write` trabajan con buffers directos |
+| Pipes, sockets y señales | Son recursos Linux más avanzados |
+| `mmap` y memoria virtual | Requieren otra base de páginas y permisos |
+| Procesos completos | `execve` y `wait4` solo aparecen como mapa inicial |
+| Directorios con `getdents64` | Se menciona, no será tema central |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+slides/aarch64/linux-api-kernel/overview/slides.md
+```
+
+Esa presentación debe practicar visualmente file descriptors, rutas de error,
+cleanup y recursos del kernel; no debe reemplazar estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar qué es un file descriptor.
+- [ ] Puedo distinguir `fd`, dirección y contenido.
+- [ ] Puedo usar `openat` para obtener un `fd`.
+- [ ] Puedo guardar el `fd` antes de sobrescribir `x0`.
+- [ ] Puedo usar `read` y `write` con un `fd`.
+- [ ] Puedo cerrar un `fd` con `close`.
+- [ ] Puedo detectar error con retorno negativo.
+- [ ] Puedo explicar `errno` de forma conceptual.
+- [ ] Puedo diseñar una ruta `cleanup`.
+- [ ] Puedo reconocer para qué sirven `lseek`, `fstat`, `statx`, `getpid` y `nanosleep`.
+
+## Siguiente paso
+
+Empieza por [File descriptors y recursos](01-file-descriptors-recursos.qmd).

@@ -1,0 +1,157 @@
+---
+title: "11.4 · Funciones no hoja y registros"
+subtitle: "Una función que llama a otra debe proteger su propio retorno."
+description: "Funciones hoja, no hoja, LR, llamadas anidadas y preservación introductoria de registros."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Stack, funciones y stack frames > Funciones no hoja
+:::
+
+::: {.hero-lab}
+Una función hoja puede retornar con el `LR` que recibió. Una función no hoja
+llama a otra función, y esa nueva llamada sobrescribe `LR`. Por eso debe guardar
+su retorno antes de hacer otro `bl`.
+:::
+
+## Hoja vs no hoja
+
+| Tipo | Qué hace | Riesgo |
+|---|---|---|
+| función hoja | no llama a otra función | `LR` no se sobrescribe por otro `bl` |
+| función no hoja | llama a otra función | otro `bl` sobrescribe `x30/LR` |
+
+Función hoja:
+
+```asm
+sumar_simple:
+    add x0, x0, x1
+    ret
+```
+
+Función no hoja:
+
+```asm
+funcion_no_hoja:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    bl otra_funcion
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+## Qué pasa si no guardas `LR`
+
+```bash
+_start
+  bl funcion_a       -> x30 = retorno a _start
+
+funcion_a
+  bl funcion_b       -> x30 = retorno dentro de funcion_a
+
+funcion_b
+  ret                -> vuelve a funcion_a
+
+funcion_a
+  ret                -> usa x30 actual, no retorno original
+```
+
+`funcion_a` perdió el retorno hacia `_start`. Por eso el frame guarda `x30`
+antes de llamar a `funcion_b`.
+
+::: {.callout-warning title="Error común"}
+Si una función ejecuta `bl`, asume que `x30` cambia. Si todavía necesitas el
+retorno anterior, guárdalo antes.
+:::
+
+## Programa con llamada anidada
+
+```asm
+.global _start
+
+.text
+_start:
+    bl funcion_a
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+funcion_a:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    bl funcion_b
+    add x1, x0, #1
+
+    ldp x29, x30, [sp], #16
+    ret
+
+funcion_b:
+    mov x0, #41
+    ret
+```
+
+Lectura:
+
+| Bloque | Papel |
+|---|---|
+| `_start` | caller de `funcion_a` |
+| `funcion_a` | callee de `_start` y caller de `funcion_b` |
+| `funcion_b` | función hoja |
+
+`funcion_a` es no hoja porque llama a `funcion_b`. Por eso guarda `x29` y
+`x30`.
+
+## Preservar registros, versión introductoria
+
+En ABI real, algunos registros pertenecen más al caller y otros deben ser
+preservados por el callee. Esta unidad no dará la tabla completa todavía.
+
+Regla práctica inicial:
+
+| Situación | Qué hacer |
+|---|---|
+| necesitas un valor después de llamar otra función | guárdalo en stack o en registro que controles |
+| tu función usa `x29`/`x30` para frame | guárdalos y restáuralos |
+| llamas otra función | no asumas que `x0`-`x7` sobreviven |
+
+`x0`-`x7` suelen usarse para argumentos y retornos. Si guardas algo importante
+ahí y llamas otra función, puedes perderlo.
+
+## Guardar un valor temporal
+
+```asm
+funcion_a:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    sub sp, sp, #16
+    str x0, [sp]        // guardar valor importante
+
+    bl funcion_b
+
+    ldr x0, [sp]        // recuperar valor
+    add sp, sp, #16
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+Este patrón enseña la idea sin convertir la página en ABI completo.
+
+## Mini ejercicios
+
+1. ¿Qué diferencia una función hoja de una no hoja?
+2. ¿Por qué `funcion_a` guarda `x30`?
+3. ¿Qué instrucción sobrescribe `LR`?
+4. ¿Por qué no debes asumir que `x0` sobrevive después de `bl`?
+5. ¿Qué dos registros restaura el epílogo mínimo?
+
+## Cierre
+
+Función no hoja significa responsabilidad extra. Si tu función llama a otra, ya
+no basta con `ret`; debes proteger el retorno y cualquier valor que necesites
+después de la llamada.
