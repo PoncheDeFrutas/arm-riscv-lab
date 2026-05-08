@@ -1,0 +1,181 @@
+---
+title: "12.5 · Errores de memoria"
+subtitle: "Leaks, use-after-free y double free son fallos de vida útil."
+description: "Errores de memoria dinámica: memory leaks, use-after-free, double free y punteros perdidos."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Heap y memoria dinámica > Errores de memoria
+:::
+
+::: {.hero-lab}
+Los errores de heap suelen empezar con una pregunta mal contestada: ¿quién es
+dueño del bloque?, ¿sigue vivo?, ¿ya fue liberado?, ¿todavía tengo el puntero?
+Esta página ordena esos fallos antes de ver allocators reales.
+:::
+
+## Tabla principal
+
+| Error | Qué significa | Consecuencia |
+|---|---|---|
+| memory leak | se pierde referencia a memoria reservada | memoria no se puede liberar |
+| use-after-free | se usa un puntero después de liberar | comportamiento incorrecto o inseguro |
+| double free | se libera dos veces el mismo bloque | corrupción o error del allocator |
+
+## Estados de un puntero
+
+| Estado | Se puede leer/escribir | Se puede liberar | Lectura |
+|---|---|---|---|
+| válido y dueño | sí | sí | bloque vivo bajo tu responsabilidad |
+| válido prestado | depende del permiso | no | puedes usar, no liberar |
+| perdido | no | no | ya no tienes referencia |
+| liberado | no | no | puntero viejo queda inválido |
+| nulo | no | no | representa “sin bloque” en muchos patrones |
+
+Esta tabla no es regla del CPU. Es disciplina del programa. AArch64 solo ve
+direcciones y bytes; no sabe si tu ownership tiene sentido.
+
+## Memory leak
+
+Leak significa que el programa reservó memoria, pero perdió la forma de
+liberarla.
+
+```asm
+ldr x19, =buffer    // simula puntero a bloque
+mov x19, #0         // se pierde la referencia local
+```
+
+Con `.bss` el símbolo sigue existiendo. En heap real, si ese era el último
+puntero al bloque, ya no hay forma directa de liberarlo.
+
+```bash
+bloque reservado
+  puntero perdido
+  bloque sigue ocupado
+```
+
+Un leak pequeño en un programa que termina enseguida puede parecer inofensivo,
+porque el sistema recupera memoria al finalizar el proceso. Pero en programas
+largos, servidores, loops o herramientas que procesan muchos archivos, leaks se
+acumulan.
+
+## Use-after-free
+
+Use-after-free ocurre cuando el programa usa un puntero después de liberar el
+bloque.
+
+```asm
+// liberar bloque conceptual
+mov x19, #0
+
+// strb w0, [x19]   // incorrecto: puntero inválido
+```
+
+En un programa real, el puntero viejo podría seguir teniendo una dirección que
+parece válida, pero el bloque ya no pertenece al dueño anterior.
+
+Diagrama:
+
+```bash
+antes:
+  x19 -> bloque vivo
+
+free:
+  allocator recupera bloque
+
+después:
+  x19 -> dirección vieja
+  esa dirección ya no es tu bloque
+```
+
+Lo difícil es que el número de dirección puede seguir ahí. El CPU no marca el
+registro como “malo”. El error está en usarlo fuera de su vida útil.
+
+::: {.callout-warning title="Error común"}
+Liberar un bloque no borra automáticamente todas las copias del puntero. Las
+copias viejas quedan peligrosas si alguien las usa.
+:::
+
+## Double free
+
+Double free significa liberar dos veces el mismo bloque.
+
+```bash
+free(ptr)
+free(ptr)   <- error conceptual
+```
+
+El problema no es repetir una línea. El problema es que el allocator ya recibió
+ese bloque de vuelta. Intentar liberarlo otra vez puede romper su estado interno
+o activar una detección de error.
+
+Double free suele venir de ownership confuso:
+
+```bash
+A cree que debe liberar
+B también cree que debe liberar
+A libera
+B libera otra vez
+```
+
+La solución conceptual es decidir quién posee el bloque y cuándo se transfiere
+esa responsabilidad.
+
+## Puntero colgante
+
+Un puntero colgante es una dirección guardada hacia memoria que ya no debes usar.
+
+```bash
+ptr -> bloque
+free(ptr)
+ptr -> dirección vieja, ya no válida para uso normal
+```
+
+Una práctica defensiva local es invalidar copias que ya no deben usarse:
+
+```asm
+mov x19, #0
+```
+
+No resuelve todas las copias, pero ayuda con la copia actual.
+
+## No es unidad de exploits
+
+Estos errores también aparecen en seguridad ofensiva y hardening, pero aquí no
+vamos a explotarlos. La meta es reconocerlos como fallos de vida útil:
+
+| Error | Pregunta que falló |
+|---|---|
+| leak | ¿quién conserva el puntero para liberar? |
+| use-after-free | ¿el bloque sigue vivo? |
+| double free | ¿quién es dueño y ya liberó? |
+
+## Relación con cleanup
+
+Un buen cleanup debe liberar lo adquirido una sola vez.
+
+```bash
+si allocate falla:
+  no liberar
+
+si allocate funciona y luego falla otra operación:
+  liberar una vez
+  salir
+```
+
+Esa lógica se parece a la de `fd`, pero liberar memoria y cerrar fd son
+mecanismos distintos.
+
+## Mini ejercicios
+
+1. ¿Qué error aparece si pierdes el último puntero?
+2. ¿Qué error aparece si usas un puntero después de liberar?
+3. ¿Qué error aparece si liberas dos veces?
+4. ¿Por qué poner un registro en cero no libera memoria?
+5. ¿Por qué cleanup debe saber si la reserva funcionó?
+
+## Cierre
+
+Errores de heap son errores de vida útil y ownership. Antes de aprender
+allocators, debes poder reconocer cuándo un bloque está vivo, quién lo posee y
+cuándo deja de ser válido.

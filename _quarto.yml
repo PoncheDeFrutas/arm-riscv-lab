@@ -248,6 +248,22 @@ website:
                   href: courses/aarch64/stack-funciones-frames/05-recursion-basica.qmd
                 - text: "Debugging de frames con GDB"
                   href: courses/aarch64/stack-funciones-frames/06-debugging-frames-gdb.qmd
+            - section: "12 · Heap y memoria dinámica"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/heap-memoria-dinamica/index.qmd
+                - text: "Stack vs heap"
+                  href: courses/aarch64/heap-memoria-dinamica/01-stack-vs-heap.qmd
+                - text: "Bloques y ownership"
+                  href: courses/aarch64/heap-memoria-dinamica/02-bloques-ownership.qmd
+                - text: "Allocation y deallocation"
+                  href: courses/aarch64/heap-memoria-dinamica/03-allocation-deallocation.qmd
+                - text: "Buffers y strings dinámicos"
+                  href: courses/aarch64/heap-memoria-dinamica/04-buffers-strings-dinamicos.qmd
+                - text: "Errores de memoria"
+                  href: courses/aarch64/heap-memoria-dinamica/05-errores-memoria.qmd
+                - text: "De brk a mmap"
+                  href: courses/aarch64/heap-memoria-dinamica/06-brk-malloc-mmap.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

@@ -1,0 +1,182 @@
+---
+title: "12.3 · Allocation y deallocation"
+subtitle: "Reservar y liberar son dos mitades de la misma responsabilidad."
+description: "Allocation, deallocation, ownership, malloc/free conceptual y cleanup de memoria."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Heap y memoria dinámica > Allocation y deallocation
+:::
+
+::: {.hero-lab}
+Allocation pide un bloque. Deallocation lo devuelve. El error clásico es tratar
+la reserva como evento aislado, sin pensar quién guarda el puntero y quién lo
+libera.
+:::
+
+## Flujo mínimo
+
+```bash
+allocate
+  -> puntero válido
+  -> capacidad conocida
+usar
+  -> escribir dentro del límite
+  -> leer solo bytes válidos
+deallocate
+  -> bloque deja de ser usable
+  -> puntero viejo debe considerarse inválido
+```
+
+En esta unidad el flujo es conceptual. La implementación real vendrá después con
+`mmap` o con funciones de biblioteca.
+
+## Allocation como contrato
+
+Pedir memoria no debe leerse como “crear una variable”. Es un contrato:
+
+| Parte | Pregunta |
+|---|---|
+| tamaño pedido | ¿cuántos bytes necesito? |
+| retorno | ¿recibí dirección válida o falló? |
+| capacidad | ¿cuánto puedo usar? |
+| ownership | ¿quién queda responsable? |
+
+En AArch64, cualquier mecanismo que retorne puntero necesita la misma disciplina
+que ya viste con syscalls: guardar retorno antes de sobrescribirlo.
+
+## Allocation conceptual
+
+Reservar memoria devuelve una dirección.
+
+```bash
+pedir 64 bytes
+  retorno: puntero al bloque
+```
+
+En AArch64 ese puntero normalmente queda en un registro, por ejemplo `x0`, y el
+programa lo copia si necesita conservarlo:
+
+```asm
+// x0 contiene puntero retornado por una función de reserva conceptual
+mov x19, x0
+```
+
+Esto se parece al patrón de syscalls: retorno en `x0`, guardar si importa.
+
+Si el mecanismo de reserva puede fallar, también necesitas ruta de error:
+
+```asm
+// x0 contiene puntero retornado, o 0 si el mecanismo conceptual falla
+cmp x0, #0
+b.eq error_sin_bloque
+
+mov x19, x0
+```
+
+No todos los mecanismos reales reportan error igual, pero la idea pedagógica es
+estable: no uses un puntero sin revisar que sea válido.
+
+## Deallocation conceptual
+
+Liberar memoria no significa borrar todas las copias del puntero. Significa que
+el bloque ya no pertenece a tu programa.
+
+```asm
+// Después de liberar, invalidar copia local ayuda a evitar uso accidental.
+mov x19, #0
+```
+
+Poner el registro en cero no libera por sí mismo. Solo representa “ya no tengo
+puntero válido”.
+
+Estado antes y después:
+
+```bash
+antes de liberar:
+  x19 -> bloque vivo
+
+después de liberar:
+  bloque ya no pertenece al programa
+  x19 viejo no debe usarse
+```
+
+El valor numérico de `x19` podría no cambiar automáticamente. Por eso conviene
+invalidar la copia local si ya no debe usarse.
+
+::: {.callout-warning title="Error común"}
+`mov x19, #0` no libera memoria. Solo borra una copia del puntero. Liberar exige
+llamar al mecanismo correcto.
+:::
+
+## `malloc/free` conceptual
+
+`malloc` y `free` no son instrucciones de CPU. Tampoco conviene tratarlas como
+syscalls simples. Son funciones de biblioteca que administran bloques, metadata
+interna y llamadas al kernel cuando necesitan más memoria.
+
+```bash
+malloc(size) -> puntero o fallo
+free(ptr)    -> devuelve bloque al allocator
+```
+
+Más adelante, cuando estudies interoperabilidad con C y ABI, podrás llamar
+funciones de biblioteca. Aquí basta entender el contrato conceptual.
+
+## Cleanup de memoria
+
+La Unidad 10 usó cleanup para cerrar `fd`. Memoria dinámica necesita una idea
+parecida: si algo falla después de reservar, se debe liberar antes de salir.
+
+```bash
+allocate funciona
+read falla
+cleanup_memoria
+exit 1
+```
+
+No es el mismo mecanismo que `close`, pero sí la misma disciplina: recurso
+adquirido debe tener ruta de liberación.
+
+## Rutas de cleanup
+
+Una forma clara de pensar:
+
+```bash
+error_sin_bloque:
+  no hay nada que liberar
+
+cleanup_con_bloque:
+  liberar bloque
+  salir con error
+
+salida_ok:
+  liberar bloque
+  salir con 0
+```
+
+El punto no es copiar estas etiquetas siempre. El punto es saber si el bloque
+existe en cada ruta. Si la reserva falló, liberar sería incorrecto. Si la reserva
+funcionó y luego falla otra operación, no liberar produce leak.
+
+## Diferencia con `close(fd)`
+
+| Recurso | Valor que guardas | Liberación |
+|---|---|---|
+| archivo abierto | `fd` entero | `close(fd)` |
+| bloque dinámico | puntero | `free(ptr)`, `munmap`, u otro mecanismo |
+
+Ambos requieren ownership y cleanup. No se liberan igual.
+
+## Mini ejercicios
+
+1. ¿Qué devuelve una reserva de memoria si funciona?
+2. ¿Por qué conviene guardar el puntero?
+3. ¿`mov x19, #0` libera memoria?
+4. ¿Por qué `malloc` no es instrucción de CPU?
+5. ¿Qué relación mental hay entre `close(fd)` y liberar memoria?
+
+## Cierre
+
+Allocation sin deallocation es programa incompleto. En bajo nivel, reservar
+implica planear uso, ownership y salida por error.

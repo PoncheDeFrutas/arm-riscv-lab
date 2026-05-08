@@ -1,0 +1,196 @@
+---
+title: "12.2 · Bloques y ownership"
+subtitle: "Un bloque dinámico necesita puntero, capacidad, uso y dueño."
+description: "Bloques dinámicos, punteros al heap, ownership y memoria reservada frente a memoria usada."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Heap y memoria dinámica > Bloques y ownership
+:::
+
+::: {.hero-lab}
+Para entender heap no necesitas empezar implementando `malloc`. Primero necesitas
+leer un bloque como objeto de bajo nivel: dirección, capacidad, uso actual y
+responsable de liberarlo.
+:::
+
+## Anatomía de un bloque
+
+```bash
+bloque dinámico
+  puntero   -> dirección inicial
+  capacidad -> bytes reservados
+  usados    -> bytes con datos válidos
+  dueño     -> parte del programa responsable
+```
+
+El puntero puede vivir en un registro:
+
+```asm
+ldr x19, =buffer
+```
+
+o puede guardarse en memoria para que otra función lo recupere después.
+
+## Puntero no es el bloque
+
+El bloque son los bytes reservados. El puntero solo es la dirección inicial.
+
+```bash
+x19 = 0x410000       puntero
+
+0x410000: primer byte del bloque
+0x410001: segundo byte
+0x410002: tercer byte
+...
+```
+
+Puedes copiar el puntero a otro registro:
+
+```asm
+mov x22, x19
+```
+
+Eso no copia el bloque. Solo copia la dirección. `x19` y `x22` apuntan al mismo
+rango de memoria.
+
+## Simulación con `.bss`
+
+Usaremos `.bss` para simular un bloque. Esto no es heap real; sirve para
+practicar puntero, capacidad y uso antes de pedir memoria dinámica real.
+
+```asm
+.bss
+buffer:
+    .skip 64
+
+.text
+.global _start
+_start:
+    ldr x19, =buffer    // puntero al bloque
+    mov x20, #64        // capacidad reservada
+    mov x21, #0         // bytes usados
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Lectura del modelo:
+
+| Registro | Pregunta que responde |
+|---|---|
+| `x19` | ¿dónde empieza el bloque? |
+| `x20` | ¿cuánto espacio tengo? |
+| `x21` | ¿cuánto espacio ya tiene datos válidos? |
+
+## Reservado vs usado
+
+Reservar 64 bytes no significa que los 64 tengan datos válidos.
+
+```bash
+capacidad: 64
+usados:    0
+
+después de escribir "ABC":
+capacidad: 64
+usados:    3
+```
+
+Esta diferencia evita leer basura o escribir fuera del bloque.
+
+Estado del bloque:
+
+```bash
+capacidad 8, usados 3
+
+índice:  0 1 2 3 4 5 6 7
+bytes:   A B C ? ? ? ? ?
+válido:  sí sí sí no no no no no
+```
+
+Leer índice `5` no necesariamente falla, pero no es dato válido de tu estructura.
+Es memoria reservada, no memoria usada.
+
+## Ownership
+
+Ownership significa responsabilidad. Si una función o módulo recibe ownership de
+un bloque, también recibe responsabilidad de liberarlo o transferirlo claramente.
+
+```bash
+crear bloque -> dueño A
+pasar ownership -> dueño B
+liberar bloque -> dueño B
+```
+
+Si nadie sabe quién es dueño, aparecen leaks. Si dos partes creen ser dueñas,
+aparece double free.
+
+::: {.callout-note title="Idea clave"}
+Puntero no equivale a ownership. Puedes tener una copia de la dirección sin ser
+responsable de liberar el bloque.
+:::
+
+## Copias de puntero sin ownership
+
+Puedes pasar un puntero a una función para que lea o escriba, sin darle derecho
+a liberar.
+
+```bash
+dueño A crea bloque
+dueño A llama función B con puntero
+función B usa bloque
+función B retorna
+dueño A sigue siendo responsable de liberar
+```
+
+Eso evita que dos partes liberen lo mismo. Si B solo recibió préstamo, B no debe
+liberar.
+
+| Situación | Puede usar | Puede liberar |
+|---|---|---|
+| tiene puntero prestado | sí, según permiso | no |
+| tiene ownership | sí | sí |
+| perdió puntero | no | no |
+| bloque ya liberado | no | no |
+
+## Transferir ownership
+
+Transferir ownership significa que el dueño anterior ya no debe liberar.
+
+```bash
+antes:
+  A dueño del bloque
+
+transferencia:
+  A entrega bloque a B
+
+después:
+  B dueño del bloque
+  A no libera ese bloque
+```
+
+En bajo nivel esto es una regla del programa. El CPU no la controla por ti.
+
+## Perder puntero
+
+```asm
+ldr x19, =buffer    // x19 apunta al bloque
+mov x19, #0         // referencia perdida
+```
+
+En `.bss` todavía existe el símbolo `buffer`, pero en heap real perder el último
+puntero al bloque puede impedir liberarlo.
+
+## Mini ejercicios
+
+1. ¿Qué guarda `x19` en el ejemplo?
+2. ¿Qué diferencia hay entre `x20` y `x21`?
+3. ¿Por qué capacidad no significa datos válidos?
+4. ¿Puntero y ownership significan lo mismo?
+5. ¿Qué pasa si pierdes el último puntero a un bloque dinámico?
+
+## Cierre
+
+Memoria dinámica no se entiende solo como “dirección”. Se entiende como bloque
+con tamaño reservado, uso actual y dueño responsable.

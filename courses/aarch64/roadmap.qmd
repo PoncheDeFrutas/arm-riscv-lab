@@ -65,7 +65,7 @@ seguridad, virtualización y proyectos.
 <summary>Bloque C — Funciones, memoria dinámica, ABI y binarios</summary>
 <div class="unit-list">
 <div class="unit-card"><strong><a href="stack-funciones-frames/index.qmd">11. Stack, funciones y stack frames</a></strong><p>Caller/callee, LR, FP, SP, prólogo, epílogo, variables locales, llamadas anidadas y recursión.</p></div>
-<div class="unit-card"><strong>12. Heap y memoria dinámica</strong><p>Stack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.</p></div>
+<div class="unit-card"><strong><a href="heap-memoria-dinamica/index.qmd">12. Heap y memoria dinámica</a></strong><p>Stack vs heap, vida útil, ownership, leaks, use-after-free y malloc/free como modelo conceptual.</p></div>
 <div class="unit-card"><strong>13. mmap, munmap, mprotect, páginas y permisos</strong><p>Memoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.</p></div>
 <div class="unit-card"><strong>14. Layout de datos, structs, ADTs y objetos manuales</strong><p>Offsets, size, alignment, padding, invariantes, self pointer y descriptores propios.</p></div>
 <div class="unit-card"><strong>15. ABI, AAPCS64 e interoperabilidad con C</strong><p>Calling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.</p></div>

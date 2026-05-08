@@ -1,0 +1,216 @@
+---
+title: "12.4 · Buffers y strings dinámicos"
+subtitle: "Capacidad y uso actual permiten que una estructura crezca con control."
+description: "Buffers, strings dinámicos, capacidad, tamaño usado y crecimiento conceptual en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Heap y memoria dinámica > Buffers y strings dinámicos
+:::
+
+::: {.hero-lab}
+Buffers y strings dinámicos se entienden con tres valores: puntero, capacidad y
+uso actual. Sin esos tres datos, el programa no sabe dónde escribir, cuánto cabe
+ni cuántos bytes son válidos.
+:::
+
+## Tres registros para pensar un buffer
+
+| Registro | Papel |
+|---|---|
+| `x19` | dirección inicial del bloque |
+| `x20` | capacidad total |
+| `x21` | bytes usados |
+
+Esta no es convención ABI. Es un modelo didáctico para leer ejemplos.
+
+## Estado de un buffer
+
+```bash
+capacidad = 8
+usados    = 0
+
+índice: 0 1 2 3 4 5 6 7
+byte:  ? ? ? ? ? ? ? ?
+```
+
+Después de agregar tres bytes:
+
+```bash
+capacidad = 8
+usados    = 3
+
+índice: 0 1 2 3 4 5 6 7
+byte:  A B C ? ? ? ? ?
+```
+
+Los bytes `3` a `7` están reservados, pero no forman parte del contenido lógico
+del buffer.
+
+## Agregar un byte
+
+```asm
+.bss
+buffer:
+    .skip 8
+
+.text
+.global _start
+_start:
+    ldr x19, =buffer
+    mov x20, #8
+    mov x21, #0
+
+    cmp x21, x20
+    b.hs sin_espacio
+
+    mov w0, #65         // 'A'
+    strb w0, [x19, x21]
+    add x21, x21, #1
+
+sin_espacio:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+El ejemplo usa `.bss` para simular bloque. En heap real, `x19` apuntaría al
+bloque reservado dinámicamente.
+
+## Lectura del ejemplo
+
+| Paso | Idea |
+|---|---|
+| `cmp x21, x20` | compara usados contra capacidad |
+| `b.hs sin_espacio` | si usados >= capacidad, no escribir |
+| `strb w0, [x19, x21]` | escribe en `buffer[usados]` |
+| `add x21, x21, #1` | ahora hay un byte más usado |
+
+Usamos condición unsigned porque tamaños y capacidades no deben ser negativos.
+
+## Off-by-one
+
+Si `capacidad = 8`, el último índice válido es `7`.
+
+```bash
+válidos:      0 1 2 3 4 5 6 7
+inválido:                         8
+```
+
+Por eso la comparación correcta para saber si ya no hay espacio es:
+
+```asm
+cmp x21, x20
+b.hs sin_espacio
+```
+
+Si `usados >= capacidad`, escribir sería salir del bloque.
+
+## String dinámico
+
+Un string dinámico no es solo bytes. Necesita saber cuántos bytes son válidos.
+
+```bash
+puntero -> A B C ? ? ? ? ?
+capacidad = 8
+usados    = 3
+```
+
+Si además quieres string terminado en cero, debes reservar espacio para el byte
+nulo:
+
+```bash
+"ABC\0"
+usados con terminador = 4
+capacidad mínima = 4
+```
+
+Si quieres agregar otro carácter a un string terminado en cero, debes pensar en
+dos escrituras: el nuevo carácter y el nuevo terminador.
+
+```bash
+antes:
+  A B C \0 ? ? ? ?
+  longitud = 3
+
+agregar D:
+  A B C D \0 ? ? ?
+  longitud = 4
+```
+
+Con capacidad `4`, `"ABC\0"` ya llena el bloque. No cabe agregar `D` manteniendo
+terminador.
+
+## Ejemplo: agregar carácter y terminador
+
+```asm
+// x19 = bloque
+// x20 = capacidad
+// x21 = longitud sin contar terminador
+
+add x22, x21, #1        // espacio requerido para nuevo char
+add x22, x22, #1        // más terminador
+cmp x22, x20
+b.hi sin_espacio
+
+mov w0, #68             // 'D'
+strb w0, [x19, x21]
+add x21, x21, #1
+
+mov w0, #0
+strb w0, [x19, x21]
+```
+
+La comparación usa “mayor que” unsigned: si bytes requeridos superan capacidad,
+no cabe.
+
+## Crecimiento conceptual
+
+Cuando no hay espacio:
+
+```bash
+1. reservar bloque más grande
+2. copiar bytes usados
+3. liberar bloque anterior
+4. actualizar puntero y capacidad
+```
+
+No implementaremos ese crecimiento todavía. La siguiente unidad prepara memoria
+real con `mmap`; luego se podrán construir estructuras dinámicas más completas.
+
+## Copiar al crecer
+
+Al crecer, normalmente copias los bytes usados, no todos los bytes reservados.
+
+```bash
+bloque viejo
+  capacidad = 8
+  usados    = 3
+  datos     = A B C
+
+bloque nuevo
+  capacidad = 16
+  copiar    = 3 bytes usados
+```
+
+Copiar toda la capacidad puede mover bytes sin significado. A veces se hace por
+simplicidad o rendimiento, pero conceptualmente los datos válidos son los bytes
+usados.
+
+::: {.callout-warning title="Error común"}
+No escribas en `buffer[capacidad]`. Índices válidos van de `0` a
+`capacidad - 1`.
+:::
+
+## Mini ejercicios
+
+1. ¿Qué representa `x20`?
+2. ¿Qué representa `x21`?
+3. ¿Por qué se revisa espacio antes de `strb`?
+4. ¿Por qué un string terminado en cero necesita un byte extra?
+5. ¿Qué pasos requiere crecer un buffer?
+
+## Cierre
+
+Buffers dinámicos no se manejan con puntero solo. Necesitan tamaño reservado,
+tamaño usado y reglas claras para crecer sin pisar memoria.

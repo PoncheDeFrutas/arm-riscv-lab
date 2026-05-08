@@ -1,0 +1,171 @@
+---
+title: "12.1 · Stack vs heap"
+subtitle: "No toda memoria vive lo mismo ni se administra igual."
+description: "Diferencia entre memoria estática, stack y heap en programas AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Heap y memoria dinámica > Stack vs heap
+:::
+
+::: {.hero-lab}
+El stack sirvió para frames y variables temporales de una llamada. El heap sirve
+para datos cuya vida no encaja con una sola llamada o cuyo tamaño se decide al
+ejecutar.
+:::
+
+## Tres vidas distintas
+
+| Región | Cuándo nace | Cuándo deja de servir |
+|---|---|---|
+| `.data` / `.bss` | al cargar el proceso | al terminar el proceso |
+| stack | al entrar a función o reservar espacio | al liberar frame o restaurar `sp` |
+| heap | cuando el programa pide memoria | cuando el programa la libera |
+
+Esto es vida útil. No todos los datos deben vivir todo el proceso, ni todos
+pueden desaparecer al salir de una función.
+
+## Vida útil no es ubicación solamente
+
+La dirección indica dónde está un dato. La vida útil indica hasta cuándo tiene
+sentido usarlo.
+
+```bash
+dirección: número donde empieza el dato
+contenido: bytes guardados ahí
+vida útil: periodo donde esos bytes pertenecen a ese uso
+```
+
+El error aparece cuando una dirección se sigue usando después de que su vida útil
+terminó. Eso puede pasar con stack después de retornar o con heap después de
+liberar.
+
+## Por qué no basta `.bss`
+
+`.bss` sirve para reservar un tamaño fijo desde el programa:
+
+```asm
+.bss
+buffer:
+    .skip 64
+```
+
+Esto funciona si sabes de antemano que necesitas 64 bytes. Si el tamaño depende
+de entrada, archivo, cantidad de elementos o crecimiento de estructura, un bloque
+dinámico tiene más sentido.
+
+Ejemplo donde `.bss` sí alcanza:
+
+```asm
+.bss
+linea:
+    .skip 128
+```
+
+Si el laboratorio siempre lee una línea de máximo 128 bytes, ese buffer fijo es
+sencillo. Pero si quieres guardar un archivo completo cuyo tamaño no conoces, o
+una lista que crece según entrada, fijar un número puede desperdiciar memoria o
+quedarse corto.
+
+## Por qué no basta stack
+
+El stack está ligado a llamadas activas.
+
+```bash
+funcion entra
+  reserva stack
+  usa locales
+funcion retorna
+  frame desaparece
+```
+
+Si devuelves una dirección a memoria local del stack y luego la función retorna,
+esa dirección ya no representa memoria propia de esa función.
+
+::: {.callout-warning title="Error común"}
+No guardes para largo plazo una dirección de variable local en stack. El frame
+se deshace al retornar.
+:::
+
+Diagrama de vida local:
+
+```bash
+funcion crea local en stack
+  ptr = dirección del local
+funcion retorna
+  sp se restaura
+  ptr apunta a zona que ya no pertenece a ese local
+```
+
+La dirección puede seguir siendo un número, pero el contrato ya terminó. Ese es
+el punto difícil: un puntero puede tener forma correcta y aun así ser incorrecto
+por vida útil.
+
+## Para qué sirve heap
+
+Heap permite bloques con vida controlada por el programa:
+
+```bash
+reservar bloque
+guardar puntero
+pasar puntero entre funciones
+usar mientras siga siendo válido
+liberar cuando ya no se necesite
+```
+
+Ese bloque puede sobrevivir a una llamada concreta. Por eso sirve para buffers,
+strings y estructuras que crecen.
+
+## Stack vs heap en errores típicos
+
+| Región | Error típico | Lectura |
+|---|---|---|
+| stack | usar dirección después de retornar | frame ya no existe |
+| heap | olvidar liberar | leak |
+| heap | usar después de liberar | use-after-free |
+| heap | liberar dos veces | double free |
+
+El stack falla cuando olvidas que pertenece a una llamada activa. El heap falla
+cuando olvidas quién posee el bloque y cuándo fue liberado.
+
+## Mapa visual
+
+```bash
+Direcciones bajas
+
+.text       código
+.rodata     datos constantes
+.data       datos inicializados
+.bss        espacio estático reservado
+heap        bloques pedidos durante ejecución
+...
+stack       frames activos y datos temporales
+
+Direcciones altas
+```
+
+No memorices direcciones exactas. Memoriza propósito y vida útil.
+
+## Comparación práctica
+
+| Necesidad | Región apropiada |
+|---|---|
+| mensaje fijo del programa | `.rodata` |
+| contador global modificable | `.data` |
+| buffer fijo conocido al ensamblar | `.bss` |
+| variable local de una función | stack |
+| buffer cuyo tamaño se decide al correr | heap |
+| string que debe sobrevivir a una función | heap |
+
+## Mini ejercicios
+
+1. ¿Qué región usarías para un mensaje constante?
+2. ¿Qué región usarías para una variable local temporal?
+3. ¿Por qué heap sirve para datos que crecen?
+4. ¿Por qué una dirección de stack puede dejar de ser válida?
+5. ¿Qué región vive normalmente hasta terminar el proceso?
+
+## Cierre
+
+Heap no reemplaza stack ni `.bss`. Cada región resuelve una vida distinta. Elegir
+bien empieza por preguntar cuánto debe vivir el dato.

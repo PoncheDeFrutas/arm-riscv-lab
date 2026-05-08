@@ -185,6 +185,7 @@ AArch64 antes de entrar en programas más grandes.
 - [09 · Syscalls esenciales](syscalls-esenciales/index.qmd)
 - [10 · Linux como API del kernel](linux-api-kernel/index.qmd)
 - [11 · Stack, funciones y stack frames](stack-funciones-frames/index.qmd)
+- [12 · Heap y memoria dinámica](heap-memoria-dinamica/index.qmd)
 :::
 
 ## Siguiente paso

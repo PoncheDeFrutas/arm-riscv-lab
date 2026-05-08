@@ -1,0 +1,153 @@
+---
+title: "12.6 · De brk a malloc y mmap"
+subtitle: "brk da contexto histórico; mmap será la base práctica siguiente."
+description: "brk, malloc/free conceptual y preparación para mmap, munmap y mprotect."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Heap y memoria dinámica > De brk a mmap
+:::
+
+::: {.hero-lab}
+Heap no es una instrucción del procesador. En Linux, la memoria dinámica aparece
+por cooperación entre programa, biblioteca y kernel. Esta página ubica `brk`,
+`malloc/free` y `mmap` sin implementar todavía un allocator.
+:::
+
+## Tres capas
+
+| Capa | Qué hace |
+|---|---|
+| CPU | ejecuta instrucciones A64, carga y guarda bytes |
+| kernel | ofrece syscalls para recursos y memoria |
+| biblioteca | construye funciones como `malloc` encima del kernel |
+
+Confundir estas capas causa errores de lectura. `add`, `ldr` o `str` son
+instrucciones. `mmap` es syscall. `malloc` es función de biblioteca.
+
+## `brk` como contexto histórico
+
+`brk` ajusta el límite de una zona tradicional asociada al heap del proceso.
+Históricamente fue una forma de crecer o reducir esa región.
+
+```asm
+// brk existe como syscall histórica para mover el límite del heap.
+// No construir todavía un allocator completo con brk.
+```
+
+No usaremos `brk` como técnica principal del curso porque construir un allocator
+correcto encima de eso abre demasiados temas: fragmentación, metadata,
+reutilización de bloques y errores difíciles.
+
+Lectura conceptual:
+
+```bash
+heap tradicional
+  inicio fijo
+  límite actual marcado por brk
+  mover límite puede crecer o reducir región
+```
+
+Eso no entrega por sí solo un sistema cómodo de bloques pequeños. Si pides 24
+bytes, luego 80, luego liberas el primero, alguien debe recordar huecos,
+tamaños, bloques libres y bloques ocupados. Ese “alguien” es el allocator.
+
+## `malloc/free`
+
+`malloc` y `free` son funciones de biblioteca.
+
+```bash
+malloc(size) -> puntero a bloque o fallo
+free(ptr)    -> devuelve bloque al allocator
+```
+
+No son instrucciones A64. No son sinónimos simples de una syscall. Una
+biblioteca puede usar `brk`, `mmap` u otras estrategias internas para conseguir
+memoria del kernel y administrar bloques pequeños.
+
+## Instrucción, syscall o función
+
+| Forma | Ejemplo | Quién la entiende |
+|---|---|---|
+| instrucción A64 | `ldr x0, [x1]` | CPU |
+| syscall Linux | `svc #0` con `x8 = 222` para `mmap` | kernel |
+| función de biblioteca | `malloc`, `free` | código de `libc` u otra biblioteca |
+
+En assembly sin `libc`, no puedes escribir `malloc` esperando que el CPU lo
+entienda. Para llamar funciones de biblioteca hacen falta linking, ABI y entorno
+adecuado, que se verán después.
+
+## Qué hace un allocator conceptualmente
+
+```bash
+pedir memoria grande al kernel
+dividir en bloques
+entregar bloques al programa
+recordar cuáles están libres u ocupados
+recibir bloques con free
+reutilizar espacio
+```
+
+Esta unidad no implementa esas piezas. Solo prepara el vocabulario para que
+cuando aparezcan, no parezcan magia.
+
+## Por qué no implementar allocator ahora
+
+Un allocator real necesita responder preguntas que todavía no queremos meter en
+esta unidad:
+
+| Pregunta | Tema que abriría |
+|---|---|
+| ¿dónde guardo tamaño de cada bloque? | metadata |
+| ¿cómo reutilizo bloques liberados? | freelists |
+| ¿qué hago con huecos pequeños? | fragmentación |
+| ¿qué pasa si dos bloques se juntan? | coalescing |
+| ¿cómo detecto double free? | validación interna |
+
+Mencionar esto basta. Implementarlo ahora desviaría el curso antes de estudiar
+`mmap` y páginas.
+
+## Por qué `mmap` viene después
+
+`mmap` permite pedir regiones de memoria al kernel con permisos y tamaño más
+explícitos. También conecta con:
+
+| Tema futuro | Relación |
+|---|---|
+| `munmap` | liberar región mapeada |
+| `mprotect` | cambiar permisos |
+| páginas | unidad mínima de mapeo |
+| permisos | lectura, escritura, ejecución |
+| W^X | separar escritura y ejecución |
+
+En la siguiente unidad se puede estudiar memoria dinámica real desde Linux sin
+convertir la explicación en implementación de `malloc`.
+
+## Qué debe quedar claro
+
+| Término | Qué significa aquí |
+|---|---|
+| `brk` | syscall histórica para límite del heap |
+| `malloc` | función de biblioteca que entrega bloques |
+| `free` | función de biblioteca que devuelve bloques al allocator |
+| `mmap` | syscall para mapear memoria o archivos |
+| `munmap` | syscall para liberar mapeo |
+
+::: {.callout-note title="Idea clave"}
+El CPU ejecuta instrucciones. El kernel entrega servicios. La biblioteca puede
+construir una abstracción como `malloc` encima de esos servicios.
+:::
+
+## Mini ejercicios
+
+1. ¿Por qué `malloc` no es instrucción del procesador?
+2. ¿Por qué `free` no debe verse como syscall simple?
+3. ¿Qué problema tendría implementar allocator completo ahora?
+4. ¿Qué syscall futura permitirá pedir regiones de memoria al kernel?
+5. ¿Qué syscall futura libera una región mapeada?
+
+## Cierre
+
+La unidad termina con una frontera clara: ya conoces heap, bloques, ownership y
+errores. Lo siguiente será pedir memoria real al kernel con `mmap` y liberarla
+con `munmap`.
