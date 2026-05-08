@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "slides:dev": "slidev slides/aarch64/laboratorio/overview/slides.md",
-    "slides:build": "slidev build slides/aarch64/laboratorio/overview/slides.md --out .slidev-dist --base ./ --router-mode hash && rm -rf $PWD/_site/slides/aarch64/laboratorio/overview && mkdir -p $PWD/_site/slides/aarch64/laboratorio/overview && cp -R slides/aarch64/laboratorio/overview/.slidev-dist/. $PWD/_site/slides/aarch64/laboratorio/overview && rm -rf slides/aarch64/laboratorio/overview/.slidev-dist"
+    "slides:build": "make slides-build"
   },
   "devDependencies": {
     "@slidev/cli": "52.15.0",

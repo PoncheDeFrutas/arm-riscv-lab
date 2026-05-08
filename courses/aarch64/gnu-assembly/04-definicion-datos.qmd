@@ -44,7 +44,7 @@ little endian cuando ocupen más de un byte.
 cero al final.
 
 ```asm
-.rodata
+.section .rodata
 sin_cero:
     .ascii "ABC"
 
@@ -108,7 +108,7 @@ en un lenguaje de alto nivel.
 contador:
     .word 10
 
-.rodata
+.section .rodata
 mensaje:
     .asciz "Hola AArch64\n"
 

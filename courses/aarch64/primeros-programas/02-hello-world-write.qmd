@@ -30,7 +30,7 @@ _start:
     mov x8, #93         // syscall exit
     svc #0
 
-.rodata
+.section .rodata
 mensaje:
     .ascii "Hola AArch64\n"
 len = . - mensaje

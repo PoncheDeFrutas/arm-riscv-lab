@@ -1,0 +1,17 @@
+.slidev-layout {
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.slidev-layout h1 {
+  letter-spacing: 0;
+}
+
+.slidev-layout table {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.slidev-layout pre {
+  max-height: 360px;
+}

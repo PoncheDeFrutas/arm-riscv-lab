@@ -137,7 +137,7 @@ una sección concreta.
 Clasifica cada símbolo:
 
 ```asm
-.rodata
+.section .rodata
 titulo:
     .ascii "Lab\n"
 

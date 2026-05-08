@@ -50,10 +50,11 @@ contador:
 
 ## `.rodata`
 
-`.rodata` contiene datos de solo lectura.
+`.rodata` contiene datos de solo lectura. En GNU `as`, se entra a esa sección
+con `.section .rodata`.
 
 ```asm
-.rodata
+.section .rodata
 mensaje:
     .asciz "Hola AArch64\n"
 ```
@@ -91,7 +92,7 @@ _start:
 contador:
     .word 10
 
-.rodata
+.section .rodata
 mensaje:
     .asciz "Hola AArch64\n"
 

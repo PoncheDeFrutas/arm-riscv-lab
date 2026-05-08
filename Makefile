@@ -1,9 +1,9 @@
 .PHONY: help site quarto-site preview slides slides-build nojekyll publish hello hello-run hello-gdb clean
 
-LESSON ?= lessons/aarch64/01-laboratorio/00-hello-minimo/src
+LESSON ?= projects/aarch64/minimo/src
 SLIDES ?= slides/aarch64/laboratorio/overview/slides.md
-SLIDES_OUT ?= $(CURDIR)/_site/slides/aarch64/laboratorio/overview
-SLIDES_TMP ?= $(dir $(SLIDES)).slidev-dist
+SLIDE_DECKS ?= slides/aarch64/laboratorio/overview/slides.md slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md
+SLIDEV ?= ./node_modules/.bin/slidev
 
 help:
 	@echo "Targets:"
@@ -28,21 +28,34 @@ preview:
 
 slides:
 	@if [ -f "$(SLIDES)" ]; then \
-		pnpm exec slidev "$(SLIDES)"; \
+		if [ -x "$(SLIDEV)" ]; then \
+			"$(SLIDEV)" "$(SLIDES)"; \
+		else \
+			pnpm exec slidev "$(SLIDES)"; \
+		fi; \
 	else \
 		echo "Slidev deck not found at $(SLIDES); skipping."; \
 	fi
 
 slides-build:
-	@if [ -f "$(SLIDES)" ]; then \
-		pnpm exec slidev build "$(SLIDES)" --out ".slidev-dist" --base ./ --router-mode hash; \
-		rm -rf "$(SLIDES_OUT)"; \
-		mkdir -p "$(SLIDES_OUT)"; \
-		cp -R "$(SLIDES_TMP)/." "$(SLIDES_OUT)"; \
-		rm -rf "$(SLIDES_TMP)"; \
-	else \
-		echo "Slidev deck not found at $(SLIDES); skipping."; \
-	fi
+	@set -e; \
+	for deck in $(SLIDE_DECKS); do \
+		if [ -f "$$deck" ]; then \
+			out="$(CURDIR)/_site/$${deck%/slides.md}"; \
+			tmp="$(CURDIR)/$${deck%/slides.md}/.slidev-dist"; \
+			if [ -x "$(SLIDEV)" ]; then \
+				"$(SLIDEV)" build "$$deck" --out "$$tmp" --base ./ --router-mode hash; \
+			else \
+				pnpm exec slidev build "$$deck" --out "$$tmp" --base ./ --router-mode hash; \
+			fi; \
+			rm -rf "$$out"; \
+			mkdir -p "$$out"; \
+			cp -R "$$tmp/." "$$out"; \
+			rm -rf "$$tmp"; \
+		else \
+			echo "Slidev deck not found at $$deck; skipping."; \
+		fi; \
+	done
 
 nojekyll:
 	touch _site/.nojekyll

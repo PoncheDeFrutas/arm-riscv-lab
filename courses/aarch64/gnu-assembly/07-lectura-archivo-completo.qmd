@@ -40,7 +40,7 @@ _start:
 
 .size _start, . - _start
 
-.rodata
+.section .rodata
 mensaje:
     .ascii "Hola GNU Assembly\n"
 mensaje_len = . - mensaje
@@ -64,7 +64,7 @@ que el assembler convertirá en instrucciones.
 | `ldr x1, =mensaje` | Pseudo-instrucción | Obtiene dirección/valor asociado |
 | `svc #0` | Instrucción A64 | Entra al kernel |
 | `.size _start, . - _start` | Directiva | Calcula tamaño |
-| `.rodata` | Directiva | Cambia a datos de solo lectura |
+| `.section .rodata` | Directiva | Cambia a datos de solo lectura |
 | `mensaje:` | Etiqueta | Nombra dirección de datos |
 | `.ascii "Hola GNU Assembly\n"` | Directiva de datos | Coloca bytes |
 | `mensaje_len = . - mensaje` | Símbolo calculado | Longitud del mensaje |
@@ -83,7 +83,7 @@ No ejecuta:
 
 ```asm
 .global _start
-.rodata
+.section .rodata
 mensaje:
 mensaje_len = . - mensaje
 ```
