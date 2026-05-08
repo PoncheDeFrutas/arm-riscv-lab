@@ -51,9 +51,18 @@ AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.
 
 ## Cómo se organiza el aprendizaje
 
-```txt
-Fundamentos -> Programas mínimos -> Memoria y control de flujo ->
-Funciones y ABI -> Binarios y debugging -> Sistemas avanzados
+La @fig-home-learning-flow resume el recorrido general sin mezclarlo con la
+navegación de cada ruta.
+
+```{mermaid}
+%%| label: fig-home-learning-flow
+%%| fig-cap: "Flujo general de aprendizaje del laboratorio."
+flowchart LR
+  A["Fundamentos"] --> B["Programas mínimos"]
+  B --> C["Memoria y control de flujo"]
+  C --> D["Funciones y ABI"]
+  D --> E["Binarios y debugging"]
+  E --> F["Sistemas avanzados"]
 ```
 
 Cada ruta crecerá por bloques y unidades. La home solo muestra las rutas para

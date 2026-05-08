@@ -127,16 +127,25 @@ Mirar registros sin convertir esta unidad en debugging avanzado.
 
 ## Modelo mental de la unidad
 
-```bash
-programa en EL0
-        |
-        v
-instrucciones A64 modifican registros visibles
-        |
-        +--> Xn / Wn
-        +--> SP / PC / LR / FP
-        +--> NZCV
-        `--> Vn si usa FP/SIMD
+La @fig-aarch64-visible-state muestra el estado visible que miraremos durante
+las primeras prácticas.
+
+```{mermaid}
+%%| label: fig-aarch64-visible-state
+%%| fig-cap: "Estado visible inicial de un programa AArch64 en EL0."
+flowchart TB
+  program["Programa en EL0"]
+  inst["Instrucciones A64"]
+  gpr["Xn / Wn"]
+  special["SP / PC / LR / FP"]
+  flags["NZCV"]
+  simd["Vn si usa FP/SIMD"]
+
+  program --> inst
+  inst --> gpr
+  inst --> special
+  inst --> flags
+  inst --> simd
 ```
 
 Depurar significa detener el programa y mirar parte de ese estado con contexto.

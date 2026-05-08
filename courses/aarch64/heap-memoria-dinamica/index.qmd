@@ -59,18 +59,28 @@ Después de liberar, puntero viejo no debe usarse.
 | stack | llamada actual y frames activos | cambia con llamadas | locales, retorno, frames |
 | heap | hasta que se libere | dinámico | buffers, strings, estructuras que crecen |
 
-```bash
-Direcciones bajas
+La @fig-heap-memory-regions ubica las regiones como modelo didáctico, no como
+promesa de direcciones exactas.
 
-.text
-.rodata
-.data
-.bss
-heap      bloques dinámicos
-...
-stack     frames activos
+```{dot}
+//| label: fig-heap-memory-regions
+//| fig-cap: "Mapa conceptual de regiones de memoria en un proceso."
+digraph G {
+  rankdir=TB;
+  node [shape=box];
 
-Direcciones altas
+  low [label="Direcciones bajas"];
+  text [label=".text"];
+  rodata [label=".rodata"];
+  data [label=".data"];
+  bss [label=".bss"];
+  heap [label="heap\\nbloques dinámicos"];
+  gap [label="..."];
+  stack [label="stack\\nframes activos"];
+  high [label="Direcciones altas"];
+
+  low -> text -> rodata -> data -> bss -> heap -> gap -> stack -> high;
+}
 ```
 
 El orden real depende de sistema y configuración. El mapa sirve para estudiar
@@ -124,18 +134,18 @@ se usó y quién es responsable.
 
 ## Ciclo completo
 
-```bash
-reservar bloque
-  guardar puntero
-  guardar capacidad
+La @fig-heap-block-lifecycle muestra el ciclo mínimo que debe respetar cualquier
+bloque dinámico.
 
-usar bloque
-  revisar límites
-  actualizar bytes usados
-
-liberar bloque
-  dejar de usar puntero viejo
-  evitar liberar otra vez
+```{mermaid}
+%%| label: fig-heap-block-lifecycle
+%%| fig-cap: "Ciclo de vida conceptual de un bloque dinámico."
+flowchart LR
+  reserve["Reservar bloque"] --> save["Guardar puntero y capacidad"]
+  save --> use["Usar dentro de límites"]
+  use --> update["Actualizar bytes usados"]
+  update --> free["Liberar bloque"]
+  free --> invalid["Puntero viejo inválido"]
 ```
 
 La Unidad 10 enseñó recursos como file descriptors. Memoria dinámica también es

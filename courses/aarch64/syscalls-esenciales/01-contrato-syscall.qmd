@@ -19,15 +19,19 @@ terminar el proceso, prepara registros y ejecuta `svc #0`.
 Un programa de usuario no escribe directamente en la terminal ni abre archivos
 por su cuenta. Esas operaciones pertenecen al sistema operativo.
 
-```bash
-programa en EL0
-  prepara registros
-  ejecuta svc #0
+La @fig-aarch64-syscall-contract muestra el recorrido mínimo: userland prepara
+registros, entra al kernel y recibe retorno.
 
-kernel en EL1
-  revisa número de syscall
-  usa argumentos
-  devuelve resultado en x0
+```{mermaid}
+%%| label: fig-aarch64-syscall-contract
+%%| fig-cap: "Contrato conceptual de una syscall Linux en AArch64."
+flowchart LR
+  user["Programa en EL0"] --> regs["Argumentos en x0-x5"]
+  regs --> number["Número de syscall en x8"]
+  number --> svc["svc #0"]
+  svc --> kernel["Kernel en EL1"]
+  kernel --> ret["Retorno en x0"]
+  ret --> user
 ```
 
 `EL0` y `EL1` vienen del mapa inicial de Unidad 03. Aquí no estudiaremos

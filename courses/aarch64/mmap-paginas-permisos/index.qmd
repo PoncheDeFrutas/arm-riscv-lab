@@ -73,21 +73,19 @@ Lees y escribes con punteros normales.
 
 ## Idea central
 
-```bash
-mmap
-  pide al kernel una región virtual
-  retorna dirección en x0
+La @fig-mmap-region-lifecycle muestra `mmap` como ciclo de vida de una región,
+no como una variable normal.
 
-uso
-  x19 guarda dirección
-  ldr/str leen y escriben bytes
-
-mprotect
-  cambia permisos de la región
-
-munmap
-  libera región
-  puntero viejo queda inválido
+```{mermaid}
+%%| label: fig-mmap-region-lifecycle
+%%| fig-cap: "Ciclo de vida conceptual de una región virtual creada con mmap."
+flowchart LR
+  mmap["mmap"] --> ret["Dirección virtual en x0"]
+  ret --> keep["Guardar dirección base"]
+  keep --> use["ldr/str leen y escriben"]
+  use --> protect["mprotect cambia permisos"]
+  protect --> unmap["munmap libera región"]
+  unmap --> invalid["Puntero viejo inválido"]
 ```
 
 `mmap` no te entrega “memoria física” para manipular directamente. Te entrega

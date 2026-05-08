@@ -126,20 +126,20 @@ Direcciones como números, punteros y lectura de contenido en memoria.
 
 ## Modelo mental de la unidad
 
-```bash
-registro o dirección
-        |
-        v
-bytes guardados
-        |
-        v
-interpretación elegida
-        |
-        +--> unsigned
-        +--> signed
-        +--> texto
-        +--> dirección
-        `--> bytes sin interpretar
+La @fig-binary-interpretation muestra la idea central: los bytes no traen una
+interpretación única.
+
+```{mermaid}
+%%| label: fig-binary-interpretation
+%%| fig-cap: "Relación entre bytes guardados e interpretación elegida."
+flowchart TB
+  source["Registro o dirección"] --> bytes["Bytes guardados"]
+  bytes --> choice["Interpretación elegida"]
+  choice --> unsigned["unsigned"]
+  choice --> signed["signed"]
+  choice --> text["texto"]
+  choice --> address["dirección"]
+  choice --> raw["bytes sin interpretar"]
 ```
 
 El depurador y las herramientas muestran registros, direcciones y memoria. El

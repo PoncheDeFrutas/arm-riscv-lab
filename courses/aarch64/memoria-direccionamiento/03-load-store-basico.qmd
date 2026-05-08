@@ -16,8 +16,19 @@ resultado, lo escribes de vuelta a memoria.
 
 ## Arquitectura load/store
 
-```bash
-memoria -> load -> registro -> operación -> registro -> store -> memoria
+La @fig-load-store-flow muestra por qué AArch64 no opera directamente sobre un
+valor guardado en memoria.
+
+```{mermaid}
+%%| label: fig-load-store-flow
+%%| fig-cap: "Flujo load/store básico en AArch64."
+flowchart LR
+  memory1["Memoria"] --> load["load / ldr"]
+  load --> reg1["Registro"]
+  reg1 --> op["Operación"]
+  op --> reg2["Registro"]
+  reg2 --> store["store / str"]
+  store --> memory2["Memoria"]
 ```
 
 | Acción | Instrucción típica | Resultado |

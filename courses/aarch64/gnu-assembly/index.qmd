@@ -121,14 +121,37 @@ Clasificar un `.s` línea por línea.
 
 ## Modelo mental de la unidad
 
-```bash
-archivo .s
-   |
-   +-- directivas        -> assembler
-   +-- etiquetas         -> nombres de direcciones
-   +-- datos             -> bytes en secciones
-   +-- pseudo-instrucc.  -> assembler expande o resuelve
-   `-- instrucciones A64 -> CPU ejecuta
+La @fig-gnu-assembly-model separa qué partes entiende el assembler y qué parte
+termina como instrucciones ejecutadas por la CPU.
+
+```{dot}
+//| label: fig-gnu-assembly-model
+//| fig-cap: "Modelo de lectura de un archivo GNU Assembly AArch64."
+digraph G {
+  rankdir=LR;
+  node [shape=box];
+
+  source [label="archivo .s"];
+  directives [label="directivas"];
+  labels [label="etiquetas"];
+  data [label="datos"];
+  pseudo [label="pseudo-instrucciones"];
+  inst [label="instrucciones A64"];
+  assembler [label="GNU assembler"];
+  cpu [label="CPU"];
+
+  source -> directives;
+  source -> labels;
+  source -> data;
+  source -> pseudo;
+  source -> inst;
+  directives -> assembler;
+  labels -> assembler;
+  data -> assembler;
+  pseudo -> assembler;
+  inst -> assembler;
+  assembler -> cpu [label="código máquina"];
+}
 ```
 
 ## Qué no estudiaremos todavía

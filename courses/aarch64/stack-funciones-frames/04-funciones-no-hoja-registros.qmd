@@ -44,18 +44,20 @@ funcion_no_hoja:
 
 ## Qué pasa si no guardas `LR`
 
-```bash
-_start
-  bl funcion_a       -> x30 = retorno a _start
+La @fig-lr-overwrite muestra el fallo: cada `bl` escribe un nuevo retorno en
+`x30`.
 
-funcion_a
-  bl funcion_b       -> x30 = retorno dentro de funcion_a
-
-funcion_b
-  ret                -> vuelve a funcion_a
-
-funcion_a
-  ret                -> usa x30 actual, no retorno original
+```{mermaid}
+%%| label: fig-lr-overwrite
+%%| fig-cap: "Pérdida del retorno cuando una función no hoja no guarda LR."
+sequenceDiagram
+  participant Start as _start
+  participant A as funcion_a
+  participant B as funcion_b
+  Start->>A: bl funcion_a, x30 = retorno a _start
+  A->>B: bl funcion_b, x30 = retorno dentro de funcion_a
+  B-->>A: ret
+  A-->>A: ret usa x30 actual, no retorno original
 ```
 
 `funcion_a` perdió el retorno hacia `_start`. Por eso el frame guarda `x30`

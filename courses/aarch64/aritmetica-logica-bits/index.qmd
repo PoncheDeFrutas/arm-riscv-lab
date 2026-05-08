@@ -54,8 +54,19 @@ Shifts, rotates, extensiones y campos.
 
 ## Idea de trabajo
 
-```bash
-memoria -> ldr -> registro -> operación -> registro -> flags opcionales
+La @fig-register-operation-flow resume el flujo típico: memoria se carga a
+registros, la operación ocurre en registros y algunas instrucciones actualizan
+flags.
+
+```{mermaid}
+%%| label: fig-register-operation-flow
+%%| fig-cap: "Flujo básico de operación sobre registros en AArch64."
+flowchart LR
+  memory["Memoria"] --> load["ldr"]
+  load --> reg1["Registro"]
+  reg1 --> op["Operación"]
+  op --> reg2["Registro resultado"]
+  op -.-> flags["Flags opcionales"]
 ```
 
 AArch64 opera principalmente sobre registros. Algunas instrucciones solo
