@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Lectura inicial de readelf -h, tipo de archivo, arquitectura y punto de entrada.">
+
+<title>16.2 · ELF header y entry point – ARM RISC-V Lab</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.html" rel="next">
+<link href="../../../courses/aarch64/elf-linking-loading/01-flujo-assembly-objeto-ejecutable.html" rel="prev">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8a35c1121b147d3068ed786f180143c4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-27d5687e4e5938cae3c5b6a84d67ce9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">ARM RISC-V Lab</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Buscar"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Navegación de palanca" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Inicio</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cursos" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cursos</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cursos">    
+        <li>
+    <a class="dropdown-item" href="../../../courses/aarch64/index.html">
+ <span class="dropdown-text">Ruta AArch64</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../courses/riscv/index.html">
+ <span class="dropdown-text">Ruta RISC-V</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="../../../courses/aarch64/roadmap.html" aria-current="page"> 
+<span class="menu-text">Roadmap</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-guías" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Guías</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-guías">    
+        <li>
+    <a class="dropdown-item" href="../../../guides/setup/index.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../guides/setup/makefiles.html">
+ <span class="dropdown-text">Makefiles</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../guides/debugging/qemu-vscode.html">
+ <span class="dropdown-text">Debugging con QEMU</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../guides/debugging/native-vscode.html">
+ <span class="dropdown-text">Debugging nativo ARM</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../../guides/troubleshooting.html">
+ <span class="dropdown-text">Troubleshooting</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://github.com/PoncheDeFrutas/arm-riscv-lab" title="GitHub" class="quarto-navigation-tool px-1" aria-label="GitHub"><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/elf-linking-loading/index.html">16 · ELF, linking, loading y binarios</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/elf-linking-loading/02-elf-header-entry-point.html">ELF header y entry point</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">AArch64</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inicio del curso</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">00 · Contexto, historia y objetivos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">01 · Laboratorio ARM64 reproducible</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Entorno Linux ARM64</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Instalación toolchain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Primer programa</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Inspección del binario</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Debugging mínimo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/laboratorio/06-estructura-repositorio.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estructura del repositorio</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">02 · Bases binarias y representación</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bits, bytes y bases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Enteros, signo y rangos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overflow y extensiones</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bytes y texto</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Endianness y alineación</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Direcciones y punteros</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">03 · Modelo ARMv8-A / AArch64</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/01-registros-generales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Registros generales</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/02-registros-especiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Registros especiales</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/03-pstate-flags.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PSTATE y flags</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/04-simd-floating-registers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SIMD/Floating Point</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/05-exception-levels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exception levels</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura con GDB</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">04 · GNU Assembly</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/01-estructura-archivo-s.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Estructura de archivo .s</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/02-secciones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secciones</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/03-directivas-basicas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Directivas básicas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/04-definicion-datos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definición de datos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/05-pseudo-instrucciones-direcciones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pseudo-instrucciones</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/06-include-macros.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Include y macros</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/gnu-assembly/07-lectura-archivo-completo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura de archivo completo</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">05 · Primeros programas</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/primeros-programas/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/primeros-programas/01-programa-minimo-exit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Programa mínimo con exit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/primeros-programas/02-hello-world-write.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hello World con write</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/primeros-programas/03-stdout-stderr-exit-codes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">stdout, stderr y exit codes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/primeros-programas/04-start-main-libc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">_start, main y libc</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura guiada de syscalls</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">06 · Memoria y direccionamiento</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/01-memoria-direccion-contenido.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Dirección y contenido</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/02-secciones-mapa-memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secciones y mapa inicial</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/03-load-store-basico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Load/store básico</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/04-tamanos-acceso.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tamaños de acceso</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/05-modos-direccionamiento.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modos de direccionamiento</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/06-arrays-recorrido-memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Arrays y recorrido</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura guiada de memoria</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">07 · Aritmética, lógica y bits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/01-movimiento-constantes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Movimiento de constantes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/02-aritmetica-flags.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aritmética y flags</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/03-multiplicacion-division.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multiplicación y división</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/04-logica-mascaras.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lógica y máscaras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/05-shifts-rotates.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shifts y rotates</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/06-extensiones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Extensiones</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/07-bit-manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bit manipulation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/aritmetica-logica-bits/08-lectura-guiada-operaciones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura guiada de operaciones</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">08 · Control de flujo</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/01-branching-etiquetas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Branching y etiquetas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/02-condiciones-flags.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Condiciones y flags</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/03-if-else.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">if e if/else</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/04-loops-recorrido.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Loops y recorrido</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/05-branches-especializados-csel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Branches especializados y select</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/control-flujo/06-branch-link-register.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Link y branch por registro</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">09 · Syscalls esenciales</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/01-contrato-syscall.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contrato de syscall</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/02-exit-write.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">exit y write</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/03-read-buffers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">read y buffers</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/04-openat-close.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">openat y close</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/05-errores-minimos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Errores mínimos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/syscalls-esenciales/06-programa-guiado.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Programa guiado</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">10 · Linux como API del kernel</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/01-file-descriptors-recursos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">File descriptors y recursos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Archivos con syscalls</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/03-errores-cleanup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Errores y cleanup</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/04-posicion-metadatos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Posición y metadatos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/05-procesos-tiempo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Procesos y tiempo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/linux-api-kernel/06-programa-guiado-recursos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Programa guiado con recursos</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false">
+ <span class="menu-text">11 · Stack, funciones y stack frames</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/01-llamadas-retorno.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llamadas y retorno</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/02-stack-basico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stack básico</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/03-stack-frames.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stack frames</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/04-funciones-no-hoja-registros.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Funciones no hoja y registros</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/05-recursion-basica.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Recursión básica</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/stack-funciones-frames/06-debugging-frames-gdb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Debugging de frames con GDB</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+ <span class="menu-text">12 · Heap y memoria dinámica</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/01-stack-vs-heap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stack vs heap</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/02-bloques-ownership.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bloques y ownership</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/03-allocation-deallocation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Allocation y deallocation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/04-buffers-strings-dinamicos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Buffers y strings dinámicos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/05-errores-memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Errores de memoria</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/heap-memoria-dinamica/06-brk-malloc-mmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">De brk a mmap</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false">
+ <span class="menu-text">13 · mmap, munmap, mprotect y permisos</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/01-paginas-memoria-virtual.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Páginas y memoria virtual</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/02-mmap-anonimo-privado.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mmap anónimo privado</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/03-munmap-ciclo-vida-region.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">munmap y ciclo de vida</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/04-mprotect-permisos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mprotect y permisos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/05-mmap-con-archivo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mmap con archivo</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/06-errores-y-diagnostico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Errores y diagnóstico</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/mmap-paginas-permisos/07-programa-guiado.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Programa guiado</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false">
+ <span class="menu-text">14 · Layout de datos y structs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/01-structs-layout.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Structs y layout</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/02-acceso-campos-punteros.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Acceso a campos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/03-adts-invariantes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ADTs e invariantes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/04-objetos-manuales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Objetos manuales</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/05-descriptores.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Descriptores</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/06-buffer-string-matrix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Buffer, String y Matrix</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/07-file-wrapper-arena.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">File wrapper y arena</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/layout-datos-structs/08-lectura-guiada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura guiada</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false">
+ <span class="menu-text">15 · ABI, AAPCS64 e interoperabilidad con C</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/01-abi-aapcs64-registros.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ABI, AAPCS64 y registros</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/02-argumentos-retornos-stack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Argumentos y retornos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/03-caller-callee-saved.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Caller y callee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/04-main-start-libc-runtime.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">main, _start y libc</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/05-assembly-desde-c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Assembly desde C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">C desde assembly y printf</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/abi-aapcs64-c/07-librerias-y-lectura-guiada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Librerías y lectura guiada</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="true">
+ <span class="menu-text">16 · ELF, linking, loading y binarios</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="true" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/01-flujo-assembly-objeto-ejecutable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Flujo .s, .o y ELF</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/02-elf-header-entry-point.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">ELF header y entry point</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Secciones y símbolos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/04-segmentos-loader-permisos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Segmentos y loader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/05-linking-estatico-dinamico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linking estático y dinámico</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/06-got-plt-pie.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GOT, PLT y PIE</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/elf-linking-loading/07-herramientas-lectura-guiada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Herramientas y lectura guiada</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false">
+ <span class="menu-text">17 · Debugging con GDB, QEMU y strace</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Alternar sección">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mapa de la unidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/01-gdb-flujo-basico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Flujo básico de GDB</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/02-registros-instrucciones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Registros e instrucciones</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/03-lectura-memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectura de memoria</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/04-stack-frames-gdb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stack frames en GDB</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/05-qemu-gdbserver.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">QEMU y gdbserver</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/06-strace-syscalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">strace y syscalls</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/07-core-dumps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Core dumps</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/08-practica-guiada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Práctica guiada</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En esta página</h2>
+   
+  <ul>
+  <li><a href="#qué-pregunta-responde-readelf--h" id="toc-qué-pregunta-responde-readelf--h" class="nav-link active" data-scroll-target="#qué-pregunta-responde-readelf--h">Qué pregunta responde <code>readelf -h</code></a></li>
+  <li><a href="#campos-que-sí-importan-al-inicio" id="toc-campos-que-sí-importan-al-inicio" class="nav-link" data-scroll-target="#campos-que-sí-importan-al-inicio">Campos que sí importan al inicio</a></li>
+  <li><a href="#entry-point-no-es-siempre-main" id="toc-entry-point-no-es-siempre-main" class="nav-link" data-scroll-target="#entry-point-no-es-siempre-main">Entry point no es siempre <code>main</code></a></li>
+  <li><a href="#comparar-.o-y-ejecutable" id="toc-comparar-.o-y-ejecutable" class="nav-link" data-scroll-target="#comparar-.o-y-ejecutable">Comparar <code>.o</code> y ejecutable</a></li>
+  <li><a href="#qué-usa-esta-información" id="toc-qué-usa-esta-información" class="nav-link" data-scroll-target="#qué-usa-esta-información">Qué usa esta información</a></li>
+  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../courses/aarch64/index.html">AArch64</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/elf-linking-loading/index.html">16 · ELF, linking, loading y binarios</a></li><li class="breadcrumb-item"><a href="../../../courses/aarch64/elf-linking-loading/02-elf-header-entry-point.html">ELF header y entry point</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">16.2 · ELF header y entry point</h1>
+</div>
+
+<div>
+  <div class="description">
+    Lectura inicial de readelf -h, tipo de archivo, arquitectura y punto de entrada.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="breadcrumb-lite">
+<p>Cursos &gt; AArch64 &gt; ELF &gt; Header y entry point</p>
+</div>
+<div class="hero-lab">
+<p>El ELF header es la tarjeta de identidad del archivo. Antes de mirar secciones, símbolos o instrucciones, debes saber qué clase de objeto tienes enfrente.</p>
+</div>
+<section id="qué-pregunta-responde-readelf--h" class="level2">
+<h2 class="anchored" data-anchor-id="qué-pregunta-responde-readelf--h">Qué pregunta responde <code>readelf -h</code></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-h</span> min</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esta salida responde:</p>
+<ul>
+<li>¿es ELF?</li>
+<li>¿es 64-bit?</li>
+<li>¿es AArch64?</li>
+<li>¿es relocatable, executable, shared object o PIE?</li>
+<li>¿dónde empieza la ejecución?</li>
+<li>¿hay section headers y program headers?</li>
+</ul>
+<p>Esto convierte <code>readelf -h</code> en la primera lectura razonable de cualquier ELF. Antes de desensamblar o buscar símbolos, confirma que estás mirando el archivo correcto. Si esperabas AArch64 y aparece otra arquitectura, todo análisis posterior queda contaminado. Si esperabas ejecutable y aparece relocatable, todavía estás frente a una pieza intermedia.</p>
+</section>
+<section id="campos-que-sí-importan-al-inicio" class="level2">
+<h2 class="anchored" data-anchor-id="campos-que-sí-importan-al-inicio">Campos que sí importan al inicio</h2>
+<p>No vamos a estudiar cada campo. Para esta unidad, enfócate en:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Class</code></td>
+<td>¿ELF32 o ELF64?</td>
+</tr>
+<tr class="even">
+<td><code>Data</code></td>
+<td>¿endianness?</td>
+</tr>
+<tr class="odd">
+<td><code>Type</code></td>
+<td>¿objeto, ejecutable o shared object?</td>
+</tr>
+<tr class="even">
+<td><code>Machine</code></td>
+<td>¿arquitectura esperada?</td>
+</tr>
+<tr class="odd">
+<td><code>Entry point address</code></td>
+<td>¿dónde empieza el ejecutable?</td>
+</tr>
+<tr class="even">
+<td><code>Start of program headers</code></td>
+<td>¿hay mapa para cargar?</td>
+</tr>
+<tr class="odd">
+<td><code>Start of section headers</code></td>
+<td>¿hay mapa para herramientas/linker?</td>
+</tr>
+</tbody>
+</table>
+<p>Salida esperada resumida:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Class:</span>                             ELF64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Data:</span>                              2<span class="st">'s complement, little endian</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">Type:                              EXEC (Executable file)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">Machine:                           AArch64</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="st">Entry point address:               0x400078</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tu dirección puede cambiar. No copies el número como verdad universal. Lo importante es que existe un entry point.</p>
+<p>El entry point es una dirección dentro de la imagen cargada, no una línea de código fuente. Puede coincidir con <code>_start</code> en ejemplos sin runtime, pero en un programa C normal suele apuntar a código de arranque que prepara el entorno antes de llamar a <code>main</code>. Esta diferencia evita una confusión frecuente: <code>main</code> es importante para C, pero el loader no busca “la función main” por nombre.</p>
+</section>
+<section id="entry-point-no-es-siempre-main" class="level2">
+<h2 class="anchored" data-anchor-id="entry-point-no-es-siempre-main">Entry point no es siempre <code>main</code></h2>
+<p>En un programa sin <code>libc</code>, tú exportas <code>_start</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El linker puede usar <code>_start</code> como punto inicial. En un programa C normal, <code>main</code> no suele ser la primera instrucción del proceso. Antes hay runtime de C, inicialización y llamada posterior a <code>main</code>.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>main</code> es punto de entrada para el programador C. El ELF entry point es punto de entrada para loader/kernel.</p>
+</div>
+</div>
+</section>
+<section id="comparar-.o-y-ejecutable" class="level2">
+<h2 class="anchored" data-anchor-id="comparar-.o-y-ejecutable">Comparar <code>.o</code> y ejecutable</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-h</span> min.o</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-h</span> min</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tabla de lectura:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Archivo</th>
+<th><code>Type</code> esperado</th>
+<th>Entry point</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>min.o</code></td>
+<td>relocatable</td>
+<td>no útil para ejecución</td>
+</tr>
+<tr class="even">
+<td><code>min</code></td>
+<td>executable</td>
+<td>dirección inicial real</td>
+</tr>
+</tbody>
+</table>
+<p>El <code>.o</code> puede contener una etiqueta <code>_start</code>, pero todavía no significa que ya pueda ejecutarse como proceso Linux.</p>
+<p>Un objeto relocatable puede tener muchos símbolos útiles, incluso símbolos con nombres que suenan definitivos. Pero el tipo del ELF indica su contrato. Si el tipo dice relocatable, el archivo está diseñado para el linker. Si el tipo dice executable o shared object, ya pertenece al mundo del loader y la ejecución.</p>
+</section>
+<section id="qué-usa-esta-información" class="level2">
+<h2 class="anchored" data-anchor-id="qué-usa-esta-información">Qué usa esta información</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Actor</th>
+<th>Qué mira</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>herramientas</td>
+<td>header para identificar formato</td>
+</tr>
+<tr class="even">
+<td>linker</td>
+<td>tipo de objeto y arquitectura</td>
+</tr>
+<tr class="odd">
+<td>loader/kernel</td>
+<td>entry point y program headers</td>
+</tr>
+<tr class="even">
+<td>depurador</td>
+<td>direcciones y símbolos si existen</td>
+</tr>
+</tbody>
+</table>
+<p>El header no contiene “todo el programa”. Contiene metadatos para interpretar el resto del archivo.</p>
+<p>La analogía correcta no es “el header es el programa”, sino “el header es la portada técnica”. Te dice cómo leer lo que sigue: arquitectura, tipo, offsets de tablas, tamaños de entradas y dirección de entrada. Las instrucciones reales están en otra parte; los segmentos y secciones se describen mediante tablas separadas.</p>
+</section>
+<section id="error-común" class="level2">
+<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
+<p>Ver <code>Entry point address</code> y asumir que es dirección fija en todos los sistemas. Con PIE y ASLR, la dirección efectiva de carga puede cambiar. Esta unidad lo prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo usar <code>readelf -h</code>.</label></li>
+<li><label><input type="checkbox">Puedo ubicar <code>Type</code>, <code>Machine</code> y <code>Entry point address</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué <code>min.o</code> no tiene entry point ejecutable útil.</label></li>
+<li><label><input type="checkbox">Puedo distinguir ELF entry point de <code>main</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué direcciones pueden variar.</label></li>
+</ul>
+</section>
+<section id="siguiente-paso" class="level2">
+<h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
+<p>Abre <a href="../../../courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.html">Secciones, símbolos y relocations</a>.</p>
+
+
+</section>
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Volver arriba</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/PoncheDeFrutas\.github\.io\/arm-riscv-lab\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../courses/aarch64/elf-linking-loading/01-flujo-assembly-objeto-ejecutable.html" class="pagination-link" aria-label="Flujo .s, .o y ELF">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Flujo .s, .o y ELF</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.html" class="pagination-link" aria-label="Secciones y símbolos">
+        <span class="nav-page-text">Secciones y símbolos</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>ARM RISC-V Lab</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Arquitectura de Computadores y Ensambladores</p>
+</div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="https://github.com/PoncheDeFrutas/arm-riscv-lab">
+<p>GitHub</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
