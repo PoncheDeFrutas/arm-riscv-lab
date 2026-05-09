@@ -48,6 +48,106 @@ Unidad de apertura: vocabulario, mapa conceptual y razón de ser del curso.
 
 ---
 
+# Anuncios importantes
+
+<div class="numbered-grid">
+  <div class="numbered-card">
+    <div class="card-number">1</div>
+    <h3>Anuncio 1</h3>
+    <p>Detalle breve del anuncio importante.</p>
+  </div>
+
+  <div class="numbered-card">
+    <div class="card-number">2</div>
+    <h3>Anuncio 2</h3>
+    <p>Detalle breve del anuncio importante.</p>
+  </div>
+
+  <div class="numbered-card">
+    <div class="card-number">3</div>
+    <h3>Anuncio 3</h3>
+    <p>Detalle breve del anuncio importante.</p>
+  </div>
+</div>
+
+---
+
+# Agenda
+
+<div class="numbered-grid">
+  <div class="numbered-card">
+    <div class="card-number">1</div>
+    <h3>Punto de agenda 1</h3>
+    <p>Descripción breve del primer bloque.</p>
+  </div>
+
+  <div class="numbered-card">
+    <div class="card-number">2</div>
+    <h3>Punto de agenda 2</h3>
+    <p>Descripción breve del segundo bloque.</p>
+  </div>
+
+  <div class="numbered-card">
+    <div class="card-number">3</div>
+    <h3>Punto de agenda 3</h3>
+    <p>Descripción breve del tercer bloque.</p>
+  </div>
+
+  <div class="numbered-card">
+    <div class="card-number">4</div>
+    <h3>Punto de agenda 4</h3>
+    <p>Descripción breve del cierre.</p>
+  </div>
+</div>
+
+---
+
+# Competencias
+
+<div class="concept-grid vertical-center">
+  <div class="concept-card">
+    <h3>Competencia 1</h3>
+    <p>Describe la competencia que se espera trabajar.</p>
+  </div>
+
+  <div class="concept-card">
+    <h3>Competencia 2</h3>
+    <p>Describe la competencia que se espera trabajar.</p>
+  </div>
+
+  <div class="concept-card">
+    <h3>Competencia 3</h3>
+    <p>Describe la competencia que se espera trabajar.</p>
+  </div>
+
+  <div class="concept-card">
+    <h3>Competencia 4</h3>
+    <p>Describe la competencia que se espera trabajar.</p>
+  </div>
+</div>
+
+---
+
+# Valor de la semana
+
+<div class="callout tip">
+Valor de la semana: escribe aquí el valor o actitud que se quiere reforzar.
+</div>
+
+<div class="concept-grid">
+  <div class="concept-card">
+    <h3>Aplicación en clase</h3>
+    <p>Describe cómo se verá este valor durante la sesión.</p>
+  </div>
+
+  <div class="concept-card">
+    <h3>Aplicación en laboratorio</h3>
+    <p>Describe cómo se verá este valor durante la práctica.</p>
+  </div>
+</div>
+
+---
+
 # Qué buscamos hoy
 
 <div class="slide-center-block">
@@ -995,12 +1095,6 @@ _start:
 </div>
 
 ---
-layout: statement
----
-
-# Assembly será herramienta para observar cómo se conectan software y hardware
-
----
 
 # Checklist mental
 
@@ -1060,3 +1154,21 @@ class: text-center
 - Arm, *Arm Architecture Reference Manual Supplement: Armv8, for R-profile AArch64 architecture*
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
 - Slidev, documentación oficial
+
+---
+layout: center
+---
+
+# Ejemplo Práctico
+
+---
+layout: statement
+---
+
+# Dudas¿?
+
+---
+layout: center
+---
+
+# Gracias por tu atención
