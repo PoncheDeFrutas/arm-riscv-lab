@@ -1092,8 +1092,8 @@ ul.task-list li input[type="checkbox"] {
 <section id="estado-actual" class="level2">
 <h2 class="anchored" data-anchor-id="estado-actual">Estado actual</h2>
 <div class="course-meter">
-<p><strong>Base inicial del curso</strong></p>
-<p>La ruta ya tiene su estructura de estudio. El contenido se publicará por unidades conforme avance el laboratorio.</p>
+<p><strong>Unidades 0-15 disponibles</strong></p>
+<p>La ruta ya contiene las unidades públicas desde contexto inicial hasta ABI, AAPCS64 e interoperabilidad con C. Las unidades posteriores siguen en roadmap y se enlazarán solo cuando existan como páginas reales.</p>
 </div>
 </section>
 <section id="cómo-se-organiza" class="level2">
@@ -1112,7 +1112,7 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Temas internos</strong> Secciones dentro de cada unidad.</p>
 </div>
 </div>
-<p>La regla de navegación será simple: la portada explica la ruta, el roadmap muestra los bloques, cada bloque mostrará unidades, y cada unidad desarrollará sus temas internos.</p>
+<p>La regla de navegación es simple: la portada resume la ruta, el roadmap muestra la visión completa, cada unidad publicada desarrolla sus temas internos, y las unidades futuras quedan sin enlace hasta que existan.</p>
 </section>
 <section id="niveles-de-avance" class="level2">
 <h2 class="anchored" data-anchor-id="niveles-de-avance">Niveles de avance</h2>
@@ -1121,9 +1121,9 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>Nivel 1 — Base obligatoria</strong></p>
 <p>Programas ARM64 simples en Linux usando registros, memoria, saltos, aritmética, lógica y syscalls.</p>
 </div>
-<div class="roadmap-item">
-<p><strong>Nivel 2 — Programador ARM64 competente</strong></p>
-<p>Funciones, stack, ABI, structs, ELF, debugging, arrays, strings y algoritmos básicos.</p>
+<div class="roadmap-item available">
+<p><strong>Nivel 2 — Programador ARM64 competente, en curso</strong></p>
+<p>Funciones, stack, heap, <code>mmap</code>, structs y ABI ya están publicados. ELF, debugging avanzado, arrays, strings y algoritmos quedan como avance posterior.</p>
 </div>
 <div class="roadmap-item">
 <p><strong>Nivel 3 — ARM64 aplicado a Linux y rendimiento</strong></p>
@@ -1213,7 +1213,18 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
-<p>Empezar por la unidad “00 · Contexto, historia y objetivos” y mantener el roadmap completo como referencia. Después sigue con <a href="../../courses/aarch64/laboratorio/index.html">01 · Laboratorio ARM64 reproducible</a>.</p>
+<div class="resource-grid">
+<section id="siguiente-paso-1" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="siguiente-paso-1">Siguiente paso</h3>
+<p>Empieza por la unidad 00 para fijar vocabulario: ARM, ARMv8-A, AArch64 y A64.</p>
+<p><a href="../../courses/aarch64/fundamentos/contexto-historia-objetivos.html" class="resource-action">Ir a contexto</a></p>
+</section>
+<section id="ejemplo" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="ejemplo">Ejemplo</h3>
+<p>Cuando llegues al laboratorio, compila y ejecuta el ejemplo <code>00-hello-minimo</code> desde la página.</p>
+<p><a href="../../courses/aarch64/laboratorio/03-primer-programa.html" class="resource-action">Ver primer programa</a></p>
+</section>
+</div>
 
 
 </section>

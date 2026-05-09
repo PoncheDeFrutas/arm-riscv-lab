@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1212,17 +1215,130 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Direcciones</span> bajas</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.text</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">.rodata</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">.data</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">.bss</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">heap</span>      bloques dinámicos</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">stack</span>     frames activos</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Direcciones</span> altas</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-heap-memory-regions" class="quarto-xref">Figura&nbsp;1</a> ubica las regiones como modelo didáctico, no como promesa de direcciones exactas.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-heap-memory-regions" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-heap-memory-regions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 166.70 620.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 616)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-616 162.7,-616 162.7,4 -4,4"></polygon>
+<!-- low -->
+<g id="node1" class="node">
+<title>low</title>
+<polygon fill="none" stroke="black" points="136.97,-612 21.73,-612 21.73,-576 136.97,-576 136.97,-612"></polygon>
+<text text-anchor="middle" x="79.35" y="-589.8" font-family="Times,serif" font-size="14.00">Direcciones bajas</text>
+</g>
+<!-- text -->
+<g id="node2" class="node">
+<title>text</title>
+<polygon fill="none" stroke="black" points="106.35,-540 52.35,-540 52.35,-504 106.35,-504 106.35,-540"></polygon>
+<text text-anchor="middle" x="79.35" y="-517.8" font-family="Times,serif" font-size="14.00">.text</text>
+</g>
+<!-- low&#45;&gt;text -->
+<g id="edge1" class="edge">
+<title>low-&gt;text</title>
+<path fill="none" stroke="black" d="M79.35,-575.7C79.35,-567.98 79.35,-558.71 79.35,-550.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-550.1 79.35,-540.1 75.85,-550.1 82.85,-550.1"></polygon>
+</g>
+<!-- rodata -->
+<g id="node3" class="node">
+<title>rodata</title>
+<polygon fill="none" stroke="black" points="106.83,-468 51.87,-468 51.87,-432 106.83,-432 106.83,-468"></polygon>
+<text text-anchor="middle" x="79.35" y="-445.8" font-family="Times,serif" font-size="14.00">.rodata</text>
+</g>
+<!-- text&#45;&gt;rodata -->
+<g id="edge2" class="edge">
+<title>text-&gt;rodata</title>
+<path fill="none" stroke="black" d="M79.35,-503.7C79.35,-495.98 79.35,-486.71 79.35,-478.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-478.1 79.35,-468.1 75.85,-478.1 82.85,-478.1"></polygon>
+</g>
+<!-- data -->
+<g id="node4" class="node">
+<title>data</title>
+<polygon fill="none" stroke="black" points="106.35,-396 52.35,-396 52.35,-360 106.35,-360 106.35,-396"></polygon>
+<text text-anchor="middle" x="79.35" y="-373.8" font-family="Times,serif" font-size="14.00">.data</text>
+</g>
+<!-- rodata&#45;&gt;data -->
+<g id="edge3" class="edge">
+<title>rodata-&gt;data</title>
+<path fill="none" stroke="black" d="M79.35,-431.7C79.35,-423.98 79.35,-414.71 79.35,-406.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-406.1 79.35,-396.1 75.85,-406.1 82.85,-406.1"></polygon>
+</g>
+<!-- bss -->
+<g id="node5" class="node">
+<title>bss</title>
+<polygon fill="none" stroke="black" points="106.35,-324 52.35,-324 52.35,-288 106.35,-288 106.35,-324"></polygon>
+<text text-anchor="middle" x="79.35" y="-301.8" font-family="Times,serif" font-size="14.00">.bss</text>
+</g>
+<!-- data&#45;&gt;bss -->
+<g id="edge4" class="edge">
+<title>data-&gt;bss</title>
+<path fill="none" stroke="black" d="M79.35,-359.7C79.35,-351.98 79.35,-342.71 79.35,-334.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-334.1 79.35,-324.1 75.85,-334.1 82.85,-334.1"></polygon>
+</g>
+<!-- heap -->
+<g id="node6" class="node">
+<title>heap</title>
+<polygon fill="none" stroke="black" points="158.55,-252 0.15,-252 0.15,-216 158.55,-216 158.55,-252"></polygon>
+<text text-anchor="middle" x="79.35" y="-229.8" font-family="Times,serif" font-size="14.00">heap\nbloques dinámicos</text>
+</g>
+<!-- bss&#45;&gt;heap -->
+<g id="edge5" class="edge">
+<title>bss-&gt;heap</title>
+<path fill="none" stroke="black" d="M79.35,-287.7C79.35,-279.98 79.35,-270.71 79.35,-262.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-262.1 79.35,-252.1 75.85,-262.1 82.85,-262.1"></polygon>
+</g>
+<!-- gap -->
+<g id="node7" class="node">
+<title>gap</title>
+<polygon fill="none" stroke="black" points="106.35,-180 52.35,-180 52.35,-144 106.35,-144 106.35,-180"></polygon>
+<text text-anchor="middle" x="79.35" y="-157.8" font-family="Times,serif" font-size="14.00">...</text>
+</g>
+<!-- heap&#45;&gt;gap -->
+<g id="edge6" class="edge">
+<title>heap-&gt;gap</title>
+<path fill="none" stroke="black" d="M79.35,-215.7C79.35,-207.98 79.35,-198.71 79.35,-190.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-190.1 79.35,-180.1 75.85,-190.1 82.85,-190.1"></polygon>
+</g>
+<!-- stack -->
+<g id="node8" class="node">
+<title>stack</title>
+<polygon fill="none" stroke="black" points="147.75,-108 10.95,-108 10.95,-72 147.75,-72 147.75,-108"></polygon>
+<text text-anchor="middle" x="79.35" y="-85.8" font-family="Times,serif" font-size="14.00">stack\nframes activos</text>
+</g>
+<!-- gap&#45;&gt;stack -->
+<g id="edge7" class="edge">
+<title>gap-&gt;stack</title>
+<path fill="none" stroke="black" d="M79.35,-143.7C79.35,-135.98 79.35,-126.71 79.35,-118.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-118.1 79.35,-108.1 75.85,-118.1 82.85,-118.1"></polygon>
+</g>
+<!-- high -->
+<g id="node9" class="node">
+<title>high</title>
+<polygon fill="none" stroke="black" points="135.36,-36 23.34,-36 23.34,0 135.36,0 135.36,-36"></polygon>
+<text text-anchor="middle" x="79.35" y="-13.8" font-family="Times,serif" font-size="14.00">Direcciones altas</text>
+</g>
+<!-- stack&#45;&gt;high -->
+<g id="edge8" class="edge">
+<title>stack-&gt;high</title>
+<path fill="none" stroke="black" d="M79.35,-71.7C79.35,-63.98 79.35,-54.71 79.35,-46.11"></path>
+<polygon fill="black" stroke="black" points="82.85,-46.1 79.35,-36.1 75.85,-46.1 82.85,-46.1"></polygon>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heap-memory-regions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Mapa conceptual de regiones de memoria en un proceso.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p>El orden real depende de sistema y configuración. El mapa sirve para estudiar clases de memoria y vida útil.</p>
 </section>
 <section id="qué-problema-resuelve-cada-región" class="level2">
@@ -1266,11 +1382,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="idea-central" class="level2">
 <h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
 <p>Un bloque dinámico se entiende como:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bloque</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dirección:</span> puntero guardado en registro o memoria</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">capacidad:</span> bytes reservados</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">usados:</span> bytes con datos válidos</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dueño:</span> parte del programa responsable de liberar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bloque</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dirección:</span> puntero guardado en registro o memoria</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">capacidad:</span> bytes reservados</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">usados:</span> bytes con datos válidos</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dueño:</span> parte del programa responsable de liberar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1325,17 +1441,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ciclo-completo" class="level2">
 <h2 class="anchored" data-anchor-id="ciclo-completo">Ciclo completo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">reservar</span> bloque</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">guardar</span> puntero</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">guardar</span> capacidad</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">usar</span> bloque</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">revisar</span> límites</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">actualizar</span> bytes usados</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">liberar</span> bloque</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">dejar</span> de usar puntero viejo</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">evitar</span> liberar otra vez</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-heap-block-lifecycle" class="quarto-xref">Figura&nbsp;2</a> muestra el ciclo mínimo que debe respetar cualquier bloque dinámico.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-heap-block-lifecycle" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-heap-block-lifecycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-heap-block-lifecycle">flowchart LR
+  reserve["Reservar bloque"] --&gt; save["Guardar puntero y capacidad"]
+  save --&gt; use["Usar dentro de límites"]
+  use --&gt; update["Actualizar bytes usados"]
+  update --&gt; free["Liberar bloque"]
+  free --&gt; invalid["Puntero viejo inválido"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heap-block-lifecycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;2: Ciclo de vida conceptual de un bloque dinámico.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p>La Unidad 10 enseñó recursos como file descriptors. Memoria dinámica también es un recurso, pero no se libera con <code>close</code>: se libera con el mecanismo de memoria correspondiente.</p>
 </section>
 <section id="errores-que-esta-unidad-prepara" class="level2">
@@ -1451,7 +1579,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="preparación-para-presentación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
 <p>La página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/heap-memoria-dinamica/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/heap-memoria-dinamica/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esa presentación debe visualizar mapa de memoria, bloques dinámicos, ownership, leaks, use-after-free, double free y puente a <code>mmap</code>.</p>
 </section>
 <section id="checklist-de-cierre" class="level2">

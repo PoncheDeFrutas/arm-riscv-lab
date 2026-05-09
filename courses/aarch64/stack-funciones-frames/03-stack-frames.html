@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1078,12 +1081,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#prólogo-y-epílogo" id="toc-prólogo-y-epílogo" class="nav-link active" data-scroll-target="#prólogo-y-epílogo">Prólogo y epílogo</a></li>
   <li><a href="#qué-hace-stp-x29-x30-sp--16" id="toc-qué-hace-stp-x29-x30-sp--16" class="nav-link" data-scroll-target="#qué-hace-stp-x29-x30-sp--16">Qué hace <code>stp x29, x30, [sp, #-16]!</code></a></li>
   <li><a href="#qué-hace-mov-x29-sp" id="toc-qué-hace-mov-x29-sp" class="nav-link" data-scroll-target="#qué-hace-mov-x29-sp">Qué hace <code>mov x29, sp</code></a></li>
+  <li><a href="#diagrama-del-frame" id="toc-diagrama-del-frame" class="nav-link" data-scroll-target="#diagrama-del-frame">Diagrama del frame</a></li>
   <li><a href="#qué-hace-ldp-x29-x30-sp-16" id="toc-qué-hace-ldp-x29-x30-sp-16" class="nav-link" data-scroll-target="#qué-hace-ldp-x29-x30-sp-16">Qué hace <code>ldp x29, x30, [sp], #16</code></a></li>
-  <li><a href="#variable-local-simple" id="toc-variable-local-simple" class="nav-link" data-scroll-target="#variable-local-simple">Variable local simple</a></li>
+  <li><a href="#sec-frame-variable-local" id="toc-sec-frame-variable-local" class="nav-link" data-scroll-target="#sec-frame-variable-local">Ejemplo de frame con variable local</a></li>
   <li><a href="#lectura-del-frame" id="toc-lectura-del-frame" class="nav-link" data-scroll-target="#lectura-del-frame">Lectura del frame</a></li>
   <li><a href="#orden-correcto-al-salir" id="toc-orden-correcto-al-salir" class="nav-link" data-scroll-target="#orden-correcto-al-salir">Orden correcto al salir</a></li>
-  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#sec-stack-frame-ejercicios" id="toc-sec-stack-frame-ejercicios" class="nav-link" data-scroll-target="#sec-stack-frame-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
+  <li><a href="#recursos" id="toc-recursos" class="nav-link" data-scroll-target="#recursos">Recursos</a></li>
   </ul>
 </nav>
     </div>
@@ -1123,7 +1128,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="prólogo-y-epílogo" class="level2">
 <h2 class="anchored" data-anchor-id="prólogo-y-epílogo">Prólogo y epílogo</h2>
-<p>El prólogo prepara el frame al entrar. El epílogo lo deshace antes de retornar.</p>
+<p>El prólogo prepara el frame al entrar. El epílogo lo deshace antes de retornar. En esta unidad usaremos un frame con <code>x29</code> porque deja una referencia estable para leer variables locales y reconstruir llamadas. En código optimizado, un compilador puede omitir <code>x29</code>, pero para aprender conviene ver el frame de forma explícita.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
@@ -1145,12 +1150,67 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">sp</span> <span class="at">-</span><span class="op">&gt;</span> x29 guardado</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="ex">x30</span> guardado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La instrucción reserva 16 bytes y guarda dos registros de 8 bytes.</p>
+<p>En AArch64 cada registro <code>x</code> ocupa 8 bytes. Por eso el par <code>x29</code>, <code>x30</code> ocupa exactamente 16 bytes. Ese tamaño también conserva la alineación del stack, que debe mantenerse en múltiplos de 16 bytes antes de hacer llamadas.</p>
 </section>
 <section id="qué-hace-mov-x29-sp" class="level2">
 <h2 class="anchored" data-anchor-id="qué-hace-mov-x29-sp">Qué hace <code>mov x29, sp</code></h2>
 <p>Después de guardar <code>x29</code> y <code>x30</code>, copiamos <code>sp</code> a <code>x29</code>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Desde ese momento, <code>x29</code> marca la base del frame actual. Aunque <code>sp</code> se mueva para variables locales, <code>x29</code> queda como referencia estable.</p>
+<p>En este patrón, <code>x29</code> apunta al registro <code>x29</code> guardado del caller. El retorno guardado queda 8 bytes después:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Dirección relativa</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>[x29]</code></td>
+<td><code>x29</code> anterior</td>
+</tr>
+<tr class="even">
+<td><code>[x29, #8]</code></td>
+<td><code>x30</code> anterior, es decir, <code>LR</code></td>
+</tr>
+</tbody>
+</table>
+<p>Los datos locales suelen quedar por debajo de ese registro de frame, hacia direcciones menores.</p>
+</section>
+<section id="diagrama-del-frame" class="level2">
+<h2 class="anchored" data-anchor-id="diagrama-del-frame">Diagrama del frame</h2>
+<p>Después del prólogo y de reservar 16 bytes para una variable local, el frame didáctico queda así:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-aarch64-stack-frame" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aarch64-stack-frame-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-aarch64-stack-frame">flowchart TB
+  high["Direcciones altas"]
+  caller["Frame del caller"]
+  saved_fp["[x29] x29 guardado"]
+  saved_lr["[x29 + 8] x30 guardado / LR"]
+  locals["Locales y temporales"]
+  low["Direcciones bajas"]
+  fp["x29 / fp"]
+  sp["sp"]
+
+  high --&gt; caller --&gt; saved_fp --&gt; saved_lr --&gt; locals --&gt; low
+  fp -.-&gt;|apunta| saved_fp
+  sp -.-&gt;|apunta| locals
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aarch64-stack-frame-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Stack frame didáctico en AArch64 con frame pointer, link register y espacio local.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>El punto importante no es memorizar un dibujo único. El punto es entender dos referencias: <code>x29</code> se mantiene fijo para ubicar el frame, mientras <code>sp</code> puede moverse cuando reservas o liberas espacio local.</p>
 </section>
 <section id="qué-hace-ldp-x29-x30-sp-16" class="level2">
 <h2 class="anchored" data-anchor-id="qué-hace-ldp-x29-x30-sp-16">Qué hace <code>ldp x29, x30, [sp], #16</code></h2>
@@ -1165,8 +1225,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">sp</span> <span class="at">-</span><span class="op">&gt;</span> frame anterior</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Luego <code>ret</code> usa el <code>x30</code> restaurado.</p>
 </section>
-<section id="variable-local-simple" class="level2">
-<h2 class="anchored" data-anchor-id="variable-local-simple">Variable local simple</h2>
+<section id="sec-frame-variable-local" class="level2">
+<h2 class="anchored" data-anchor-id="sec-frame-variable-local">Ejemplo de frame con variable local</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>.text</span>
@@ -1199,6 +1259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">variable</span> local    <span class="op">&lt;</span>- sp apunta aquí después de sub sp, sp, <span class="co">#16</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">direcciones</span> bajas</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En ejemplos simples usamos <code>[sp]</code> para la variable local. También se pueden usar offsets desde <code>x29</code>, pero no conviene mezclar demasiado al inicio. Primero hay que entender qué se guarda y cuándo se libera.</p>
+<p>La variable local existe solo mientras <code>funcion</code> está activa. Cuando <code>add sp, sp, #16</code> libera el espacio local, ese valor deja de pertenecer a la función. No se “borra” necesariamente de memoria; simplemente ya no forma parte de un frame válido.</p>
 </section>
 <section id="orden-correcto-al-salir" class="level2">
 <h2 class="anchored" data-anchor-id="orden-correcto-al-salir">Orden correcto al salir</h2>
@@ -1221,8 +1282,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="mini-ejercicios" class="level2">
-<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<section id="sec-stack-frame-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="sec-stack-frame-ejercicios">Mini ejercicios</h2>
 <ol type="1">
 <li>¿Qué dos registros guarda el prólogo mínimo?</li>
 <li>¿Por qué <code>stp</code> reserva 16 bytes?</li>
@@ -1234,6 +1295,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Un frame es orden. Guarda el frame anterior, guarda retorno, reserva locales y deshace todo en orden inverso antes de <code>ret</code>.</p>
+</section>
+<section id="recursos" class="level2">
+<h2 class="anchored" data-anchor-id="recursos">Recursos</h2>
+<div class="resource-grid">
+<section id="ejemplo" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="ejemplo">Ejemplo</h3>
+<p>Lee el programa mínimo con una variable local y ubica <code>sp</code>, <code>x29</code> y <code>x30</code>.</p>
+<p><a href="#sec-frame-variable-local" class="resource-action">Ver ejemplo</a></p>
+</section>
+<section id="ejercicio" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="ejercicio">Ejercicio</h3>
+<p>Responde las preguntas de comprobación antes de pasar a funciones no hoja.</p>
+<p><a href="#sec-stack-frame-ejercicios" class="resource-action">Resolver</a></p>
+</section>
+<section id="siguiente-paso" class="level3 resource-card">
+<h3 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h3>
+<p>Una función que llama a otra debe proteger su propio retorno.</p>
+<p><a href="../../../courses/aarch64/stack-funciones-frames/04-funciones-no-hoja-registros.html" class="resource-action">Continuar</a></p>
+</section>
+</div>
 
 
 </section>

@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1172,7 +1175,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="idea-de-trabajo" class="level2">
 <h2 class="anchored" data-anchor-id="idea-de-trabajo">Idea de trabajo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">memoria</span> <span class="at">-</span><span class="op">&gt;</span> ldr <span class="at">-</span><span class="op">&gt;</span> registro <span class="at">-</span><span class="op">&gt;</span> operación <span class="at">-</span><span class="op">&gt;</span> registro <span class="at">-</span><span class="op">&gt;</span> flags opcionales</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-register-operation-flow" class="quarto-xref">Figura&nbsp;1</a> resume el flujo típico: memoria se carga a registros, la operación ocurre en registros y algunas instrucciones actualizan flags.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-register-operation-flow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-register-operation-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-register-operation-flow">flowchart LR
+  memory["Memoria"] --&gt; load["ldr"]
+  load --&gt; reg1["Registro"]
+  reg1 --&gt; op["Operación"]
+  op --&gt; reg2["Registro resultado"]
+  op -.-&gt; flags["Flags opcionales"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-register-operation-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Flujo básico de operación sobre registros en AArch64.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p>AArch64 opera principalmente sobre registros. Algunas instrucciones solo producen un resultado. Otras, además del resultado, actualizan <code>N</code>, <code>Z</code>, <code>C</code> y <code>V</code>.</p>
 <table class="caption-top table">
 <thead>
@@ -1358,7 +1383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="preparación-para-presentación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
 <p>La página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/aritmetica-logica-bits/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/aritmetica-logica-bits/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esa presentación debe practicar lectura visual de registros, flags y bits; no debe reemplazar estas lecciones.</p>
 </section>
 <section id="checklist-de-cierre" class="level2">

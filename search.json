@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "ARM RISC-V Lab",
     "section": "",
-    "text": "Aprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.\n\nEntrar a AArch64 Entrar a RISC-V\n\n\n\n\nRepresentación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware.\n\n\n\n\n\n\nRuta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V\n\n\n\n\n\nSi quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.\n\n\n\nFundamentos -&gt; Programas mínimos -&gt; Memoria y control de flujo -&gt;\nFunciones y ABI -&gt; Binarios y debugging -&gt; Sistemas avanzados\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+    "text": "Aprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.\n\nEntrar a AArch64 Entrar a RISC-V\n\n\n\n\nRepresentación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware.\n\n\n\n\n\n\nRuta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V\n\n\n\n\n\nSi quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.\n\n\n\nLa Figura 1 resume el recorrido general sin mezclarlo con la navegación de cada ruta.\n\n\n\n\n\n\nflowchart LR\n  A[\"Fundamentos\"] --&gt; B[\"Programas mínimos\"]\n  B --&gt; C[\"Memoria y control de flujo\"]\n  C --&gt; D[\"Funciones y ABI\"]\n  D --&gt; E[\"Binarios y debugging\"]\n  E --&gt; F[\"Sistemas avanzados\"]\n\n\n\n\nFigura 1: Flujo general de aprendizaje del laboratorio.\n\n\n\n\n\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
   },
   {
     "objectID": "index.html#qué-aprenderás",
@@ -32,7 +32,7 @@
     "href": "index.html#cómo-se-organiza-el-aprendizaje",
     "title": "ARM RISC-V Lab",
     "section": "",
-    "text": "Fundamentos -&gt; Programas mínimos -&gt; Memoria y control de flujo -&gt;\nFunciones y ABI -&gt; Binarios y debugging -&gt; Sistemas avanzados\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+    "text": "La Figura 1 resume el recorrido general sin mezclarlo con la navegación de cada ruta.\n\n\n\n\n\n\nflowchart LR\n  A[\"Fundamentos\"] --&gt; B[\"Programas mínimos\"]\n  B --&gt; C[\"Memoria y control de flujo\"]\n  C --&gt; D[\"Funciones y ABI\"]\n  D --&gt; E[\"Binarios y debugging\"]\n  E --&gt; F[\"Sistemas avanzados\"]\n\n\n\n\nFigura 1: Flujo general de aprendizaje del laboratorio.\n\n\n\n\n\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
   },
   {
     "objectID": "guides/setup/qemu-x86_64.html",
@@ -680,7 +680,7 @@
     "href": "courses/aarch64/syscalls-esenciales/01-contrato-syscall.html#qué-problema-resuelve-una-syscall",
     "title": "09.1 · Contrato de syscall",
     "section": "Qué problema resuelve una syscall",
-    "text": "Qué problema resuelve una syscall\nUn programa de usuario no escribe directamente en la terminal ni abre archivos por su cuenta. Esas operaciones pertenecen al sistema operativo.\nprograma en EL0\n  prepara registros\n  ejecuta svc #0\n\nkernel en EL1\n  revisa número de syscall\n  usa argumentos\n  devuelve resultado en x0\nEL0 y EL1 vienen del mapa inicial de Unidad 03. Aquí no estudiaremos excepciones en detalle; solo usaremos la idea práctica: userland pide, kernel responde.",
+    "text": "Qué problema resuelve una syscall\nUn programa de usuario no escribe directamente en la terminal ni abre archivos por su cuenta. Esas operaciones pertenecen al sistema operativo.\nLa Figura 1 muestra el recorrido mínimo: userland prepara registros, entra al kernel y recibe retorno.\n\n\n\n\n\n\nflowchart LR\n  user[\"Programa en EL0\"] --&gt; regs[\"Argumentos en x0-x5\"]\n  regs --&gt; number[\"Número de syscall en x8\"]\n  number --&gt; svc[\"svc #0\"]\n  svc --&gt; kernel[\"Kernel en EL1\"]\n  kernel --&gt; ret[\"Retorno en x0\"]\n  ret --&gt; user\n\n\n\n\nFigura 1: Contrato conceptual de una syscall Linux en AArch64.\n\n\n\n\n\nEL0 y EL1 vienen del mapa inicial de Unidad 03. Aquí no estudiaremos excepciones en detalle; solo usaremos la idea práctica: userland pide, kernel responde.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -914,7 +914,7 @@
     "href": "courses/aarch64/stack-funciones-frames/04-funciones-no-hoja-registros.html#qué-pasa-si-no-guardas-lr",
     "title": "11.4 · Funciones no hoja y registros",
     "section": "Qué pasa si no guardas LR",
-    "text": "Qué pasa si no guardas LR\n_start\n  bl funcion_a       -&gt; x30 = retorno a _start\n\nfuncion_a\n  bl funcion_b       -&gt; x30 = retorno dentro de funcion_a\n\nfuncion_b\n  ret                -&gt; vuelve a funcion_a\n\nfuncion_a\n  ret                -&gt; usa x30 actual, no retorno original\nfuncion_a perdió el retorno hacia _start. Por eso el frame guarda x30 antes de llamar a funcion_b.\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nSi una función ejecuta bl, asume que x30 cambia. Si todavía necesitas el retorno anterior, guárdalo antes.",
+    "text": "Qué pasa si no guardas LR\nLa Figura 1 muestra el fallo: cada bl escribe un nuevo retorno en x30.\n\n\n\n\n\n\nsequenceDiagram\n  participant Start as _start\n  participant A as funcion_a\n  participant B as funcion_b\n  Start-&gt;&gt;A: bl funcion_a, x30 = retorno a _start\n  A-&gt;&gt;B: bl funcion_b, x30 = retorno dentro de funcion_a\n  B--&gt;&gt;A: ret\n  A--&gt;&gt;A: ret usa x30 actual, no retorno original\n\n\n\n\nFigura 1: Pérdida del retorno cuando una función no hoja no guarda LR.\n\n\n\n\n\nfuncion_a perdió el retorno hacia _start. Por eso el frame guarda x30 antes de llamar a funcion_b.\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nSi una función ejecuta bl, asume que x30 cambia. Si todavía necesitas el retorno anterior, guárdalo antes.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1121,7 +1121,7 @@
     "href": "courses/aarch64/roadmap.html#lectura-rápida",
     "title": "Roadmap AArch64",
     "section": "Lectura rápida",
-    "text": "Lectura rápida\n\n\nBase obligatoria\nUnidades 0-10. Programas ARM64 simples en Linux con registros, memoria, control de flujo y syscalls.\n\n\nRuta profesional\nUnidades 11-44. ABI, ELF, debugging, SIMD, hardware, kernel, reversing, seguridad, virtualización y proyectos.",
+    "text": "Lectura rápida\n\n\nBase obligatoria\nUnidades 0-15. Programas ARM64 en Linux, registros, memoria, control de flujo, syscalls, stack, heap, mmap, structs y ABI/AAPCS64.\n\n\nRuta posterior\nUnidades 16-44. ELF, debugging avanzado, SIMD, hardware, kernel, reversing, seguridad, virtualización y proyectos integradores.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1146,6 +1146,18 @@
     "title": "Roadmap AArch64",
     "section": "Regla de crecimiento",
     "text": "Regla de crecimiento\nLa ruta no enlazará páginas que no existan. Primero se publica una unidad, luego aparece en el sidebar y en la navegación del bloque correspondiente.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "Roadmap"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/roadmap.html#siguiente-paso",
+    "href": "courses/aarch64/roadmap.html#siguiente-paso",
+    "title": "Roadmap AArch64",
+    "section": "Siguiente paso",
+    "text": "Siguiente paso\n\n\nSiguiente paso\nSi empiezas la ruta, no avances por el roadmap completo. Entra por la unidad 00.\nIr a contexto\n\n\nEjemplo\nEl primer programa público vive en la página de laboratorio, con código copiable.\nVer 00-hello-minimo",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1235,7 +1247,7 @@
     "href": "courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.html#lectura-final-de-hello-world",
     "title": "05.5 · Lectura guiada de syscalls",
     "section": "Lectura final de Hello World",
-    "text": "Lectura final de Hello World\n.global _start\n\n.text\n_start:\n    mov x0, #1\n    ldr x1, =mensaje\n    mov x2, #len\n    mov x8, #64\n    svc #0\n\n    mov x0, #0\n    mov x8, #93\n    svc #0\n\n.rodata\nmensaje:\n    .ascii \"Hola AArch64\\n\"\nlen = . - mensaje\n\n\n\nBloque\nQué hace\n\n\n\n\nPrimer syscall\nescribe mensaje\n\n\nSegundo syscall\ntermina con código 0\n\n\n.rodata\nguarda bytes del mensaje\n\n\nlen\ncantidad de bytes",
+    "text": "Lectura final de Hello World\n.global _start\n\n.text\n_start:\n    mov x0, #1\n    ldr x1, =mensaje\n    mov x2, #len\n    mov x8, #64\n    svc #0\n\n    mov x0, #0\n    mov x8, #93\n    svc #0\n\n.section .rodata\nmensaje:\n    .ascii \"Hola AArch64\\n\"\nlen = . - mensaje\n\n\n\nBloque\nQué hace\n\n\n\n\nPrimer syscall\nescribe mensaje\n\n\nSegundo syscall\ntermina con código 0\n\n\n.rodata\nguarda bytes del mensaje\n\n\nlen\ncantidad de bytes",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1313,7 +1325,7 @@
     "href": "courses/aarch64/primeros-programas/03-stdout-stderr-exit-codes.html#escribir-en-stderr",
     "title": "05.3 · stdout, stderr y códigos de salida",
     "section": "Escribir en stderr",
-    "text": "Escribir en stderr\n.global _start\n\n.text\n_start:\n    mov x0, #2\n    ldr x1, =mensaje\n    mov x2, #len\n    mov x8, #64\n    svc #0\n\n    mov x0, #1\n    mov x8, #93\n    svc #0\n\n.rodata\nmensaje:\n    .ascii \"Error de ejemplo\\n\"\nlen = . - mensaje\nEl mensaje va a stderr. El proceso termina con código 1.\naarch64-linux-gnu-as stderr.s -o stderr.o\naarch64-linux-gnu-ld stderr.o -o stderr\nqemu-aarch64 ./stderr\necho $?\nSalida esperada:\nError de ejemplo\n1",
+    "text": "Escribir en stderr\n.global _start\n\n.text\n_start:\n    mov x0, #2\n    ldr x1, =mensaje\n    mov x2, #len\n    mov x8, #64\n    svc #0\n\n    mov x0, #1\n    mov x8, #93\n    svc #0\n\n.section .rodata\nmensaje:\n    .ascii \"Error de ejemplo\\n\"\nlen = . - mensaje\nEl mensaje va a stderr. El proceso termina con código 1.\naarch64-linux-gnu-as stderr.s -o stderr.o\naarch64-linux-gnu-ld stderr.o -o stderr\nqemu-aarch64 ./stderr\necho $?\nSalida esperada:\nError de ejemplo\n1",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -1950,7 +1962,7 @@
     "href": "courses/aarch64/mmap-paginas-permisos/index.html#idea-central",
     "title": "13 · mmap, munmap, mprotect, páginas y permisos",
     "section": "Idea central",
-    "text": "Idea central\nmmap\n  pide al kernel una región virtual\n  retorna dirección en x0\n\nuso\n  x19 guarda dirección\n  ldr/str leen y escriben bytes\n\nmprotect\n  cambia permisos de la región\n\nmunmap\n  libera región\n  puntero viejo queda inválido\nmmap no te entrega “memoria física” para manipular directamente. Te entrega una dirección virtual dentro del proceso. Linux y la MMU se encargan de que esa dirección tenga respaldo y permisos.\nPiensa en tres capas:\n\n\n\nCapa\nPregunta\n\n\n\n\nPrograma\n¿Qué dirección guardé en un registro?\n\n\nKernel\n¿Qué región virtual existe para este proceso?\n\n\nMMU\n¿Ese acceso se permite y cómo se traduce?\n\n\n\nDesde userland solo trabajas con la primera capa de forma directa. Las otras dos aparecen como efectos visibles: mmap funciona o falla, strb puede escribir o fallar, munmap libera una región y un acceso posterior deja de ser válido.",
+    "text": "Idea central\nLa Figura 1 muestra mmap como ciclo de vida de una región, no como una variable normal.\n\n\n\n\n\n\nflowchart LR\n  mmap[\"mmap\"] --&gt; ret[\"Dirección virtual en x0\"]\n  ret --&gt; keep[\"Guardar dirección base\"]\n  keep --&gt; use[\"ldr/str leen y escriben\"]\n  use --&gt; protect[\"mprotect cambia permisos\"]\n  protect --&gt; unmap[\"munmap libera región\"]\n  unmap --&gt; invalid[\"Puntero viejo inválido\"]\n\n\n\n\nFigura 1: Ciclo de vida conceptual de una región virtual creada con mmap.\n\n\n\n\n\nmmap no te entrega “memoria física” para manipular directamente. Te entrega una dirección virtual dentro del proceso. Linux y la MMU se encargan de que esa dirección tenga respaldo y permisos.\nPiensa en tres capas:\n\n\n\nCapa\nPregunta\n\n\n\n\nPrograma\n¿Qué dirección guardé en un registro?\n\n\nKernel\n¿Qué región virtual existe para este proceso?\n\n\nMMU\n¿Ese acceso se permite y cómo se traduce?\n\n\n\nDesde userland solo trabajas con la primera capa de forma directa. Las otras dos aparecen como efectos visibles: mmap funciona o falla, strb puede escribir o fallar, munmap libera una región y un acceso posterior deja de ser válido.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -3016,7 +3028,7 @@
     "href": "courses/aarch64/memoria-direccionamiento/02-secciones-mapa-memoria.html#mini-ejercicio",
     "title": "06.2 · Secciones y mapa inicial de memoria",
     "section": "Mini ejercicio",
-    "text": "Mini ejercicio\nClasifica cada símbolo:\n.rodata\ntitulo:\n    .ascii \"Lab\\n\"\n\n.data\nestado:\n    .word 1\n\n.bss\ntemp:\n    .skip 32\n\n¿Cuál símbolo apunta a texto constante?\n¿Cuál apunta a dato inicializado?\n¿Cuál apunta a espacio reservado?",
+    "text": "Mini ejercicio\nClasifica cada símbolo:\n.section .rodata\ntitulo:\n    .ascii \"Lab\\n\"\n\n.data\nestado:\n    .word 1\n\n.bss\ntemp:\n    .skip 32\n\n¿Cuál símbolo apunta a texto constante?\n¿Cuál apunta a dato inicializado?\n¿Cuál apunta a espacio reservado?",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -4784,7 +4796,7 @@
     "href": "courses/aarch64/heap-memoria-dinamica/index.html#regiones-de-memoria",
     "title": "12 · Heap y memoria dinámica",
     "section": "Regiones de memoria",
-    "text": "Regiones de memoria\n\n\n\n\n\n\n\n\n\nRegión\nVida útil típica\nTamaño\nUso\n\n\n\n\n.data / .bss\ntodo el proceso\nfijo al cargar\ndatos globales o estáticos\n\n\nstack\nllamada actual y frames activos\ncambia con llamadas\nlocales, retorno, frames\n\n\nheap\nhasta que se libere\ndinámico\nbuffers, strings, estructuras que crecen\n\n\n\nDirecciones bajas\n\n.text\n.rodata\n.data\n.bss\nheap      bloques dinámicos\n...\nstack     frames activos\n\nDirecciones altas\nEl orden real depende de sistema y configuración. El mapa sirve para estudiar clases de memoria y vida útil.",
+    "text": "Regiones de memoria\n\n\n\n\n\n\n\n\n\nRegión\nVida útil típica\nTamaño\nUso\n\n\n\n\n.data / .bss\ntodo el proceso\nfijo al cargar\ndatos globales o estáticos\n\n\nstack\nllamada actual y frames activos\ncambia con llamadas\nlocales, retorno, frames\n\n\nheap\nhasta que se libere\ndinámico\nbuffers, strings, estructuras que crecen\n\n\n\nLa Figura 1 ubica las regiones como modelo didáctico, no como promesa de direcciones exactas.\n\n\n\n\n\n\n\n\nG\n\n\n\nlow\n\nDirecciones bajas\n\n\n\ntext\n\n.text\n\n\n\nlow-&gt;text\n\n\n\n\n\nrodata\n\n.rodata\n\n\n\ntext-&gt;rodata\n\n\n\n\n\ndata\n\n.data\n\n\n\nrodata-&gt;data\n\n\n\n\n\nbss\n\n.bss\n\n\n\ndata-&gt;bss\n\n\n\n\n\nheap\n\nheap\\nbloques dinámicos\n\n\n\nbss-&gt;heap\n\n\n\n\n\ngap\n\n...\n\n\n\nheap-&gt;gap\n\n\n\n\n\nstack\n\nstack\\nframes activos\n\n\n\ngap-&gt;stack\n\n\n\n\n\nhigh\n\nDirecciones altas\n\n\n\nstack-&gt;high\n\n\n\n\n\n\n\n\nFigura 1: Mapa conceptual de regiones de memoria en un proceso.\n\n\n\n\n\nEl orden real depende de sistema y configuración. El mapa sirve para estudiar clases de memoria y vida útil.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -4836,7 +4848,7 @@
     "href": "courses/aarch64/heap-memoria-dinamica/index.html#ciclo-completo",
     "title": "12 · Heap y memoria dinámica",
     "section": "Ciclo completo",
-    "text": "Ciclo completo\nreservar bloque\n  guardar puntero\n  guardar capacidad\n\nusar bloque\n  revisar límites\n  actualizar bytes usados\n\nliberar bloque\n  dejar de usar puntero viejo\n  evitar liberar otra vez\nLa Unidad 10 enseñó recursos como file descriptors. Memoria dinámica también es un recurso, pero no se libera con close: se libera con el mecanismo de memoria correspondiente.",
+    "text": "Ciclo completo\nLa Figura 2 muestra el ciclo mínimo que debe respetar cualquier bloque dinámico.\n\n\n\n\n\n\nflowchart LR\n  reserve[\"Reservar bloque\"] --&gt; save[\"Guardar puntero y capacidad\"]\n  save --&gt; use[\"Usar dentro de límites\"]\n  use --&gt; update[\"Actualizar bytes usados\"]\n  update --&gt; free[\"Liberar bloque\"]\n  free --&gt; invalid[\"Puntero viejo inválido\"]\n\n\n\n\nFigura 2: Ciclo de vida conceptual de un bloque dinámico.\n\n\n\n\n\nLa Unidad 10 enseñó recursos como file descriptors. Memoria dinámica también es un recurso, pero no se libera con close: se libera con el mecanismo de memoria correspondiente.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -5369,7 +5381,7 @@
     "href": "courses/aarch64/gnu-assembly/07-lectura-archivo-completo.html#archivo-completo",
     "title": "04.7 · Lectura guiada de un archivo .s completo",
     "section": "Archivo completo",
-    "text": "Archivo completo\n.equ SYS_write, 64\n.equ SYS_exit, 93\n.equ STDOUT, 1\n.equ EXIT_OK, 0\n\n.global _start\n.type _start, %function\n\n.text\n_start:\n    mov x0, #STDOUT\n    ldr x1, =mensaje\n    mov x2, #mensaje_len\n    mov x8, #SYS_write\n    svc #0\n\n    mov x0, #EXIT_OK\n    mov x8, #SYS_exit\n    svc #0\n\n.size _start, . - _start\n\n.rodata\nmensaje:\n    .ascii \"Hola GNU Assembly\\n\"\nmensaje_len = . - mensaje",
+    "text": "Archivo completo\n.equ SYS_write, 64\n.equ SYS_exit, 93\n.equ STDOUT, 1\n.equ EXIT_OK, 0\n\n.global _start\n.type _start, %function\n\n.text\n_start:\n    mov x0, #STDOUT\n    ldr x1, =mensaje\n    mov x2, #mensaje_len\n    mov x8, #SYS_write\n    svc #0\n\n    mov x0, #EXIT_OK\n    mov x8, #SYS_exit\n    svc #0\n\n.size _start, . - _start\n\n.section .rodata\nmensaje:\n    .ascii \"Hola GNU Assembly\\n\"\nmensaje_len = . - mensaje",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -5382,7 +5394,7 @@
     "href": "courses/aarch64/gnu-assembly/07-lectura-archivo-completo.html#clasificación-línea-por-línea",
     "title": "04.7 · Lectura guiada de un archivo .s completo",
     "section": "Clasificación línea por línea",
-    "text": "Clasificación línea por línea\nLa tabla separa cada fragmento por su papel. Si una línea empieza con punto, normalmente habla con el assembler. Si termina en :, marca una dirección. Si usa un mnemónico como mov o svc, ya estás viendo una instrucción o una forma que el assembler convertirá en instrucciones.\n\n\n\n\n\n\n\n\nFragmento\nTipo\nLectura\n\n\n\n\n.equ SYS_write, 64\nDirectiva\nCrea nombre simbólico\n\n\n.global _start\nDirectiva\nHace visible _start\n\n\n.type _start, %function\nDirectiva\nMetadato para herramientas\n\n\n.text\nDirectiva\nCambia a sección de código\n\n\n_start:\nEtiqueta\nNombra dirección de inicio\n\n\nmov x0, #STDOUT\nInstrucción A64\nColoca valor en registro\n\n\nldr x1, =mensaje\nPseudo-instrucción\nObtiene dirección/valor asociado\n\n\nsvc #0\nInstrucción A64\nEntra al kernel\n\n\n.size _start, . - _start\nDirectiva\nCalcula tamaño\n\n\n.rodata\nDirectiva\nCambia a datos de solo lectura\n\n\nmensaje:\nEtiqueta\nNombra dirección de datos\n\n\n.ascii \"Hola GNU Assembly\\n\"\nDirectiva de datos\nColoca bytes\n\n\nmensaje_len = . - mensaje\nSímbolo calculado\nLongitud del mensaje",
+    "text": "Clasificación línea por línea\nLa tabla separa cada fragmento por su papel. Si una línea empieza con punto, normalmente habla con el assembler. Si termina en :, marca una dirección. Si usa un mnemónico como mov o svc, ya estás viendo una instrucción o una forma que el assembler convertirá en instrucciones.\n\n\n\n\n\n\n\n\nFragmento\nTipo\nLectura\n\n\n\n\n.equ SYS_write, 64\nDirectiva\nCrea nombre simbólico\n\n\n.global _start\nDirectiva\nHace visible _start\n\n\n.type _start, %function\nDirectiva\nMetadato para herramientas\n\n\n.text\nDirectiva\nCambia a sección de código\n\n\n_start:\nEtiqueta\nNombra dirección de inicio\n\n\nmov x0, #STDOUT\nInstrucción A64\nColoca valor en registro\n\n\nldr x1, =mensaje\nPseudo-instrucción\nObtiene dirección/valor asociado\n\n\nsvc #0\nInstrucción A64\nEntra al kernel\n\n\n.size _start, . - _start\nDirectiva\nCalcula tamaño\n\n\n.section .rodata\nDirectiva\nCambia a datos de solo lectura\n\n\nmensaje:\nEtiqueta\nNombra dirección de datos\n\n\n.ascii \"Hola GNU Assembly\\n\"\nDirectiva de datos\nColoca bytes\n\n\nmensaje_len = . - mensaje\nSímbolo calculado\nLongitud del mensaje",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -5395,7 +5407,7 @@
     "href": "courses/aarch64/gnu-assembly/07-lectura-archivo-completo.html#qué-ejecuta-el-cpu",
     "title": "04.7 · Lectura guiada de un archivo .s completo",
     "section": "Qué ejecuta el CPU",
-    "text": "Qué ejecuta el CPU\nEl CPU ejecuta instrucciones como:\nmov x0, #STDOUT\nmov x8, #SYS_write\nsvc #0\nNo ejecuta:\n.global _start\n.rodata\nmensaje:\nmensaje_len = . - mensaje\nEsas líneas sirven para construir el binario.",
+    "text": "Qué ejecuta el CPU\nEl CPU ejecuta instrucciones como:\nmov x0, #STDOUT\nmov x8, #SYS_write\nsvc #0\nNo ejecuta:\n.global _start\n.section .rodata\nmensaje:\nmensaje_len = . - mensaje\nEsas líneas sirven para construir el binario.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -6760,7 +6772,7 @@
     "href": "courses/aarch64/aritmetica-logica-bits/index.html#idea-de-trabajo",
     "title": "07 · Aritmética, lógica, flags y bits",
     "section": "Idea de trabajo",
-    "text": "Idea de trabajo\nmemoria -&gt; ldr -&gt; registro -&gt; operación -&gt; registro -&gt; flags opcionales\nAArch64 opera principalmente sobre registros. Algunas instrucciones solo producen un resultado. Otras, además del resultado, actualizan N, Z, C y V.\n\n\n\nFamilia\nPregunta que responde\n\n\n\n\nConstantes\n¿Cómo pongo este valor en un registro?\n\n\nAritmética\n¿Cómo sumo, resto o comparo?\n\n\nMultiplicación/división\n¿Cómo calculo productos y cocientes?\n\n\nLógica\n¿Cómo trabajo bits con máscaras?\n\n\nShifts/rotates\n¿Cómo muevo bits dentro de un registro?\n\n\nExtensiones\n¿Cómo agrando 8, 16 o 32 bits?\n\n\nBit manipulation\n¿Cómo extraigo o inserto campos?\n\n\n\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nadd no actualiza flags. adds sí. sub no actualiza flags. subs sí. En AArch64, la s final suele ser una señal importante: resultado y flags.",
+    "text": "Idea de trabajo\nLa Figura 1 resume el flujo típico: memoria se carga a registros, la operación ocurre en registros y algunas instrucciones actualizan flags.\n\n\n\n\n\n\nflowchart LR\n  memory[\"Memoria\"] --&gt; load[\"ldr\"]\n  load --&gt; reg1[\"Registro\"]\n  reg1 --&gt; op[\"Operación\"]\n  op --&gt; reg2[\"Registro resultado\"]\n  op -.-&gt; flags[\"Flags opcionales\"]\n\n\n\n\nFigura 1: Flujo básico de operación sobre registros en AArch64.\n\n\n\n\n\nAArch64 opera principalmente sobre registros. Algunas instrucciones solo producen un resultado. Otras, además del resultado, actualizan N, Z, C y V.\n\n\n\nFamilia\nPregunta que responde\n\n\n\n\nConstantes\n¿Cómo pongo este valor en un registro?\n\n\nAritmética\n¿Cómo sumo, resto o comparo?\n\n\nMultiplicación/división\n¿Cómo calculo productos y cocientes?\n\n\nLógica\n¿Cómo trabajo bits con máscaras?\n\n\nShifts/rotates\n¿Cómo muevo bits dentro de un registro?\n\n\nExtensiones\n¿Cómo agrando 8, 16 o 32 bits?\n\n\nBit manipulation\n¿Cómo extraigo o inserto campos?\n\n\n\n\n\n\n\n\n\nNotaIdea clave\n\n\n\nadd no actualiza flags. adds sí. sub no actualiza flags. subs sí. En AArch64, la s final suele ser una señal importante: resultado y flags.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -9477,7 +9489,7 @@
     "href": "courses/aarch64/bases-binarias/index.html#modelo-mental-de-la-unidad",
     "title": "02 · Bases binarias y representación de datos",
     "section": "Modelo mental de la unidad",
-    "text": "Modelo mental de la unidad\nregistro o dirección\n        |\n        v\nbytes guardados\n        |\n        v\ninterpretación elegida\n        |\n        +--&gt; unsigned\n        +--&gt; signed\n        +--&gt; texto\n        +--&gt; dirección\n        `--&gt; bytes sin interpretar\nEl depurador y las herramientas muestran registros, direcciones y memoria. El programador debe saber qué tamaño leer y qué interpretación aplicar.",
+    "text": "Modelo mental de la unidad\nLa Figura 1 muestra la idea central: los bytes no traen una interpretación única.\n\n\n\n\n\n\nflowchart TB\n  source[\"Registro o dirección\"] --&gt; bytes[\"Bytes guardados\"]\n  bytes --&gt; choice[\"Interpretación elegida\"]\n  choice --&gt; unsigned[\"unsigned\"]\n  choice --&gt; signed[\"signed\"]\n  choice --&gt; text[\"texto\"]\n  choice --&gt; address[\"dirección\"]\n  choice --&gt; raw[\"bytes sin interpretar\"]\n\n\n\n\nFigura 1: Relación entre bytes guardados e interpretación elegida.\n\n\n\n\n\nEl depurador y las herramientas muestran registros, direcciones y memoria. El programador debe saber qué tamaño leer y qué interpretación aplicar.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -10236,7 +10248,7 @@
     "href": "courses/aarch64/gnu-assembly/02-secciones.html#rodata",
     "title": "04.2 · Secciones: .text, .data, .rodata y .bss",
     "section": ".rodata",
-    "text": ".rodata\n.rodata contiene datos de solo lectura.\n.rodata\nmensaje:\n    .asciz \"Hola AArch64\\n\"\nÚsala para mensajes o tablas constantes que no necesitas modificar.",
+    "text": ".rodata\n.rodata contiene datos de solo lectura. En GNU as, se entra a esa sección con .section .rodata.\n.section .rodata\nmensaje:\n    .asciz \"Hola AArch64\\n\"\nÚsala para mensajes o tablas constantes que no necesitas modificar.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -10262,7 +10274,7 @@
     "href": "courses/aarch64/gnu-assembly/02-secciones.html#ejemplo-integrado",
     "title": "04.2 · Secciones: .text, .data, .rodata y .bss",
     "section": "Ejemplo integrado",
-    "text": "Ejemplo integrado\n.text\n_start:\n    mov x0, #0\n    mov x8, #93\n    svc #0\n\n.data\ncontador:\n    .word 10\n\n.rodata\nmensaje:\n    .asciz \"Hola AArch64\\n\"\n\n.bss\nbuffer:\n    .skip 64",
+    "text": "Ejemplo integrado\n.text\n_start:\n    mov x0, #0\n    mov x8, #93\n    svc #0\n\n.data\ncontador:\n    .word 10\n\n.section .rodata\nmensaje:\n    .asciz \"Hola AArch64\\n\"\n\n.bss\nbuffer:\n    .skip 64",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -10340,7 +10352,7 @@
     "href": "courses/aarch64/gnu-assembly/04-definicion-datos.html#ascii-y-.asciz",
     "title": "04.4 · Definición de datos",
     "section": ".ascii y .asciz",
-    "text": ".ascii y .asciz\n.ascii coloca bytes de texto sin terminador automático. .asciz agrega byte cero al final.\n.rodata\nsin_cero:\n    .ascii \"ABC\"\n\ncon_cero:\n    .asciz \"ABC\"\n\n\n\nDirectiva\nBytes\n\n\n\n\n.ascii \"ABC\"\n41 42 43\n\n\n.asciz \"ABC\"\n41 42 43 00\n\n\n\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nNo asumas que .ascii termina string. Si necesitas byte cero, usa .asciz o agrega .byte 0.",
+    "text": ".ascii y .asciz\n.ascii coloca bytes de texto sin terminador automático. .asciz agrega byte cero al final.\n.section .rodata\nsin_cero:\n    .ascii \"ABC\"\n\ncon_cero:\n    .asciz \"ABC\"\n\n\n\nDirectiva\nBytes\n\n\n\n\n.ascii \"ABC\"\n41 42 43\n\n\n.asciz \"ABC\"\n41 42 43 00\n\n\n\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nNo asumas que .ascii termina string. Si necesitas byte cero, usa .asciz o agrega .byte 0.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -10379,7 +10391,7 @@
     "href": "courses/aarch64/gnu-assembly/04-definicion-datos.html#ejemplo-integrado",
     "title": "04.4 · Definición de datos",
     "section": "Ejemplo integrado",
-    "text": "Ejemplo integrado\n.data\ncontador:\n    .word 10\n\n.rodata\nmensaje:\n    .asciz \"Hola AArch64\\n\"\n\n.bss\nbuffer:\n    .skip 64",
+    "text": "Ejemplo integrado\n.data\ncontador:\n    .word 10\n\n.section .rodata\nmensaje:\n    .asciz \"Hola AArch64\\n\"\n\n.bss\nbuffer:\n    .skip 64",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -10587,7 +10599,7 @@
     "href": "courses/aarch64/gnu-assembly/index.html#modelo-mental-de-la-unidad",
     "title": "04 · GNU Assembly, directivas y pseudo-instrucciones",
     "section": "Modelo mental de la unidad",
-    "text": "Modelo mental de la unidad\narchivo .s\n   |\n   +-- directivas        -&gt; assembler\n   +-- etiquetas         -&gt; nombres de direcciones\n   +-- datos             -&gt; bytes en secciones\n   +-- pseudo-instrucc.  -&gt; assembler expande o resuelve\n   `-- instrucciones A64 -&gt; CPU ejecuta",
+    "text": "Modelo mental de la unidad\nLa Figura 1 separa qué partes entiende el assembler y qué parte termina como instrucciones ejecutadas por la CPU.\n\n\n\n\n\n\n\n\nG\n\n\n\nsource\n\narchivo .s\n\n\n\ndirectives\n\ndirectivas\n\n\n\nsource-&gt;directives\n\n\n\n\n\nlabels\n\netiquetas\n\n\n\nsource-&gt;labels\n\n\n\n\n\ndata\n\ndatos\n\n\n\nsource-&gt;data\n\n\n\n\n\npseudo\n\npseudo-instrucciones\n\n\n\nsource-&gt;pseudo\n\n\n\n\n\ninst\n\ninstrucciones A64\n\n\n\nsource-&gt;inst\n\n\n\n\n\nassembler\n\nGNU assembler\n\n\n\ndirectives-&gt;assembler\n\n\n\n\n\nlabels-&gt;assembler\n\n\n\n\n\ndata-&gt;assembler\n\n\n\n\n\npseudo-&gt;assembler\n\n\n\n\n\ninst-&gt;assembler\n\n\n\n\n\ncpu\n\nCPU\n\n\n\nassembler-&gt;cpu\n\n\ncódigo máquina\n\n\n\n\n\n\nFigura 1: Modelo de lectura de un archivo GNU Assembly AArch64.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -11119,7 +11131,7 @@
     "href": "courses/aarch64/index.html#estado-actual",
     "title": "Ruta AArch64",
     "section": "Estado actual",
-    "text": "Estado actual\n\nBase inicial del curso\nLa ruta ya tiene su estructura de estudio. El contenido se publicará por unidades conforme avance el laboratorio.",
+    "text": "Estado actual\n\nUnidades 0-15 disponibles\nLa ruta ya contiene las unidades públicas desde contexto inicial hasta ABI, AAPCS64 e interoperabilidad con C. Las unidades posteriores siguen en roadmap y se enlazarán solo cuando existan como páginas reales.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -11131,7 +11143,7 @@
     "href": "courses/aarch64/index.html#cómo-se-organiza",
     "title": "Ruta AArch64",
     "section": "Cómo se organiza",
-    "text": "Cómo se organiza\n\n\nRuta Todo el camino AArch64.\n\n\nBloques Grandes áreas de aprendizaje.\n\n\nUnidades Páginas principales de estudio.\n\n\nTemas internos Secciones dentro de cada unidad.\n\n\nLa regla de navegación será simple: la portada explica la ruta, el roadmap muestra los bloques, cada bloque mostrará unidades, y cada unidad desarrollará sus temas internos.",
+    "text": "Cómo se organiza\n\n\nRuta Todo el camino AArch64.\n\n\nBloques Grandes áreas de aprendizaje.\n\n\nUnidades Páginas principales de estudio.\n\n\nTemas internos Secciones dentro de cada unidad.\n\n\nLa regla de navegación es simple: la portada resume la ruta, el roadmap muestra la visión completa, cada unidad publicada desarrolla sus temas internos, y las unidades futuras quedan sin enlace hasta que existan.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -11143,7 +11155,7 @@
     "href": "courses/aarch64/index.html#niveles-de-avance",
     "title": "Ruta AArch64",
     "section": "Niveles de avance",
-    "text": "Niveles de avance\n\n\nNivel 1 — Base obligatoria\nProgramas ARM64 simples en Linux usando registros, memoria, saltos, aritmética, lógica y syscalls.\n\n\nNivel 2 — Programador ARM64 competente\nFunciones, stack, ABI, structs, ELF, debugging, arrays, strings y algoritmos básicos.\n\n\nNivel 3 — ARM64 aplicado a Linux y rendimiento\nFloating point, NEON básico, mmap, debugging serio, pruebas, optimización y proyectos reales.\n\n\nNivel 4 — Hardware y bare metal\nGPIO, UART, timers, interrupciones, MMIO, MMU básica, caches y memoria de dispositivos.\n\n\nNivel 5 — Sistemas operativos y kernel\nSincronización multicore, RTOS mínimo, kernel internals y device drivers.\n\n\nNivel 6 — Performance, reversing y seguridad\nAnálisis de binarios, NEON/PMU, vulnerabilidades, mitigaciones y side channels desde una perspectiva defensiva.\n\n\nNivel 7 — Arquitectura avanzada\nVirtualización, hipervisores, trusted execution, compiladores, intrinsics, inline assembly y proyectos avanzados.",
+    "text": "Niveles de avance\n\n\nNivel 1 — Base obligatoria\nProgramas ARM64 simples en Linux usando registros, memoria, saltos, aritmética, lógica y syscalls.\n\n\nNivel 2 — Programador ARM64 competente, en curso\nFunciones, stack, heap, mmap, structs y ABI ya están publicados. ELF, debugging avanzado, arrays, strings y algoritmos quedan como avance posterior.\n\n\nNivel 3 — ARM64 aplicado a Linux y rendimiento\nFloating point, NEON básico, mmap, debugging serio, pruebas, optimización y proyectos reales.\n\n\nNivel 4 — Hardware y bare metal\nGPIO, UART, timers, interrupciones, MMIO, MMU básica, caches y memoria de dispositivos.\n\n\nNivel 5 — Sistemas operativos y kernel\nSincronización multicore, RTOS mínimo, kernel internals y device drivers.\n\n\nNivel 6 — Performance, reversing y seguridad\nAnálisis de binarios, NEON/PMU, vulnerabilidades, mitigaciones y side channels desde una perspectiva defensiva.\n\n\nNivel 7 — Arquitectura avanzada\nVirtualización, hipervisores, trusted execution, compiladores, intrinsics, inline assembly y proyectos avanzados.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -11179,7 +11191,7 @@
     "href": "courses/aarch64/index.html#siguiente-paso",
     "title": "Ruta AArch64",
     "section": "Siguiente paso",
-    "text": "Siguiente paso\nEmpezar por la unidad “00 · Contexto, historia y objetivos” y mantener el roadmap completo como referencia. Después sigue con 01 · Laboratorio ARM64 reproducible.",
+    "text": "Siguiente paso\n\n\nSiguiente paso\nEmpieza por la unidad 00 para fijar vocabulario: ARM, ARMv8-A, AArch64 y A64.\nIr a contexto\n\n\nEjemplo\nCuando llegues al laboratorio, compila y ejecuta el ejemplo 00-hello-minimo desde la página.\nVer primer programa",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -12920,7 +12932,7 @@
     "href": "courses/aarch64/memoria-direccionamiento/03-load-store-basico.html#arquitectura-loadstore",
     "title": "06.3 · Load/store básico",
     "section": "Arquitectura load/store",
-    "text": "Arquitectura load/store\nmemoria -&gt; load -&gt; registro -&gt; operación -&gt; registro -&gt; store -&gt; memoria\n\n\n\n\n\n\n\n\nAcción\nInstrucción típica\nResultado\n\n\n\n\nLeer memoria\nldr x1, [x0]\nx1 recibe contenido desde la dirección en x0\n\n\nEscribir memoria\nstr x1, [x0]\nmemoria recibe el contenido de x1\n\n\nCalcular\nadd x2, x1, #5\nla ALU trabaja con registros",
+    "text": "Arquitectura load/store\nLa Figura 1 muestra por qué AArch64 no opera directamente sobre un valor guardado en memoria.\n\n\n\n\n\n\nflowchart LR\n  memory1[\"Memoria\"] --&gt; load[\"load / ldr\"]\n  load --&gt; reg1[\"Registro\"]\n  reg1 --&gt; op[\"Operación\"]\n  op --&gt; reg2[\"Registro\"]\n  reg2 --&gt; store[\"store / str\"]\n  store --&gt; memory2[\"Memoria\"]\n\n\n\n\nFigura 1: Flujo load/store básico en AArch64.\n\n\n\n\n\n\n\n\n\n\n\n\n\nAcción\nInstrucción típica\nResultado\n\n\n\n\nLeer memoria\nldr x1, [x0]\nx1 recibe contenido desde la dirección en x0\n\n\nEscribir memoria\nstr x1, [x0]\nmemoria recibe el contenido de x1\n\n\nCalcular\nadd x2, x1, #5\nla ALU trabaja con registros",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14363,7 +14375,7 @@
     "href": "courses/aarch64/modelo-aarch64/index.html#modelo-mental-de-la-unidad",
     "title": "03 · Modelo ARMv8-A / AArch64",
     "section": "Modelo mental de la unidad",
-    "text": "Modelo mental de la unidad\nprograma en EL0\n        |\n        v\ninstrucciones A64 modifican registros visibles\n        |\n        +--&gt; Xn / Wn\n        +--&gt; SP / PC / LR / FP\n        +--&gt; NZCV\n        `--&gt; Vn si usa FP/SIMD\nDepurar significa detener el programa y mirar parte de ese estado con contexto. Un número en x0 puede ser un entero, una dirección o un valor temporal; la unidad anterior ayuda a interpretarlo.",
+    "text": "Modelo mental de la unidad\nLa Figura 1 muestra el estado visible que miraremos durante las primeras prácticas.\n\n\n\n\n\n\nflowchart TB\n  program[\"Programa en EL0\"]\n  inst[\"Instrucciones A64\"]\n  gpr[\"Xn / Wn\"]\n  special[\"SP / PC / LR / FP\"]\n  flags[\"NZCV\"]\n  simd[\"Vn si usa FP/SIMD\"]\n\n  program --&gt; inst\n  inst --&gt; gpr\n  inst --&gt; special\n  inst --&gt; flags\n  inst --&gt; simd\n\n\n\n\nFigura 1: Estado visible inicial de un programa AArch64 en EL0.\n\n\n\n\n\nDepurar significa detener el programa y mirar parte de ese estado con contexto. Un número en x0 puede ser un entero, una dirección o un valor temporal; la unidad anterior ayuda a interpretarlo.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14454,7 +14466,7 @@
     "href": "courses/aarch64/primeros-programas/02-hello-world-write.html#archivo-hello.s",
     "title": "05.2 · Hello World con write",
     "section": "Archivo hello.s",
-    "text": "Archivo hello.s\n.global _start\n\n.text\n_start:\n    mov x0, #1          // stdout\n    ldr x1, =mensaje    // dirección del mensaje\n    mov x2, #len        // cantidad de bytes\n    mov x8, #64         // syscall write\n    svc #0\n\n    mov x0, #0\n    mov x8, #93         // syscall exit\n    svc #0\n\n.rodata\nmensaje:\n    .ascii \"Hola AArch64\\n\"\nlen = . - mensaje",
+    "text": "Archivo hello.s\n.global _start\n\n.text\n_start:\n    mov x0, #1          // stdout\n    ldr x1, =mensaje    // dirección del mensaje\n    mov x2, #len        // cantidad de bytes\n    mov x8, #64         // syscall write\n    svc #0\n\n    mov x0, #0\n    mov x8, #93         // syscall exit\n    svc #0\n\n.section .rodata\nmensaje:\n    .ascii \"Hola AArch64\\n\"\nlen = . - mensaje",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14922,7 +14934,7 @@
     "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#prólogo-y-epílogo",
     "title": "11.3 · Stack frames",
     "section": "Prólogo y epílogo",
-    "text": "Prólogo y epílogo\nEl prólogo prepara el frame al entrar. El epílogo lo deshace antes de retornar.\nfuncion:\n    stp x29, x30, [sp, #-16]!\n    mov x29, sp\n\n    // cuerpo de la función\n\n    ldp x29, x30, [sp], #16\n    ret",
+    "text": "Prólogo y epílogo\nEl prólogo prepara el frame al entrar. El epílogo lo deshace antes de retornar. En esta unidad usaremos un frame con x29 porque deja una referencia estable para leer variables locales y reconstruir llamadas. En código optimizado, un compilador puede omitir x29, pero para aprender conviene ver el frame de forma explícita.\nfuncion:\n    stp x29, x30, [sp, #-16]!\n    mov x29, sp\n\n    // cuerpo de la función\n\n    ldp x29, x30, [sp], #16\n    ret",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14935,7 +14947,7 @@
     "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#qué-hace-stp-x29-x30-sp--16",
     "title": "11.3 · Stack frames",
     "section": "Qué hace stp x29, x30, [sp, #-16]!",
-    "text": "Qué hace stp x29, x30, [sp, #-16]!\nstp guarda un par de registros. La forma con ! usa pre-index: primero ajusta sp, luego guarda.\nantes:\n  sp -&gt; frame anterior\n\nstp x29, x30, [sp, #-16]!\n\ndespués:\n  sp -&gt; x29 guardado\n        x30 guardado\nLa instrucción reserva 16 bytes y guarda dos registros de 8 bytes.",
+    "text": "Qué hace stp x29, x30, [sp, #-16]!\nstp guarda un par de registros. La forma con ! usa pre-index: primero ajusta sp, luego guarda.\nantes:\n  sp -&gt; frame anterior\n\nstp x29, x30, [sp, #-16]!\n\ndespués:\n  sp -&gt; x29 guardado\n        x30 guardado\nLa instrucción reserva 16 bytes y guarda dos registros de 8 bytes.\nEn AArch64 cada registro x ocupa 8 bytes. Por eso el par x29, x30 ocupa exactamente 16 bytes. Ese tamaño también conserva la alineación del stack, que debe mantenerse en múltiplos de 16 bytes antes de hacer llamadas.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14948,7 +14960,20 @@
     "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#qué-hace-mov-x29-sp",
     "title": "11.3 · Stack frames",
     "section": "Qué hace mov x29, sp",
-    "text": "Qué hace mov x29, sp\nDespués de guardar x29 y x30, copiamos sp a x29.\nmov x29, sp\nDesde ese momento, x29 marca la base del frame actual. Aunque sp se mueva para variables locales, x29 queda como referencia estable.",
+    "text": "Qué hace mov x29, sp\nDespués de guardar x29 y x30, copiamos sp a x29.\nmov x29, sp\nDesde ese momento, x29 marca la base del frame actual. Aunque sp se mueva para variables locales, x29 queda como referencia estable.\nEn este patrón, x29 apunta al registro x29 guardado del caller. El retorno guardado queda 8 bytes después:\n\n\n\nDirección relativa\nContenido\n\n\n\n\n[x29]\nx29 anterior\n\n\n[x29, #8]\nx30 anterior, es decir, LR\n\n\n\nLos datos locales suelen quedar por debajo de ese registro de frame, hacia direcciones menores.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "11 · Stack, funciones y stack frames",
+      "Stack frames"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#diagrama-del-frame",
+    "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#diagrama-del-frame",
+    "title": "11.3 · Stack frames",
+    "section": "Diagrama del frame",
+    "text": "Diagrama del frame\nDespués del prólogo y de reservar 16 bytes para una variable local, el frame didáctico queda así:\n\n\n\n\n\n\nflowchart TB\n  high[\"Direcciones altas\"]\n  caller[\"Frame del caller\"]\n  saved_fp[\"[x29] x29 guardado\"]\n  saved_lr[\"[x29 + 8] x30 guardado / LR\"]\n  locals[\"Locales y temporales\"]\n  low[\"Direcciones bajas\"]\n  fp[\"x29 / fp\"]\n  sp[\"sp\"]\n\n  high --&gt; caller --&gt; saved_fp --&gt; saved_lr --&gt; locals --&gt; low\n  fp -.-&gt;|apunta| saved_fp\n  sp -.-&gt;|apunta| locals\n\n\n\n\nFigura 1: Stack frame didáctico en AArch64 con frame pointer, link register y espacio local.\n\n\n\n\n\nEl punto importante no es memorizar un dibujo único. El punto es entender dos referencias: x29 se mantiene fijo para ubicar el frame, mientras sp puede moverse cuando reservas o liberas espacio local.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14970,11 +14995,11 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#variable-local-simple",
-    "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#variable-local-simple",
+    "objectID": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#sec-frame-variable-local",
+    "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#sec-frame-variable-local",
     "title": "11.3 · Stack frames",
-    "section": "Variable local simple",
-    "text": "Variable local simple\n.global _start\n\n.text\n_start:\n    bl funcion\n\n    mov x0, #0\n    mov x8, #93\n    svc #0\n\nfuncion:\n    stp x29, x30, [sp, #-16]!\n    mov x29, sp\n\n    sub sp, sp, #16\n    mov x0, #123\n    str x0, [sp]\n    ldr x1, [sp]\n\n    add sp, sp, #16\n    ldp x29, x30, [sp], #16\n    ret",
+    "section": "Ejemplo de frame con variable local",
+    "text": "Ejemplo de frame con variable local\n.global _start\n\n.text\n_start:\n    bl funcion\n\n    mov x0, #0\n    mov x8, #93\n    svc #0\n\nfuncion:\n    stp x29, x30, [sp, #-16]!\n    mov x29, sp\n\n    sub sp, sp, #16\n    mov x0, #123\n    str x0, [sp]\n    ldr x1, [sp]\n\n    add sp, sp, #16\n    ldp x29, x30, [sp], #16\n    ret",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14987,7 +15012,7 @@
     "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#lectura-del-frame",
     "title": "11.3 · Stack frames",
     "section": "Lectura del frame",
-    "text": "Lectura del frame\ndirecciones altas\n  frame anterior\n  x29 guardado      &lt;- x29 apunta aquí después del prólogo\n  x30 guardado\n  variable local    &lt;- sp apunta aquí después de sub sp, sp, #16\ndirecciones bajas\nEn ejemplos simples usamos [sp] para la variable local. También se pueden usar offsets desde x29, pero no conviene mezclar demasiado al inicio. Primero hay que entender qué se guarda y cuándo se libera.",
+    "text": "Lectura del frame\ndirecciones altas\n  frame anterior\n  x29 guardado      &lt;- x29 apunta aquí después del prólogo\n  x30 guardado\n  variable local    &lt;- sp apunta aquí después de sub sp, sp, #16\ndirecciones bajas\nEn ejemplos simples usamos [sp] para la variable local. También se pueden usar offsets desde x29, pero no conviene mezclar demasiado al inicio. Primero hay que entender qué se guarda y cuándo se libera.\nLa variable local existe solo mientras funcion está activa. Cuando add sp, sp, #16 libera el espacio local, ese valor deja de pertenecer a la función. No se “borra” necesariamente de memoria; simplemente ya no forma parte de un frame válido.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -15009,8 +15034,8 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#mini-ejercicios",
-    "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#mini-ejercicios",
+    "objectID": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#sec-stack-frame-ejercicios",
+    "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#sec-stack-frame-ejercicios",
     "title": "11.3 · Stack frames",
     "section": "Mini ejercicios",
     "text": "Mini ejercicios\n\n¿Qué dos registros guarda el prólogo mínimo?\n¿Por qué stp reserva 16 bytes?\n¿Para qué sirve mov x29, sp?\n¿Qué restaura ldp x29, x30, [sp], #16?\n¿Qué falla si no se ejecuta add sp, sp, #16 antes del epílogo?",
@@ -15027,6 +15052,19 @@
     "title": "11.3 · Stack frames",
     "section": "Cierre",
     "text": "Cierre\nUn frame es orden. Guarda el frame anterior, guarda retorno, reserva locales y deshace todo en orden inverso antes de ret.",
+    "crumbs": [
+      "Roadmap",
+      "AArch64",
+      "11 · Stack, funciones y stack frames",
+      "Stack frames"
+    ]
+  },
+  {
+    "objectID": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#recursos",
+    "href": "courses/aarch64/stack-funciones-frames/03-stack-frames.html#recursos",
+    "title": "11.3 · Stack frames",
+    "section": "Recursos",
+    "text": "Recursos\n\n\nEjemplo\nLee el programa mínimo con una variable local y ubica sp, x29 y x30.\nVer ejemplo\n\n\nEjercicio\nResponde las preguntas de comprobación antes de pasar a funciones no hoja.\nResolver\n\n\nSiguiente paso\nUna función que llama a otra debe proteger su propio retorno.\nContinuar",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -15286,7 +15324,7 @@
     "href": "courses/aarch64/stack-funciones-frames/index.html#siguiente-paso",
     "title": "11 · Stack, funciones y stack frames",
     "section": "Siguiente paso",
-    "text": "Siguiente paso\nEmpieza por Llamadas y retorno.",
+    "text": "Siguiente paso\n\n\nSiguiente paso\nEmpieza por bl, x30/LR y ret antes de construir frames.\nIr a llamadas y retorno\n\n\nEjemplo\nRevisa un frame mínimo con x29, x30, sp y una variable local.\nVer frame con local\n\n\nEjercicio\nComprueba si puedes leer el prólogo, el epílogo y la reserva local.\nResolver preguntas",
     "crumbs": [
       "Roadmap",
       "AArch64",

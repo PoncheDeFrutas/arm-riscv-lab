@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1284,19 +1287,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="modelo-mental-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-mental-de-la-unidad">Modelo mental de la unidad</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registro</span> o dirección</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bytes</span> guardados</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">interpretación</span> elegida</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> unsigned</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> signed</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> texto</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> dirección</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">`</span><span class="ex">--</span><span class="op">&gt;</span> bytes sin interpretar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-binary-interpretation" class="quarto-xref">Figura&nbsp;1</a> muestra la idea central: los bytes no traen una interpretación única.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-binary-interpretation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-binary-interpretation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-binary-interpretation">flowchart TB
+  source["Registro o dirección"] --&gt; bytes["Bytes guardados"]
+  bytes --&gt; choice["Interpretación elegida"]
+  choice --&gt; unsigned["unsigned"]
+  choice --&gt; signed["signed"]
+  choice --&gt; text["texto"]
+  choice --&gt; address["dirección"]
+  choice --&gt; raw["bytes sin interpretar"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-binary-interpretation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Relación entre bytes guardados e interpretación elegida.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p>El depurador y las herramientas muestran registros, direcciones y memoria. El programador debe saber qué tamaño leer y qué interpretación aplicar.</p>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
@@ -1343,7 +1358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="preparación-para-presentación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
 <p>La página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/bases-binarias/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/bases-binarias/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esa presentación debe resumir y practicar la unidad, no reemplazarla.</p>
 </section>
 <section id="para-investigar-más" class="level2">

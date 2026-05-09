@@ -1240,13 +1240,143 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="modelo-mental-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-mental-de-la-unidad">Modelo mental de la unidad</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">archivo</span> .s</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>   <span class="ex">+--</span> directivas        <span class="at">-</span><span class="op">&gt;</span> assembler</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>   <span class="ex">+--</span> etiquetas         <span class="at">-</span><span class="op">&gt;</span> nombres de direcciones</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>   <span class="ex">+--</span> datos             <span class="at">-</span><span class="op">&gt;</span> bytes en secciones</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="ex">+--</span> pseudo-instrucc.  <span class="at">-</span><span class="op">&gt;</span> assembler expande o resuelve</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">--</span> instrucciones A64 <span class="at">-</span><span class="op">&gt;</span> CPU ejecuta</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-gnu-assembly-model" class="quarto-xref">Figura&nbsp;1</a> separa qué partes entiende el assembler y qué parte termina como instrucciones ejecutadas por la CPU.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-gnu-assembly-model" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gnu-assembly-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 573.03 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 569.03,-256 569.03,4 -4,4"></polygon>
+<!-- source -->
+<g id="node1" class="node">
+<title>source</title>
+<polygon fill="none" stroke="black" points="70.64,-144 -0.22,-144 -0.22,-108 70.64,-108 70.64,-144"></polygon>
+<text text-anchor="middle" x="35.21" y="-121.8" font-family="Times,serif" font-size="14.00">archivo .s</text>
+</g>
+<!-- directives -->
+<g id="node2" class="node">
+<title>directives</title>
+<polygon fill="none" stroke="black" points="209.95,-252 139.1,-252 139.1,-216 209.95,-216 209.95,-252"></polygon>
+<text text-anchor="middle" x="174.52" y="-229.8" font-family="Times,serif" font-size="14.00">directivas</text>
+</g>
+<!-- source&#45;&gt;directives -->
+<g id="edge1" class="edge">
+<title>source-&gt;directives</title>
+<path fill="none" stroke="black" d="M48.45,-144.3C61.31,-162.33 83.02,-189.62 107.43,-207 114.18,-211.8 121.91,-215.94 129.64,-219.43"></path>
+<polygon fill="black" stroke="black" points="128.45,-222.72 139.02,-223.37 131.16,-216.27 128.45,-222.72"></polygon>
+</g>
+<!-- labels -->
+<g id="node3" class="node">
+<title>labels</title>
+<polygon fill="none" stroke="black" points="207.28,-198 141.77,-198 141.77,-162 207.28,-162 207.28,-198"></polygon>
+<text text-anchor="middle" x="174.52" y="-175.8" font-family="Times,serif" font-size="14.00">etiquetas</text>
+</g>
+<!-- source&#45;&gt;labels -->
+<g id="edge2" class="edge">
+<title>source-&gt;labels</title>
+<path fill="none" stroke="black" d="M70.51,-139.49C89.21,-146.84 112.5,-156 132.2,-163.75"></path>
+<polygon fill="black" stroke="black" points="130.96,-167.02 141.55,-167.43 133.52,-160.51 130.96,-167.02"></polygon>
+</g>
+<!-- data -->
+<g id="node4" class="node">
+<title>data</title>
+<polygon fill="none" stroke="black" points="201.52,-144 147.52,-144 147.52,-108 201.52,-108 201.52,-144"></polygon>
+<text text-anchor="middle" x="174.52" y="-121.8" font-family="Times,serif" font-size="14.00">datos</text>
+</g>
+<!-- source&#45;&gt;data -->
+<g id="edge3" class="edge">
+<title>source-&gt;data</title>
+<path fill="none" stroke="black" d="M70.51,-126C90.8,-126 116.49,-126 137.14,-126"></path>
+<polygon fill="black" stroke="black" points="137.42,-129.5 147.42,-126 137.42,-122.5 137.42,-129.5"></polygon>
+</g>
+<!-- pseudo -->
+<g id="node5" class="node">
+<title>pseudo</title>
+<polygon fill="none" stroke="black" points="241.72,-90 107.33,-90 107.33,-54 241.72,-54 241.72,-90"></polygon>
+<text text-anchor="middle" x="174.52" y="-67.8" font-family="Times,serif" font-size="14.00">pseudo-instrucciones</text>
+</g>
+<!-- source&#45;&gt;pseudo -->
+<g id="edge4" class="edge">
+<title>source-&gt;pseudo</title>
+<path fill="none" stroke="black" d="M70.51,-112.51C84.92,-106.85 102.05,-100.11 118.16,-93.77"></path>
+<polygon fill="black" stroke="black" points="119.48,-97.02 127.5,-90.1 116.92,-90.5 119.48,-97.02"></polygon>
+</g>
+<!-- inst -->
+<g id="node6" class="node">
+<title>inst</title>
+<polygon fill="none" stroke="black" points="233.5,-36 115.54,-36 115.54,0 233.5,0 233.5,-36"></polygon>
+<text text-anchor="middle" x="174.52" y="-13.8" font-family="Times,serif" font-size="14.00">instrucciones A64</text>
+</g>
+<!-- source&#45;&gt;inst -->
+<g id="edge5" class="edge">
+<title>source-&gt;inst</title>
+<path fill="none" stroke="black" d="M48.45,-107.7C61.31,-89.67 83.02,-62.38 107.43,-45 109.31,-43.66 111.28,-42.37 113.3,-41.13"></path>
+<polygon fill="black" stroke="black" points="115.41,-43.95 122.44,-36.02 112,-37.84 115.41,-43.95"></polygon>
+</g>
+<!-- assembler -->
+<g id="node7" class="node">
+<title>assembler</title>
+<polygon fill="none" stroke="black" points="384.34,-144 278.72,-144 278.72,-108 384.34,-108 384.34,-144"></polygon>
+<text text-anchor="middle" x="331.53" y="-121.8" font-family="Times,serif" font-size="14.00">GNU assembler</text>
+</g>
+<!-- directives&#45;&gt;assembler -->
+<g id="edge6" class="edge">
+<title>directives-&gt;assembler</title>
+<path fill="none" stroke="black" d="M209.94,-222.59C220.49,-218.4 231.87,-213.16 241.62,-207 266.12,-191.53 290.17,-169.03 307.08,-151.67"></path>
+<polygon fill="black" stroke="black" points="309.93,-153.75 314.31,-144.1 304.87,-148.91 309.93,-153.75"></polygon>
+</g>
+<!-- labels&#45;&gt;assembler -->
+<g id="edge7" class="edge">
+<title>labels-&gt;assembler</title>
+<path fill="none" stroke="black" d="M207.64,-168.81C225.4,-162.62 248.08,-154.72 269.1,-147.4"></path>
+<polygon fill="black" stroke="black" points="270.33,-150.68 278.62,-144.08 268.03,-144.07 270.33,-150.68"></polygon>
+</g>
+<!-- data&#45;&gt;assembler -->
+<g id="edge8" class="edge">
+<title>data-&gt;assembler</title>
+<path fill="none" stroke="black" d="M201.82,-126C220.1,-126 245.27,-126 268.5,-126"></path>
+<polygon fill="black" stroke="black" points="268.66,-129.5 278.66,-126 268.66,-122.5 268.66,-129.5"></polygon>
+</g>
+<!-- pseudo&#45;&gt;assembler -->
+<g id="edge9" class="edge">
+<title>pseudo-&gt;assembler</title>
+<path fill="none" stroke="black" d="M227.57,-90.13C240.8,-94.74 255.15,-99.74 268.82,-104.5"></path>
+<polygon fill="black" stroke="black" points="268.02,-107.93 278.62,-107.92 270.33,-101.32 268.02,-107.93"></polygon>
+</g>
+<!-- inst&#45;&gt;assembler -->
+<g id="edge10" class="edge">
+<title>inst-&gt;assembler</title>
+<path fill="none" stroke="black" d="M225.21,-36.05C230.89,-38.77 236.49,-41.76 241.62,-45 266.12,-60.47 290.17,-82.97 307.08,-100.33"></path>
+<polygon fill="black" stroke="black" points="304.87,-103.09 314.31,-107.9 309.93,-98.25 304.87,-103.09"></polygon>
+</g>
+<!-- cpu -->
+<g id="node8" class="node">
+<title>cpu</title>
+<polygon fill="none" stroke="black" points="565.03,-144 511.03,-144 511.03,-108 565.03,-108 565.03,-144"></polygon>
+<text text-anchor="middle" x="538.03" y="-121.8" font-family="Times,serif" font-size="14.00">CPU</text>
+</g>
+<!-- assembler&#45;&gt;cpu -->
+<g id="edge11" class="edge">
+<title>assembler-&gt;cpu</title>
+<path fill="none" stroke="black" d="M384.4,-126C420.65,-126 468.17,-126 500.49,-126"></path>
+<polygon fill="black" stroke="black" points="500.83,-129.5 510.83,-126 500.83,-122.5 500.83,-129.5"></polygon>
+<text text-anchor="middle" x="447.73" y="-130.2" font-family="Times,serif" font-size="14.00">código máquina</text>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gnu-assembly-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Modelo de lectura de un archivo GNU Assembly AArch64.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
@@ -1288,7 +1418,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="preparación-para-presentación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
 <p>La página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/gnu-assembly/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/gnu-assembly/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esa presentación debe servir como repaso visual, no reemplazar estas lecciones.</p>
 </section>
 <section id="para-investigar-más" class="level2">

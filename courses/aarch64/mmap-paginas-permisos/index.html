@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1214,20 +1217,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="idea-central" class="level2">
 <h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mmap</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">pide</span> al kernel una región virtual</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">retorna</span> dirección en x0</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uso</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x19</span> guarda dirección</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ldr/str</span> leen y escriben bytes</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">mprotect</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">cambia</span> permisos de la región</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">munmap</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">libera</span> región</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">puntero</span> viejo queda inválido</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-mmap-region-lifecycle" class="quarto-xref">Figura&nbsp;1</a> muestra <code>mmap</code> como ciclo de vida de una región, no como una variable normal.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-mmap-region-lifecycle" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mmap-region-lifecycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-mmap-region-lifecycle">flowchart LR
+  mmap["mmap"] --&gt; ret["Dirección virtual en x0"]
+  ret --&gt; keep["Guardar dirección base"]
+  keep --&gt; use["ldr/str leen y escriben"]
+  use --&gt; protect["mprotect cambia permisos"]
+  protect --&gt; unmap["munmap libera región"]
+  unmap --&gt; invalid["Puntero viejo inválido"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mmap-region-lifecycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Ciclo de vida conceptual de una región virtual creada con mmap.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p><code>mmap</code> no te entrega “memoria física” para manipular directamente. Te entrega una dirección virtual dentro del proceso. Linux y la MMU se encargan de que esa dirección tenga respaldo y permisos.</p>
 <p>Piensa en tres capas:</p>
 <table class="caption-top table">
@@ -1306,14 +1319,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="permisos-y-flags-básicos" class="level2">
 <h2 class="anchored" data-anchor-id="permisos-y-flags-básicos">Permisos y flags básicos</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_NONE<span class="op">,</span>  <span class="dv">0</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_READ<span class="op">,</span>  <span class="dv">1</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_WRITE<span class="op">,</span> <span class="dv">2</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_EXEC<span class="op">,</span>  <span class="dv">4</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> MAP_SHARED<span class="op">,</span>    <span class="dv">1</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> MAP_PRIVATE<span class="op">,</span>   <span class="dv">2</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> MAP_ANONYMOUS<span class="op">,</span> <span class="dv">32</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_NONE<span class="op">,</span>  <span class="dv">0</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_READ<span class="op">,</span>  <span class="dv">1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_WRITE<span class="op">,</span> <span class="dv">2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> PROT_EXEC<span class="op">,</span>  <span class="dv">4</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> MAP_SHARED<span class="op">,</span>    <span class="dv">1</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> MAP_PRIVATE<span class="op">,</span>   <span class="dv">2</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> MAP_ANONYMOUS<span class="op">,</span> <span class="dv">32</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1469,7 +1482,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="preparación-para-presentación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
 <p>La página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/mmap-paginas-permisos/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/mmap-paginas-permisos/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No crear presentación todavía. Debe servir como apoyo visual, no reemplazo de estas lecciones.</p>
 </section>
 <section id="checklist-de-cierre" class="level2">

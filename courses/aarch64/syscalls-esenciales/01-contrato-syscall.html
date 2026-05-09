@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1123,22 +1126,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-problema-resuelve-una-syscall" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve-una-syscall">Qué problema resuelve una syscall</h2>
 <p>Un programa de usuario no escribe directamente en la terminal ni abre archivos por su cuenta. Esas operaciones pertenecen al sistema operativo.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">programa</span> en EL0</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">prepara</span> registros</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ejecuta</span> svc <span class="co">#0</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kernel</span> en EL1</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">revisa</span> número de syscall</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">usa</span> argumentos</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">devuelve</span> resultado en x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-aarch64-syscall-contract" class="quarto-xref">Figura&nbsp;1</a> muestra el recorrido mínimo: userland prepara registros, entra al kernel y recibe retorno.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-aarch64-syscall-contract" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aarch64-syscall-contract-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-aarch64-syscall-contract">flowchart LR
+  user["Programa en EL0"] --&gt; regs["Argumentos en x0-x5"]
+  regs --&gt; number["Número de syscall en x8"]
+  number --&gt; svc["svc #0"]
+  svc --&gt; kernel["Kernel en EL1"]
+  kernel --&gt; ret["Retorno en x0"]
+  ret --&gt; user
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aarch64-syscall-contract-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Contrato conceptual de una syscall Linux en AArch64.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p><code>EL0</code> y <code>EL1</code> vienen del mapa inicial de Unidad 03. Aquí no estudiaremos excepciones en detalle; solo usaremos la idea práctica: userland pide, kernel responde.</p>
 </section>
 <section id="svc-0" class="level2">
 <h2 class="anchored" data-anchor-id="svc-0"><code>svc #0</code></h2>
 <p><code>svc</code> significa supervisor call. En Linux AArch64, <code>svc #0</code> provoca la entrada controlada al kernel para atender una syscall.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>svc #0</code> no significa <code>exit</code> por sí solo. Es <code>exit</code> porque antes pusiste <code>93</code> en <code>x8</code>.</p>
 <div class="callout callout-style-simple callout-warning callout-titled" title="Error común">
 <div class="callout-header d-flex align-content-center">
@@ -1206,18 +1225,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="plantilla-mental" class="level2">
 <h2 class="anchored" data-anchor-id="plantilla-mental">Plantilla mental</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>// 1. argumentos</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#...</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#...</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#...</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>// 2. número de syscall</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#...</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>// 3. entrada <span class="kw">al</span> kernel</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>// 4. x0 contiene retorno</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>// 1. argumentos</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#...</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#...</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#...</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>// 2. número de syscall</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#...</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>// 3. entrada <span class="kw">al</span> kernel</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>// 4. x0 contiene retorno</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No todas las syscalls usan todos los argumentos. Si una syscall necesita tres, usas <code>x0</code>, <code>x1</code>, <code>x2</code>. Si necesita uno, solo <code>x0</code>.</p>
 </section>
 <section id="syscall-vs-función-de-libc" class="level2">
@@ -1282,9 +1301,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Ejemplo mínimo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No convertiremos todavía ese valor a <code>errno</code>. Basta reconocer la rama de error.</p>
 </section>
 <section id="mini-ejercicios" class="level2">

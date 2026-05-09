@@ -104,6 +104,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1286,15 +1289,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="modelo-mental-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-mental-de-la-unidad">Modelo mental de la unidad</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">programa</span> en EL0</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">instrucciones</span> A64 modifican registros visibles</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> Xn / Wn</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> SP / PC / LR / FP</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="ex">+--</span><span class="op">&gt;</span> NZCV</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">`</span><span class="ex">--</span><span class="op">&gt;</span> Vn si usa FP/SIMD</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La <a href="#fig-aarch64-visible-state" class="quarto-xref">Figura&nbsp;1</a> muestra el estado visible que miraremos durante las primeras prácticas.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-aarch64-visible-state" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aarch64-visible-state-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-aarch64-visible-state">flowchart TB
+  program["Programa en EL0"]
+  inst["Instrucciones A64"]
+  gpr["Xn / Wn"]
+  special["SP / PC / LR / FP"]
+  flags["NZCV"]
+  simd["Vn si usa FP/SIMD"]
+
+  program --&gt; inst
+  inst --&gt; gpr
+  inst --&gt; special
+  inst --&gt; flags
+  inst --&gt; simd
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aarch64-visible-state-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Estado visible inicial de un programa AArch64 en EL0.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <p>Depurar significa detener el programa y mirar parte de ese estado con contexto. Un número en <code>x0</code> puede ser un entero, una dirección o un valor temporal; la unidad anterior ayuda a interpretarlo.</p>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
@@ -1345,7 +1369,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="preparación-para-presentación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
 <p>La página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/modelo-aarch64/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">slides/aarch64/modelo-aarch64/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esa presentación debe resumir el mapa de registros, no reemplazar estas lecciones.</p>
 </section>
 <section id="para-investigar-más" class="level2">
