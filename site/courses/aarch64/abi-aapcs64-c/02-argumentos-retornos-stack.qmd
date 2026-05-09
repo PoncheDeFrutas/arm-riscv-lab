@@ -1,0 +1,207 @@
+---
+title: "15.2 · Argumentos, retornos y stack"
+subtitle: "Los valores cruzan una llamada por registros primero; si no alcanzan, aparece el stack."
+description: "Argumentos enteros, punteros, floating/SIMD, retornos, structs, stack args y alineación."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > Argumentos y retornos
+:::
+
+::: {.hero-lab}
+La llamada no transporta valores mágicamente. Antes de `bl`, el caller coloca
+argumentos en lugares definidos. Después de `ret`, el caller mira el lugar de
+retorno definido.
+:::
+
+## Primeros argumentos
+
+Para enteros y punteros, AAPCS64 usa `x0`-`x7` para los primeros ocho
+argumentos.
+
+```bash
+f(a, b, c)
+
+x0 = a
+x1 = b
+x2 = c
+```
+
+Ejemplo de función assembly:
+
+```asm
+.global sumar3
+.type sumar3, %function
+
+sumar3:
+    add x0, x0, x1
+    add x0, x0, x2
+    ret
+
+.size sumar3, . - sumar3
+```
+
+El resultado queda en `x0`. No hay instrucción especial de retorno de valor.
+Solo se respeta el contrato.
+
+## Retorno de enteros y punteros
+
+Un entero o puntero simple retorna en `x0`.
+
+```asm
+.global identidad_ptr
+.type identidad_ptr, %function
+
+identidad_ptr:
+    ret
+
+.size identidad_ptr, . - identidad_ptr
+```
+
+Lectura:
+
+```bash
+x0 entra con puntero
+función no lo cambia
+x0 sale con el mismo puntero
+```
+
+No confundas “retornar puntero” con copiar memoria. Retornar puntero significa
+dejar una dirección en `x0`.
+
+## Floating/SIMD
+
+Los argumentos floating y SIMD usan registros `v0`-`v7` cuando aplican.
+
+```bash
+double f(double a, double b)
+
+v0 = a
+v1 = b
+v0 = retorno
+```
+
+Esta unidad no profundiza en ABI vectorial. Pero la regla debe aparecer para no
+crear una idea falsa de que todo siempre pasa por `x0`-`x7`.
+
+## Más de ocho argumentos
+
+Cuando ya se usaron `x0`-`x7`, argumentos adicionales pasan por stack según
+AAPCS64.
+
+```bash
+sum9(a,b,c,d,e,f,g,h,i)
+
+x0 = a
+x1 = b
+x2 = c
+x3 = d
+x4 = e
+x5 = f
+x6 = g
+x7 = h
+stack = i
+```
+
+Práctica completa:
+
+```bash
+$ cd examples/aarch64/15-abi-aapcs64/04-argumentos-stack/src
+$ make
+$ make run
+sum9 = 45
+$ echo $?
+0
+```
+
+La lección debe explicar este caso con diagrama antes de pedir al estudiante que
+lea el código.
+
+## `sp` alineado a 16 bytes
+
+Antes de llamar otra función, `sp` debe estar alineado a 16 bytes.
+
+```bash
+sp % 16 == 0
+```
+
+Esto importa especialmente cuando assembly llama C:
+
+```asm
+stp x29, x30, [sp, #-16]!
+mov x29, sp
+
+bl printf
+
+ldp x29, x30, [sp], #16
+ret
+```
+
+El prólogo resta 16 bytes, no 8, para mantener alineación. Guardar solo 8 bytes
+con `str x30, [sp, #-8]!` rompería la regla.
+
+## Retorno de structs
+
+Con structs pequeños, la ABI puede usar registros. Con structs grandes, puede
+aparecer un mecanismo especial donde el caller proporciona una dirección para
+guardar el resultado. En AAPCS64, `x8` puede participar como indirect result
+location en esos casos.
+
+Para esta unidad, regla docente:
+
+```bash
+struct pequeño
+  puede volver por registros según reglas ABI
+
+struct grande
+  no asumir que vuelve todo en x0
+  normalmente se trabaja por puntero de salida
+```
+
+No necesitamos estudiar todos los casos ahora. Sí necesitamos evitar esta idea
+incorrecta:
+
+```bash
+struct de muchos bytes
+  no cabe mágicamente en x0
+```
+
+## Forma clara para curso: pasar puntero
+
+La forma más visible para aprender es pasar puntero a estructura:
+
+```c
+extern void point_clear(struct Point *p);
+```
+
+```asm
+// x0 = puntero a Point
+point_clear:
+    str xzr, [x0]
+    str xzr, [x0, #8]
+    ret
+```
+
+Esto conecta directamente con Unidad 14: C entrega dirección base, assembly usa
+offsets.
+
+## Errores comunes
+
+- Retornar en `x1` y esperar que C lo vea.
+- Confundir retorno de puntero con copia de bloque.
+- Olvidar que `x0`-`x7` solo cubren primeros ocho argumentos.
+- Leer un argumento de stack con offset incorrecto después de mover `sp`.
+- Romper alineación de `sp` antes de `bl printf`.
+- Asumir que structs grandes retornan igual que enteros.
+
+## Checklist
+
+- [ ] Puedo ubicar los primeros ocho argumentos enteros o punteros.
+- [ ] Puedo explicar retorno en `x0`.
+- [ ] Puedo explicar retorno de puntero.
+- [ ] Puedo explicar por qué argumentos extra usan stack.
+- [ ] Puedo explicar `sp % 16 == 0`.
+- [ ] Puedo explicar retorno de structs sin simplificarlo mal.
+
+Siguiente: [Caller-saved y callee-saved](03-caller-callee-saved.qmd).
+

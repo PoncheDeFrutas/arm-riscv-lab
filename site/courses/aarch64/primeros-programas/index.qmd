@@ -1,0 +1,158 @@
+---
+title: "05 · Primeros programas en Linux AArch64"
+subtitle: "Escribe, ensambla, enlaza y ejecuta programas pequeños con syscalls directas de Linux."
+description: "Página principal de la Unidad 05 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Primeros programas en Linux AArch64
+:::
+
+::: {.hero-lab}
+Esta unidad convierte el laboratorio en programas reales. Vas a escribir archivos
+`.s`, ensamblarlos, enlazarlos, ejecutarlos y comprobar su resultado. El foco es
+pequeño: `exit`, `write`, `_start`, registros de syscall y `svc #0`.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Termina**
+Programa mínimo que llama `exit`.
+:::
+
+::: {.lab-step}
+**2. Construye**
+`archivo.s` -> `archivo.o` -> ejecutable.
+:::
+
+::: {.lab-step}
+**3. Imprime**
+`write` escribe bytes en `stdout`.
+:::
+
+::: {.lab-step}
+**4. Verifica**
+Salida visible y código de salida.
+:::
+
+::: {.lab-step}
+**5. Lee**
+Registros `x0`, `x1`, `x2`, `x8` y `svc #0`.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 01: laboratorio | Ensamblar, enlazar, ejecutar con QEMU o ARM64 nativo |
+| Unidad 03: registros | Entender argumentos en `x0`, `x1`, `x2` y syscall en `x8` |
+| Unidad 04: GNU Assembly | Usar `.global`, `.text`, `.rodata`, etiquetas y símbolos |
+
+## Flujo de trabajo
+
+```bash
+programa.s -> programa.o -> programa -> salida o código de salida
+```
+
+| Paso | Herramienta | Resultado |
+|---|---|---|
+| Ensamblar | `as` | archivo objeto `.o` |
+| Enlazar | `ld` | ejecutable |
+| Ejecutar | `qemu-aarch64` o nativo | proceso Linux |
+| Verificar | `echo $?` | código de salida |
+
+## Syscalls de esta unidad
+
+| Syscall | Número en `x8` | Argumentos principales |
+|---|---:|---|
+| `write` | `64` | `x0 = fd`, `x1 = dirección`, `x2 = bytes` |
+| `exit` | `93` | `x0 = código de salida` |
+
+::: {.callout-note title="Idea clave"}
+Linux mira los registros. `x8` indica qué syscall quieres. `x0`, `x1`, `x2` y
+los siguientes registros llevan argumentos. `svc #0` entra al kernel.
+:::
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Programa mínimo con `exit`
+
+`_start`, syscall `exit`, ensamblado, enlazado, ejecución y `echo $?`.
+
+[Abrir](01-programa-minimo-exit.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Hello World con `write`
+
+Mensaje en `.rodata`, `stdout`, longitud y escritura sin `printf`.
+
+[Abrir](02-hello-world-write.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### stdout, stderr y exit codes
+
+File descriptors `1` y `2`, código de salida y cambios pequeños.
+
+[Abrir](03-stdout-stderr-exit-codes.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `_start`, `main` y `libc`
+
+Por qué aquí no usamos `main` ni runtime de C.
+
+[Abrir](04-start-main-libc.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lectura guiada de syscalls
+
+Clasifica registros usados por `exit` y `write`.
+
+[Abrir](05-lectura-guiada-syscalls.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| Tabla completa de syscalls | Primero usaremos solo `exit` y `write` |
+| `errno` y errores avanzados | Más adelante veremos retorno y errores |
+| ABI/AAPCS64 completo | Aquí basta el contrato práctico de syscalls |
+| ELF, linker scripts y loader | Usamos `as` y `ld` sin entrar en formato completo |
+| Stack frames | No llamaremos funciones todavía |
+| I/O con `libc` | Esta unidad usa syscalls directas |
+
+## Preparación para presentación
+
+La página Quarto es la fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/primeros-programas/overview/slides.md
+```
+
+Esa presentación debe practicar el flujo, no reemplazar estas páginas.
+
+## Checklist de cierre
+
+- [ ] Puedo escribir un programa que termina con `exit`.
+- [ ] Puedo ensamblar con `as`.
+- [ ] Puedo enlazar con `ld`.
+- [ ] Puedo ejecutar con QEMU o nativo.
+- [ ] Puedo revisar código de salida con `echo $?`.
+- [ ] Puedo escribir `Hola AArch64` con `write`.
+- [ ] Puedo explicar `x0`, `x1`, `x2`, `x8` y `svc #0`.
+- [ ] Puedo distinguir `_start` de `main`.
+
+## Siguiente paso
+
+Empieza por [Programa mínimo con `exit`](01-programa-minimo-exit.qmd).

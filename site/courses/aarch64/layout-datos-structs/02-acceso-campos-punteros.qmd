@@ -1,0 +1,261 @@
+---
+title: "14.2 · Acceso a campos con punteros"
+subtitle: "Leer y escribir campos es calcular base + offset con el tamaño correcto."
+description: "Acceso a campos con ldr, str, ldrb, strb, dirección base y offset."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > Acceso a campos
+:::
+
+::: {.hero-lab}
+Cuando tienes un puntero a una estructura, no tienes sus campos por separado.
+Tienes una dirección base. Cada campo se alcanza sumando su offset.
+:::
+
+## Base + offset
+
+```bash
+x0 = dirección base del objeto
+
+campo x = [x0 + POINT_X]
+campo y = [x0 + POINT_Y]
+```
+
+Assembly lo expresa con direccionamiento base más inmediato:
+
+```asm
+ldr x1, [x0, #POINT_X]
+ldr x2, [x0, #POINT_Y]
+```
+
+`x0` contiene dirección del objeto. `x1` y `x2` reciben contenidos de campos.
+
+## Cómo leer una instrucción de campo
+
+Toma esta instrucción:
+
+```asm
+ldr x1, [x0, #POINT_X]
+```
+
+Léela así:
+
+```bash
+usa x0 como base
+suma POINT_X
+lee 8 bytes porque destino es x1
+guarda contenido en x1
+```
+
+No la leas como “cargar el objeto”. Lee un campo concreto. El objeto completo
+sigue estando en memoria.
+
+## Programa completo con `Point`
+
+Guarda como `point.s`.
+
+```asm
+.equ POINT_X, 0
+.equ POINT_Y, 8
+.equ POINT_SIZE, 16
+
+.data
+point1:
+    .quad 10
+    .quad 20
+
+.text
+.global _start
+_start:
+    ldr x3, =point1
+    ldr x1, [x3, #POINT_X]
+    ldr x2, [x3, #POINT_Y]
+
+    add x4, x1, x2
+    cmp x4, #30
+    b.ne error
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+```
+
+Construir:
+
+```bash
+$ aarch64-linux-gnu-as point.s -o point.o
+$ aarch64-linux-gnu-ld point.o -o point
+$ qemu-aarch64 ./point
+$ echo $?
+0
+```
+
+El programa no imprime. La verificación está en el flujo: carga `x`, carga `y`,
+suma ambos, compara con `30` y sale con `0` si el layout fue leído bien.
+
+También queda como práctica en:
+
+```bash
+$ cd examples/aarch64/14-layout-datos-structs/00-point/src
+$ make
+$ make run
+$ echo $?
+0
+```
+
+## Dirección del objeto vs contenido
+
+| Expresión | Significado |
+|---|---|
+| `x0` | dirección base del objeto |
+| `[x0, #POINT_X]` | contenido del campo `x` |
+| `[x0, #POINT_Y]` | contenido del campo `y` |
+
+Error típico: creer que `x0` “es el campo x”. No. `x0` es puntero. Si el primer
+campo empieza en offset 0, entonces `[x0]` contiene el primer campo.
+
+Diagrama:
+
+```bash
+x0
+  contiene dirección base
+
+[x0 + 0]
+  contiene campo x
+
+[x0 + 8]
+  contiene campo y
+```
+
+Este detalle evita confundir puntero con dato apuntado. Si haces aritmética con
+`x0`, mueves dirección. Si haces `ldr`, lees contenido.
+
+## Escribir un campo
+
+```asm
+ldr x0, =point1
+mov x1, #99
+str x1, [x0, #POINT_X]
+```
+
+Después:
+
+```bash
+point1.x = 99
+point1.y = 20
+```
+
+`str` escribe 8 bytes porque usa registro `x`. Eso coincide con campos `.quad`.
+
+## Tamaño correcto de acceso
+
+No todos los campos miden 8 bytes.
+
+| Campo | Tamaño | Lectura | Escritura |
+|---|---:|---|---|
+| byte | 1 | `ldrb` | `strb` |
+| halfword | 2 | `ldrh` | `strh` |
+| word | 4 | `ldr wN` | `str wN` |
+| doubleword | 8 | `ldr xN` | `str xN` |
+
+Si un campo mide 1 byte y usas `str x`, escribes 8 bytes y puedes pisar campos
+vecinos.
+
+## Ejemplo con byte y quad
+
+```asm
+.equ ITEM_FLAG, 0
+.equ ITEM_VALUE, 8
+.equ ITEM_SIZE, 16
+```
+
+Acceso correcto:
+
+```asm
+ldrb w1, [x0, #ITEM_FLAG]
+ldr  x2, [x0, #ITEM_VALUE]
+```
+
+No uses `ldr x1, [x0, #ITEM_FLAG]` para el byte si solo quieres leer el campo
+`flag`. Eso leería 8 bytes desde offset 0.
+
+## Escritura parcial
+
+`strb` escribe un byte y deja los demás bytes intactos:
+
+```asm
+mov w1, #1
+strb w1, [x0, #ITEM_FLAG]
+```
+
+`str x1` escribe 8 bytes:
+
+```asm
+str x1, [x0, #ITEM_FLAG]
+```
+
+Si `ITEM_FLAG` mide 1 byte, esta segunda forma pisa padding o campos vecinos.
+El tamaño de instrucción debe coincidir con tamaño de campo.
+
+## Campo dentro de array de structs
+
+Si tienes varios `Point` consecutivos:
+
+```bash
+base_array + i * POINT_SIZE + POINT_Y
+```
+
+En assembly:
+
+```asm
+// x0 = base del array
+// x1 = índice i
+lsl x2, x1, #4              // i * 16
+add x2, x2, #POINT_Y
+ldr x3, [x0, x2]
+```
+
+Aquí aparece relación con aritmética: offset total puede ser constante o
+calculado.
+
+## Función que recibe puntero
+
+```asm
+// x0 = puntero a Point
+point_clear:
+    str xzr, [x0, #POINT_X]
+    str xzr, [x0, #POINT_Y]
+    ret
+```
+
+`point_clear` no necesita saber dónde vive el objeto: `.data`, stack, heap o
+`mmap`. Solo necesita un puntero válido a un bloque con layout `Point`.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| usar dirección como contenido | valor incorrecto |
+| usar offset equivocado | lees otro campo |
+| usar tamaño equivocado | pisas campos vecinos |
+| olvidar que `x0` puede cambiar | pierdes puntero |
+| escribir fuera de `POINT_SIZE` | corrupción de memoria |
+
+## Mini ejercicios
+
+1. ¿Qué contiene `x0` después de `ldr x0, =point1`?
+2. ¿Qué lee `ldr x1, [x0, #POINT_X]`?
+3. ¿Por qué `str x1` escribe 8 bytes?
+4. ¿Qué instrucción usarías para un campo byte?
+5. ¿Por qué `point_clear` sirve para objetos en heap también?
+
+## Cierre
+
+Acceder a campos no es magia. Es dirección base, offset y tamaño correcto de
+carga o almacenamiento.

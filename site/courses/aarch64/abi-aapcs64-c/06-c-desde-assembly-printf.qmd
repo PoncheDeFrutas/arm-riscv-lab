@@ -1,0 +1,177 @@
+---
+title: "15.6 · C desde assembly y printf"
+subtitle: "Llamar funciones C desde assembly exige respetar ABI, stack y runtime."
+description: "Assembly llama C, main en assembly, printf, variadic functions, scanf conceptual y alineación."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > C desde assembly
+:::
+
+::: {.hero-lab}
+Ahora assembly será el caller. Eso significa preparar argumentos, mantener `sp`
+alineado y llamar funciones C con `bl`, no con `svc`.
+:::
+
+## `main` escrito en assembly
+
+Si compilas con GCC, puedes escribir `main` en assembly. El runtime de C llamará
+tu símbolo `main` igual que si viniera de C.
+
+```asm
+.global main
+.type main, %function
+
+main:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    mov x0, #0
+
+    ldp x29, x30, [sp], #16
+    ret
+
+.size main, . - main
+```
+
+No usas syscall `exit`. Retornar de `main` entrega el código de salida al
+runtime.
+
+## Llamar una función C
+
+Archivo `funcion.c`:
+
+```c
+long funcion_c(long a, long b) {
+    return a + b;
+}
+```
+
+Archivo `main.s`:
+
+```asm
+.global main
+.type main, %function
+
+main:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    mov x0, #7
+    mov x1, #5
+    bl funcion_c
+
+    cmp x0, #12
+    cset x0, ne
+
+    ldp x29, x30, [sp], #16
+    ret
+
+.size main, . - main
+```
+
+Práctica:
+
+```bash
+$ cd examples/aarch64/15-abi-aapcs64/03-c-desde-assembly/src
+$ make
+$ make run
+$ echo $?
+0
+```
+
+## Llamar `printf`
+
+`printf` recibe un puntero a formato en `x0`. El siguiente argumento entero va
+en `x1`.
+
+```asm
+.global main
+.type main, %function
+
+main:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    adrp x0, fmt
+    add  x0, x0, :lo12:fmt
+    mov  x1, #42
+    bl printf
+
+    mov x0, #0
+    ldp x29, x30, [sp], #16
+    ret
+
+.size main, . - main
+
+.section .rodata
+fmt:
+    .asciz "valor = %ld\n"
+```
+
+Compilar con GCC:
+
+```bash
+$ aarch64-linux-gnu-gcc main.s -o app
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu ./app
+valor = 42
+```
+
+Práctica:
+
+```bash
+$ cd examples/aarch64/15-abi-aapcs64/02-printf-desde-assembly/src
+$ make
+$ make run
+valor = 42
+```
+
+## Por qué `printf` necesita cuidado
+
+`printf` es variadic: la cantidad y tipo de argumentos reales se deducen del
+formato.
+
+```c
+printf("valor = %ld\n", 42L);
+```
+
+En assembly, tú debes hacer que el formato y los registros coincidan:
+
+```bash
+x0 = puntero a "valor = %ld\n"
+x1 = entero long para %ld
+```
+
+Si el formato pide dos valores y solo preparas uno, `printf` leerá basura desde
+la convención de llamada.
+
+## `scanf` conceptual
+
+`scanf` también es variadic, pero además escribe resultados en direcciones:
+
+```c
+scanf("%ld", &x);
+```
+
+En assembly eso exige preparar punteros válidos. Por eso queda como tema
+conceptual en esta unidad. Primero importa dominar `printf`.
+
+## Errores comunes
+
+- Llamar `printf` con `svc #0`.
+- Pasar valor directo donde `printf` espera puntero a formato.
+- Romper alineación de `sp` antes de `bl printf`.
+- Olvidar guardar `LR` en `main` assembly antes de llamar otra función.
+- Retornar de `main` sin código claro en `x0`.
+- Usar formato `%ld` pero preparar un argumento incorrecto.
+
+## Checklist
+
+- [ ] Puedo escribir `main` en assembly y compilar con GCC.
+- [ ] Puedo llamar una función C desde assembly.
+- [ ] Puedo llamar `printf`.
+- [ ] Puedo mantener `sp` alineado.
+- [ ] Puedo explicar por qué `printf` es variadic.
+- [ ] Puedo explicar por qué `scanf` requiere punteros.
+
+Siguiente: [Librerías y lectura guiada](07-librerias-y-lectura-guiada.qmd).

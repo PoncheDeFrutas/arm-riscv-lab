@@ -1,9 +1,10 @@
 .PHONY: help site quarto-site preview slides slides-build nojekyll publish hello hello-run hello-gdb clean
 
+SITE_DIR ?= site
 LESSON ?= projects/aarch64/minimo/src
-SLIDES ?= slides/aarch64/laboratorio/overview/slides.md
-SLIDE_DECKS ?= slides/aarch64/laboratorio/overview/slides.md slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md
-SLIDEV ?= ./node_modules/.bin/slidev
+SLIDES ?= $(SITE_DIR)/slides/aarch64/laboratorio/overview/slides.md
+SLIDE_DECKS ?= $(SITE_DIR)/slides/aarch64/laboratorio/overview/slides.md $(SITE_DIR)/slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md
+SLIDEV ?= node_modules/.bin/slidev
 
 help:
 	@echo "Targets:"
@@ -21,17 +22,19 @@ help:
 site: quarto-site
 
 quarto-site:
-	quarto render
+	rm -rf _site
+	quarto render $(SITE_DIR)
 
 preview:
-	quarto preview
+	quarto preview $(SITE_DIR)
 
 slides:
 	@if [ -f "$(SLIDES)" ]; then \
-		if [ -x "$(SLIDEV)" ]; then \
-			"$(SLIDEV)" "$(SLIDES)"; \
+		deck="$$(printf '%s\n' "$(SLIDES)" | sed 's#^$(SITE_DIR)/##')"; \
+		if [ -x "$(SITE_DIR)/$(SLIDEV)" ]; then \
+			cd "$(SITE_DIR)" && "./$(SLIDEV)" "$$deck"; \
 		else \
-			pnpm exec slidev "$(SLIDES)"; \
+			cd "$(SITE_DIR)" && pnpm exec slidev "$$deck"; \
 		fi; \
 	else \
 		echo "Slidev deck not found at $(SLIDES); skipping."; \
@@ -41,12 +44,14 @@ slides-build:
 	@set -e; \
 	for deck in $(SLIDE_DECKS); do \
 		if [ -f "$$deck" ]; then \
-			out="$(CURDIR)/_site/$${deck%/slides.md}"; \
+			rel="$${deck#$(SITE_DIR)/}"; \
+			inner="$${deck#$(SITE_DIR)/}"; \
+			out="$(CURDIR)/_site/$${rel%/slides.md}"; \
 			tmp="$(CURDIR)/$${deck%/slides.md}/.slidev-dist"; \
-			if [ -x "$(SLIDEV)" ]; then \
-				"$(SLIDEV)" build "$$deck" --out "$$tmp" --base ./ --router-mode hash; \
+			if [ -x "$(SITE_DIR)/$(SLIDEV)" ]; then \
+				cd "$(SITE_DIR)" && "./$(SLIDEV)" build "$$inner" --out "$$tmp" --base ./ --router-mode hash; \
 			else \
-				pnpm exec slidev build "$$deck" --out "$$tmp" --base ./ --router-mode hash; \
+				cd "$(SITE_DIR)" && pnpm exec slidev build "$$inner" --out "$$tmp" --base ./ --router-mode hash; \
 			fi; \
 			rm -rf "$$out"; \
 			mkdir -p "$$out"; \
@@ -61,7 +66,7 @@ nojekyll:
 	touch _site/.nojekyll
 
 publish: site
-	quarto publish gh-pages --no-browser --no-prompt
+	quarto publish gh-pages $(SITE_DIR) --no-browser --no-prompt
 
 hello:
 	$(MAKE) -C $(LESSON)

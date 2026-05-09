@@ -1,0 +1,142 @@
+---
+title: "15.3 · Caller-saved, callee-saved y funciones correctas"
+subtitle: "Una función ABI-correcta no solo calcula: también devuelve el entorno en buen estado."
+description: "Preservación de registros, x19-x28, LR, FP, prólogo, epílogo y errores frecuentes."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ABI > Caller y callee
+:::
+
+::: {.hero-lab}
+El bug clásico de ABI no siempre está en la suma o en la resta. Muchas veces
+está en un registro que una función modificó y no debía dejar modificado.
+:::
+
+## Dos responsabilidades distintas
+
+| Concepto | Responsable | Idea |
+|---|---|---|
+| caller-saved | caller | si quiere conservarlo después de `bl`, lo guarda antes |
+| callee-saved | callee | si lo modifica, lo restaura antes de `ret` |
+
+No leas caller-saved como “lo guarda el callee”. Es lo contrario: el caller sabe
+que esos registros pueden ser destruidos por la llamada.
+
+## Registros caller-saved comunes
+
+| Registro | Uso práctico |
+|---|---|
+| `x0`-`x7` | argumentos, retornos, temporales entre llamadas |
+| `x9`-`x15` | temporales |
+| `x16`-`x17` | temporales especiales para llamadas internas/linker |
+
+Si el caller necesita un valor en `x0` después de llamar otra función, debe
+guardarlo antes. La función llamada puede usar `x0` para su propio retorno.
+
+## Registros callee-saved
+
+| Registro | Regla |
+|---|---|
+| `x19`-`x28` | si el callee los usa, debe restaurarlos |
+| `x29` | frame pointer, se preserva si se establece frame |
+| `x30` | link register, se debe guardar en funciones no hoja |
+
+Ejemplo de función que usa `x19` correctamente:
+
+```asm
+.global usar_x19
+.type usar_x19, %function
+
+usar_x19:
+    stp x29, x30, [sp, #-32]!
+    mov x29, sp
+    str x19, [sp, #16]
+
+    mov x19, x0
+    add x0, x19, #1
+
+    ldr x19, [sp, #16]
+    ldp x29, x30, [sp], #32
+    ret
+
+.size usar_x19, . - usar_x19
+```
+
+El frame reserva 32 bytes para mantener alineación. Los primeros 16 guardan
+`x29` y `x30`. El espacio restante guarda `x19`.
+
+## Por qué no basta con que el resultado sea correcto
+
+Esta función puede devolver `42`, pero seguir siendo mala:
+
+```asm
+usar_x19_mal:
+    mov x19, x0
+    add x0, x19, #1
+    ret
+```
+
+El resultado en `x0` puede estar bien. Pero si el caller tenía un valor vivo en
+`x19`, quedó destruido. Ese bug puede aparecer muchas instrucciones después.
+
+## Función hoja vs no hoja
+
+Una función hoja no llama a otra función:
+
+```asm
+sumar:
+    add x0, x0, x1
+    ret
+```
+
+Una función no hoja sí llama a otra:
+
+```asm
+funcion:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    bl otra_funcion
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+`bl` sobrescribe `x30`. Por eso una función no hoja que necesita retornar al
+caller original debe guardar `LR`.
+
+## Práctica completa
+
+```bash
+$ cd examples/aarch64/15-abi-aapcs64/01-preservar-x19/src
+$ make
+$ make run
+usar_x19 = 42
+$ echo $?
+0
+```
+
+El programa C llama la función assembly. La función assembly usa `x19`, lo
+restaura y retorna `42`.
+
+## Errores comunes
+
+- Modificar `x19` sin restaurarlo.
+- Guardar `x19` con `str` y liberar `sp` con tamaño distinto.
+- Guardar 8 bytes y romper alineación de 16 bytes.
+- Olvidar que `bl` sobrescribe `x30`.
+- Creer que una función correcta solo debe devolver el valor correcto.
+- Usar `x16` o `x17` como almacenamiento persistente.
+
+## Checklist
+
+- [ ] Puedo explicar caller-saved.
+- [ ] Puedo explicar callee-saved.
+- [ ] Puedo preservar `x19`.
+- [ ] Puedo explicar por qué una función no hoja guarda `LR`.
+- [ ] Puedo mantener `sp` alineado.
+- [ ] Puedo detectar función ABI-incorrecta aunque retorne bien.
+
+Siguiente: [`main`, `_start` y libc](04-main-start-libc-runtime.qmd).
+

@@ -1,0 +1,320 @@
+---
+title: "14 · Layout de datos, structs, ADTs y objetos manuales"
+subtitle: "Diseñar datos complejos como bloques de memoria con offsets, invariantes y funciones."
+description: "Página principal de la Unidad 14 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos, structs y ADTs
+:::
+
+::: {.hero-lab}
+Ya sabes cargar y guardar bytes, usar punteros, crear funciones, administrar
+recursos y pedir regiones dinámicas con `mmap`. Ahora toca diseñar datos
+compuestos sin ayuda de un lenguaje de alto nivel.
+:::
+
+## Qué debe quedar claro
+
+En assembly no existe una palabra mágica `struct`. Tampoco existen clases,
+métodos o constructores automáticos. Lo que existe es memoria, registros,
+direcciones y convenciones.
+
+```bash
+struct
+  bloque de bytes con offsets conocidos
+
+ADT
+  datos + operaciones + invariantes
+
+objeto manual
+  bloque de memoria + funciones que reciben self
+
+descriptor
+  estructura pequeña que describe recurso o bloque mayor
+```
+
+La unidad enseña a pasar de “tengo una dirección” a “tengo un diseño de datos”.
+Si no hay layout claro, cada `ldr` y cada `str` se vuelve una suposición.
+
+## Cómo pensar datos compuestos
+
+Un dato compuesto no es “un valor grande”. Es un grupo de valores pequeños que
+se interpretan juntos. En alto nivel podrías escribir `point.x`; en assembly
+debes decidir dónde vive `x`, cuánto mide y qué instrucción lo lee.
+
+```bash
+dato compuesto
+  tiene dirección base
+  tiene campos
+  cada campo tiene offset
+  cada campo tiene tamaño
+  operaciones conocen el layout
+```
+
+La pregunta que guía toda esta unidad es:
+
+```bash
+si solo tengo una dirección,
+¿cómo sé qué bytes significan qué cosa?
+```
+
+Respuesta: layout explícito. Sin layout, memoria es solo una secuencia de bytes.
+Con layout, esos bytes se vuelven `Point`, `Buffer`, `String`, `Matrix` o
+wrapper de archivo.
+
+## Diseño antes de código
+
+Antes de escribir `ldr` o `str`, diseña:
+
+| Paso | Pregunta |
+|---|---|
+| 1 | ¿Qué representa el objeto? |
+| 2 | ¿Qué campos necesita? |
+| 3 | ¿Qué tamaño tiene cada campo? |
+| 4 | ¿Qué offset tendrá cada campo? |
+| 5 | ¿Hace falta padding por alignment? |
+| 6 | ¿Cuál es tamaño total? |
+| 7 | ¿Qué reglas deben cumplirse siempre? |
+| 8 | ¿Qué funciones pueden modificarlo? |
+
+Este orden evita código frágil. Si empiezas escribiendo offsets al azar, después
+no sabrás si un bug viene de la instrucción, del cálculo o del diseño.
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Layout**
+Campo, offset, tamaño, alignment y padding.
+:::
+
+::: {.lab-step}
+**2. Acceso**
+Base + offset con `ldr`, `str`, `ldrb`, `strb`.
+:::
+
+::: {.lab-step}
+**3. ADT**
+Datos, operaciones e invariantes.
+:::
+
+::: {.lab-step}
+**4. Objeto**
+Constructor, destructor, método y `self`.
+:::
+
+::: {.lab-step}
+**5. Descriptor**
+Buffer, string, matrix, file wrapper y arena.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 02: tamaños y bytes | Elegir tamaño de cada campo |
+| Unidad 06: dirección vs contenido | Distinguir objeto de campo |
+| Unidad 07: shifts y aritmética | Calcular índices y offsets |
+| Unidad 08: branches | Validar invariantes y errores |
+| Unidad 10: recursos | Diseñar wrappers y cleanup |
+| Unidad 11: funciones | Pasar puntero en `x0` |
+| Unidad 12 y 13: heap y `mmap` | Crear objetos en memoria dinámica |
+
+## Idea central
+
+```bash
+base del objeto
+  + offset 0   -> campo 0
+  + offset 8   -> campo 1
+  + offset 16  -> campo 2
+
+función
+  x0 = puntero al objeto
+  usa offsets
+  mantiene invariantes
+```
+
+Un campo no vive “flotando”. Vive en una posición dentro de un bloque. Una
+operación no es especial porque se llame método. Es una función normal que
+recibe puntero al bloque y respeta reglas.
+
+## Tabla mínima de `Point`
+
+| Campo | Offset | Tamaño | Descripción |
+|---|---:|---:|---|
+| `x` | `0` | `8` | coordenada x |
+| `y` | `8` | `8` | coordenada y |
+| `POINT_SIZE` | `16` | - | tamaño total |
+
+```asm
+.equ POINT_X, 0
+.equ POINT_Y, 8
+.equ POINT_SIZE, 16
+```
+
+## Tabla mínima de descriptor `Buffer`
+
+| Campo | Offset | Tamaño | Descripción |
+|---|---:|---:|---|
+| `data` | `0` | `8` | puntero al bloque de bytes |
+| `len` | `8` | `8` | bytes usados |
+| `cap` | `16` | `8` | capacidad reservada |
+| `BUFFER_SIZE` | `24` | - | tamaño del descriptor |
+
+```asm
+.equ BUF_DATA, 0
+.equ BUF_LEN,  8
+.equ BUF_CAP,  16
+.equ BUF_SIZE, 24
+```
+
+## ADT en esta unidad
+
+| Parte | Significado |
+|---|---|
+| Datos | layout de memoria del objeto |
+| Operaciones | funciones que reciben puntero al objeto |
+| Invariantes | reglas que siempre deben cumplirse |
+
+Ejemplo de invariante de buffer:
+
+```bash
+0 <= len <= cap
+data apunta a bloque válido si cap > 0
+```
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Structs y layout
+
+Campos, offsets, size, alignment y padding con diagramas de bytes.
+
+[Abrir](01-structs-layout.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Acceso a campos
+
+Dirección base, offset, `ldr`, `str`, tamaños de campo y errores de acceso.
+
+[Abrir](02-acceso-campos-punteros.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### ADTs e invariantes
+
+Datos + operaciones + reglas. Funciones que reciben puntero.
+
+[Abrir](03-adts-invariantes.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Objetos manuales
+
+Constructor, destructor, métodos manuales y `self` en `x0`.
+
+[Abrir](04-objetos-manuales.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Descriptores
+
+File descriptor del kernel y descriptores propios en memoria.
+
+[Abrir](05-descriptores.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Buffer, String y Matrix
+
+Diseños concretos con layout, invariantes y operaciones mínimas.
+
+[Abrir](06-buffer-string-matrix.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### File wrapper y arena
+
+Recursos, cleanup, wrapper de archivo y arena simple.
+
+[Abrir](07-file-wrapper-arena.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lectura guiada
+
+ADT `Buffer` completo con `push_byte`, `clear` y error por capacidad.
+
+[Abrir](08-lectura-guiada.qmd){.resource-action}
+:::
+:::
+
+## Programas de práctica
+
+Estos programas están completos. Puedes leerlos en la página y también correrlos
+desde `examples/`.
+
+| Caso | Qué practica | Ruta |
+|---|---|---|
+| `Point` | struct básico y campos `x`, `y` | `examples/aarch64/14-layout-datos-structs/00-point/src` |
+| `Buffer ADT` | descriptor, `push_byte`, `clear` | `examples/aarch64/14-layout-datos-structs/01-buffer-adt/src` |
+| `String` | `data`, `len`, `cap` y `write` | `examples/aarch64/14-layout-datos-structs/02-string-dinamico/src` |
+| `Matrix` | row-major, límites y elemento `u64` | `examples/aarch64/14-layout-datos-structs/03-matrix/src` |
+| `File wrapper` | fd, wrapper, `openat`, `write`, `close` | `examples/aarch64/14-layout-datos-structs/04-file-wrapper/src` |
+| `Arena` | `base`, `used`, `cap`, alloc simple | `examples/aarch64/14-layout-datos-structs/05-arena-simple/src` |
+
+Flujo recomendado:
+
+```bash
+$ cd examples/aarch64/14-layout-datos-structs/00-point/src
+$ make
+$ make run
+$ echo $?
+```
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| Herencia y polimorfismo | Primero objetos como memoria + funciones |
+| Vtables reales | Requieren ABI y punteros a función con más contexto |
+| C++ ABI, RTTI, exceptions | Son capas de lenguaje y runtime |
+| Allocators avanzados | Arena simple basta como patrón inicial |
+| SIMD para matrices | Primero layout correcto |
+| Seguridad avanzada de heap | Primero errores de layout e invariantes |
+| Macros avanzadas para objetos | Pueden ocultar el aprendizaje |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/layout-datos-structs/overview/slides.md
+```
+
+No crear presentación todavía. Debe visualizar bloques de bytes, offsets,
+padding, `self` y descriptores.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar struct como layout manual.
+- [ ] Puedo definir campos, offsets y size.
+- [ ] Puedo explicar alignment y padding.
+- [ ] Puedo acceder campos con `ldr`, `str`, `ldrb`, `strb`.
+- [ ] Puedo distinguir dirección del objeto y contenido de campo.
+- [ ] Puedo usar `.equ` para offsets.
+- [ ] Puedo explicar ADT como datos + operaciones + invariantes.
+- [ ] Puedo pasar `self` en `x0`.
+- [ ] Puedo diseñar constructor y destructor manual.
+- [ ] Puedo diseñar descriptor de buffer, string, matrix y file wrapper.
+- [ ] Puedo explicar arena simple.
+- [ ] Puedo reconocer errores típicos de layout manual.
+
+## Siguiente paso
+
+Empieza por [Structs y layout](01-structs-layout.qmd).

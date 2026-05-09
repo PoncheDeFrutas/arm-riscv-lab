@@ -1,0 +1,216 @@
+---
+title: "07 · Aritmética, lógica, flags y bits"
+subtitle: "Opera valores en registros, actualiza flags y manipula bits antes de control de flujo."
+description: "Página principal de la Unidad 07 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Aritmética, lógica, flags y bits
+:::
+
+::: {.hero-lab}
+En la unidad anterior cargaste valores desde memoria hacia registros. Ahora vas
+a operar esos valores: construir constantes, sumar, restar, comparar, mirar
+flags, aplicar máscaras, desplazar bits, extender valores pequeños y extraer
+campos dentro de un registro.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Construye**
+Constantes pequeñas y grandes.
+:::
+
+::: {.lab-step}
+**2. Calcula**
+Suma, resta, multiplicación y división.
+:::
+
+::: {.lab-step}
+**3. Marca**
+`NZCV` queda listo para condiciones futuras.
+:::
+
+::: {.lab-step}
+**4. Filtra**
+Máscaras para encender, apagar y probar bits.
+:::
+
+::: {.lab-step}
+**5. Ajusta**
+Shifts, rotates, extensiones y campos.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 02: signed, unsigned, carry y overflow | Separar `C` de `V` y elegir extensiones |
+| Unidad 03: `Xn`, `Wn`, `PSTATE`, `NZCV` | Entender qué registros cambian y qué flags quedan |
+| Unidad 06: load/store | Operar datos ya cargados desde memoria hacia registros |
+
+## Idea de trabajo
+
+La @fig-register-operation-flow resume el flujo típico: memoria se carga a
+registros, la operación ocurre en registros y algunas instrucciones actualizan
+flags.
+
+```{mermaid}
+%%| label: fig-register-operation-flow
+%%| fig-cap: "Flujo básico de operación sobre registros en AArch64."
+flowchart LR
+  memory["Memoria"] --> load["ldr"]
+  load --> reg1["Registro"]
+  reg1 --> op["Operación"]
+  op --> reg2["Registro resultado"]
+  op -.-> flags["Flags opcionales"]
+```
+
+AArch64 opera principalmente sobre registros. Algunas instrucciones solo
+producen un resultado. Otras, además del resultado, actualizan `N`, `Z`, `C` y
+`V`.
+
+| Familia | Pregunta que responde |
+|---|---|
+| Constantes | ¿Cómo pongo este valor en un registro? |
+| Aritmética | ¿Cómo sumo, resto o comparo? |
+| Multiplicación/división | ¿Cómo calculo productos y cocientes? |
+| Lógica | ¿Cómo trabajo bits con máscaras? |
+| Shifts/rotates | ¿Cómo muevo bits dentro de un registro? |
+| Extensiones | ¿Cómo agrando 8, 16 o 32 bits? |
+| Bit manipulation | ¿Cómo extraigo o inserto campos? |
+
+::: {.callout-note title="Idea clave"}
+`add` no actualiza flags. `adds` sí. `sub` no actualiza flags. `subs` sí. En
+AArch64, la `s` final suele ser una señal importante: resultado y flags.
+:::
+
+## Cómo estudiar esta unidad
+
+No intentes memorizar todas las instrucciones de una vez. Lee cada familia como
+una pregunta práctica:
+
+| Si quiero... | Miro esta familia |
+|---|---|
+| Preparar operandos | movimiento de constantes |
+| Calcular y comparar | aritmética y flags |
+| Combinar producto con suma | multiplicación/división |
+| Seleccionar bits | lógica y máscaras |
+| Mover bits por posición | shifts y rotates |
+| Agrandar datos pequeños | extensiones |
+| Tomar un campo dentro de un registro | bit manipulation |
+
+Cada página termina con ejercicios pequeños porque la meta es leer registros y
+bits con seguridad antes de escribir branches y loops.
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Movimiento de constantes
+
+`mov`, `movz`, `movk`, `movn` y diferencia entre mover inmediato y cargar desde
+memoria.
+
+[Abrir](01-movimiento-constantes.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Aritmética y flags
+
+`add`, `adds`, `sub`, `subs`, `neg`, `cmp`, `cmn`, `NZCV`, carry y overflow.
+
+[Abrir](02-aritmetica-flags.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Multiplicación y división
+
+`mul`, `madd`, `msub`, `smaddl`, `umaddl`, `sdiv` y `udiv`.
+
+[Abrir](03-multiplicacion-division.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lógica y máscaras
+
+`and`, `orr`, `eor`, `bic`, `orn`, `mvn`, `tst` y operaciones sobre bits.
+
+[Abrir](04-logica-mascaras.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Shifts y rotates
+
+`lsl`, `lsr`, `asr`, `ror`, `extr` y diferencia entre desplazar y rotar.
+
+[Abrir](05-shifts-rotates.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Extensiones
+
+`sxtb`, `sxth`, `sxtw`, `uxtb`, `uxth`, `uxtw` y signed/unsigned.
+
+[Abrir](06-extensiones.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Bit manipulation
+
+`clz`, `cls`, `rbit`, `rev`, `bfi`, `bfxil`, `ubfx`, `sbfx`.
+
+[Abrir](07-bit-manipulation.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lectura guiada
+
+Archivo `.s` corto que combina constantes, operaciones, flags, máscaras y
+campos de bits.
+
+[Abrir](08-lectura-guiada-operaciones.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| Control de flujo completo | La siguiente unidad usará estos flags para saltar |
+| Loops y algoritmos grandes | Primero hay que dominar operaciones unitarias |
+| ABI/AAPCS64 | No llamaremos funciones externas |
+| SIMD/NEON y floating point | Esta unidad es enteros y bits |
+| Atomics y barreras | Son operaciones de concurrencia |
+| Criptografía u optimización avanzada | Aquí buscamos lectura clara, no trucos |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/aritmetica-logica-bits/overview/slides.md
+```
+
+Esa presentación debe practicar lectura visual de registros, flags y bits; no
+debe reemplazar estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo construir constantes pequeñas y grandes.
+- [ ] Puedo distinguir `mov` de cargar desde memoria.
+- [ ] Puedo usar `add`, `sub`, `adds`, `subs`, `cmp` y `cmn`.
+- [ ] Puedo explicar `N`, `Z`, `C` y `V`.
+- [ ] Puedo separar carry unsigned de overflow signed.
+- [ ] Puedo usar máscaras con `and`, `orr`, `eor`, `bic` y `tst`.
+- [ ] Puedo distinguir `lsl`, `lsr`, `asr` y `ror`.
+- [ ] Puedo elegir extensión con signo o con ceros.
+- [ ] Puedo extraer e insertar campos de bits.
+
+## Siguiente paso
+
+Empieza por [Movimiento de constantes](01-movimiento-constantes.qmd).

@@ -1,0 +1,183 @@
+---
+title: "08 · Control de flujo y programación estructurada"
+subtitle: "Traduce decisiones y ciclos a etiquetas, branches y condiciones AArch64."
+description: "Página principal de la Unidad 08 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Control de flujo y programación estructurada
+:::
+
+::: {.hero-lab}
+Hasta ahora los programas se podían leer casi de arriba hacia abajo. En esta
+unidad el flujo cambia: una instrucción puede saltar a otra etiqueta, repetir un
+bloque o elegir entre dos caminos según flags. Esa es la base para escribir
+`if`, `while`, `for` y llamadas a funciones en assembly.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Marca**
+Etiquetas como destinos dentro del programa.
+:::
+
+::: {.lab-step}
+**2. Salta**
+`b` cambia la siguiente instrucción.
+:::
+
+::: {.lab-step}
+**3. Decide**
+`cmp` y `NZCV` preparan ramas condicionales.
+:::
+
+::: {.lab-step}
+**4. Repite**
+Loops usan saltos hacia atrás.
+:::
+
+::: {.lab-step}
+**5. Vuelve**
+`bl` y `ret` preparan funciones futuras.
+:::
+:::
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 03: `PSTATE`, `NZCV`, `PC`, `LR/X30` | Leer flags, saltos y retorno inicial |
+| Unidad 05: `_start`, `exit`, código de salida | Verificar qué camino tomó el programa |
+| Unidad 06: arrays, punteros, post-index | Recorrer memoria con loops |
+| Unidad 07: `cmp`, `subs`, `tst`, signed/unsigned | Elegir condiciones correctas |
+
+## Idea de trabajo
+
+```bash
+flujo normal:
+instrucción A -> instrucción B -> instrucción C
+
+con branch:
+instrucción A -> etiqueta destino -> otra parte del programa
+```
+
+Una etiqueta no ejecuta nada por sí sola. Solo nombra una posición. La rama es
+la instrucción que cambia el flujo.
+
+::: {.callout-note title="Idea clave"}
+El procesador no entiende `if`, `while` o `for` como palabras especiales. En
+assembly esas estructuras se construyen con comparaciones, flags, etiquetas y
+branches.
+:::
+
+## AArch64 y ejecución condicional
+
+En ARM32 clásico existía conditional execution amplia: muchas instrucciones
+podían tener condición. En AArch64 no se programa así de forma general. Aquí vas
+a usar principalmente:
+
+| Herramienta | Uso |
+|---|---|
+| ramas condicionales | saltar según `NZCV` |
+| compare-and-branch | saltar si un registro es cero o no cero |
+| test-bit-and-branch | saltar según un bit concreto |
+| conditional select | elegir un valor sin rama pequeña |
+
+No necesitamos una comparación larga con ARM32. Basta esta regla: en AArch64,
+las decisiones se escriben con branches y selectores condicionales, no
+predicando cualquier instrucción.
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Branching y etiquetas
+
+`b`, etiquetas, salto hacia adelante, salto hacia atrás y lectura de flujo.
+
+[Abrir](01-branching-etiquetas.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Condiciones y flags
+
+`cmp`, `subs`, `NZCV`, condiciones signed y unsigned.
+
+[Abrir](02-condiciones-flags.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### `if` e `if/else`
+
+Traducción de decisiones simples a etiquetas, ramas y salida común.
+
+[Abrir](03-if-else.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Loops y recorrido
+
+`while`, `do while`, `for`, contador, puntero y salto hacia atrás.
+
+[Abrir](04-loops-recorrido.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Branches especializados y select
+
+`cbz`, `cbnz`, `tbz`, `tbnz`, `csel`, `cinc`, `cset`, `cneg` y familia `cs*`.
+
+[Abrir](05-branches-especializados-csel.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Link y branch por registro
+
+Introducción a `bl`, `br`, `blr`, `ret` y `LR/X30`.
+
+[Abrir](06-branch-link-register.qmd){.resource-action}
+:::
+:::
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| ABI/AAPCS64 completo | Primero veremos llamada y retorno como idea |
+| Stack frames | Se estudiarán cuando aparezcan funciones reales |
+| Recursión | Depende de stack frames y preservación de registros |
+| Jump tables reales | `switch` queda conceptual |
+| Predicción de branches | Es tema de rendimiento |
+| Exception handling e interrupciones | No son control de flujo userland básico |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/control-flujo/overview/slides.md
+```
+
+Esa presentación debe practicar lectura visual de etiquetas, ramas, flags y
+loops; no debe reemplazar estas lecciones.
+
+## Checklist de cierre
+
+- [ ] Puedo explicar qué hace una etiqueta.
+- [ ] Puedo distinguir salto hacia adelante y hacia atrás.
+- [ ] Puedo leer `b` y `b.cond`.
+- [ ] Puedo explicar cómo `cmp` prepara flags.
+- [ ] Puedo separar condiciones signed y unsigned.
+- [ ] Puedo traducir `if` e `if/else`.
+- [ ] Puedo traducir `while`, `do while` y `for`.
+- [ ] Puedo reconocer loops con contador y puntero.
+- [ ] Puedo usar `cbz`, `cbnz`, `tbz` y `tbnz` en casos simples.
+- [ ] Puedo explicar `csel` como selección sin rama.
+- [ ] Puedo explicar qué hacen `bl` y `ret` sin entrar al ABI.
+
+## Siguiente paso
+
+Empieza por [Branching y etiquetas](01-branching-etiquetas.qmd).

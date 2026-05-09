@@ -2,63 +2,62 @@
 
 Repositorio educativo para Arquitectura de Computadores y Ensambladores.
 
-La primera vertical slice cubre AArch64/ARM64 en Linux user-space usando syscalls,
-QEMU user mode, GDB y VS Code. La estructura queda preparada para crecer hacia
-RISC-V sin mezclar contenido ni duplicar teoría.
-
-## Flujo principal
-
-```bash
-cd 00-hello-minimo
-cd src
-make
-make run
-make gdb
-```
-
-El flujo recomendado para estudiantes es:
-
-```bash
-leer teoría -> ejecutar ejemplo -> depurar -> resolver ejercicio
-```
-
-Para Raspberry Pi ARM64 real, copia el template ARM64 como `src/Makefile` y usa
-los mismos comandos:
-
-```bash
-cd 00-hello-minimo
-cd src
-make
-make run
-make gdb
-```
+La raíz queda para navegar y trabajar: sitio, ejemplos, proyectos y tooling.
+La fuente completa del sitio Quarto vive en `site/`; el sitio publicado se
+genera en `_site/` para GitHub Pages.
 
 ## Estructura
 
-- `courses/`: teoría y navegación del sitio Quarto.
-- `guides/`: instalación, ejecución, depuración y troubleshooting.
-- `lessons/`: ejemplos ejecutables autocontenidos.
-- `exercises/`: prácticas asociadas a cada lección.
-- `slides/`: presentaciones Slidev de apoyo a clase.
-- `tooling/`: templates de Makefile y Docker.
-- `projects/`: estructura mínima de proyecto con `.vscode/` y `src/`.
+- `site/`: fuente del sitio Quarto, guías, cursos, estilos y diapositivas.
+- `examples/`: ejemplos ejecutables autocontenidos.
+- `projects/`: plantillas o proyectos de práctica con `src/` y configuración local.
+- `tooling/`: Makefiles base, Docker y apoyo para laboratorio.
+- `Makefile`: comandos de build, preview, slides y publicación.
 
 ## Sitio
 
 ```bash
+cd site
 pnpm install
+cd ..
 make site
-quarto preview
+make preview
 ```
 
-`make site` renderiza Quarto y después compila las slides dentro de `_site/`.
+`make site` renderiza `site/` hacia `_site/` y después compila las diapositivas
+configuradas en `SLIDE_DECKS`.
 
-## Slides
+## Diapositivas
 
 ```bash
-pnpm install
-pnpm exec slidev slides/aarch64/laboratorio/overview/slides.md
+make slides
+make slides-build
 ```
 
-El workflow de GitHub Pages compila el deck en
-`_site/slides/aarch64/laboratorio/overview/`.
+Las fuentes viven bajo `site/slides/`. El build publicado queda bajo
+`_site/slides/` para preservar las URLs públicas actuales.
+
+Las dependencias de Slidev viven en `site/package.json`.
+
+## Ejemplos
+
+Flujo recomendado para estudiantes:
+
+```bash
+cd examples/aarch64/00-hello-minimo/src
+make
+make run
+make gdb
+```
+
+Para Raspberry Pi ARM64 real, copia una plantilla de `tooling/make/` como
+`src/Makefile` y usa el mismo flujo: `make`, `make run`, `make gdb`.
+
+## Publicación
+
+```bash
+make publish
+```
+
+`make publish` conserva el flujo de GitHub Pages con Quarto y publica el sitio
+generado sin prefijo `/site`.

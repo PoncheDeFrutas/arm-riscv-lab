@@ -1,0 +1,204 @@
+---
+title: "04 · GNU Assembly, directivas y pseudo-instrucciones"
+subtitle: "Lee archivos .s separando sintaxis del assembler, directivas, símbolos, datos, pseudo-instrucciones e instrucciones A64 reales."
+description: "Página principal de la Unidad 04 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > GNU Assembly, directivas y pseudo-instrucciones
+:::
+
+::: {.hero-lab}
+Esta unidad enseña a leer un archivo `.s` sin mezclar capas. No todo lo que
+aparece en assembly llega al procesador como instrucción A64. Algunas líneas son
+directivas para el assembler, otras nombran direcciones, otras declaran bytes y
+otras son atajos que el assembler resuelve.
+:::
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Archivo**
+Forma mínima de un `.s`: comentarios, etiquetas y punto de entrada.
+:::
+
+::: {.lab-step}
+**2. Secciones**
+`.text`, `.data`, `.rodata` y `.bss`.
+:::
+
+::: {.lab-step}
+**3. Directivas**
+Instrucciones para el assembler, no para el CPU.
+:::
+
+::: {.lab-step}
+**4. Datos**
+Bytes, words, strings y espacio reservado.
+:::
+
+::: {.lab-step}
+**5. Atajos**
+Pseudo-instrucciones, literales y direcciones.
+:::
+:::
+
+## Qué debes distinguir
+
+| Línea | Tipo | Quién la usa |
+|---|---|---|
+| `.text` | Directiva | Assembler |
+| `_start:` | Etiqueta / símbolo | Assembler, linker, depurador |
+| `mov x0, #0` | Instrucción A64 | CPU |
+| `.word 10` | Directiva de datos | Assembler |
+| `ldr x0, =mensaje` | Pseudo-instrucción frecuente | Assembler la resuelve |
+
+::: {.callout-note title="Idea clave"}
+El CPU ejecuta instrucciones. El assembler procesa directivas, etiquetas,
+símbolos y pseudo-instrucciones para producir código y datos.
+:::
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Estructura de archivo `.s`
+
+Comentarios, etiquetas, símbolos, `_start` y forma mínima del archivo.
+
+[Abrir](01-estructura-archivo-s.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Secciones
+
+`.text`, `.data`, `.rodata`, `.bss` y propósito de cada área.
+
+[Abrir](02-secciones.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Directivas básicas
+
+`.global`, `.type`, `.size`, `.align`, `.balign`, `.equ` y `.set`.
+
+[Abrir](03-directivas-basicas.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Definición de datos
+
+`.byte`, `.hword`, `.word`, `.quad`, `.ascii`, `.asciz`, `.skip`, `.space`.
+
+[Abrir](04-definicion-datos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Pseudo-instrucciones y direcciones
+
+`ldr =symbol`, `adr`, `adrp + add`, literales, literal pools y relocations.
+
+[Abrir](05-pseudo-instrucciones-direcciones.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Include y macros
+
+`.include`, `.macro`, parámetros y uso mínimo para no repetir código.
+
+[Abrir](06-include-macros.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lectura de archivo completo
+
+Clasificar un `.s` línea por línea.
+
+[Abrir](07-lectura-archivo-completo.qmd){.resource-action}
+:::
+:::
+
+## Modelo mental de la unidad
+
+La @fig-gnu-assembly-model separa qué partes entiende el assembler y qué parte
+termina como instrucciones ejecutadas por la CPU.
+
+```{dot}
+//| label: fig-gnu-assembly-model
+//| fig-cap: "Modelo de lectura de un archivo GNU Assembly AArch64."
+digraph G {
+  rankdir=LR;
+  node [shape=box];
+
+  source [label="archivo .s"];
+  directives [label="directivas"];
+  labels [label="etiquetas"];
+  data [label="datos"];
+  pseudo [label="pseudo-instrucciones"];
+  inst [label="instrucciones A64"];
+  assembler [label="GNU assembler"];
+  cpu [label="CPU"];
+
+  source -> directives;
+  source -> labels;
+  source -> data;
+  source -> pseudo;
+  source -> inst;
+  directives -> assembler;
+  labels -> assembler;
+  data -> assembler;
+  pseudo -> assembler;
+  inst -> assembler;
+  assembler -> cpu [label="código máquina"];
+}
+```
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| ELF completo | Primero hay que reconocer secciones y símbolos |
+| Linker scripts | Todavía no controlaremos layout completo |
+| Relocations binarias | Solo veremos idea conceptual |
+| ABI/AAPCS64 | Esta unidad trata sintaxis y assembler |
+| GOT/PLT, PIC/PIE | Requieren linker y loading más avanzados |
+| Macros avanzadas | Queremos claridad, no metaprogramación |
+
+## Preparación para presentación
+
+La página Quarto es la fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/gnu-assembly/overview/slides.md
+```
+
+Esa presentación debe servir como repaso visual, no reemplazar estas lecciones.
+
+## Para investigar más
+
+| Fuente | Qué buscar |
+|---|---|
+| Larry D. Pyeatt, *ARM 64-Bit Assembly Language* | Sintaxis GNU Assembly, estructura de programas y directivas |
+| Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide* | Qué sí pertenece a A64: registros e instrucciones reales |
+| William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques* | Etiquetas, módulos y reglas de assembler como apoyo conceptual |
+| Stephen Smith, *Raspberry Pi Assembly Language Programming* | Ejemplos prácticos con GNU assembler en entorno ARM |
+| `man as` | Opciones y comportamiento del GNU assembler |
+| `info as` | Directivas y sintaxis GAS con más detalle |
+
+## Checklist de cierre
+
+- [ ] Puedo distinguir directiva de instrucción A64.
+- [ ] Puedo reconocer etiquetas y símbolos.
+- [ ] Puedo explicar `.text`, `.data`, `.rodata` y `.bss`.
+- [ ] Puedo usar `.global`, `.type` y `.size` como mapa inicial.
+- [ ] Puedo declarar datos con `.byte`, `.word`, `.quad`, `.ascii` y `.asciz`.
+- [ ] Puedo reservar espacio con `.skip` o `.space`.
+- [ ] Puedo explicar por qué `ldr x0, =symbol` no siempre es una instrucción real única.
+- [ ] Puedo leer un archivo `.s` completo y clasificar sus líneas.
+
+## Siguiente paso
+
+Empieza por [Estructura de archivo `.s`](01-estructura-archivo-s.qmd). Si ya
+entiendes etiquetas y comentarios, avanza a [Secciones](02-secciones.qmd).

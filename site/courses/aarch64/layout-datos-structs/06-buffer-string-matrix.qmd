@@ -1,0 +1,453 @@
+---
+title: "14.6 · Buffer, String y Matrix"
+subtitle: "Tres diseños concretos con layout, invariantes y operaciones mínimas."
+description: "Diseño manual de Buffer, String y Matrix en GNU Assembly AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > Buffer, String y Matrix
+:::
+
+::: {.hero-lab}
+Esta página convierte la idea de descriptor en diseños concretos. No basta una
+tabla de offsets: cada estructura necesita reglas y operaciones seguras.
+:::
+
+## Buffer
+
+Layout:
+
+```asm
+.equ BUF_DATA, 0
+.equ BUF_LEN,  8
+.equ BUF_CAP,  16
+.equ BUF_SIZE, 24
+```
+
+Diagrama:
+
+```bash
+Buffer descriptor
+  data -> bloque de bytes
+  len  -> bytes usados
+  cap  -> capacidad
+```
+
+Invariantes:
+
+```bash
+0 <= len <= cap
+data válido si cap > 0
+push solo si len < cap
+```
+
+## Estado de un Buffer
+
+Piensa en dos lugares:
+
+```bash
+descriptor
+  data -> storage
+  len  -> 2
+  cap  -> 8
+
+storage
+  byte 0 usado
+  byte 1 usado
+  byte 2 libre
+  ...
+  byte 7 libre
+```
+
+`len` no mide cuánto storage existe. Mide cuánto storage contiene datos válidos.
+`cap` no mide cuánto se escribió. Mide límite.
+
+Operaciones mínimas:
+
+| Operación | Qué hace |
+|---|---|
+| `buffer_init` | inicializa `data`, `len`, `cap` |
+| `buffer_clear` | pone `len = 0` |
+| `buffer_push_byte` | agrega byte si hay espacio |
+
+## String dinámico
+
+String dinámico puede usar el mismo patrón, pero con semántica de texto.
+
+```asm
+.equ STR_DATA, 0
+.equ STR_LEN,  8
+.equ STR_CAP,  16
+.equ STR_SIZE, 24
+```
+
+| Campo | Significado |
+|---|---|
+| `data` | bytes del string |
+| `len` | bytes válidos |
+| `cap` | espacio reservado |
+
+Regla importante: `len` manda. No dependas de terminador cero si tu descriptor ya
+guarda longitud.
+
+```bash
+data: H o l a basura basura
+len:  4
+cap:  8
+```
+
+En unidades futuras se puede decidir si también se mantiene byte `0` final para
+interoperar con C. Aquí basta entender longitud explícita.
+
+## String: length explícito vs terminador cero
+
+Hay dos modelos comunes:
+
+| Modelo | Cómo sabe dónde termina |
+|---|---|
+| C string | busca byte `0` |
+| string con descriptor | usa `len` |
+
+Esta unidad usa descriptor con `len` porque muestra mejor layout manual. Puede
+existir basura después de `len` y no formar parte del string.
+
+```bash
+data:  H o l a ? ? ? ?
+len:   4
+cap:   8
+```
+
+Los signos `?` son bytes sin significado actual para el string. No los imprimas
+ni compares como texto válido.
+
+## Programa completo: String dinámico
+
+Este programa escribe `Hola`, agrega `!` si hay capacidad y vuelve a escribir.
+
+Guarda como `string-dinamico.s`.
+
+```asm
+.equ STR_DATA, 0
+.equ STR_LEN,  8
+.equ STR_CAP,  16
+.equ STR_SIZE, 24
+
+.data
+string_desc:
+    .quad string_storage
+    .quad 4
+    .quad 16
+
+string_storage:
+    .ascii "Hola"
+    .skip 12
+
+newline:
+    .ascii "\n"
+
+.text
+.global _start
+_start:
+    ldr x0, =string_desc
+    bl string_write_stdout
+    cmp x0, #0
+    b.ne error
+
+    ldr x0, =string_desc
+    mov w1, #'!'
+    bl string_push_byte
+    cmp x0, #0
+    b.ne error
+
+    ldr x0, =string_desc
+    bl string_write_stdout
+    cmp x0, #0
+    b.ne error
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+string_push_byte:
+    ldr x2, [x0, #STR_DATA]
+    ldr x3, [x0, #STR_LEN]
+    ldr x4, [x0, #STR_CAP]
+
+    cmp x3, x4
+    b.hs string_full
+
+    strb w1, [x2, x3]
+    add x3, x3, #1
+    str x3, [x0, #STR_LEN]
+
+    mov x0, #0
+    ret
+
+string_full:
+    mov x0, #-1
+    ret
+
+string_write_stdout:
+    mov x5, x0
+
+    mov x0, #1
+    ldr x1, [x5, #STR_DATA]
+    ldr x2, [x5, #STR_LEN]
+    mov x8, #64
+    svc #0
+    cmp x0, #0
+    b.lt string_write_error
+
+    mov x0, #1
+    ldr x1, =newline
+    mov x2, #1
+    mov x8, #64
+    svc #0
+    cmp x0, #0
+    b.lt string_write_error
+
+    mov x0, #0
+    ret
+
+string_write_error:
+    mov x0, #-1
+    ret
+```
+
+Construir:
+
+```bash
+$ aarch64-linux-gnu-as string-dinamico.s -o string-dinamico.o
+$ aarch64-linux-gnu-ld string-dinamico.o -o string-dinamico
+$ qemu-aarch64 ./string-dinamico
+Hola
+Hola!
+$ echo $?
+0
+```
+
+Ruta práctica:
+
+```bash
+$ cd examples/aarch64/14-layout-datos-structs/02-string-dinamico/src
+$ make
+$ make run
+Hola
+Hola!
+```
+
+## Matrix
+
+Matriz necesita dimensiones y puntero a datos.
+
+```asm
+.equ MAT_DATA, 0
+.equ MAT_ROWS, 8
+.equ MAT_COLS, 16
+.equ MAT_SIZE, 24
+```
+
+Layout:
+
+```bash
+Matrix
+  data -> elementos contiguos
+  rows -> cantidad de filas
+  cols -> cantidad de columnas
+```
+
+Para row-major:
+
+```bash
+índice = row * cols + col
+offset = índice * tamaño_elemento
+```
+
+Si elementos son `.quad`, tamaño es 8:
+
+```asm
+// x0 = Matrix*
+// x1 = row
+// x2 = col
+ldr x3, [x0, #MAT_DATA]
+ldr x4, [x0, #MAT_COLS]
+mul x5, x1, x4
+add x5, x5, x2
+lsl x5, x5, #3
+ldr x6, [x3, x5]
+```
+
+Lectura paso a paso:
+
+| Instrucción | Papel |
+|---|---|
+| `ldr x3, [x0, #MAT_DATA]` | obtiene base de elementos |
+| `ldr x4, [x0, #MAT_COLS]` | obtiene cantidad de columnas |
+| `mul x5, x1, x4` | calcula filas completas anteriores |
+| `add x5, x5, x2` | suma columna |
+| `lsl x5, x5, #3` | convierte índice a bytes |
+| `ldr x6, [x3, x5]` | lee elemento |
+
+La matriz no guarda arrays anidados. Guarda un bloque lineal. `rows` y `cols`
+dicen cómo interpretar ese bloque.
+
+## Validación de límites
+
+Antes de acceder matriz:
+
+```bash
+row < rows
+col < cols
+```
+
+Patrón:
+
+```asm
+ldr x7, [x0, #MAT_ROWS]
+cmp x1, x7
+b.hs matrix_oob
+
+ldr x7, [x0, #MAT_COLS]
+cmp x2, x7
+b.hs matrix_oob
+```
+
+`b.hs` sirve para comparación unsigned. Índices y tamaños no deben ser
+negativos en este modelo.
+
+## Cómo elegir entre estos diseños
+
+| Necesitas... | Diseño |
+|---|---|
+| bytes crudos con crecimiento | `Buffer` |
+| texto con longitud | `String` |
+| datos 2D contiguos | `Matrix` |
+
+Los tres diseños enseñan la misma práctica: descriptor pequeño con puntero a
+datos reales. Cambia la interpretación, no la técnica base.
+
+## Programa completo: Matrix
+
+Este programa lee `matrix[1][2]` en una matriz 2x3, compara el valor con `6` y
+sale con `0` si el acceso fue correcto.
+
+Guarda como `matrix.s`.
+
+```asm
+.equ MAT_DATA, 0
+.equ MAT_ROWS, 8
+.equ MAT_COLS, 16
+.equ MAT_SIZE, 24
+
+.data
+matrix_desc:
+    .quad matrix_data
+    .quad 2
+    .quad 3
+
+matrix_data:
+    .quad 1, 2, 3
+    .quad 4, 5, 6
+
+.text
+.global _start
+_start:
+    ldr x0, =matrix_desc
+    mov x1, #1
+    mov x2, #2
+    bl matrix_get_u64
+
+    cmp x0, #0
+    b.lt error
+
+    cmp x0, #6
+    b.ne error
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+matrix_get_u64:
+    ldr x3, [x0, #MAT_ROWS]
+    cmp x1, x3
+    b.hs matrix_oob
+
+    ldr x4, [x0, #MAT_COLS]
+    cmp x2, x4
+    b.hs matrix_oob
+
+    ldr x5, [x0, #MAT_DATA]
+    mul x6, x1, x4
+    add x6, x6, x2
+    lsl x6, x6, #3
+    ldr x0, [x5, x6]
+    ret
+
+matrix_oob:
+    mov x0, #-1
+    ret
+```
+
+Construir:
+
+```bash
+$ aarch64-linux-gnu-as matrix.s -o matrix.o
+$ aarch64-linux-gnu-ld matrix.o -o matrix
+$ qemu-aarch64 ./matrix
+$ echo $?
+0
+```
+
+Ruta práctica:
+
+```bash
+$ cd examples/aarch64/14-layout-datos-structs/03-matrix/src
+$ make
+$ make run
+$ echo $?
+0
+```
+
+## Comparación rápida
+
+| Diseño | Campos clave | Invariante central |
+|---|---|---|
+| Buffer | `data`, `len`, `cap` | `len <= cap` |
+| String | `data`, `len`, `cap` | bytes válidos son `len` |
+| Matrix | `data`, `rows`, `cols` | índice dentro de rango |
+
+Los tres tienen algo en común: descriptor pequeño + bloque de datos separado.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| string sin `len` confiable | no sabes dónde termina |
+| buffer sin revisar capacidad | overflow |
+| matriz sin validar índices | acceso fuera de rango |
+| confundir `rows` con `cols` | offset incorrecto |
+| olvidar multiplicar por tamaño de elemento | lees dirección equivocada |
+| tratar descriptor como datos | corrompes metadata |
+
+## Mini ejercicios
+
+1. ¿Qué campo indica bytes usados en `Buffer`?
+2. ¿Por qué `String` puede no depender de terminador cero?
+3. ¿Cómo se calcula índice row-major?
+4. ¿Por qué `lsl #3` equivale a multiplicar por 8?
+5. ¿Qué comparación evita acceso fuera de matriz?
+
+## Cierre
+
+Buffer, String y Matrix muestran misma técnica en tres formas: descriptor,
+puntero a datos, tamaños, reglas y acceso con offsets.

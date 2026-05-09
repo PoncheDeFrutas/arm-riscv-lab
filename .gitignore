@@ -3,6 +3,12 @@ _site/
 node_modules/
 dist/
 .slidev/
+site/.quarto/
+site/node_modules/
+site/site_libs/
+site/**/*.html
+site/**/*.xml
+site/**/*.json
 
 build/
 **/build/

@@ -1,0 +1,353 @@
+---
+title: "14.8 · Lectura guiada de un Buffer ADT"
+subtitle: "Descriptor, operaciones, invariantes y código completo pequeño."
+description: "Lectura guiada de un Buffer manual en AArch64 con push_byte, clear y error por capacidad."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Layout de datos > Lectura guiada
+:::
+
+::: {.hero-lab}
+Esta lectura junta la unidad en un ADT pequeño. `Buffer` tiene descriptor,
+storage, operación para agregar byte, operación para limpiar y rutas de error.
+:::
+
+## Layout
+
+```asm
+.equ BUF_DATA, 0
+.equ BUF_LEN,  8
+.equ BUF_CAP,  16
+.equ BUF_SIZE, 24
+```
+
+Invariante:
+
+```bash
+0 <= len <= cap
+data apunta a storage
+```
+
+## Qué entidades existen
+
+Este programa tiene dos bloques distintos:
+
+| Nombre | Sección | Papel |
+|---|---|---|
+| `storage` | `.bss` | bytes reales disponibles |
+| `buffer_desc` | `.data` | descriptor que apunta a `storage` |
+
+No son lo mismo. `buffer_desc` no almacena los bytes `'A'` y `'B'`; almacena
+dirección, `len` y `cap`.
+
+```bash
+buffer_desc.data -> storage
+buffer_desc.len  -> bytes usados
+buffer_desc.cap  -> capacidad
+```
+
+## Programa completo
+
+Guarda como `buffer-adt.s`. También queda como práctica en
+`examples/aarch64/14-layout-datos-structs/01-buffer-adt/src/main.s`.
+
+```asm
+.equ BUF_DATA, 0
+.equ BUF_LEN,  8
+.equ BUF_CAP,  16
+.equ BUF_SIZE, 24
+
+.bss
+storage:
+    .skip 4
+
+.data
+buffer_desc:
+    .quad storage
+    .quad 0
+    .quad 4
+
+.text
+.global _start
+_start:
+    ldr x0, =buffer_desc
+    mov w1, #'A'
+    bl buffer_push_byte
+    cmp x0, #0
+    b.ne error
+
+    ldr x0, =buffer_desc
+    mov w1, #'B'
+    bl buffer_push_byte
+    cmp x0, #0
+    b.ne error
+
+    ldr x0, =buffer_desc
+    bl buffer_clear
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #1
+    mov x8, #93
+    svc #0
+
+// x0 = self, puntero a Buffer
+// w1 = byte a agregar
+buffer_push_byte:
+    ldr x2, [x0, #BUF_DATA]
+    ldr x3, [x0, #BUF_LEN]
+    ldr x4, [x0, #BUF_CAP]
+
+    cmp x3, x4
+    b.hs buffer_full
+
+    strb w1, [x2, x3]
+    add x3, x3, #1
+    str x3, [x0, #BUF_LEN]
+
+    mov x0, #0
+    ret
+
+buffer_full:
+    mov x0, #-1
+    ret
+
+// x0 = self, puntero a Buffer
+buffer_clear:
+    str xzr, [x0, #BUF_LEN]
+    ret
+```
+
+## Construir y ejecutar
+
+```bash
+$ aarch64-linux-gnu-as buffer-adt.s -o buffer-adt.o
+$ aarch64-linux-gnu-ld buffer-adt.o -o buffer-adt
+$ qemu-aarch64 ./buffer-adt
+$ echo $?
+0
+```
+
+Ruta práctica:
+
+```bash
+$ cd examples/aarch64/14-layout-datos-structs/01-buffer-adt/src
+$ make
+$ make run
+$ echo $?
+0
+```
+
+El programa no imprime. Código `0` significa que pudo agregar dos bytes y limpiar
+el descriptor.
+
+## Lectura del descriptor
+
+```asm
+buffer_desc:
+    .quad storage
+    .quad 0
+    .quad 4
+```
+
+Estado inicial:
+
+| Campo | Valor |
+|---|---|
+| `data` | dirección de `storage` |
+| `len` | `0` |
+| `cap` | `4` |
+
+El storage tiene 4 bytes. El descriptor sabe cuántos están usados.
+
+Memoria inicial:
+
+```bash
+buffer_desc:
+  data = &storage
+  len  = 0
+  cap  = 4
+
+storage:
+  ? ? ? ?
+```
+
+`?` significa “no hay dato válido para el ADT”. Puede haber ceros por `.bss`,
+pero para el diseño del buffer lo importante es `len = 0`.
+
+## Primera llamada a `buffer_push_byte`
+
+Entrada:
+
+```bash
+x0 = &buffer_desc
+w1 = 'A'
+len = 0
+cap = 4
+```
+
+Como `0 < 4`, se escribe:
+
+```bash
+storage[0] = 'A'
+len = 1
+```
+
+Retorno:
+
+```bash
+x0 = 0
+```
+
+Estado después:
+
+```bash
+buffer_desc:
+  data = &storage
+  len  = 1
+  cap  = 4
+
+storage:
+  A ? ? ?
+```
+
+## Segunda llamada
+
+Entrada:
+
+```bash
+w1 = 'B'
+len = 1
+cap = 4
+```
+
+Resultado:
+
+```bash
+storage[1] = 'B'
+len = 2
+```
+
+La invariante sigue viva: `2 <= 4`.
+
+Estado:
+
+```bash
+buffer_desc:
+  data = &storage
+  len  = 2
+  cap  = 4
+
+storage:
+  A B ? ?
+```
+
+## `buffer_clear`
+
+```asm
+str xzr, [x0, #BUF_LEN]
+```
+
+Esto no borra `storage`. Solo dice que ya no hay bytes usados. Después:
+
+```bash
+len = 0
+cap = 4
+data = storage
+```
+
+Storage puede seguir conteniendo bytes viejos:
+
+```bash
+storage:
+  A B ? ?
+
+len = 0
+```
+
+Para el ADT, esos bytes ya no forman parte del contenido válido. Esta distinción
+es clave para strings, buffers y arenas.
+
+## Error por capacidad
+
+Si intentas agregar quinto byte:
+
+```bash
+len = 4
+cap = 4
+cmp len, cap
+b.hs buffer_full
+```
+
+La función retorna `-1` y no escribe fuera de storage.
+
+## Estado de registros dentro de `push_byte`
+
+| Registro | Significado dentro de función |
+|---|---|
+| `x0` | `self`, puntero a descriptor al entrar; retorno al salir |
+| `w1` | byte a agregar |
+| `x2` | puntero `data` |
+| `x3` | `len` |
+| `x4` | `cap` |
+
+Cuando la función retorna, `x0` ya no es `self`: es código de resultado. Por eso
+el llamador vuelve a cargar `buffer_desc` antes de cada llamada.
+
+## Por qué el llamador recarga `x0`
+
+Después de:
+
+```asm
+bl buffer_push_byte
+```
+
+`x0` contiene `0` o `-1`. Ya no contiene puntero al descriptor. Por eso:
+
+```asm
+ldr x0, =buffer_desc
+```
+
+aparece antes de la siguiente llamada. Esta es misma regla de syscalls y
+funciones: `x0` sirve para argumento y retorno.
+
+## Qué revisar en GDB
+
+Puntos útiles:
+
+```bash
+(gdb) break buffer_push_byte
+(gdb) info registers x0 x2 x3 x4
+(gdb) x/3gx &buffer_desc
+(gdb) x/4bx &storage
+```
+
+No es obligatorio para completar la unidad, pero ayuda a ver descriptor y bytes
+separados.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| pasar `storage` en vez de `buffer_desc` como `self` | offsets leen bytes equivocados |
+| no revisar retorno de `push_byte` | error ignorado |
+| borrar storage creyendo que eso limpia descriptor | `len` sigue viejo |
+| cambiar `cap` sin cambiar storage | invariante falsa |
+| usar `str x1` para byte | pisa más de un byte |
+
+## Mini ejercicios
+
+1. ¿Qué contiene `BUF_DATA`?
+2. ¿Por qué `buffer_push_byte` usa `strb`?
+3. ¿Por qué `buffer_clear` solo modifica `len`?
+4. ¿Qué pasa cuando `len == cap`?
+5. ¿Qué diferencia hay entre `buffer_desc` y `storage`?
+
+## Cierre
+
+Este `Buffer` es pequeño, pero contiene toda la idea de la unidad: layout,
+offsets, descriptor, función con `self`, invariante y manejo de error.
