@@ -1,0 +1,190 @@
+---
+title: "17.3 · Lectura de memoria"
+description: "Inspeccionar .data, .bss, strings, heap y mmap con GDB."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > Lectura de memoria
+:::
+
+::: {.hero-lab}
+Leer memoria con GDB exige separar dos ideas: dirección y contenido. Un registro
+puede guardar una dirección; `x/x` te deja mirar qué bytes viven en esa
+dirección.
+:::
+
+## Qué problema resuelve
+
+Muchos bugs de bajo nivel no están en una instrucción aislada. Están en una
+dirección equivocada, un buffer no inicializado, un string sin byte cero, una
+región `mmap` usada después de `munmap` o una escritura que cayó donde no debía.
+
+GDB permite inspeccionar memoria con el comando `x`:
+
+```bash
+(gdb) x/x dirección
+(gdb) x/8xb dirección
+(gdb) x/gx dirección
+(gdb) x/s dirección
+```
+
+La forma general es:
+
+```bash
+x/cantidad formato tamaño dirección
+```
+
+No necesitas memorizar todas las combinaciones. Para esta unidad basta:
+
+| Comando | Lectura |
+|---|---|
+| `x/x dirección` | hexadecimal básico |
+| `x/8xb dirección` | 8 bytes, hex, byte por byte |
+| `x/gx dirección` | una palabra de 8 bytes en hex |
+| `x/s dirección` | string terminado en cero |
+
+## Datos de ejemplo
+
+```asm
+.rodata
+mensaje:
+    .asciz "Hola GDB"
+
+.data
+valor:
+    .quad 0x1122334455667788
+
+.bss
+buffer:
+    .skip 64
+```
+
+`.rodata` contiene bytes de solo lectura, `.data` contiene datos inicializados
+modificables y `.bss` reserva espacio que aparece inicializado en cero al cargar
+el proceso.
+
+## Inspeccionar string
+
+```bash
+(gdb) x/s &mensaje
+```
+
+Salida típica:
+
+```bash
+0x4100b0 <mensaje>: "Hola GDB"
+```
+
+`x/s` interpreta bytes como caracteres hasta encontrar `\0`. Si usas `x/s` sobre
+memoria que no contiene un string terminado en cero, GDB seguirá leyendo bytes y
+la salida puede ser basura o demasiado larga.
+
+## Inspeccionar `.data`
+
+```bash
+(gdb) x/xg &valor
+(gdb) x/8xb &valor
+```
+
+El primer comando lee una palabra de 8 bytes. El segundo muestra esos mismos
+bytes uno por uno.
+
+En una máquina little-endian puedes ver los bytes de `0x1122334455667788` en
+orden inverso en memoria:
+
+```bash
+0x4100c0 <valor>: 0x88 0x77 0x66 0x55 0x44 0x33 0x22 0x11
+```
+
+Esto conecta con la Unidad 02: el número tiene una representación lógica, pero
+los bytes se guardan en memoria con un orden.
+
+## Inspeccionar `.bss`
+
+```bash
+(gdb) x/16xb &buffer
+```
+
+Salida esperada al inicio:
+
+```bash
+0x4100d0 <buffer>: 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+```
+
+`.bss` no ocupa todos esos bytes como datos explícitos dentro del archivo ELF.
+El loader crea memoria inicializada en cero para esa región. Por eso `.bss` se
+entiende mejor como reserva de memoria inicializada al cargar, no como una lista
+de bytes escritos en el archivo.
+
+## Dirección vs contenido
+
+Si `x0` contiene la dirección de `buffer`, hay dos preguntas distintas:
+
+```bash
+(gdb) info registers x0
+(gdb) x/16xb $x0
+```
+
+La primera pregunta es “¿qué valor numérico tiene `x0`?”. La segunda es “¿qué
+bytes viven en la dirección guardada por `x0`?”.
+
+Confundir estas dos preguntas causa diagnósticos falsos. Un puntero puede tener
+un valor razonable y aun así apuntar a memoria con contenido inesperado.
+
+## Heap y mmap
+
+En ejemplos con `malloc` o `mmap`, el puntero de retorno suele llegar en `x0`.
+Después de una llamada exitosa, puedes mirar:
+
+```bash
+(gdb) info registers x0
+(gdb) x/32xb $x0
+```
+
+Para `mmap`, recuerda la regla de Linux AArch64: retorno en `x0`. Si `x0` trae
+un valor negativo interpretado como error, no lo trates como dirección válida.
+Primero verifica éxito.
+
+```bash
+(gdb) p/x $x0
+```
+
+En `mmap`, una región válida se puede inspeccionar. Después de `munmap`, esa
+dirección deja de estar disponible; leerla puede fallar o producir una señal.
+
+## Mapa visual
+
+```{mermaid}
+%%| label: fig-memory-debug-map
+%%| fig-cap: "Regiones típicas que GDB puede inspeccionar en un proceso."
+flowchart TB
+  ro[".rodata\nstrings constantes"]
+  data[".data\ndatos inicializados"]
+  bss[".bss\nreserva en cero"]
+  heap["heap\nbloques dinámicos"]
+  mmap["mmap\nregiones mapeadas"]
+  stack["stack\nframes y temporales"]
+```
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| confundir dirección con contenido | `info registers x0` no es igual a `x/.. $x0` |
+| usar `x/s` sobre bytes sin `\0` | usar `x/xb` primero si no sabes si hay string |
+| esperar que `.bss` esté completo en el archivo | `.bss` se materializa en memoria |
+| leer puntero de `mmap` sin verificar error | revisar `x0` después de la syscall |
+| usar tamaño equivocado | elegir byte, word o giant word según dato |
+
+## Checklist
+
+- [ ] Puedo leer un string con `x/s`.
+- [ ] Puedo leer bytes con `x/8xb`.
+- [ ] Puedo leer una palabra de 64 bits con `x/gx`.
+- [ ] Puedo explicar dirección vs contenido.
+- [ ] Puedo inspeccionar `.data` y `.bss`.
+- [ ] Puedo explicar cómo leer una dirección retornada por `mmap`.
+
+## Siguiente paso
+
+Abre [Stack frames en GDB](04-stack-frames-gdb.qmd).

@@ -1,0 +1,148 @@
+---
+title: "16.2 · ELF header y entry point"
+description: "Lectura inicial de readelf -h, tipo de archivo, arquitectura y punto de entrada."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > Header y entry point
+:::
+
+::: {.hero-lab}
+El ELF header es la tarjeta de identidad del archivo. Antes de mirar secciones,
+símbolos o instrucciones, debes saber qué clase de objeto tienes enfrente.
+:::
+
+## Qué pregunta responde `readelf -h`
+
+```bash
+$ aarch64-linux-gnu-readelf -h min
+```
+
+Esta salida responde:
+
+- ¿es ELF?
+- ¿es 64-bit?
+- ¿es AArch64?
+- ¿es relocatable, executable, shared object o PIE?
+- ¿dónde empieza la ejecución?
+- ¿hay section headers y program headers?
+
+Esto convierte `readelf -h` en la primera lectura razonable de cualquier ELF.
+Antes de desensamblar o buscar símbolos, confirma que estás mirando el archivo
+correcto. Si esperabas AArch64 y aparece otra arquitectura, todo análisis
+posterior queda contaminado. Si esperabas ejecutable y aparece relocatable,
+todavía estás frente a una pieza intermedia.
+
+## Campos que sí importan al inicio
+
+No vamos a estudiar cada campo. Para esta unidad, enfócate en:
+
+| Campo | Pregunta |
+|---|---|
+| `Class` | ¿ELF32 o ELF64? |
+| `Data` | ¿endianness? |
+| `Type` | ¿objeto, ejecutable o shared object? |
+| `Machine` | ¿arquitectura esperada? |
+| `Entry point address` | ¿dónde empieza el ejecutable? |
+| `Start of program headers` | ¿hay mapa para cargar? |
+| `Start of section headers` | ¿hay mapa para herramientas/linker? |
+
+Salida esperada resumida:
+
+```bash
+Class:                             ELF64
+Data:                              2's complement, little endian
+Type:                              EXEC (Executable file)
+Machine:                           AArch64
+Entry point address:               0x400078
+```
+
+Tu dirección puede cambiar. No copies el número como verdad universal. Lo
+importante es que existe un entry point.
+
+El entry point es una dirección dentro de la imagen cargada, no una línea de
+código fuente. Puede coincidir con `_start` en ejemplos sin runtime, pero en un
+programa C normal suele apuntar a código de arranque que prepara el entorno
+antes de llamar a `main`. Esta diferencia evita una confusión frecuente: `main`
+es importante para C, pero el loader no busca “la función main” por nombre.
+
+## Entry point no es siempre `main`
+
+En un programa sin `libc`, tú exportas `_start`:
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+El linker puede usar `_start` como punto inicial. En un programa C normal,
+`main` no suele ser la primera instrucción del proceso. Antes hay runtime de C,
+inicialización y llamada posterior a `main`.
+
+::: {.callout-note title="Idea clave"}
+`main` es punto de entrada para el programador C. El ELF entry point es punto de
+entrada para loader/kernel.
+:::
+
+## Comparar `.o` y ejecutable
+
+```bash
+$ aarch64-linux-gnu-readelf -h min.o
+$ aarch64-linux-gnu-readelf -h min
+```
+
+Tabla de lectura:
+
+| Archivo | `Type` esperado | Entry point |
+|---|---|---|
+| `min.o` | relocatable | no útil para ejecución |
+| `min` | executable | dirección inicial real |
+
+El `.o` puede contener una etiqueta `_start`, pero todavía no significa que ya
+pueda ejecutarse como proceso Linux.
+
+Un objeto relocatable puede tener muchos símbolos útiles, incluso símbolos con
+nombres que suenan definitivos. Pero el tipo del ELF indica su contrato. Si el
+tipo dice relocatable, el archivo está diseñado para el linker. Si el tipo dice
+executable o shared object, ya pertenece al mundo del loader y la ejecución.
+
+## Qué usa esta información
+
+| Actor | Qué mira |
+|---|---|
+| herramientas | header para identificar formato |
+| linker | tipo de objeto y arquitectura |
+| loader/kernel | entry point y program headers |
+| depurador | direcciones y símbolos si existen |
+
+El header no contiene “todo el programa”. Contiene metadatos para interpretar el
+resto del archivo.
+
+La analogía correcta no es “el header es el programa”, sino “el header es la
+portada técnica”. Te dice cómo leer lo que sigue: arquitectura, tipo, offsets de
+tablas, tamaños de entradas y dirección de entrada. Las instrucciones reales
+están en otra parte; los segmentos y secciones se describen mediante tablas
+separadas.
+
+## Error común
+
+Ver `Entry point address` y asumir que es dirección fija en todos los sistemas.
+Con PIE y ASLR, la dirección efectiva de carga puede cambiar. Esta unidad lo
+prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo.
+
+## Checklist
+
+- [ ] Puedo usar `readelf -h`.
+- [ ] Puedo ubicar `Type`, `Machine` y `Entry point address`.
+- [ ] Puedo explicar por qué `min.o` no tiene entry point ejecutable útil.
+- [ ] Puedo distinguir ELF entry point de `main`.
+- [ ] Puedo explicar por qué direcciones pueden variar.
+
+## Siguiente paso
+
+Abre [Secciones, símbolos y relocations](03-secciones-simbolos-relocations.qmd).

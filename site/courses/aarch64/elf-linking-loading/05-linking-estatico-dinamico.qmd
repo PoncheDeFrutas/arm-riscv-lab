@@ -1,0 +1,168 @@
+---
+title: "16.5 · Linking estático, dinámico y dynamic loader"
+description: "Diferencia entre static linking, dynamic linking, libc, ldd y readelf -d."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > Linking estático y dinámico
+:::
+
+::: {.hero-lab}
+Cuando llamas `printf`, tu programa ya no vive solo. Depende de `libc`, del
+runtime de C y, normalmente, del dynamic loader. Esta lección separa qué queda
+fijo al linkear y qué se resuelve al cargar.
+:::
+
+## Dos modelos
+
+| Modelo | Idea | Consecuencia |
+|---|---|---|
+| static linking | copiar más código necesario dentro del ejecutable | binario más autosuficiente |
+| dynamic linking | registrar dependencias a shared libraries | loader debe encontrarlas al ejecutar |
+
+No memorices “estático rápido, dinámico lento”. Esa frase es pobre. La decisión
+real mezcla tamaño, actualizaciones, memoria compartida, despliegue y seguridad.
+
+En linking estático, el ejecutable queda más cerrado: muchas piezas necesarias
+se copian dentro del propio archivo. En linking dinámico, el ejecutable queda
+con referencias a librerías externas que el sistema debe encontrar al cargar.
+Ambos modelos son válidos. La pregunta técnica no es cuál “gana”, sino qué
+dependencias quedan dentro del archivo y cuáles quedan para el entorno de
+ejecución.
+
+## Ejemplo con `printf`
+
+Archivo `hello.c`:
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    printf("Hola ELF\n");
+    return 0;
+}
+```
+
+Compilar:
+
+```bash
+$ aarch64-linux-gnu-gcc hello.c -o hello_dyn
+$ aarch64-linux-gnu-readelf -l hello_dyn
+$ aarch64-linux-gnu-readelf -d hello_dyn
+```
+
+Usamos `gcc`, no `ld` directo, porque `gcc` agrega runtime, rutas, startup files
+y librerías necesarias para C. Eso ya apareció en Unidad 15.
+
+Esta regla evita un error muy común: intentar enlazar programas con `printf`
+usando `ld` como si fueran programas `_start` sin runtime. `printf` vive en
+`libc`, `main` necesita arranque de C y el ejecutable dinámico necesita
+metadatos extra. `gcc` actúa como driver: invoca linker con las piezas correctas
+para ese caso.
+
+## Dynamic section
+
+```bash
+$ aarch64-linux-gnu-readelf -d hello_dyn
+```
+
+Busca entradas como:
+
+```bash
+NEEDED               Shared library: [libc.so.6]
+```
+
+Eso significa: el ejecutable no contiene toda `libc`; declara que necesita esa
+shared library.
+
+La dynamic section es una lista de compromisos para tiempo de carga. Incluye
+dependencias, tablas y datos que el dynamic loader necesita para terminar de
+preparar el proceso. No tienes que leer todo en esta unidad. Sí debes reconocer
+`NEEDED` como “este ejecutable necesita esta librería compartida”.
+
+## Program interpreter
+
+```bash
+$ aarch64-linux-gnu-readelf -l hello_dyn
+```
+
+Busca `INTERP`. Esa entrada indica el dynamic loader que debe preparar el
+programa. En AArch64 Linux suele apuntar a una ruta estilo:
+
+```bash
+/lib/ld-linux-aarch64.so.1
+```
+
+La ruta exacta depende del sistema y toolchain.
+
+## `ldd` y binarios cruzados
+
+```bash
+$ ldd hello_dyn
+```
+
+En host `x86_64`, `ldd` puede no funcionar directamente con binario AArch64
+cruzado. No inventes resultados. Alternativas:
+
+```bash
+$ aarch64-linux-gnu-readelf -d hello_dyn
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn
+```
+
+`ldd` es útil, pero no universal. Además, no se debe usar sobre ejecutables no
+confiables; puede involucrar el dynamic loader.
+
+## Qué hace el dynamic loader
+
+Modelo inicial:
+
+```{mermaid}
+%%| label: fig-dynamic-loader
+%%| fig-cap: "Papel del dynamic loader en un ejecutable enlazado dinámicamente."
+flowchart LR
+  exe["hello_dyn"] --> interp["INTERP"]
+  interp --> ldso["dynamic loader"]
+  exe --> needed["NEEDED libc.so.6"]
+  ldso --> libc["cargar libc"]
+  ldso --> relocs["aplicar relocations dinámicas"]
+  ldso --> run["saltar al entry/runtime"]
+```
+
+El dynamic loader encuentra shared libraries, prepara relocations dinámicas y
+deja el proceso listo para ejecutar.
+
+El kernel puede iniciar el proceso, pero si el ejecutable es dinámico delega
+parte del trabajo al dynamic loader indicado por `INTERP`. Ese loader localiza
+librerías, verifica que puede cargarlas, ajusta referencias y transfiere control
+cuando el entorno está listo. Por eso un binario dinámico puede fallar aunque el
+archivo principal exista: tal vez falta una librería o el loader esperado no
+está en la ruta correcta.
+
+## Static linking
+
+```bash
+$ aarch64-linux-gnu-gcc hello.c -static -o hello_static
+$ aarch64-linux-gnu-readelf -d hello_static
+```
+
+Un binario estático puede no tener dynamic section útil ni `NEEDED` para `libc`.
+Suele ser mucho más grande.
+
+El aumento de tamaño tiene sentido: si más código queda dentro del ejecutable,
+el archivo crece. A cambio, reduce dependencia de librerías externas compatibles
+en el sistema destino. En laboratorios cruzados esto puede simplificar algunas
+ejecuciones, pero también oculta el comportamiento real de dynamic loader que
+queremos estudiar en esta unidad.
+
+## Checklist
+
+- [ ] Puedo distinguir static linking y dynamic linking.
+- [ ] Puedo explicar por qué `gcc` simplifica linking con `libc`.
+- [ ] Puedo usar `readelf -d` para ver dependencias.
+- [ ] Puedo buscar `INTERP` con `readelf -l`.
+- [ ] Puedo explicar qué hace dynamic loader.
+- [ ] Puedo advertir que `ldd` puede fallar con binarios cruzados.
+
+## Siguiente paso
+
+Abre [GOT, PLT y PIE](06-got-plt-pie.qmd).

@@ -27,11 +27,11 @@ arquitectura.
 ## Estado actual
 
 ::: {.course-meter}
-**Unidades 0-15 disponibles**
+**Unidades 0-17 disponibles**
 
-La ruta ya contiene las unidades públicas desde contexto inicial hasta ABI,
-AAPCS64 e interoperabilidad con C. Las unidades posteriores siguen en roadmap y
-se enlazarán solo cuando existan como páginas reales.
+La ruta ya contiene las unidades públicas desde contexto inicial hasta ELF,
+linking, loading y debugging con GDB, QEMU y `strace`. Las unidades posteriores
+siguen en roadmap y se enlazarán solo cuando existan como páginas reales.
 :::
 
 ## Cómo se organiza
@@ -75,8 +75,8 @@ aritmética, lógica y syscalls.
 ::: {.roadmap-item .available}
 **Nivel 2 — Programador ARM64 competente, en curso**
 
-Funciones, stack, heap, `mmap`, structs y ABI ya están publicados. ELF,
-debugging avanzado, arrays, strings y algoritmos quedan como avance posterior.
+Funciones, stack, heap, `mmap`, structs, ABI, ELF y debugging ya están
+publicados. Arrays, strings y algoritmos quedan como avance posterior.
 :::
 
 ::: {.roadmap-item}
@@ -190,6 +190,8 @@ AArch64 antes de entrar en programas más grandes.
 - [13 · mmap, munmap, mprotect, páginas y permisos](mmap-paginas-permisos/index.qmd)
 - [14 · Layout de datos, structs, ADTs y objetos manuales](layout-datos-structs/index.qmd)
 - [15 · ABI, AAPCS64 e interoperabilidad con C](abi-aapcs64-c/index.qmd)
+- [16 · ELF, linking, loading y binarios](elf-linking-loading/index.qmd)
+- [17 · Debugging con GDB, QEMU, strace y lectura de memoria](debugging-gdb-qemu-strace/index.qmd)
 :::
 
 ## Siguiente paso

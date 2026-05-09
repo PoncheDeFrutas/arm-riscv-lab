@@ -1,0 +1,135 @@
+---
+title: "17.5 · QEMU y gdbserver"
+description: "Ejecutar AArch64 con qemu-aarch64 y conectar gdb-multiarch por puerto."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > QEMU y gdbserver
+:::
+
+::: {.hero-lab}
+Si tu host no es ARM64, QEMU ejecuta el binario AArch64. Para depurar, QEMU puede
+esperar una conexión de GDB. Esa separación explica por qué usamos dos
+terminales.
+:::
+
+## Qué problema resuelve
+
+Un binario AArch64 no puede ejecutarse directamente en un host `x86_64` sin
+emulación o soporte del sistema. `qemu-aarch64` ejecuta el programa. Con `-g`,
+QEMU abre un puerto y se queda esperando a GDB antes de avanzar.
+
+```bash
+$ qemu-aarch64 ./debug_min
+```
+
+Esto ejecuta el programa.
+
+```bash
+$ qemu-aarch64 -g 1234 ./debug_min
+```
+
+Esto espera a GDB en el puerto `1234`.
+
+## Flujo de dos terminales
+
+Terminal 1:
+
+```bash
+$ qemu-aarch64 -g 1234 ./debug_min
+```
+
+Terminal 2:
+
+```bash
+$ gdb-multiarch ./debug_min
+(gdb) target remote :1234
+(gdb) break _start
+(gdb) continue
+```
+
+La terminal 1 parece “congelada”, pero no está fallando. QEMU está esperando a
+GDB. Cuando GDB se conecta y el programa continúa, QEMU ejecuta instrucciones
+AArch64.
+
+## Quién hace qué
+
+| Componente | Rol |
+|---|---|
+| `qemu-aarch64` | ejecuta instrucciones AArch64 en el host |
+| `-g 1234` | activa servidor remoto de debugging |
+| `gdb-multiarch` | cliente GDB capaz de entender AArch64 |
+| `target remote :1234` | conecta GDB con QEMU |
+
+GDB no reemplaza a QEMU. GDB observa y controla. QEMU ejecuta.
+
+## Por qué no empezar con run
+
+En una sesión local nativa, puedes hacer:
+
+```bash
+$ gdb ./programa
+(gdb) break _start
+(gdb) run
+```
+
+En la sesión remota, QEMU ya inició el proceso y lo dejó detenido esperando. Por
+eso el flujo correcto es:
+
+```bash
+(gdb) target remote :1234
+(gdb) continue
+```
+
+Si usas `run` en el momento equivocado, mezclas dos modelos: “GDB crea el
+proceso” contra “QEMU ya creó el proceso y GDB se conecta”.
+
+## Con libc
+
+Para programas enlazados con `libc`, QEMU puede necesitar ruta de librerías:
+
+```bash
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn
+```
+
+Con debugging remoto:
+
+```bash
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu -g 1234 ./hello_dyn
+```
+
+Si faltan librerías, el problema no es GDB: el loader dinámico no puede resolver
+dependencias del binario AArch64.
+
+## Diagrama
+
+```{mermaid}
+%%| label: fig-qemu-gdbserver
+%%| fig-cap: "GDB se conecta a QEMU; QEMU ejecuta el binario AArch64."
+flowchart LR
+  gdb["gdb-multiarch\ncliente"] --> port["target remote :1234"]
+  port --> qemu["qemu-aarch64 -g 1234\nservidor remoto"]
+  qemu --> bin["programa AArch64"]
+```
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| olvidar `target remote :1234` | GDB no controla el programa |
+| pensar que QEMU colgado falló | con `-g`, QEMU espera a GDB |
+| usar `run` como si fuera sesión local | en remoto usar `continue` después de conectar |
+| depurar binario sin símbolos | usar `-g` para etiquetas y backtrace más claros |
+| olvidar `-L` con binarios dinámicos | dar ruta de librerías AArch64 |
+
+## Checklist
+
+- [ ] Puedo ejecutar un binario con `qemu-aarch64`.
+- [ ] Puedo dejar QEMU esperando con `-g`.
+- [ ] Puedo conectar `gdb-multiarch`.
+- [ ] Puedo explicar por qué hay dos terminales.
+- [ ] Puedo distinguir flujo local y flujo remoto.
+
+## Siguiente paso
+
+Abre [strace y syscalls](06-strace-syscalls.qmd).

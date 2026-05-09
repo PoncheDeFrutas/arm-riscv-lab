@@ -1,0 +1,135 @@
+---
+title: "17.7 · Core dumps"
+description: "Introducción al diagnóstico post-mortem con GDB."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > Core dumps
+:::
+
+::: {.hero-lab}
+Un core dump es una fotografía del proceso cuando falló. No reemplaza a depurar
+paso a paso, pero ayuda cuando el fallo ya ocurrió y necesitas leer registros,
+stack y backtrace después del accidente.
+:::
+
+## Qué problema resuelve
+
+Algunos errores no son cómodos de reproducir instrucción por instrucción. Un
+programa puede fallar por acceso inválido, retorno a dirección rota, stack
+corrupto o escritura fuera de región válida. Si el sistema guarda un core dump,
+GDB puede abrir ese estado.
+
+Flujo básico:
+
+```bash
+$ ulimit -c unlimited
+$ ./programa_que_falla
+$ gdb ./programa_que_falla core
+(gdb) bt
+(gdb) info registers
+```
+
+No todos los sistemas dejan un archivo llamado `core` en el directorio actual.
+La configuración puede usar `systemd-coredump`, límites del shell o políticas de
+seguridad. Por eso esta unidad lo trata como introducción, no como garantía.
+
+## Caso mínimo en C
+
+Usamos C solo para producir un fallo controlado:
+
+```c
+int main(void) {
+    int *p = 0;
+    *p = 42;
+    return 0;
+}
+```
+
+El objetivo no es aprender C. El objetivo es producir un acceso inválido claro.
+
+## Activar core dumps
+
+```bash
+$ ulimit -c unlimited
+```
+
+Esto permite que el shell no bloquee el tamaño del core. Aun así, el sistema
+puede redirigir cores a otra herramienta o impedir que aparezca un archivo local.
+
+## Abrir con GDB
+
+```bash
+$ gdb ./programa_que_falla core
+```
+
+Dentro de GDB:
+
+```bash
+(gdb) bt
+(gdb) info registers
+(gdb) x/i $pc
+```
+
+Lectura:
+
+| Comando | Pregunta |
+|---|---|
+| `bt` | ¿qué cadena de llamadas llevó al fallo? |
+| `info registers` | ¿qué valores quedaron al fallar? |
+| `x/i $pc` | ¿qué instrucción estaba activa? |
+
+## Qué esperar
+
+Un fallo por puntero nulo suele apuntar a una instrucción de store o load sobre
+dirección inválida. En AArch64, si un registro usado como base vale cero o una
+dirección no mapeada, una instrucción como `str` puede terminar en señal.
+
+El core dump no ejecuta nada. Solo permite inspeccionar un estado detenido.
+
+## Diagrama
+
+```{mermaid}
+%%| label: fig-core-dump-flow
+%%| fig-cap: "Flujo introductorio de análisis con core dump."
+flowchart LR
+  crash["programa falla"] --> core["core dump"]
+  core --> gdb["GDB abre binario + core"]
+  gdb --> bt["bt"]
+  gdb --> regs["info registers"]
+  gdb --> pc["x/i $pc"]
+```
+
+## Relación con debugging en vivo
+
+| Debugging en vivo | Core dump |
+|---|---|
+| puedes avanzar instrucciones | no ejecuta |
+| puedes poner breakpoints | el fallo ya ocurrió |
+| ves causa si reproduces | ves estado final |
+| útil para entender proceso | útil para fallos capturados |
+
+Lo ideal es combinar: core dump para ubicar el punto de fallo, GDB en vivo para
+reproducir y observar cómo se llegó a ese estado.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| asumir que siempre aparece archivo `core` | depende de configuración del sistema |
+| abrir solo el core sin binario correcto | usar binario que produjo el fallo |
+| esperar que el core avance instrucciones | es post-mortem, no ejecución viva |
+| no compilar con símbolos | `bt` será menos legible |
+| confundir dirección de fallo con causa única | revisar registros y stack |
+
+## Checklist
+
+- [ ] Puedo explicar qué es un core dump.
+- [ ] Puedo activar core dumps con `ulimit`.
+- [ ] Puedo abrir binario y core con GDB.
+- [ ] Puedo usar `bt` e `info registers`.
+- [ ] Puedo explicar por qué puede no existir archivo `core`.
+
+## Siguiente paso
+
+Abre [Práctica guiada](08-practica-guiada.qmd).

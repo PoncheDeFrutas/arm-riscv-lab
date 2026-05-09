@@ -1,0 +1,177 @@
+---
+title: "16.7 · Herramientas y lectura guiada de binarios"
+description: "Uso integrado de readelf, objdump, nm, ldd y strip sobre binarios AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > Herramientas y lectura guiada
+:::
+
+::: {.hero-lab}
+Esta lección no agrega otra teoría grande. Ordena las herramientas en un método.
+Cada comando debe responder una pregunta. Si no sabes la pregunta, la salida te
+va a parecer ruido.
+:::
+
+La disciplina de lectura importa más que el comando exacto. Un binario pequeño
+puede inspeccionarse en minutos si sigues orden: identidad, carga, organización,
+código, nombres y dependencias. El mismo orden escala a programas más grandes,
+aunque no entiendas cada línea de salida.
+
+## Método de lectura
+
+| Paso | Pregunta | Herramienta |
+|---|---|---|
+| 1 | ¿qué archivo es? | `file`, `readelf -h` |
+| 2 | ¿dónde empieza? | `readelf -h` |
+| 3 | ¿cómo se carga? | `readelf -l` |
+| 4 | ¿cómo se organiza? | `readelf -S` |
+| 5 | ¿qué instrucciones contiene? | `objdump -d` |
+| 6 | ¿qué nombres existen? | `nm` |
+| 7 | ¿qué dependencias dinámicas tiene? | `readelf -d`, `ldd` |
+| 8 | ¿qué pasa al remover símbolos? | `strip`, `nm` |
+
+## Lectura de `min`
+
+```bash
+$ aarch64-linux-gnu-readelf -h min
+$ aarch64-linux-gnu-readelf -l min
+$ aarch64-linux-gnu-readelf -S min
+$ aarch64-linux-gnu-objdump -d min
+$ aarch64-linux-gnu-nm min
+```
+
+Orden de interpretación:
+
+1. `readelf -h`: confirma `ELF64`, `AArch64`, tipo y entry point.
+2. `readelf -l`: mira segmentos `LOAD` y permisos.
+3. `readelf -S`: mira secciones para herramientas/linker.
+4. `objdump -d`: confirma instrucciones generadas.
+5. `nm`: mira símbolos como `_start`.
+
+No cambies el orden al azar. Si desensamblas antes de saber si el archivo es
+AArch64, puedes interpretar basura. Si miras símbolos antes de saber si el
+binario fue `strip`, puedes concluir erróneamente que “no tiene funciones”. Si
+miras secciones antes de program headers, puedes confundir organización de
+linker con mapa de ejecución.
+
+## Leer `objdump -d`
+
+Salida resumida:
+
+```bash
+0000000000400078 <_start>:
+  400078: d2800000  mov x0, #0x0
+  40007c: d2800ba8  mov x8, #0x5d
+  400080: d4000001  svc #0x0
+```
+
+Lectura:
+
+| Parte | Significado |
+|---|---|
+| `400078` | dirección virtual mostrada |
+| `d2800000` | encoding de instrucción |
+| `mov x0, #0x0` | desensamblado legible |
+| `<_start>` | símbolo asociado a esa dirección |
+
+No todos los números serán iguales en tu sistema. La estructura sí debe ser
+reconocible.
+
+`objdump -d` mezcla tres cosas útiles: dirección, encoding e instrucción
+desensamblada. La dirección sirve para ubicar. El encoding muestra los bytes que
+el CPU realmente recibirá. La instrucción desensamblada te devuelve una forma
+legible. En AArch64, esto conecta lo que escribiste con lo que quedó codificado.
+
+## `strip`
+
+```bash
+$ cp min min_stripped
+$ aarch64-linux-gnu-strip min_stripped
+$ ls -lh min min_stripped
+$ aarch64-linux-gnu-nm min_stripped
+```
+
+Salida posible:
+
+```bash
+aarch64-linux-gnu-nm: min_stripped: no symbols
+```
+
+Eso no implica que el programa esté roto. Implica que símbolos útiles para
+inspección o debugging ya no están disponibles.
+
+`strip` separa dos preguntas: “¿puede ejecutarse?” y “¿puedo leerlo con nombres
+cómodos?”. Muchas veces la respuesta es sí a la primera y no a la segunda. El
+loader no necesita una symbol table completa para ejecutar código ya enlazado,
+pero tú sí la extrañas cuando intentas depurar o explicar el binario.
+
+```bash
+$ qemu-aarch64 ./min_stripped
+$ echo $?
+0
+```
+
+## Lectura de binario dinámico
+
+```bash
+$ aarch64-linux-gnu-gcc hello.c -o hello_dyn
+$ aarch64-linux-gnu-readelf -h hello_dyn
+$ aarch64-linux-gnu-readelf -l hello_dyn
+$ aarch64-linux-gnu-readelf -d hello_dyn
+$ aarch64-linux-gnu-objdump -d hello_dyn | grep -E "plt|printf"
+```
+
+Busca:
+
+- `INTERP` en program headers.
+- `NEEDED` en dynamic section.
+- referencias a `.plt` o `printf@plt`.
+
+Esta lectura une toda la unidad. `readelf -h` te dice qué clase de ELF tienes.
+`readelf -l` te muestra cómo será cargado. `readelf -d` muestra dependencias y
+metadatos dinámicos. `objdump -d` revela que llamadas como `printf` no son
+instrucciones mágicas: pasan por stubs, símbolos y direcciones que el sistema
+prepara.
+
+Si intentas:
+
+```bash
+$ ldd hello_dyn
+```
+
+y estás en host `x86_64`, puede fallar o no mostrar lo que esperas. Usa:
+
+```bash
+$ aarch64-linux-gnu-readelf -d hello_dyn
+$ qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn
+```
+
+## Preguntas de cierre
+
+Antes de decir “ya inspeccioné el binario”, responde:
+
+1. ¿Es relocatable, executable, shared object o PIE?
+2. ¿Cuál es el entry point?
+3. ¿Qué segmentos se mapearán?
+4. ¿Qué permisos tienen?
+5. ¿Qué secciones explican el contenido?
+6. ¿Qué símbolos siguen visibles?
+7. ¿Tiene dynamic section?
+8. ¿Depende de `libc`?
+9. ¿Se quitaron símbolos con `strip`?
+
+## Checklist
+
+- [ ] Puedo usar cada herramienta con una pregunta concreta.
+- [ ] Puedo leer `objdump -d` sin creer que todo número es estable.
+- [ ] Puedo explicar por qué `strip` afecta `nm`.
+- [ ] Puedo inspeccionar un binario mínimo.
+- [ ] Puedo inspeccionar un binario con `printf`.
+- [ ] Puedo decidir cuándo usar `readelf -d` en vez de `ldd`.
+
+## Cierre de unidad
+
+Un binario ELF no es el final opaco del proceso. Es un contrato entre
+herramientas: assembler, linker, loader, kernel, depurador y tus propias
+decisiones de código.

@@ -13,7 +13,7 @@ Este roadmap organiza la ruta AArch64 completa. No es una lista de páginas
 activas ni una obligación para estudiar todo de una vez: es el mapa de
 crecimiento del laboratorio.
 
-Las unidades 0-15 ya existen como páginas de estudio. Las unidades 16-44 quedan
+Las unidades 0-17 ya existen como páginas de estudio. Las unidades 18-44 quedan
 como planificación: aparecen para orientar la ruta, pero no se enlazarán hasta
 que tengan contenido real.
 :::
@@ -24,15 +24,15 @@ que tengan contenido real.
 ::: {.course-meter}
 **Base obligatoria**
 
-Unidades 0-15. Programas ARM64 en Linux, registros, memoria, control de flujo,
-syscalls, stack, heap, `mmap`, structs y ABI/AAPCS64.
+Unidades 0-17. Programas ARM64 en Linux, registros, memoria, control de flujo,
+syscalls, stack, heap, `mmap`, structs, ABI/AAPCS64, ELF y debugging.
 :::
 
 ::: {.course-meter}
 **Ruta posterior**
 
-Unidades 16-44. ELF, debugging avanzado, SIMD, hardware, kernel, reversing,
-seguridad, virtualización y proyectos integradores.
+Unidades 18-44. Strings, SIMD, hardware, kernel, reversing, seguridad,
+virtualización y proyectos integradores.
 :::
 :::
 
@@ -70,8 +70,8 @@ seguridad, virtualización y proyectos integradores.
 <div class="unit-card"><strong><a href="mmap-paginas-permisos/index.qmd">13. mmap, munmap, mprotect, páginas y permisos</a></strong><p>Memoria virtual userland, páginas, permisos, regiones anónimas, archivos mapeados y W^X.</p></div>
 <div class="unit-card"><strong><a href="layout-datos-structs/index.qmd">14. Layout de datos, structs, ADTs y objetos manuales</a></strong><p>Offsets, size, alignment, padding, invariantes, self pointer y descriptores propios.</p></div>
 <div class="unit-card"><strong><a href="abi-aapcs64-c/index.qmd">15. ABI, AAPCS64 e interoperabilidad con C</a></strong><p>Calling convention, registros caller/callee-saved, argumentos, retornos, libc y C con assembly.</p></div>
-<div class="unit-card"><strong>16. ELF, linking, loading y binarios</strong><p>Objetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT y GOT.</p></div>
-<div class="unit-card"><strong>17. Debugging con GDB, QEMU y strace</strong><p>Breakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.</p></div>
+<div class="unit-card"><strong><a href="elf-linking-loading/index.qmd">16. ELF, linking, loading y binarios</a></strong><p>Objetos, símbolos, relocations, linker, loader, headers, dynamic/static linking, PLT, GOT y PIE.</p></div>
+<div class="unit-card"><strong><a href="debugging-gdb-qemu-strace/index.qmd">17. Debugging con GDB, QEMU y strace</a></strong><p>Breakpoints, single-step, registros, memoria, stack frames, gdbserver, syscalls y core dumps.</p></div>
 </div>
 </details>
 

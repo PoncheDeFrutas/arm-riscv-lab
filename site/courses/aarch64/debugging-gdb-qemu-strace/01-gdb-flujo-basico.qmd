@@ -1,0 +1,196 @@
+---
+title: "17.1 · Flujo básico de GDB"
+description: "Breakpoints, ejecución, continue, stepi y nexti en programas AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > Flujo básico de GDB
+:::
+
+::: {.hero-lab}
+GDB sirve para controlar el tiempo de ejecución. Puedes detener el programa en
+un punto, mirar su estado, avanzar una instrucción y comprobar qué cambió.
+Ese ciclo es la base de toda depuración.
+:::
+
+## Qué problema resuelve
+
+Cuando un programa falla, imprimir valores no siempre basta. En assembly muchas
+veces el error ocurre entre dos instrucciones: un registro tiene un valor
+incorrecto, `sp` quedó desalineado, `x0` no contiene el argumento esperado o una
+syscall recibió una dirección inválida.
+
+GDB permite responder preguntas pequeñas:
+
+- ¿llegué a esta etiqueta?
+- ¿qué instrucción se va a ejecutar?
+- ¿qué registros cambian después de `add`, `ldr`, `str` o `svc #0`?
+- ¿el programa salta donde yo creía?
+- ¿una llamada pisa registros que todavía necesitaba?
+
+## Programa mínimo
+
+Usaremos este programa como primer caso:
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #10
+    mov x1, #20
+    add x2, x0, x1
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+El objetivo no es el cálculo. El objetivo es ver cómo `x0`, `x1` y `x2` cambian
+mientras avanzas.
+
+## Preparar binario
+
+```bash
+$ aarch64-linux-gnu-as -g debug_min.s -o debug_min.o
+$ aarch64-linux-gnu-ld debug_min.o -o debug_min
+```
+
+La opción `-g` agrega información útil para depuración. En programas muy simples
+puedes depurar sin ella, pero los símbolos y nombres hacen la lectura más clara.
+
+## Flujo remoto con QEMU
+
+En host `x86_64`, QEMU ejecuta el binario AArch64. Para que GDB pueda conectarse,
+QEMU se queda esperando en un puerto:
+
+```bash
+$ qemu-aarch64 -g 1234 ./debug_min
+```
+
+En otra terminal:
+
+```bash
+$ gdb-multiarch ./debug_min
+(gdb) target remote :1234
+(gdb) break _start
+(gdb) continue
+```
+
+Punto importante: en una sesión remota con QEMU, el programa ya fue iniciado por
+QEMU. Por eso primero conectas con `target remote :1234`. No trates esa sesión
+como una sesión local normal iniciada con `run`.
+
+## Breakpoint
+
+```bash
+(gdb) break _start
+```
+
+Un breakpoint dice: “cuando el programa llegue a esta etiqueta, detente antes de
+seguir”. Si el símbolo existe, GDB puede usar el nombre. Si no hay símbolos,
+tendrías que usar una dirección.
+
+Salida típica, resumida:
+
+```bash
+Breakpoint 1 at 0x400078
+```
+
+No importa memorizar la dirección. Importa entender que GDB resolvió `_start` a
+una dirección dentro del ejecutable.
+
+## Continue
+
+```bash
+(gdb) continue
+```
+
+`continue` deja correr el programa hasta el siguiente breakpoint, señal o fin.
+En el flujo con QEMU, después de conectar y poner el breakpoint, `continue`
+permite llegar a `_start`.
+
+Si el programa termina antes de detenerse, revisa dos cosas: que pusiste el
+breakpoint correcto y que lo pusiste antes de continuar.
+
+## Leer antes de avanzar
+
+```bash
+(gdb) info registers x0 x1 x2 pc
+```
+
+Al detenerte en `_start`, `x0`, `x1` y `x2` pueden tener valores iniciales que no
+son los del programa. Todavía no ejecutaste `mov x0, #10`.
+
+Este detalle evita muchos diagnósticos falsos: si miras un registro antes de la
+instrucción que lo escribe, no estás viendo un error; estás viendo el estado
+previo.
+
+## stepi
+
+```bash
+(gdb) stepi
+(gdb) info registers x0 x1 x2 pc
+```
+
+`stepi` ejecuta una instrucción. Si esa instrucción entra a una llamada, GDB
+entra también. En assembly puro esto permite ver cambios con precisión.
+
+Después del primer `stepi`, esperas que `x0` valga `10`. Después del segundo,
+`x1` debe valer `20`. Después del tercero, `x2` debe valer `30`.
+
+## nexti
+
+```bash
+(gdb) nexti
+```
+
+`nexti` también avanza una instrucción, pero trata llamadas como una unidad. Si
+la instrucción actual llama a una función, intenta avanzar sin entrar a cada
+instrucción interna de esa función.
+
+| Comando | Cuándo usarlo |
+|---|---|
+| `stepi` | quiero entrar y ver cada instrucción |
+| `nexti` | quiero avanzar sin meterme dentro de una llamada |
+
+En programas mínimos sin funciones, ambos pueden parecer iguales. La diferencia
+se vuelve importante cuando aparece `bl funcion`.
+
+## Flujo mental completo
+
+```{mermaid}
+%%| label: fig-gdb-basic-loop
+%%| fig-cap: "Ciclo básico de una sesión de GDB."
+flowchart LR
+  br["break"] --> run["run / target remote + continue"]
+  run --> obs["info registers / x/i"]
+  obs --> step["stepi / nexti"]
+  step --> obs
+```
+
+No avances diez instrucciones sin mirar. Depurar en assembly funciona mejor con
+pasos cortos: predices, ejecutas, verificas.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| creer que `run` funciona igual en remoto QEMU | usar `target remote :1234` y luego `continue` |
+| olvidar `target remote :1234` | GDB no está conectado al proceso AArch64 |
+| mirar registros antes de ejecutar la instrucción relevante | usar `stepi` y comparar antes/después |
+| confundir `stepi` con `nexti` | `stepi` entra; `nexti` intenta pasar llamadas |
+| no compilar con símbolos | agregar `-g` cuando quieras nombres legibles |
+
+## Checklist
+
+- [ ] Puedo iniciar QEMU esperando GDB.
+- [ ] Puedo conectar `gdb-multiarch`.
+- [ ] Puedo poner breakpoint en `_start`.
+- [ ] Puedo usar `continue`.
+- [ ] Puedo avanzar con `stepi`.
+- [ ] Puedo explicar cuándo usar `nexti`.
+
+## Siguiente paso
+
+Abre [Registros e instrucciones](02-registros-instrucciones.qmd).

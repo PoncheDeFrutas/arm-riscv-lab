@@ -1,0 +1,171 @@
+---
+title: "16.6 · GOT, PLT y PIE"
+description: "Modelo conceptual de GOT, PLT y executables PIE sin entrar en internals avanzados."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > GOT, PLT y PIE
+:::
+
+::: {.hero-lab}
+GOT, PLT y PIE aparecen cuando las direcciones no deben quedar completamente
+fijas al ensamblar o enlazar. El objetivo aquí no es dominar dynamic linker
+internals, sino entender por qué existen esas piezas.
+:::
+
+## Problema
+
+Un programa dinámico puede llamar `printf`, pero `printf` vive en `libc`. La
+dirección real de `libc` puede conocerse al cargar el programa, no cuando tú
+escribes `hello.c`.
+
+```bash
+mi código llama printf
+printf vive en libc
+libc puede cargarse en otra dirección
+```
+
+Necesitamos una forma de saltar o leer direcciones que pueden resolverse tarde.
+
+Este problema no aparece por capricho. Aparece porque queremos que el mismo
+programa pueda trabajar con librerías compartidas y con direcciones de carga que
+no están completamente decididas al momento de compilar. En vez de incrustar
+todas las direcciones como constantes absolutas, el binario usa tablas y saltos
+indirectos que el loader puede ajustar.
+
+## GOT conceptual
+
+GOT significa Global Offset Table. Modelo inicial:
+
+```bash
+tabla con direcciones que el loader puede completar o ajustar
+```
+
+Piensa en la GOT como una tabla de direcciones útiles para datos o funciones
+externas. El código no tiene que traer una dirección absoluta fija en cada
+instrucción.
+
+Conceptualmente, una entrada de GOT responde: “cuando necesites este objeto o
+función externa, usa la dirección registrada aquí”. Esa dirección puede ser
+rellenada o ajustada por el proceso de carga. Para el estudiante, lo importante
+no es memorizar formato de entrada, sino entender por qué una tabla central de
+direcciones ayuda cuando el layout puede cambiar.
+
+## PLT conceptual
+
+PLT significa Procedure Linkage Table. Modelo inicial:
+
+```bash
+puente de llamada hacia funciones dinámicas
+```
+
+Cuando ves una llamada a algo como `printf@plt`, no significa que `printf` esté
+implementado dentro de tu código. Significa que hay un camino para llegar a la
+función real usando mecanismo de linking dinámico.
+
+La PLT aparece porque una llamada de función necesita una ruta ejecutable. Tu
+código puede llamar a un stub local, y ese stub sabe cómo llegar a la dirección
+real mediante el mecanismo dinámico. Esto permite que el código del programa no
+dependa de conocer desde el inicio la dirección exacta de `printf` dentro de
+`libc`.
+
+```bash
+$ aarch64-linux-gnu-objdump -d hello_dyn | grep -E "plt|printf"
+```
+
+Salida posible:
+
+```bash
+0000000000000640 <printf@plt>:
+  bl  640 <printf@plt>
+```
+
+No memorices direcciones. Busca relación: llamada en tu código, puente PLT,
+resolución dinámica.
+
+En `objdump`, GOT y PLT pueden verse como detalles de bajo nivel. En esta unidad
+se leen como señales: “este binario usa linking dinámico” y “esta llamada cruza
+hacia una función externa”. Más adelante, en reversing o seguridad, sí tendrá
+sentido profundizar en entradas exactas, lazy binding y relocations dinámicas.
+
+## Diagrama mental
+
+```{mermaid}
+%%| label: fig-got-plt
+%%| fig-cap: "Modelo conceptual de llamada dinámica con PLT y GOT."
+flowchart LR
+  code["código del programa"] --> call["bl printf@plt"]
+  call --> plt["PLT\npuente de llamada"]
+  plt --> got["GOT\ndirección resuelta"]
+  got --> libc["printf en libc"]
+  loader["dynamic loader"] --> got
+```
+
+Esto es suficiente por ahora. Lazy binding, symbol versioning y detalles exactos
+de relocations dinámicas quedan fuera.
+
+## PIE
+
+PIE significa Position Independent Executable. Un ejecutable PIE está preparado
+para ejecutarse aunque su base de carga cambie.
+
+```bash
+$ aarch64-linux-gnu-gcc hello.c -fPIE -pie -o hello_pie
+$ aarch64-linux-gnu-readelf -h hello_pie
+```
+
+En muchos toolchains modernos, `gcc` ya produce PIE por defecto. Por eso debes
+mirar el resultado, no asumir.
+
+Lectura inicial:
+
+| Caso | Tipo frecuente | Idea |
+|---|---|---|
+| no PIE tradicional | `EXEC` | direcciones más fijas |
+| PIE | `DYN` | ejecutable cargable como objeto dinámico |
+
+`DYN` no siempre significa “librería compartida”. Un PIE puede aparecer como
+tipo `DYN` porque puede reubicarse.
+
+Este detalle evita otra confusión: el tipo ELF describe propiedades de carga,
+no una etiqueta pedagógica simple. Un ejecutable PIE comparte rasgos con shared
+objects porque ambos pueden cargarse en distintas bases. Por eso hay que mirar
+el conjunto: tipo ELF, program interpreter, permisos, símbolos y cómo fue
+construido.
+
+## Qué cambia con PIE
+
+| Tema | No PIE | PIE |
+|---|---|---|
+| base de carga | más fija | variable |
+| direcciones absolutas | más frecuentes | se prefieren relativas |
+| ASLR | limitado para ejecutable | más útil |
+| lectura con `objdump` | direcciones parecen estables | debes pensar en offsets |
+
+No entraremos todavía en ASLR profundo. La idea mínima: PIE hace que el binario
+no dependa de una única dirección base.
+
+Al leer direcciones de un PIE, piensa más en offsets que en direcciones
+absolutas eternas. La instrucción puede estar a cierto desplazamiento dentro de
+la imagen, pero la base real se decide al cargar. Esto prepara debugging moderno:
+una dirección vista en `objdump` y una dirección vista en GDB pueden requerir
+sumar la base de carga.
+
+## Error común
+
+Intentar explicar GOT/PLT como si ya estuviéramos escribiendo dynamic linker.
+No hace falta. En esta unidad basta con entender que son estructuras para
+conectar código propio con direcciones que pueden resolverse al cargar.
+
+## Checklist
+
+- [ ] Puedo explicar GOT como tabla conceptual de direcciones.
+- [ ] Puedo explicar PLT como puente para llamadas dinámicas.
+- [ ] Puedo reconocer `printf@plt` en `objdump`.
+- [ ] Puedo explicar por qué dynamic loader participa.
+- [ ] Puedo explicar PIE como ejecutable reubicable.
+- [ ] Puedo distinguir `EXEC` y `DYN` sin simplificar demasiado.
+
+## Siguiente paso
+
+Abre [Herramientas y lectura guiada](07-herramientas-lectura-guiada.qmd).

@@ -1,0 +1,183 @@
+---
+title: "16.1 · Del .s al .o y del .o al ELF"
+description: "Fuente assembly, objeto relocatable, linker y ejecutable ELF mínimo en AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > Flujo assembly, objeto y ejecutable
+:::
+
+::: {.hero-lab}
+El primer error común es pensar que “compilar” produce una sola cosa. En esta
+unidad separaremos tres objetos: archivo fuente, archivo objeto y ejecutable.
+Cada uno resuelve un problema distinto.
+:::
+
+## Tres archivos, tres preguntas
+
+| Archivo | Pregunta que responde |
+|---|---|
+| `min.s` | ¿qué quiero que haga el programa? |
+| `min.o` | ¿qué código máquina y símbolos produjo el assembler? |
+| `min` | ¿qué ejecutable puede cargar Linux? |
+
+El `.o` todavía no es un programa completo. Puede tener código máquina, datos,
+símbolos y relocations, pero todavía no tiene todo el layout final necesario
+para ejecución.
+
+Piensa en el `.o` como una pieza etiquetada. Ya contiene bytes reales de código,
+pero muchas decisiones todavía no están cerradas: dónde quedará cada sección,
+qué dirección final tendrá cada símbolo y cómo se combinará con otros objetos.
+Ese estado intermedio es útil porque permite compilar partes por separado y
+unirlas después. Sin archivos objeto, cada programa tendría que ensamblarse como
+una sola unidad rígida.
+
+## Programa mínimo para inspección
+
+Guarda este archivo como `min.s`:
+
+```asm
+.global _start
+
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Este programa solo termina con `exit(0)`. Precisamente por eso sirve para mirar
+el binario sin distraernos con lógica.
+
+## Ensamblar y enlazar
+
+```bash
+$ aarch64-linux-gnu-as min.s -o min.o
+$ aarch64-linux-gnu-ld min.o -o min
+$ file min.o
+$ file min
+```
+
+Salida esperada, resumida:
+
+```bash
+min.o: ELF 64-bit LSB relocatable, ARM aarch64
+min:   ELF 64-bit LSB executable, ARM aarch64
+```
+
+No memorices cada palabra. Observa dos diferencias:
+
+| Archivo | Tipo ELF | Lectura |
+|---|---|---|
+| `min.o` | relocatable | pieza que el linker todavía debe colocar |
+| `min` | executable | archivo con entry point y program headers |
+
+La palabra `relocatable` importa. Significa que el contenido puede moverse antes
+de quedar en su posición final. El linker todavía puede decidir dónde poner
+`.text`, qué dirección tendrá `_start` y cómo completar referencias pendientes.
+La palabra `executable` indica que el archivo ya tiene forma de programa Linux:
+el loader puede leerlo, mapearlo y saltar a su punto de entrada.
+
+## Qué hizo el assembler
+
+El assembler leyó:
+
+```bash
+directivas + etiquetas + instrucciones A64
+```
+
+y produjo:
+
+```bash
+código máquina + secciones + símbolos + relocations si hacen falta
+```
+
+En este caso mínimo casi todo queda en `.text`. En programas con datos verás
+también `.rodata`, `.data` y `.bss`.
+
+El assembler no sabe “ejecutar” tu programa. Su trabajo es traducir unidades
+locales. Si encuentra una instrucción A64, codifica bits. Si encuentra una
+etiqueta, crea un símbolo. Si encuentra una directiva como `.text`, cambia la
+sección actual. Si encuentra una referencia que depende de una dirección final,
+puede dejar una relocation para el linker. Ese resultado es técnico y legible
+con herramientas, aunque todavía no sea ejecutable final.
+
+## Qué hizo el linker
+
+El linker tomó `min.o` y creó un archivo ejecutable:
+
+```{mermaid}
+%%| label: fig-linker-min
+%%| fig-cap: "Trabajo mínimo del linker con un objeto AArch64."
+flowchart LR
+  obj["min.o\nrelocatable"] --> link["linker"]
+  link --> entry["entry point"]
+  link --> ph["program headers"]
+  link --> layout["layout final"]
+  entry --> exe["min\nELF executable"]
+  ph --> exe
+  layout --> exe
+```
+
+El linker no ejecuta el programa. Prepara un archivo que el kernel y el loader
+pueden interpretar.
+
+El linker sí toma decisiones globales. Puede juntar varios `.o`, ordenar
+secciones, resolver símbolos definidos en otro archivo, reportar símbolos
+faltantes y escribir headers que describen cómo se cargará el resultado. Cuando
+un error dice “undefined reference”, no es un problema del CPU: el linker no
+encontró una definición para un símbolo que alguien prometió usar.
+
+## Inspección mínima
+
+```bash
+$ aarch64-linux-gnu-readelf -h min.o
+$ aarch64-linux-gnu-readelf -h min
+```
+
+En `min.o` debes buscar:
+
+- `Type: REL` o equivalente de objeto relocatable.
+- arquitectura `AArch64`.
+- ausencia de un entry point útil para ejecución directa.
+
+En `min` debes buscar:
+
+- `Type: EXEC` o ejecutable.
+- `Entry point address`.
+- program headers disponibles.
+
+## Relación con unidades anteriores
+
+Unidad 05 ya usó este flujo para ejecutar programas. Aquí le ponemos nombres a
+las capas:
+
+```bash
+as = produce objeto
+ld = produce ejecutable
+kernel/loader = producen proceso
+```
+
+Unidad 04 ya mostró directivas. Ahora vemos qué archivo sale de ellas.
+
+## Error común
+
+```bash
+$ qemu-aarch64 ./min.o
+```
+
+Eso falla porque `min.o` no es el contrato que Linux espera para ejecutar. Es
+una pieza de construcción, no el edificio terminado.
+
+## Checklist
+
+- [ ] Puedo explicar qué contiene `min.s`.
+- [ ] Puedo explicar por qué `min.o` no es ejecutable final.
+- [ ] Puedo usar `file` para distinguir relocatable y executable.
+- [ ] Puedo explicar qué hace `as`.
+- [ ] Puedo explicar qué hace `ld`.
+- [ ] Puedo decir qué etapa crea el proceso: loader/kernel, no linker.
+
+## Siguiente paso
+
+Abre [ELF header y entry point](02-elf-header-entry-point.qmd).

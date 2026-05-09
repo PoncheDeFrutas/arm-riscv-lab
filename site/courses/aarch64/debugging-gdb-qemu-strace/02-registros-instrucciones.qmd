@@ -1,0 +1,165 @@
+---
+title: "17.2 · Registros e instrucciones"
+description: "Lectura de registros, PC, instrucción actual, desensamblado y vistas TUI de GDB."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > Registros e instrucciones
+:::
+
+::: {.hero-lab}
+En AArch64 el estado visible del programa vive en registros y memoria. Esta
+lección se concentra en la mitad más inmediata: qué instrucción se ejecuta y qué
+valores tienen los registros justo en ese punto.
+:::
+
+## Qué problema resuelve
+
+Cuando lees código assembly en una página, ves intención. Cuando lees registros
+en GDB, ves estado real. La diferencia importa porque un programa puede estar
+perfectamente escrito en apariencia y aun así cargar una dirección incorrecta,
+sobrescribir `x0` antes de una syscall o retornar con `x30` dañado.
+
+Los comandos principales son:
+
+```bash
+(gdb) info registers
+(gdb) info registers x0 x1 x2 x8 pc sp x29 x30
+(gdb) x/i $pc
+(gdb) disassemble _start
+```
+
+## Registros generales
+
+```bash
+(gdb) info registers x0 x1 x2 x8 pc
+```
+
+Para programas con syscalls, `x0` a `x5` suelen contener argumentos y `x8`
+contiene el número de syscall. Después de `svc #0`, `x0` contiene retorno o
+error negativo.
+
+Salida resumida:
+
+```bash
+x0             0xa                 10
+x1             0x14                20
+x2             0x1e                30
+x8             0x5d                93
+pc             0x400084            0x400084 <_start+12>
+```
+
+GDB suele mostrar hexadecimal y decimal cuando puede. En assembly debes sentirte
+cómodo con ambos: hexadecimal ayuda con direcciones y máscaras; decimal ayuda
+con contadores y tamaños.
+
+## PC e instrucción actual
+
+```bash
+(gdb) x/i $pc
+```
+
+`pc` apunta a la instrucción actual, no a la instrucción que acaba de ejecutarse.
+Si GDB muestra:
+
+```bash
+=> 0x400080 <_start+8>: add x2, x0, x1
+```
+
+significa que `add` todavía está por ejecutarse. Si quieres ver su efecto,
+ejecuta:
+
+```bash
+(gdb) stepi
+(gdb) info registers x2 pc
+```
+
+Este punto evita una confusión frecuente: mirar `x2` antes del `add` y concluir
+que el `add` falló. Todavía no ocurrió.
+
+## Desensamblar una función o etiqueta
+
+```bash
+(gdb) disassemble _start
+```
+
+Salida esperada, resumida:
+
+```bash
+Dump of assembler code for function _start:
+   0x0000000000400078 <+0>:  mov x0, #0xa
+   0x000000000040007c <+4>:  mov x1, #0x14
+   0x0000000000400080 <+8>:  add x2, x0, x1
+   0x0000000000400084 <+12>: mov x0, #0x0
+   0x0000000000400088 <+16>: mov x8, #0x5d
+   0x000000000040008c <+20>: svc #0x0
+End of assembler dump.
+```
+
+La columna izquierda es dirección. El desplazamiento `<+8>` indica distancia
+desde el inicio del símbolo. La parte derecha es instrucción A64 desensamblada.
+
+## Vista TUI
+
+```bash
+(gdb) layout regs
+(gdb) layout asm
+```
+
+`layout regs` y `layout asm` no cambian la ejecución. Solo cambian cómo GDB
+muestra información en pantalla. Son útiles cuando estás avanzando instrucción
+por instrucción y quieres ver registros e instrucciones sin repetir tantos
+comandos.
+
+Si la terminal queda incómoda, puedes salir del modo TUI con:
+
+```bash
+(gdb) tui disable
+```
+
+## Registros especiales para debugging
+
+| Registro | Lectura útil |
+|---|---|
+| `pc` | instrucción actual |
+| `sp` | cima del stack actual |
+| `x29` | frame pointer si el código lo usa |
+| `x30` | link register, dirección de retorno |
+| `x8` | número de syscall en Linux AArch64 |
+
+No confundas `x30` con valor de retorno. En AAPCS64, el retorno de una función
+normal va en `x0`. `x30` guarda a dónde volver después de `bl`.
+
+## Relación con ELF
+
+Unidad 16 mostró símbolos y entry point. GDB usa esa información para permitir:
+
+```bash
+(gdb) break _start
+(gdb) disassemble _start
+```
+
+Si quitas símbolos o usas un binario muy reducido, aún puedes depurar por
+dirección, pero la lectura será menos amable.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| creer que `x/i $pc` muestra lo ya ejecutado | muestra la instrucción actual |
+| leer todos los registros sin propósito | pedir registros concretos |
+| confundir `x30` con valor de retorno | valor de retorno va en `x0`; `x30` es LR |
+| creer que `layout regs` cambia estado | solo cambia visualización |
+| olvidar que `svc #0` pisa `x0` con retorno | mirar registros antes y después |
+
+## Checklist
+
+- [ ] Puedo leer `pc` y la instrucción actual.
+- [ ] Puedo pedir registros específicos.
+- [ ] Puedo desensamblar `_start`.
+- [ ] Puedo explicar por qué `x30` es link register.
+- [ ] Puedo usar `layout regs` y `layout asm` sin confundirlos con ejecución.
+
+## Siguiente paso
+
+Abre [Lectura de memoria](03-lectura-memoria.qmd).

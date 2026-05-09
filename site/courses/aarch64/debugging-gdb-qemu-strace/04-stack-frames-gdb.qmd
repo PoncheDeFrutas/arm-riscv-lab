@@ -1,0 +1,160 @@
+---
+title: "17.4 · Stack frames en GDB"
+description: "Inspeccionar sp, x29, x30, frame pointer, link register y backtrace."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > Stack frames en GDB
+:::
+
+::: {.hero-lab}
+El stack no es una idea abstracta. En GDB puedes leer `sp`, mirar palabras en la
+memoria del stack y comprobar si `x29` y `x30` forman un frame coherente.
+:::
+
+## Qué problema resuelve
+
+Cuando un programa con funciones falla, necesitas reconstruir cómo llegó ahí.
+El stack ayuda a responder:
+
+- ¿qué función llamó a cuál?
+- ¿dónde debería volver el programa?
+- ¿`sp` sigue alineado?
+- ¿`x30` contiene una dirección de retorno razonable?
+- ¿hay un frame pointer que permita backtrace?
+
+Los comandos iniciales:
+
+```bash
+(gdb) info registers sp x29 x30
+(gdb) x/16gx $sp
+(gdb) bt
+```
+
+## Recordatorio AArch64
+
+| Registro | Papel en funciones |
+|---|---|
+| `sp` | apunta a la cima actual del stack |
+| `x29` | frame pointer cuando el código lo usa |
+| `x30` | link register, dirección de retorno |
+
+Una función no hoja típica guarda `x29` y `x30`:
+
+```asm
+stp x29, x30, [sp, #-16]!
+mov x29, sp
+
+/* cuerpo */
+
+ldp x29, x30, [sp], #16
+ret
+```
+
+Esto crea una cadena que GDB puede usar para reconstruir frames, especialmente
+si también hay símbolos.
+
+## Mirar registros de frame
+
+```bash
+(gdb) info registers sp x29 x30
+```
+
+Salida resumida:
+
+```bash
+sp             0x55008003d0
+x29            0x55008003d0
+x30            0x4000a4
+```
+
+Si `x29` coincide con `sp` justo después del prólogo, el frame actual acaba de
+quedar establecido. Si `x30` apunta a una dirección dentro de `.text`, parece
+una dirección de retorno razonable. Si `x30` vale cero, basura o apunta a datos,
+el retorno puede fallar.
+
+## Mirar contenido del stack
+
+```bash
+(gdb) x/16gx $sp
+```
+
+Salida conceptual:
+
+```bash
+0x55008003d0: 0x00000055008003f0  0x00000000004000a4
+0x55008003e0: 0x0000000000000000  0x0000000000000000
+```
+
+Cada `gx` muestra 8 bytes. En un frame con `stp x29, x30`, las primeras palabras
+pueden contener el frame pointer anterior y la dirección de retorno guardada.
+
+No todos los programas mantienen frame pointer. Optimizaciones, código manual o
+prólogos distintos pueden hacer que `bt` sea menos claro.
+
+## Backtrace
+
+```bash
+(gdb) bt
+```
+
+`bt` intenta mostrar la cadena de llamadas:
+
+```bash
+#0  funcion_interna ()
+#1  funcion_media ()
+#2  _start ()
+```
+
+Si faltan símbolos, puedes ver direcciones en vez de nombres. Si el frame está
+roto, GDB puede no reconstruir toda la cadena.
+
+## x30 no es retorno de función
+
+Error común: pensar que `x30` contiene “el resultado”. No. `x30` contiene la
+dirección a la que `ret` saltará. El resultado normal de una función AAPCS64
+vive en `x0`.
+
+| Pregunta | Registro |
+|---|---|
+| ¿a dónde vuelvo después de `ret`? | `x30` |
+| ¿qué valor devuelve la función? | `x0` |
+| ¿dónde está el frame actual? | `x29` |
+| ¿dónde está la cima del stack? | `sp` |
+
+## Diagrama de frame
+
+```{mermaid}
+%%| label: fig-stack-frame-gdb
+%%| fig-cap: "Frame típico con x29 y x30 guardados en el stack."
+flowchart TB
+  high["direcciones mayores"]
+  old["frame anterior"]
+  fp["x29 guardado"]
+  lr["x30 guardado\nretorno"]
+  locals["locales / temporales"]
+  sp["sp actual"]
+  high --> old --> fp --> lr --> locals --> sp
+```
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| asumir que `bt` siempre funciona | símbolos y frame pointer ayudan |
+| interpretar `x30` como valor de retorno | valor de retorno va en `x0` |
+| olvidar alineación de `sp` | antes de llamadas, `sp` debe estar alineado a 16 bytes |
+| leer stack sin saber tamaño | usar `x/16gx $sp` como primera mirada |
+| romper `x29` o `x30` sin restaurar | seguir prólogo/epílogo correctamente |
+
+## Checklist
+
+- [ ] Puedo leer `sp`, `x29` y `x30`.
+- [ ] Puedo mirar palabras en el stack.
+- [ ] Puedo explicar qué guarda `stp x29, x30`.
+- [ ] Puedo usar `bt` con cautela.
+- [ ] Puedo distinguir dirección de retorno y valor retornado.
+
+## Siguiente paso
+
+Abre [QEMU y gdbserver](05-qemu-gdbserver.qmd).

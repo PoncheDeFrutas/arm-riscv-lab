@@ -1,0 +1,179 @@
+---
+title: "17.8 · Práctica guiada de depuración"
+description: "Lectura completa de un programa usando GDB, QEMU, memoria, stack y strace."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > Práctica guiada
+:::
+
+::: {.hero-lab}
+Esta práctica junta lo esencial: detener, mirar registros, avanzar, leer
+memoria, revisar stack y contrastar syscalls. No agrega herramientas nuevas;
+ordena las que ya viste.
+:::
+
+## Método de lectura
+
+Usa siempre el mismo orden inicial:
+
+1. Identifica cómo se ejecuta el programa.
+2. Detente en un punto conocido.
+3. Mira instrucción actual y registros relevantes.
+4. Predice qué cambiará.
+5. Ejecuta una instrucción.
+6. Verifica el cambio.
+7. Si hay memoria, mira dirección y contenido.
+8. Si hay syscall, revisa argumentos antes y retorno después.
+9. Si hay fallo, usa stack, `bt` o core dump.
+
+Este orden evita saltar entre comandos sin hipótesis.
+
+## Sesión mínima
+
+Terminal 1:
+
+```bash
+$ qemu-aarch64 -g 1234 ./build/debug_min
+```
+
+Terminal 2:
+
+```bash
+$ gdb-multiarch ./build/debug_min
+(gdb) target remote :1234
+(gdb) break _start
+(gdb) continue
+(gdb) x/i $pc
+(gdb) info registers x0 x1 x2 pc
+```
+
+Pregunta antes de avanzar: ¿qué instrucción está por ejecutarse y qué registro
+debería cambiar?
+
+```bash
+(gdb) stepi
+(gdb) info registers x0 x1 x2 pc
+```
+
+Repite hasta pasar el `add`. Si `x2` no vale lo esperado, no culpes al CPU:
+revisa si `x0` y `x1` tenían los valores correctos justo antes del `add`.
+
+## Lectura de memoria
+
+Con el ejemplo de memoria:
+
+```bash
+(gdb) break _start
+(gdb) continue
+(gdb) x/s &mensaje
+(gdb) x/gx &valor
+(gdb) x/16xb &buffer
+```
+
+Lectura esperada:
+
+- `mensaje` debe verse como string.
+- `valor` debe verse como palabra de 64 bits.
+- `buffer` en `.bss` debe iniciar con ceros.
+
+Si `x/s &mensaje` no muestra un string limpio, revisa si el dato fue declarado
+con `.asciz` y no solo con bytes sin terminador.
+
+## Lectura de stack
+
+Con el ejemplo de funciones:
+
+```bash
+(gdb) break funcion_interna
+(gdb) continue
+(gdb) info registers sp x29 x30
+(gdb) x/16gx $sp
+(gdb) bt
+```
+
+Lectura esperada:
+
+- `sp` apunta al frame actual.
+- `x29` puede apuntar al frame base si el prólogo lo estableció.
+- `x30` debe apuntar a una dirección de retorno.
+- `bt` debe mostrar cadena de llamadas si hay símbolos y frames claros.
+
+Si `bt` no muestra todo, no asumas de inmediato que GDB falló. Puede faltar
+frame pointer, símbolos o el stack puede estar dañado.
+
+## Verificar syscalls
+
+Para un programa que escribe o abre archivo:
+
+```bash
+$ strace -e trace=openat,read,write,close ./build/syscalls
+```
+
+Busca líneas de esta forma:
+
+```bash
+openat(AT_FDCWD, "archivo.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+write(1, "mensaje\n", 8) = 8
+```
+
+Si aparece `ENOENT`, el problema no es que `read` falle misteriosamente: el
+archivo nunca se abrió. Si `write` retorna menos bytes de los esperados, mira el
+valor después del signo `=`.
+
+En host cruzado con QEMU, recuerda la advertencia: `strace qemu-aarch64 ...`
+puede mostrar llamadas del emulador. No uses esa salida sin pensar qué capa
+estás observando.
+
+## Diagnóstico breve de fallo
+
+Si el programa falla:
+
+```bash
+(gdb) bt
+(gdb) info registers
+(gdb) x/i $pc
+```
+
+Luego formula una hipótesis pequeña:
+
+| Observación | Hipótesis inicial |
+|---|---|
+| registro base vale `0x0` | puntero nulo |
+| `x30` apunta fuera de `.text` | retorno corrupto |
+| `sp` no parece alineado | frame o llamada mal construida |
+| syscall retorna `-1` | revisar `errno` o argumentos |
+| `x/s` imprime basura | falta terminador cero o dirección mala |
+
+## Método visual
+
+```{mermaid}
+%%| label: fig-guided-debug-method
+%%| fig-cap: "Método recomendado para depurar sin convertir GDB en lista de comandos."
+flowchart TD
+  h["hipótesis"] --> p["predice cambio"]
+  p --> s["stepi / nexti"]
+  s --> r["registros"]
+  r --> m["memoria si aplica"]
+  m --> k["syscall si aplica"]
+  k --> h
+```
+
+## Checklist final de unidad
+
+- [ ] Puedo depurar bajo QEMU con `gdb-multiarch`.
+- [ ] Puedo detener en `_start` o una función.
+- [ ] Puedo avanzar con `stepi` y `nexti`.
+- [ ] Puedo leer `pc` y la instrucción actual.
+- [ ] Puedo inspeccionar registros específicos.
+- [ ] Puedo inspeccionar `.data`, `.bss` y strings.
+- [ ] Puedo leer stack con `sp`, `x29`, `x30`.
+- [ ] Puedo usar `bt` sin asumir que siempre será perfecto.
+- [ ] Puedo usar `strace` para confirmar syscalls y errores.
+- [ ] Puedo explicar qué aporta un core dump.
+
+## Cierre
+
+Depurar bien no significa usar muchos comandos. Significa mirar el estado
+correcto en el momento correcto. En AArch64, eso empieza con registros,
+instrucción actual, memoria y syscalls.

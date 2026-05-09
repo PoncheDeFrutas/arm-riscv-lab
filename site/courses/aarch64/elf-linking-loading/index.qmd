@@ -1,0 +1,268 @@
+---
+title: "16 · ELF, linking, loading y binarios"
+subtitle: "Entiende el binario como objeto técnico: fuente, objeto, ejecutable, segmentos, loader y proceso."
+description: "Página principal de la Unidad 16 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF, linking, loading y binarios
+:::
+
+::: {.hero-lab}
+Hasta ahora escribiste `.s`, generaste `.o`, enlazaste ejecutables, llamaste
+syscalls, escribiste funciones y mezclaste C con assembly. Ahora vamos a abrir
+el binario. No como curiosidad, sino como parte del contrato técnico que une
+assembler, linker, loader, memoria virtual y proceso Linux.
+:::
+
+## Qué debe quedar claro
+
+Esta unidad no trata de memorizar `readelf`, `objdump` y `nm`. Trata de
+responder una pregunta más importante:
+
+```bash
+¿qué cambió entre mi archivo fuente y el proceso que Linux ejecuta?
+```
+
+| Etapa | Archivo | Herramienta | Qué contiene |
+|---|---|---|---|
+| fuente | `.s` | editor | assembly legible |
+| objeto | `.o` | assembler | código máquina, símbolos, relocations |
+| ejecutable | ELF | linker | segmentos, entry point, símbolos resueltos o dinámica |
+| proceso | memoria | loader/kernel | segmentos mapeados con permisos |
+
+::: {.callout-note title="Idea clave"}
+El archivo ejecutable no es una caja negra. Tiene estructura: header, secciones,
+segmentos, símbolos, direcciones, permisos y, a veces, dependencias dinámicas.
+:::
+
+Esta estructura existe porque distintas herramientas necesitan mirar el mismo
+archivo con preguntas diferentes. El assembler piensa en secciones y símbolos.
+El linker piensa en combinar piezas, resolver nombres y producir un layout
+final. El loader piensa en rangos de archivo que se convertirán en regiones de
+memoria. El depurador y las herramientas de inspección vuelven a usar símbolos,
+secciones y direcciones para ayudarte a explicar qué pasó.
+
+Por eso esta unidad insiste en separar capas. Si mezclas todas las palabras, el
+tema se vuelve una lista de comandos. Si separas capas, cada comando tiene una
+función clara: `readelf -h` identifica, `readelf -S` organiza, `readelf -l`
+explica carga, `objdump -d` muestra instrucciones, `nm` muestra nombres y
+`strip` enseña qué información era necesaria para ejecutar y cuál era útil para
+inspeccionar.
+
+## Mapa rápido
+
+::: {.lab-flow}
+::: {.lab-step}
+**1. Produce**
+`.s -> .o -> ELF`.
+:::
+
+::: {.lab-step}
+**2. Identifica**
+ELF header y entry point.
+:::
+
+::: {.lab-step}
+**3. Organiza**
+Secciones, símbolos y relocations.
+:::
+
+::: {.lab-step}
+**4. Mapea**
+Program headers, segmentos y permisos.
+:::
+
+::: {.lab-step}
+**5. Carga**
+Loader, dynamic linking, GOT/PLT y PIE.
+:::
+:::
+
+## Flujo completo
+
+```{mermaid}
+%%| label: fig-elf-flow
+%%| fig-cap: "Flujo mínimo desde fuente assembly hasta proceso en memoria."
+flowchart LR
+  s["main.s\nfuente"] --> as["assembler"]
+  as --> o["main.o\nobjeto relocatable"]
+  o --> ld["linker"]
+  ld --> elf["main\nELF executable"]
+  elf --> kernel["kernel"]
+  kernel --> loader["loader / dynamic loader"]
+  loader --> proc["proceso\nsegmentos mapeados"]
+```
+
+Cada flecha resuelve un problema distinto. El assembler traduce líneas y crea
+relocations cuando todavía faltan direcciones. El linker combina objetos,
+resuelve símbolos y produce un archivo ejecutable. El loader usa program
+headers para crear el proceso en memoria.
+
+La flecha más importante para esta unidad es la que va de `ELF executable` a
+`proceso`. Un archivo en disco no ejecuta nada por sí mismo. Linux debe leer su
+estructura, mapear partes del archivo en memoria, asignar permisos, preparar el
+estado inicial y transferir control al entry point. Ese paso explica por qué no
+basta con saber escribir instrucciones A64: también debes saber cómo esas
+instrucciones quedan empaquetadas y cargadas.
+
+## Sección no es segmento
+
+| Concepto | Uso principal | Lo ve principalmente |
+|---|---|---|
+| sección | organizar contenido para assembler/linker | linker, herramientas |
+| segmento | mapear partes del ejecutable en memoria | loader/kernel |
+
+La sección ayuda a construir y analizar. El segmento ayuda a ejecutar. Por eso
+`.text`, `.rodata`, `.data` y `.bss` pueden terminar agrupadas en menos
+segmentos con permisos como `R`, `RX` o `RW`.
+
+## Herramientas de la unidad
+
+| Herramienta | Uso inicial |
+|---|---|
+| `readelf -h` | ver ELF header y entry point |
+| `readelf -S` | ver section headers |
+| `readelf -l` | ver program headers / segmentos |
+| `objdump -d` | desensamblar código |
+| `nm` | ver símbolos |
+| `ldd` | ver dependencias dinámicas |
+| `strip` | remover símbolos no necesarios para ejecución |
+
+Usa el prefijo `aarch64-linux-gnu-` cuando trabajes en host `x86_64` con
+toolchain cruzado. En ARM64 nativo, las herramientas sin prefijo suelen bastar.
+
+## Viene de unidades anteriores
+
+| Ya viste... | Aquí lo usarás para... |
+|---|---|
+| Unidad 04: `.text`, `.data`, `.rodata`, `.bss`, símbolos | leer section headers y symbol table |
+| Unidad 05: `as`, `ld`, `_start` | distinguir `.o`, ELF executable y entry point |
+| Unidad 06: direcciones y secciones | conectar bytes del archivo con memoria |
+| Unidad 13: páginas y permisos | entender segmentos `RX`, `R`, `RW` |
+| Unidad 15: `main`, `_start`, `libc`, librerías | explicar dynamic linking, loader, GOT/PLT y PIE |
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Flujo `.s`, `.o` y ELF
+
+Assembler, objeto relocatable, linker y ejecutable mínimo.
+
+[Abrir](01-flujo-assembly-objeto-ejecutable.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### ELF header y entry point
+
+Tipo de archivo, arquitectura, punto de entrada y diferencias entre `.o` y ELF.
+
+[Abrir](02-elf-header-entry-point.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Secciones, símbolos y relocations
+
+Section headers, symbol table, `nm` y relocations conceptuales.
+
+[Abrir](03-secciones-simbolos-relocations.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Segmentos, loader y permisos
+
+Program headers, loader, memoria virtual y permisos `RX` / `RW`.
+
+[Abrir](04-segmentos-loader-permisos.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Linking estático y dinámico
+
+`libc`, dynamic loader, dependencias, `ldd` y `readelf -d`.
+
+[Abrir](05-linking-estatico-dinamico.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### GOT, PLT y PIE
+
+Tablas conceptuales, llamadas dinámicas y direcciones relativas.
+
+[Abrir](06-got-plt-pie.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Herramientas y lectura guiada
+
+Método completo con `readelf`, `objdump`, `nm`, `ldd` y `strip`.
+
+[Abrir](07-herramientas-lectura-guiada.qmd){.resource-action}
+:::
+:::
+
+## Programas de práctica
+
+| Caso | Ruta | Qué valida |
+|---|---|---|
+| mínimo ELF | `examples/aarch64/16-elf-linking-loading/00-minimo-elf/src` | `.s -> .o -> ELF`, header, segmentos |
+| secciones y símbolos | `examples/aarch64/16-elf-linking-loading/01-secciones-simbolos/src` | `.text`, `.rodata`, `.data`, `.bss`, `nm` |
+| `printf` dinámico | `examples/aarch64/16-elf-linking-loading/02-dynamic-printf/src` | `libc`, dynamic loader, dependencias |
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| especificación ELF completa campo por campo | queremos lectura útil, no manual binario |
+| relocation types exhaustivos | basta entender por qué existen |
+| lazy binding avanzado | GOT/PLT se explican a nivel mental |
+| DWARF completo | símbolos de debug vienen después |
+| exploits, ROP, loader manual | seguridad avanzada requiere otra base |
+| linker scripts avanzados | aquí usamos layout producido por herramientas estándar |
+| TLS y symbol versioning | pertenecen a dynamic linking avanzado |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/elf-linking-loading/overview/slides.md
+```
+
+No crear presentación todavía. Debe visualizar flujo, secciones vs segmentos,
+permisos, linker vs loader, dynamic loader, GOT/PLT y PIE; no reemplazar estas
+lecciones.
+
+## Para investigar más
+
+| Fuente | Qué buscar |
+|---|---|
+| Larry D. Pyeatt, *ARM 64-Bit Assembly Language* | assembler, object files, linking, memory layout y programas ejecutables |
+| Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide* | A64, llamadas, relación con PCS y código generado |
+| Stephen Smith, *Raspberry Pi Assembly Language Programming* | inspección con `objdump`, programas Linux y linking |
+| William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques* | módulos assembly, símbolos y ensamblado |
+| GNU Binutils manual | `readelf`, `objdump`, `nm`, `strip` |
+| `man ld.so`, `man ldd` | dynamic loader y dependencias dinámicas |
+
+## Checklist de cierre
+
+- [ ] Puedo explicar `.s -> .o -> ELF executable -> proceso`.
+- [ ] Puedo distinguir objeto relocatable y ejecutable.
+- [ ] Puedo identificar entry point con `readelf -h`.
+- [ ] Puedo distinguir section headers y program headers.
+- [ ] Puedo explicar sección vs segmento.
+- [ ] Puedo relacionar `.text` con permisos `RX`.
+- [ ] Puedo relacionar `.data` con permisos `RW`.
+- [ ] Puedo explicar qué hace el linker.
+- [ ] Puedo explicar qué hace el loader.
+- [ ] Puedo leer símbolos con `nm`.
+- [ ] Puedo explicar relocation a nivel conceptual.
+- [ ] Puedo distinguir static linking y dynamic linking.
+- [ ] Puedo explicar GOT, PLT y PIE sin entrar en detalles avanzados.
+- [ ] Puedo usar `strip` sin creer que rompe necesariamente el ejecutable.
+
+## Siguiente paso
+
+Empieza por [Flujo `.s`, `.o` y ELF](01-flujo-assembly-objeto-ejecutable.qmd).

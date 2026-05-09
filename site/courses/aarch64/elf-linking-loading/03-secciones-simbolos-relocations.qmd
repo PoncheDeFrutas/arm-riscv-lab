@@ -1,0 +1,185 @@
+---
+title: "16.3 · Secciones, símbolos y relocations"
+description: "Section headers, symbol table, nm y relocations como trabajo pendiente del linker."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > Secciones, símbolos y relocations
+:::
+
+::: {.hero-lab}
+Las secciones organizan el contenido del archivo. Los símbolos nombran
+direcciones o piezas de código/datos. Las relocations marcan lugares que el
+linker debe ajustar cuando conozca el layout final.
+:::
+
+## Secciones: organización para construir
+
+```bash
+$ aarch64-linux-gnu-readelf -S min
+```
+
+Busca nombres conocidos de Unidad 04:
+
+| Sección | Qué suele contener |
+|---|---|
+| `.text` | instrucciones |
+| `.rodata` | datos de solo lectura |
+| `.data` | datos inicializados modificables |
+| `.bss` | espacio no inicializado, reservado en memoria |
+| `.symtab` | symbol table completa si no fue removida |
+| `.strtab` | strings usadas por tablas |
+
+No todas aparecen en todo binario. Un programa mínimo puede no tener `.data` o
+`.bss`.
+
+Las secciones son una herramienta de organización. Ayudan a separar contenido
+por intención: código ejecutable, constantes, datos modificables, reserva sin
+inicializar, tablas de símbolos o strings internas. Esta separación no existe
+para que el CPU la vea directamente. Existe para que assembler, linker y
+herramientas puedan clasificar el contenido y tomar decisiones coherentes.
+
+## Ejemplo con datos visibles
+
+```asm
+.global _start
+
+.section .rodata
+msg:
+    .asciz "ELF\n"
+
+.data
+contador:
+    .quad 7
+
+.bss
+buffer:
+    .skip 32
+
+.text
+_start:
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Inspección:
+
+```bash
+$ aarch64-linux-gnu-as main.s -o main.o
+$ aarch64-linux-gnu-ld main.o -o main
+$ aarch64-linux-gnu-readelf -S main
+```
+
+Lectura esperada:
+
+- `.rodata` tendrá bytes de `"ELF\n"`.
+- `.data` tendrá el valor inicial de `contador`.
+- `.bss` tendrá tamaño reservado, pero no todos los bytes explícitos en archivo.
+
+Este punto suele ser difícil: `.bss` no representa “un montón de ceros escritos
+uno por uno dentro del archivo”. Representa una promesa de memoria inicializada
+a cero cuando el programa se carga. Por eso puede aumentar el tamaño en memoria
+sin aumentar igual el tamaño del archivo. Esta idea volverá cuando compares
+`FileSiz` y `MemSiz` en program headers.
+
+## Símbolos
+
+Un símbolo es un nombre asociado a algo que el assembler/linker puede ubicar:
+
+| Símbolo | Puede nombrar |
+|---|---|
+| `_start` | dirección de código |
+| `msg` | dirección de string |
+| `contador` | dirección de dato |
+| función externa | dirección todavía desconocida |
+
+El símbolo evita trabajar solo con números. En assembly escribes `_start`,
+`msg` o `contador` porque esos nombres son más estables y expresivos que una
+dirección cruda. Luego el assembler y el linker convierten esos nombres en
+ubicaciones concretas o reportan que falta una definición. El símbolo es parte
+del contrato entre archivos.
+
+```bash
+$ aarch64-linux-gnu-nm main.o
+$ aarch64-linux-gnu-nm main
+```
+
+Salida típica resumida:
+
+```bash
+0000000000000000 T _start
+0000000000000000 r msg
+0000000000000000 d contador
+0000000000000000 b buffer
+```
+
+Las letras importan:
+
+| Letra | Lectura inicial |
+|---|---|
+| `T` / `t` | símbolo en código (`.text`) |
+| `R` / `r` | dato de solo lectura |
+| `D` / `d` | dato inicializado |
+| `B` / `b` | dato en `.bss` |
+| `U` | símbolo indefinido, debe resolverse después |
+
+Las mayúsculas y minúsculas pueden indicar visibilidad o tipo global/local
+según la herramienta. Para esta unidad no necesitas memorizar cada variación.
+Necesitas reconocer la pregunta: ¿este nombre vive en código, datos, bss o aún
+está indefinido? Con eso ya puedes diagnosticar muchos problemas de linking.
+
+## Relocation
+
+Una relocation no es una instrucción que ejecuta CPU. Es una nota para el
+linker:
+
+```bash
+en este lugar todavía falta ajustar una dirección
+```
+
+Ejemplo conceptual:
+
+```asm
+    adrp x0, msg
+    add  x0, x0, :lo12:msg
+```
+
+Antes de conocer el layout final, el assembler puede no saber la dirección final
+de `msg`. Entonces deja información para que el linker complete el trabajo.
+
+Una relocation es evidencia de que el archivo objeto todavía no cerró todas sus
+direcciones. No es un bug por sí misma. Es el mecanismo normal que permite
+escribir código modular. Cuando el linker conoce la ubicación final de secciones
+y símbolos, puede parchear instrucciones o datos según el tipo de relocation.
+En ejecutables dinámicos, algunas relocations pueden quedar para el dynamic
+loader porque dependen de librerías cargadas después.
+
+Inspección:
+
+```bash
+$ aarch64-linux-gnu-readelf -r main.o
+$ aarch64-linux-gnu-objdump -dr main.o
+```
+
+En `.o`, pueden aparecer relocations. En el ejecutable final, muchas ya estarán
+resueltas. En binarios dinámicos, algunas quedan para el dynamic loader.
+
+## Error común
+
+Confundir símbolo con variable. Una variable puede tener un símbolo, pero símbolo
+es más general: puede nombrar función, etiqueta, objeto, sección o referencia
+externa.
+
+## Checklist
+
+- [ ] Puedo leer section headers con `readelf -S`.
+- [ ] Puedo reconocer `.text`, `.rodata`, `.data` y `.bss`.
+- [ ] Puedo explicar que `.bss` reserva memoria sin guardar todos los ceros.
+- [ ] Puedo leer símbolos básicos con `nm`.
+- [ ] Puedo distinguir símbolo definido e indefinido.
+- [ ] Puedo explicar relocation como ajuste pendiente del linker.
+
+## Siguiente paso
+
+Abre [Segmentos, loader y permisos](04-segmentos-loader-permisos.qmd).

@@ -1,0 +1,222 @@
+---
+title: "17 · Debugging con GDB, QEMU, strace y lectura de memoria"
+subtitle: "Leer el estado real del programa mientras se ejecuta."
+description: "Página principal de la Unidad 17 de la ruta AArch64."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging con GDB, QEMU y strace
+:::
+
+::: {.hero-lab}
+Hasta ahora escribiste programas, entendiste registros, memoria, stack, heap,
+`mmap`, ABI y ELF. Esta unidad cambia el punto de vista: ya no basta con saber
+qué debería hacer el programa. Ahora debes observar qué está haciendo realmente
+mientras corre.
+:::
+
+## Objetivo de la unidad
+
+El objetivo central es:
+
+```bash
+leer el estado real del programa mientras se ejecuta
+```
+
+Debugging no es memorizar comandos de GDB. Es construir una forma de mirar:
+detener el programa, observar registros, avanzar una instrucción, comprobar una
+dirección, mirar bytes de memoria, verificar syscalls y reconstruir por qué el
+estado final no coincide con lo que esperabas.
+
+Esta unidad une varias piezas previas:
+
+| Ya viste... | Aquí lo observarás con... |
+|---|---|
+| Unidad 03: registros, `PC`, `SP`, `x29`, `x30`, `PSTATE` | `info registers`, `layout regs` |
+| Unidad 06: dirección vs contenido, `.data`, `.bss` | `x/x`, `x/s`, símbolos |
+| Unidad 09 y 10: syscalls y errores | `strace` |
+| Unidad 11: stack frames | `sp`, `x29`, `x30`, `bt` |
+| Unidad 13: `mmap`, permisos y regiones | inspección de direcciones mapeadas |
+| Unidad 16: ELF, símbolos, entry point | breakpoints, desensamblado y símbolos |
+
+## Mapa mental
+
+```{mermaid}
+%%| label: fig-debug-flow
+%%| fig-cap: "Flujo básico de depuración: detener, observar, avanzar e interpretar."
+flowchart LR
+  bin["programa AArch64"] --> stop["breakpoint"]
+  stop --> regs["registros"]
+  regs --> inst["instrucción actual"]
+  inst --> mem["memoria"]
+  mem --> sys["syscalls"]
+  sys --> diag["diagnóstico"]
+```
+
+La idea no es usar todas las herramientas a la vez. Cada herramienta responde
+una pregunta distinta. GDB responde “qué estado tiene el proceso ahora”.
+QEMU responde “cómo ejecuto AArch64 cuando mi host no es ARM64”. `strace`
+responde “qué le pidió el programa al kernel”. Un core dump responde “qué estado
+quedó guardado después de fallar”.
+
+## Herramientas de la unidad
+
+| Herramienta | Uso principal en esta unidad |
+|---|---|
+| `gdb-multiarch` | depurar AArch64 desde host no ARM |
+| `gdb` | depurar nativamente en ARM64 |
+| `qemu-aarch64` | ejecutar binarios AArch64 en host `x86_64` |
+| `qemu-aarch64 -g` | esperar conexión remota de GDB |
+| `strace` | observar syscalls y errores |
+
+En el laboratorio cruzado usamos `gdb-multiarch` con `qemu-aarch64 -g`. En un
+equipo ARM64 nativo, el flujo puede ser más directo con `gdb ./programa`.
+
+## Comandos GDB iniciales
+
+| Comando | Uso inicial |
+|---|---|
+| `break etiqueta` | detener en una etiqueta o función |
+| `run` | iniciar el programa en una sesión local |
+| `continue` | continuar hasta el siguiente breakpoint o fin |
+| `stepi` | ejecutar una instrucción entrando en llamadas |
+| `nexti` | ejecutar una instrucción sin entrar en llamadas |
+| `info registers` | ver registros |
+| `x/i $pc` | ver instrucción actual |
+| `x/x dirección` | ver memoria en hexadecimal |
+| `x/s dirección` | ver string en memoria |
+| `disassemble` | ver instrucciones de una función |
+| `layout regs` | vista TUI de registros |
+| `layout asm` | vista TUI de ensamblador |
+
+La tabla no es una lista para memorizar. Es una caja de herramientas. Primero
+detienes, luego miras el estado, después avanzas y comparas qué cambió.
+
+## Memoria inspeccionable
+
+| Región | Qué observar |
+|---|---|
+| `.data` | datos inicializados modificables |
+| `.bss` | buffers reservados sin inicialización explícita |
+| heap | bloques dinámicos, punteros y contenido |
+| `mmap` | regiones mapeadas, permisos y accesos |
+| stack | frames, retorno, locales temporales |
+
+La pregunta siempre debe ser concreta: “¿esta dirección es el puntero o el
+contenido?”, “¿este registro cambió antes o después de la instrucción?”,
+“¿esta llamada al kernel devolvió éxito o error?”.
+
+## Lecciones de esta unidad
+
+::: {.resource-grid}
+::: {.resource-card}
+### Flujo básico de GDB
+
+Breakpoints, ejecución, `continue`, `stepi` y `nexti`.
+
+[Abrir](01-gdb-flujo-basico.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Registros e instrucciones
+
+`info registers`, `x/i`, `disassemble`, `layout regs` y `layout asm`.
+
+[Abrir](02-registros-instrucciones.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Lectura de memoria
+
+`.data`, `.bss`, strings, heap, `mmap`, `x/x` y `x/s`.
+
+[Abrir](03-lectura-memoria.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Stack frames en GDB
+
+`sp`, `x29`, `x30`, frame pointer, link register y `bt`.
+
+[Abrir](04-stack-frames-gdb.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### QEMU y gdbserver
+
+Ejecución cruzada y conexión remota con `gdb-multiarch`.
+
+[Abrir](05-qemu-gdbserver.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### strace y syscalls
+
+Ver `openat`, `read`, `write`, `mmap`, errores y retornos.
+
+[Abrir](06-strace-syscalls.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Core dumps
+
+Diagnóstico post-mortem introductorio con GDB.
+
+[Abrir](07-core-dumps.qmd){.resource-action}
+:::
+
+::: {.resource-card}
+### Práctica guiada
+
+Un recorrido completo de registros, memoria, stack y syscalls.
+
+[Abrir](08-practica-guiada.qmd){.resource-action}
+:::
+:::
+
+## Programas de práctica
+
+| Caso | Ruta | Qué valida |
+|---|---|---|
+| debugging mínimo | `examples/aarch64/17-debugging-gdb-qemu-strace/00-debug-minimo/src` | breakpoints, `stepi`, registros |
+| memoria | `examples/aarch64/17-debugging-gdb-qemu-strace/01-memoria/src` | `.rodata`, `.data`, `.bss`, `x/s`, `x/x` |
+| stack frames | `examples/aarch64/17-debugging-gdb-qemu-strace/02-stack/src` | `sp`, `x29`, `x30`, `bt` |
+| syscalls | `examples/aarch64/17-debugging-gdb-qemu-strace/03-syscalls/src` | `strace`, errores y recursos |
+| core dump | `examples/aarch64/17-debugging-gdb-qemu-strace/04-core-dump/src` | fallo controlado y GDB post-mortem |
+
+## Qué no estudiaremos todavía
+
+| Tema | Por qué queda fuera |
+|---|---|
+| scripting avanzado de GDB | primero importa leer estado manualmente |
+| Python API de GDB | automatización viene después |
+| DWARF completo | solo usaremos símbolos básicos |
+| reverse engineering avanzado | aquí depuramos programas conocidos |
+| exploit development, ROP, heap exploitation | seguridad ofensiva requiere otra unidad |
+| debugging de kernel o bare metal completo | este bloque es Linux userland |
+| perf, sanitizers, rr, eBPF | herramientas avanzadas para unidades posteriores |
+
+## Preparación para presentación
+
+La página Quarto queda como fuente principal. Más adelante puede agregarse una
+presentación de apoyo en:
+
+```bash
+site/slides/aarch64/debugging-gdb-qemu-strace/overview/slides.md
+```
+
+No crear presentación todavía. La presentación debe visualizar el flujo
+`programa -> breakpoint -> registros -> memoria`, la conexión GDB/QEMU, el stack
+con `sp`/`x29`/`x30`, `strace` por syscall y el flujo `core dump -> GDB -> bt`.
+
+## Checklist de salida
+
+- [ ] Puedo iniciar una sesión GDB local o remota.
+- [ ] Puedo detenerme en una etiqueta.
+- [ ] Puedo avanzar instrucción por instrucción.
+- [ ] Puedo diferenciar `stepi` y `nexti`.
+- [ ] Puedo leer registros generales y registros especiales de debugging.
+- [ ] Puedo inspeccionar instrucciones, memoria y strings.
+- [ ] Puedo leer `sp`, `x29` y `x30`.
+- [ ] Puedo verificar syscalls con `strace`.
+- [ ] Puedo explicar qué es un core dump introductorio.

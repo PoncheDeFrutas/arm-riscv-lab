@@ -1,0 +1,147 @@
+---
+title: "17.6 · strace y syscalls"
+description: "Ver syscalls, argumentos, retornos y errores con strace."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > Debugging > strace y syscalls
+:::
+
+::: {.hero-lab}
+GDB muestra estado interno. `strace` muestra conversación con el kernel. Si tu
+programa abre, lee, escribe, mapea o falla por permisos, `strace` ayuda a ver el
+contrato real con Linux.
+:::
+
+## Qué problema resuelve
+
+En assembly puedes preparar registros para una syscall, ejecutar `svc #0` y aun
+así equivocarte en número, puntero, tamaño, flags o manejo de error. `strace`
+permite verificar qué syscall llegó al kernel y qué respondió.
+
+Comandos iniciales:
+
+```bash
+$ strace ./programa
+$ strace -e trace=openat,read,write,close ./programa
+$ strace -e trace=mmap,munmap,mprotect ./programa
+```
+
+## Lectura básica
+
+Una línea de `strace` suele tener esta forma:
+
+```bash
+write(1, "Hola\n", 5) = 5
+```
+
+Lectura:
+
+| Parte | Significado |
+|---|---|
+| `write` | syscall observada |
+| `1` | file descriptor |
+| `"Hola\n"` | buffer interpretado por `strace` |
+| `5` | cantidad solicitada |
+| `= 5` | retorno exitoso: escribió 5 bytes |
+
+Esto conecta con Unidad 09: argumentos en registros antes de `svc #0`, retorno
+en `x0` después de volver del kernel.
+
+## Ver errores
+
+Ejemplo conceptual:
+
+```bash
+openat(AT_FDCWD, "no-existe.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+```
+
+La syscall llegó al kernel, pero falló. `-1 ENOENT` indica error. En assembly
+debes revisar el retorno y no tratarlo como file descriptor válido.
+
+`strace` no arregla el programa. Te dice si tu explicación coincide con lo que
+Linux recibió.
+
+## Filtros útiles
+
+Para programas de archivos:
+
+```bash
+$ strace -e trace=openat,read,write,close ./programa
+```
+
+Para memoria virtual:
+
+```bash
+$ strace -e trace=mmap,munmap,mprotect ./programa
+```
+
+Para un programa mínimo con `write` y `exit`:
+
+```bash
+$ strace -e trace=write,exit ./debug
+```
+
+Usa filtros cuando la salida completa sea demasiado ruidosa. El objetivo es leer
+con intención, no llenar pantalla.
+
+## strace con QEMU
+
+Si ejecutas:
+
+```bash
+$ strace qemu-aarch64 ./programa
+```
+
+puedes estar trazando syscalls del proceso QEMU en el host, no una vista limpia
+del programa AArch64 como si fuera nativo. Según configuración del sistema y del
+entorno, la lectura puede mezclar capas.
+
+Modelo correcto:
+
+```{mermaid}
+%%| label: fig-strace-qemu-layers
+%%| fig-cap: "Con QEMU, strace puede observar la capa del emulador y no solo el programa invitado."
+flowchart LR
+  strace["strace host"] --> qemu["qemu-aarch64"]
+  qemu --> guest["programa AArch64"]
+  qemu --> kernel["kernel host"]
+```
+
+No inventes conclusiones si la salida no coincide con el programa. En entorno
+ARM64 nativo, `strace ./programa` es más directo. En laboratorio cruzado, usa
+`strace` con cuidado y apóyate también en GDB.
+
+## Syscalls a verificar
+
+| Syscall | Qué mirar |
+|---|---|
+| `openat` | ruta, flags, retorno como fd o error |
+| `read` | fd, buffer, tamaño, bytes leídos |
+| `write` | fd, buffer, tamaño, bytes escritos |
+| `close` | fd cerrado, error si fd inválido |
+| `mmap` | dirección retornada, flags, permisos |
+| `munmap` | dirección, tamaño, éxito o error |
+| `mprotect` | región, permisos nuevos, error por alineación o permisos |
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| asumir que `strace` siempre muestra solo el programa AArch64 | con QEMU puede mostrar capa del emulador |
+| ignorar retornos negativos | leer `= -1 ERRNO (...)` |
+| no filtrar salida | usar `-e trace=...` |
+| confundir bytes solicitados con bytes reales | mirar valor después de `=` |
+| creer que syscall exitosa implica lógica correcta | éxito solo confirma contrato con kernel |
+
+## Checklist
+
+- [ ] Puedo leer una línea básica de `write`.
+- [ ] Puedo reconocer un `ENOENT`.
+- [ ] Puedo filtrar syscalls de archivos.
+- [ ] Puedo filtrar syscalls de memoria.
+- [ ] Puedo explicar la advertencia de `strace` con QEMU.
+
+## Siguiente paso
+
+Abre [Core dumps](07-core-dumps.qmd).

@@ -320,6 +320,44 @@ website:
                   href: courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.qmd
                 - text: "Librerías y lectura guiada"
                   href: courses/aarch64/abi-aapcs64-c/07-librerias-y-lectura-guiada.qmd
+            - section: "16 · ELF, linking, loading y binarios"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/elf-linking-loading/index.qmd
+                - text: "Flujo .s, .o y ELF"
+                  href: courses/aarch64/elf-linking-loading/01-flujo-assembly-objeto-ejecutable.qmd
+                - text: "ELF header y entry point"
+                  href: courses/aarch64/elf-linking-loading/02-elf-header-entry-point.qmd
+                - text: "Secciones y símbolos"
+                  href: courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.qmd
+                - text: "Segmentos y loader"
+                  href: courses/aarch64/elf-linking-loading/04-segmentos-loader-permisos.qmd
+                - text: "Linking estático y dinámico"
+                  href: courses/aarch64/elf-linking-loading/05-linking-estatico-dinamico.qmd
+                - text: "GOT, PLT y PIE"
+                  href: courses/aarch64/elf-linking-loading/06-got-plt-pie.qmd
+                - text: "Herramientas y lectura guiada"
+                  href: courses/aarch64/elf-linking-loading/07-herramientas-lectura-guiada.qmd
+            - section: "17 · Debugging con GDB, QEMU y strace"
+              contents:
+                - text: "Mapa de la unidad"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/index.qmd
+                - text: "Flujo básico de GDB"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/01-gdb-flujo-basico.qmd
+                - text: "Registros e instrucciones"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/02-registros-instrucciones.qmd
+                - text: "Lectura de memoria"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/03-lectura-memoria.qmd
+                - text: "Stack frames en GDB"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/04-stack-frames-gdb.qmd
+                - text: "QEMU y gdbserver"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/05-qemu-gdbserver.qmd
+                - text: "strace y syscalls"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/06-strace-syscalls.qmd
+                - text: "Core dumps"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/07-core-dumps.qmd
+                - text: "Práctica guiada"
+                  href: courses/aarch64/debugging-gdb-qemu-strace/08-practica-guiada.qmd
     - title: "Curso RISC-V"
       style: docked
       background: "#0b0f14"

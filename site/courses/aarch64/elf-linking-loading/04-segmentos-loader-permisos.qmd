@@ -1,0 +1,152 @@
+---
+title: "16.4 · Program headers, segmentos, loader y permisos"
+description: "Diferencia entre secciones y segmentos, program headers, loader y permisos de memoria."
+---
+
+::: {.breadcrumb-lite}
+Cursos > AArch64 > ELF > Segmentos, loader y permisos
+:::
+
+::: {.hero-lab}
+Las secciones ayudan a construir y analizar. Los segmentos ayudan a ejecutar.
+Cuando Linux crea el proceso, lo que importa para mapear memoria son los program
+headers.
+:::
+
+## Leer program headers
+
+```bash
+$ aarch64-linux-gnu-readelf -l min
+```
+
+Busca líneas `LOAD`. Cada una describe una parte que puede mapearse en memoria.
+Salida resumida:
+
+```bash
+Type           Offset             VirtAddr           FileSiz  MemSiz   Flags
+LOAD           0x0000000000000000 0x0000000000400000 0x0000b0 0x0000b0 R E
+LOAD           0x00000000000000b0 0x00000000004100b0 0x000008 0x000028 RW
+```
+
+Los números reales pueden cambiar. La lectura importante:
+
+| Campo | Pregunta |
+|---|---|
+| `Offset` | ¿desde qué parte del archivo sale? |
+| `VirtAddr` | ¿en qué dirección virtual se espera? |
+| `FileSiz` | ¿cuántos bytes vienen del archivo? |
+| `MemSiz` | ¿cuánto ocupa en memoria? |
+| `Flags` | ¿se puede leer, escribir, ejecutar? |
+
+Esta tabla cambia el punto de vista. Con section headers preguntabas cómo está
+organizado el archivo para construirlo o inspeccionarlo. Con program headers
+preguntas cómo se transforma el archivo en memoria. Por eso aquí aparecen
+tamaños de archivo, tamaños de memoria, direcciones virtuales y permisos.
+
+## Segmento no es sección
+
+```{mermaid}
+%%| label: fig-section-segment
+%%| fig-cap: "Relación conceptual entre secciones y segmentos."
+flowchart LR
+  subgraph sections["Secciones"]
+    text[".text"]
+    rodata[".rodata"]
+    data[".data"]
+    bss[".bss"]
+  end
+
+  subgraph segments["Segmentos LOAD"]
+    rx["LOAD R E"]
+    rw["LOAD RW"]
+  end
+
+  text --> rx
+  rodata --> rx
+  data --> rw
+  bss --> rw
+```
+
+Una sección puede terminar dentro de un segmento. Un segmento puede contener
+varias secciones. El loader no necesita “estudiar” cada lección de Unidad 04;
+necesita saber qué rangos mapear y con qué permisos.
+
+Esta es la separación más importante de la unidad. Si una herramienta te muestra
+`.text`, estás viendo organización interna. Si `readelf -l` te muestra `LOAD R
+E`, estás viendo una región cargable. Ambas vistas son verdaderas, pero no
+responden la misma pregunta. Confundirlas lleva a creer que el loader carga
+“secciones” una por una, cuando su mapa principal son segmentos.
+
+## Permisos
+
+| Contenido | Permiso normal | Razón |
+|---|---|---|
+| código `.text` | `R E` / `RX` | CPU debe leer/ejecutar instrucciones |
+| constantes `.rodata` | `R` | programa lee, no debería escribir |
+| datos `.data` | `RW` | programa lee y modifica |
+| reserva `.bss` | `RW` | memoria inicializada a cero, luego modificable |
+
+`.text` no debe ser writable por defecto. Si el código también fuera `W`, una
+escritura accidental o maliciosa podría cambiar instrucciones. Unidad 13 ya
+preparó esta idea con `PROT_READ`, `PROT_WRITE` y `PROT_EXEC`.
+
+Los permisos son una defensa y una descripción de intención. Código debe poder
+ejecutarse, pero no modificarse. Datos deben poder modificarse, pero no
+ejecutarse. Constantes deben poder leerse, pero no escribirse. Cuando veas `RX`
+o `R E`, piensa en “este rango se puede leer y ejecutar”. Cuando veas `RW`,
+piensa en “este rango se puede leer y escribir”. No son decoraciones del ELF:
+terminan afectando accesos reales del proceso.
+
+## `FileSiz` y `MemSiz`
+
+`.bss` explica una diferencia importante:
+
+```bash
+FileSiz puede ser menor que MemSiz
+```
+
+Eso significa: el archivo no guarda todos los bytes, pero el proceso sí recibe
+memoria reservada. Para `.bss`, el loader puede crear memoria inicializada a
+cero sin inflar el archivo con ceros explícitos.
+
+Este diseño ahorra espacio y comunica intención. Si necesitas un buffer de 4096
+bytes inicialmente en cero, no tiene sentido guardar 4096 ceros en disco. El ELF
+puede indicar que en memoria el segmento debe ser más grande que la parte que
+viene del archivo. El loader completa esa diferencia como memoria cero.
+
+## Qué hace el loader
+
+Modelo inicial:
+
+```bash
+1. lee ELF header
+2. lee program headers
+3. mapea segmentos LOAD
+4. aplica permisos
+5. prepara stack inicial y entorno
+6. salta al entry point
+```
+
+Si el binario es dinámico, también participa el dynamic loader. Eso viene en la
+siguiente lección.
+
+## Error común
+
+Creer que section headers son el mapa principal de ejecución. Para cargar el
+proceso, los program headers son el mapa crítico. Las secciones siguen siendo
+útiles para herramientas, linker y debugging, pero no son la guía principal del
+loader.
+
+## Checklist
+
+- [ ] Puedo usar `readelf -l`.
+- [ ] Puedo reconocer `LOAD`.
+- [ ] Puedo explicar `FileSiz` y `MemSiz`.
+- [ ] Puedo explicar sección vs segmento.
+- [ ] Puedo justificar `.text` como `RX`.
+- [ ] Puedo justificar `.data` y `.bss` como `RW`.
+- [ ] Puedo conectar program headers con `mmap` y permisos de Unidad 13.
+
+## Siguiente paso
+
+Abre [Linking estático y dinámico](05-linking-estatico-dinamico.qmd).
