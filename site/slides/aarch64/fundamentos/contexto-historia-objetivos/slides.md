@@ -33,7 +33,6 @@ seoMeta:
 layout: center
 ---
 
-
 <div class="muted">Arquitectura de Computadores y Ensambladores 1</div>
 
 ## Unidad 00
@@ -50,23 +49,12 @@ Unidad de apertura: vocabulario, mapa conceptual y razón de ser del curso.
 
 # Anuncios importantes
 
+
 <div class="numbered-grid">
   <div class="numbered-card">
     <div class="card-number">1</div>
     <h3>Anuncio 1</h3>
-    <p>Detalle breve del anuncio importante.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">2</div>
-    <h3>Anuncio 2</h3>
-    <p>Detalle breve del anuncio importante.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">3</div>
-    <h3>Anuncio 3</h3>
-    <p>Detalle breve del anuncio importante.</p>
+    <p></p>
   </div>
 </div>
 
@@ -78,26 +66,9 @@ Unidad de apertura: vocabulario, mapa conceptual y razón de ser del curso.
   <div class="numbered-card">
     <div class="card-number">1</div>
     <h3>Punto de agenda 1</h3>
-    <p>Descripción breve del primer bloque.</p>
+    <p></p>
   </div>
 
-  <div class="numbered-card">
-    <div class="card-number">2</div>
-    <h3>Punto de agenda 2</h3>
-    <p>Descripción breve del segundo bloque.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">3</div>
-    <h3>Punto de agenda 3</h3>
-    <p>Descripción breve del tercer bloque.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">4</div>
-    <h3>Punto de agenda 4</h3>
-    <p>Descripción breve del cierre.</p>
-  </div>
 </div>
 
 ---
@@ -107,22 +78,21 @@ Unidad de apertura: vocabulario, mapa conceptual y razón de ser del curso.
 <div class="concept-grid vertical-center">
   <div class="concept-card">
     <h3>Competencia 1</h3>
-    <p>Describe la competencia que se espera trabajar.</p>
+    <p>
+      El estudiante desarrolla soluciones eficientes en sistemas computacionales
+      integrando arquitectura de computadores, programación en bajo nivel y
+      herramientas modernas de análisis y simulación para resolver problemas
+      complejos en sistemas embebidos e IoT.
+    </p>
   </div>
 
   <div class="concept-card">
     <h3>Competencia 2</h3>
-    <p>Describe la competencia que se espera trabajar.</p>
-  </div>
-
-  <div class="concept-card">
-    <h3>Competencia 3</h3>
-    <p>Describe la competencia que se espera trabajar.</p>
-  </div>
-
-  <div class="concept-card">
-    <h3>Competencia 4</h3>
-    <p>Describe la competencia que se espera trabajar.</p>
+    <p>
+      Analiza el comportamiento de arquitecturas modernas, como ARM y RISC-V,
+      utilizando simuladores como Gem5 y QEMU, registros e instrucciones para
+      optimizar programas a bajo nivel en microprocesadores.
+    </p>
   </div>
 </div>
 
@@ -131,18 +101,19 @@ Unidad de apertura: vocabulario, mapa conceptual y razón de ser del curso.
 # Valor de la semana
 
 <div class="callout tip">
-Valor de la semana: escribe aquí el valor o actitud que se quiere reforzar.
+  <strong>Curiosidad.</strong>
+  Interés por comprender cómo funcionan los sistemas computacionales más allá
+  de su uso superficial, explorando su estructura interna y comportamiento.
 </div>
 
 <div class="concept-grid">
   <div class="concept-card">
     <h3>Aplicación en clase</h3>
-    <p>Describe cómo se verá este valor durante la sesión.</p>
-  </div>
-
-  <div class="concept-card">
-    <h3>Aplicación en laboratorio</h3>
-    <p>Describe cómo se verá este valor durante la práctica.</p>
+    <p>
+      Permite al estudiante cuestionarse cómo interactúan el hardware y el
+      software, motivándolo a comprender la arquitectura del computador como
+      base para el aprendizaje del ensamblador.
+    </p>
   </div>
 </div>
 
