@@ -1,17 +1,574 @@
-.slidev-layout {
-  font-size: 1.05rem;
-  line-height: 1.45;
+/*
+  Global Slidev CSS — ARM64 course
+  Goal:
+  - Easy color changes through CSS variables
+  - Flat/minimal visual style
+  - No 3D, no heavy shadows, no overloaded backgrounds
+  - Better contrast between background, cards and borders
+  - Reusable cards, grids, callouts and cover layouts
+*/
+
+:root {
+  color-scheme: dark;
+
+  /* ==============================
+     1. Global color system
+     Change these values to modify the whole theme.
+     ============================== */
+
+  --arm-bg: #060a0f;
+  --arm-bg-soft: #0b1118;
+
+  --arm-surface: #111a25;
+  --arm-surface-soft: #172231;
+  --arm-surface-muted: #0d141d;
+
+  --arm-border: #344255;
+  --arm-border-soft: #253244;
+
+  --arm-text: #e8edf3;
+  --arm-text-soft: #c8d2dd;
+  --arm-muted: #94a3b8;
+
+  --arm-accent: #c9a46c;
+  --arm-accent-soft: #e2c48e;
+  --arm-accent-muted: #8f7652;
+
+  --arm-danger: #ef9a9a;
+  --arm-info: #9cc9ff;
+  --arm-success: #a7d8a9;
+
+  /* ==============================
+     2. Shape, spacing and typography
+     Keep values simple and consistent.
+     ============================== */
+
+  --arm-radius-sm: 8px;
+  --arm-radius: 14px;
+  --arm-radius-lg: 20px;
+
+  --arm-space-xs: 0.35rem;
+  --arm-space-sm: 0.65rem;
+  --arm-space-md: 1rem;
+  --arm-space-lg: 1.4rem;
+  --arm-space-xl: 2rem;
+
+  --arm-line: 1.55;
+  --arm-title-line: 1.05;
+
+  /* Flat design: no heavy shadows. */
+  --arm-shadow: none;
 }
 
-.slidev-layout h1 {
-  letter-spacing: 0;
+/* ==============================
+   Base page
+   ============================== */
+
+html,
+body {
+  background: var(--arm-bg);
+  color: var(--arm-text);
 }
 
-.slidev-layout table {
-  width: 100%;
+:global(.slidev-layout) {
+  background: var(--arm-bg);
+  color: var(--arm-text);
+}
+
+:global(.slidev-layout.default),
+:global(.slidev-layout.center),
+:global(.slidev-layout.section),
+:global(.slidev-layout.statement),
+:global(.slidev-layout.fact) {
+  padding: 2.2rem 3rem;
+}
+
+:global(.slidev-layout h1),
+:global(.slidev-layout h2),
+:global(.slidev-layout h3) {
+  color: var(--arm-text);
+  letter-spacing: -0.02em;
+}
+
+:global(.slidev-layout h1) {
+  margin-bottom: 1rem;
+}
+
+:global(.slidev-layout h2) {
+  margin-bottom: 0.8rem;
+}
+
+:global(.slidev-layout p),
+:global(.slidev-layout li) {
+  color: var(--arm-text-soft);
+  line-height: var(--arm-line);
+}
+
+:global(.slidev-layout strong) {
+  color: var(--arm-text);
+}
+
+:global(.slidev-layout a) {
+  color: var(--arm-accent-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--arm-accent-muted);
+}
+
+:global(.slidev-layout code) {
+  padding: 0.08rem 0.32rem;
+  border-radius: var(--arm-radius-sm);
+  background: var(--arm-surface-muted);
+  border: 1px solid var(--arm-border-soft);
+  color: var(--arm-text);
+}
+
+/* ==============================
+   Small reusable text helpers
+   ============================== */
+
+:global(.muted) {
+  color: var(--arm-muted);
+}
+
+:global(.eyebrow) {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--arm-border);
+  background: var(--arm-surface-muted);
+  color: var(--arm-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+:global(.card-kicker) {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--arm-border-soft);
+  background: var(--arm-surface-muted);
+  color: var(--arm-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ==============================
+   Alignment helpers
+   Use these wrappers inside slides.
+   ============================== */
+
+:global(.center-vertical) {
+  min-height: 66vh;
+  display: grid;
+  align-content: center;
+}
+
+:global(.center-horizontal) {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+:global(.center-content) {
+  min-height: 66vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+:global(.center-content > *) {
+  max-width: 48rem;
+}
+
+/* ==============================
+   Cover / opening slide
+   Keep cover simple and close to the original style.
+   ============================== */
+
+:global(.cover-clean) {
+  min-height: auto;
+  background: transparent;
+  color: var(--arm-text);
+}
+
+:global(.cover-clean h1) {
+  margin: 0 0 0.75rem;
+  max-width: 12ch;
+  font-size: clamp(2.7rem, 6.5vw, 4.6rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+:global(.cover-clean h2) {
+  margin: 0 0 1.15rem;
+  max-width: 34ch;
+  font-size: clamp(1.25rem, 2.2vw, 1.9rem);
+  font-weight: 600;
+  color: var(--arm-text-soft);
+  text-wrap: balance;
+}
+
+:global(.cover-note) {
+  width: fit-content;
+  max-width: 42rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--arm-radius);
+  border: 1px solid var(--arm-border);
+  background: var(--arm-surface-muted);
+  color: var(--arm-text-soft);
+  box-shadow: none;
+}
+
+/* ==============================
+   Big question / review slides
+   Used for opening questions, summary questions, reflection slides.
+   ============================== */
+
+:global(.big-question),
+:global(.review-slide) {
+  min-height: 66vh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(1.8rem, 3.5vw, 3rem);
+  text-align: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+:global(.big-question h1),
+:global(.review-slide h1) {
+  margin: 0;
+  max-width: 14ch;
+  font-size: clamp(2.3rem, 5vw, 3.9rem);
+  line-height: var(--arm-title-line);
+  text-wrap: balance;
+}
+
+:global(.big-question p),
+:global(.review-slide p) {
+  max-width: 44rem;
+  margin: 0;
+  color: var(--arm-text-soft);
+}
+
+:global(.question-points) {
+  display: grid;
+  gap: 0.85rem;
+  width: min(44rem, 100%);
+  margin-top: 0.75rem;
+}
+
+:global(.question-points > div) {
+  padding: 0.95rem 1.1rem;
+  border-radius: var(--arm-radius);
+  border: 1px solid var(--arm-border);
+  background: var(--arm-surface-soft);
+  text-align: left;
+  color: var(--arm-text-soft);
+}
+
+:global(.question-points > div::before) {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.7rem;
+  border-radius: 999px;
+  background: var(--arm-accent);
+  vertical-align: middle;
+}
+
+/* ==============================
+   Centered section layouts
+   ============================== */
+
+:global(.slidev-layout.section),
+:global(.slidev-layout.statement),
+:global(.slidev-layout.fact) {
+  text-align: center;
+}
+
+:global(.slidev-layout.section h1),
+:global(.slidev-layout.statement h1),
+:global(.slidev-layout.fact h1),
+:global(.slidev-layout.center h1) {
+  max-width: 18ch;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ==============================
+   Generic grids
+   ============================== */
+
+:global(.concept-grid),
+:global(.compare-grid),
+:global(.tool-grid),
+:global(.objective-grid),
+:global(.numbered-grid) {
+  display: grid;
+  gap: 1.15rem;
+  margin: 1.25rem 0 1.35rem;
+}
+
+:global(.concept-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+:global(.compare-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+:global(.tool-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+:global(.objective-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+:global(.numbered-grid) {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+/* ==============================
+   Flat cards
+   Cards are intentionally simple: border + solid background.
+   ============================== */
+
+:global(.concept-card),
+:global(.compare-card),
+:global(.tool-card),
+:global(.flow-step),
+:global(.objective-item),
+:global(.numbered-card),
+:global(.key-idea),
+:global(.callout) {
+  position: relative;
+  padding: 1.05rem 1.15rem;
+  border-radius: var(--arm-radius);
+  border: 1px solid var(--arm-border);
+  background: var(--arm-surface);
+  box-shadow: none;
+}
+
+:global(.key-idea) {
+  background: var(--arm-surface-soft);
+  border-color: var(--arm-border);
+}
+
+:global(.callout) {
+  background: var(--arm-surface-muted);
+  border-color: var(--arm-border);
+}
+
+:global(.concept-card h3),
+:global(.compare-card h3),
+:global(.tool-card h3),
+:global(.objective-item h3),
+:global(.numbered-card h3) {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  color: var(--arm-text);
+}
+
+:global(.concept-card p),
+:global(.compare-card li),
+:global(.tool-card p),
+:global(.objective-item p),
+:global(.numbered-card p),
+:global(.key-idea p),
+:global(.callout p) {
+  margin: 0;
+  color: var(--arm-text-soft);
+  line-height: var(--arm-line);
+}
+
+:global(.compare-card ul) {
+  margin: 0.65rem 0 0;
+  padding-left: 1.1rem;
+}
+
+:global(.compare-card li + li) {
+  margin-top: 0.35rem;
+}
+
+/* Optional: use this when a card must be centered. */
+:global(.centered-card) {
+  text-align: center;
+}
+
+/* ==============================
+   Numbered elements
+   ============================== */
+
+:global(.objective-item .item-number) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.55rem;
+  color: var(--arm-accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+:global(.numbered-card) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+:global(.numbered-card .card-number) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--arm-radius-sm);
+  background: var(--arm-surface-muted);
+  border: 1px solid var(--arm-accent-muted);
+  color: var(--arm-accent);
   font-size: 0.9rem;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
-.slidev-layout pre {
-  max-height: 360px;
+/* ==============================
+   Flow diagrams without extra CSS per slide
+   Use when Mermaid becomes too wide.
+   ============================== */
+
+:global(.flow-row) {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 1.15rem;
+}
+
+:global(.flow-tight) {
+  gap: 0.65rem;
+}
+
+:global(.flow-arrow) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--arm-muted);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+:global(.flow-step) {
+  background: var(--arm-surface-soft);
+}
+
+/* Vertical flow: useful for source -> compiler -> assembly -> binary -> OS. */
+:global(.flow-column) {
+  display: grid;
+  gap: 0.65rem;
+  width: min(38rem, 100%);
+  margin: 1.15rem auto 0;
+}
+
+:global(.flow-column .flow-arrow) {
+  min-height: 1rem;
+  transform: rotate(90deg);
+}
+
+/* ==============================
+   Compact cards for slides with limited space
+   ============================== */
+
+:global(.compact-card) {
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--arm-radius-sm);
+}
+
+:global(.compact-card h3) {
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+:global(.compact-card p) {
+  font-size: 0.86rem;
+}
+
+/* ==============================
+   Optional card variants
+   Use only when you need stronger visual separation.
+   ============================== */
+
+:global(.card-soft) {
+  background: var(--arm-surface-soft);
+}
+
+:global(.card-muted) {
+  background: var(--arm-surface-muted);
+}
+
+:global(.card-accent) {
+  border-color: var(--arm-accent-muted);
+}
+
+/* ==============================
+   Responsive adjustments
+   ============================== */
+
+@media (max-width: 720px) {
+  :global(.slidev-layout.default),
+  :global(.slidev-layout.center),
+  :global(.slidev-layout.section),
+  :global(.slidev-layout.statement),
+  :global(.slidev-layout.fact) {
+    padding: 1.6rem 1.15rem;
+  }
+
+  :global(.cover-clean),
+  :global(.big-question),
+  :global(.review-slide),
+  :global(.center-vertical),
+  :global(.center-content) {
+    min-height: auto;
+    padding: 1.6rem 1.15rem;
+  }
+
+  :global(.concept-grid),
+  :global(.compare-grid),
+  :global(.tool-grid),
+  :global(.objective-grid),
+  :global(.numbered-grid) {
+    grid-template-columns: 1fr;
+  }
+
+  :global(.flow-row) {
+    justify-content: stretch;
+  }
+
+  :global(.flow-row > .concept-card),
+  :global(.flow-row > .flow-step) {
+    flex: 1 1 100%;
+  }
+
+  :global(.flow-row .flow-arrow) {
+    width: 100%;
+    transform: rotate(90deg);
+  }
 }

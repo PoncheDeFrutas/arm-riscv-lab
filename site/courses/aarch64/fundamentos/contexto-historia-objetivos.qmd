@@ -15,9 +15,12 @@ qué assembly sirve para observar lo que normalmente queda oculto detrás de un
 lenguaje de alto nivel.
 :::
 
-<div class="hero-actions">
-<a class="lab-button" href="../../../slides/aarch64/fundamentos/contexto-historia-objetivos/">Ver presentación</a>
-</div>
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+[Ver presentación Slidev](../../../slides/aarch64/fundamentos/contexto-historia-objetivos/){.lab-button}
+:::
 
 ## Qué aprenderás en esta unidad
 
