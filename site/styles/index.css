@@ -58,7 +58,6 @@
 
 html,
 body {
-  background: #0f0f0f !important;
   color: #f3f4f6 !important;
 }
 
@@ -187,6 +186,48 @@ body {
   min-height: auto;
   background: transparent !important;
   color: #f3f4f6 !important;
+}
+
+:global(.ecys-cover-bg) {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("../assets/slides/Fondo_ECYS.png") !important;
+  background-color: #e7e7e7 !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+:global(.ecys-cover-content) {
+  position: relative;
+  z-index: 1;
+  max-width: 46rem;
+  color: #f3f4f6 !important;
+}
+
+:global(.ecys-title-cover) {
+  position: relative;
+  z-index: 1;
+  min-height: 70vh;
+  display: grid;
+  align-content: center;
+  max-width: 54rem;
+  color: #111111 !important;
+}
+
+:global(.ecys-title-cover h1) {
+  max-width: 14ch;
+  margin: 0.5rem 0 0;
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
+  line-height: 0.98;
+  text-wrap: balance;
+  color: #111111 !important;
+}
+
+:global(.ecys-title-cover .muted) {
+  color: #111111 !important;
 }
 
 :global(.cover-clean h1) {

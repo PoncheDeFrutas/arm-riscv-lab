@@ -19,9 +19,24 @@ seoMeta:
 @import "../../../../styles/index.css";
 </style>
 
+<div class="ecys-cover-bg"></div>
+
+<div class="ecys-title-cover">
+
+<div class="muted">Escuela de Ingeniería de Ciencias y Sistemas</div>
+
+# Arquitectura de Computadores y Ensambladores 1
+
+</div>
+
+---
+layout: center
+---
+
+
 <div class="muted">Arquitectura de Computadores y Ensambladores 1</div>
 
-# Unidad 00
+## Unidad 00
 ## Contexto, historia y objetivos
 
 Antes de escribir instrucciones, hace falta entender qué estudiamos cuando
