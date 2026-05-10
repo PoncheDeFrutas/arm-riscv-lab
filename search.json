@@ -2647,11 +2647,11 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/memoria-direccionamiento/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/memoria-direccionamiento/index.html#preparación-para-presentación",
+    "objectID": "courses/aarch64/memoria-direccionamiento/index.html#presentación-de-apoyo",
+    "href": "courses/aarch64/memoria-direccionamiento/index.html#presentación-de-apoyo",
     "title": "06 · Memoria básica, secciones y direccionamiento",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/memoria-direccionamiento/overview/slides.md\nEsa presentación debe practicar lectura visual de memoria; no debe reemplazar estas lecciones.",
+    "section": "Presentación de apoyo",
+    "text": "Presentación de apoyo\nLa página Quarto queda como fuente principal. La presentación sirve como apoyo visual para practicar lectura de memoria.\nVer presentación",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -7626,11 +7626,11 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/bases-binarias/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/bases-binarias/index.html#preparación-para-presentación",
+    "objectID": "courses/aarch64/bases-binarias/index.html#presentación-de-apoyo",
+    "href": "courses/aarch64/bases-binarias/index.html#presentación-de-apoyo",
     "title": "02 · Bases binarias y representación de datos",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/bases-binarias/overview/slides.md\nEsa presentación debe resumir y practicar la unidad, no reemplazarla.",
+    "section": "Presentación de apoyo",
+    "text": "Presentación de apoyo\nLa página Quarto es la fuente principal. La presentación sirve como apoyo visual para clase y repaso.\nVer presentación",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -12961,11 +12961,11 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/gnu-assembly/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/gnu-assembly/index.html#preparación-para-presentación",
+    "objectID": "courses/aarch64/gnu-assembly/index.html#presentación-de-apoyo",
+    "href": "courses/aarch64/gnu-assembly/index.html#presentación-de-apoyo",
     "title": "04 · GNU Assembly, directivas y pseudo-instrucciones",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/gnu-assembly/overview/slides.md\nEsa presentación debe servir como repaso visual, no reemplazar estas lecciones.",
+    "section": "Presentación de apoyo",
+    "text": "Presentación de apoyo\nLa página Quarto es la fuente principal. La presentación sirve como repaso visual de directivas y estructura GNU Assembly.\nVer presentación",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -17088,11 +17088,11 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/primeros-programas/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/primeros-programas/index.html#preparación-para-presentación",
+    "objectID": "courses/aarch64/primeros-programas/index.html#presentación-de-apoyo",
+    "href": "courses/aarch64/primeros-programas/index.html#presentación-de-apoyo",
     "title": "05 · Primeros programas en Linux AArch64",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/primeros-programas/overview/slides.md\nEsa presentación debe practicar el flujo, no reemplazar estas páginas.",
+    "section": "Presentación de apoyo",
+    "text": "Presentación de apoyo\nLa página Quarto es la fuente principal. La presentación sirve como apoyo visual para practicar el flujo de primeros programas.\nVer presentación",
     "crumbs": [
       "Roadmap",
       "AArch64",
