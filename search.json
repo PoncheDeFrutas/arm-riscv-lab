@@ -2647,19 +2647,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/memoria-direccionamiento/index.html#presentación-de-apoyo",
-    "href": "courses/aarch64/memoria-direccionamiento/index.html#presentación-de-apoyo",
-    "title": "06 · Memoria básica, secciones y direccionamiento",
-    "section": "Presentación de apoyo",
-    "text": "Presentación de apoyo\nLa página Quarto queda como fuente principal. La presentación sirve como apoyo visual para practicar lectura de memoria.\nVer presentación",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "06 · Memoria y direccionamiento",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/memoria-direccionamiento/index.html#checklist-de-cierre",
     "href": "courses/aarch64/memoria-direccionamiento/index.html#checklist-de-cierre",
     "title": "06 · Memoria básica, secciones y direccionamiento",
@@ -7626,19 +7613,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/bases-binarias/index.html#presentación-de-apoyo",
-    "href": "courses/aarch64/bases-binarias/index.html#presentación-de-apoyo",
-    "title": "02 · Bases binarias y representación de datos",
-    "section": "Presentación de apoyo",
-    "text": "Presentación de apoyo\nLa página Quarto es la fuente principal. La presentación sirve como apoyo visual para clase y repaso.\nVer presentación",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "02 · Bases binarias y representación",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/bases-binarias/index.html#para-investigar-más",
     "href": "courses/aarch64/bases-binarias/index.html#para-investigar-más",
     "title": "02 · Bases binarias y representación de datos",
@@ -10330,19 +10304,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/aritmetica-logica-bits/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/aritmetica-logica-bits/index.html#preparación-para-presentación",
-    "title": "07 · Aritmética, lógica, flags y bits",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/aritmetica-logica-bits/overview/slides.md\nEsa presentación debe practicar lectura visual de registros, flags y bits; no debe reemplazar estas lecciones.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "07 · Aritmética, lógica y bits",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/aritmetica-logica-bits/index.html#checklist-de-cierre",
     "href": "courses/aarch64/aritmetica-logica-bits/index.html#checklist-de-cierre",
     "title": "07 · Aritmética, lógica, flags y bits",
@@ -11193,19 +11154,6 @@
     "title": "08 · Control de flujo y programación estructurada",
     "section": "Qué no estudiaremos todavía",
     "text": "Qué no estudiaremos todavía\n\n\n\n\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nABI/AAPCS64 completo\nPrimero veremos llamada y retorno como idea\n\n\nStack frames\nSe estudiarán cuando aparezcan funciones reales\n\n\nRecursión\nDepende de stack frames y preservación de registros\n\n\nJump tables reales\nswitch queda conceptual\n\n\nPredicción de branches\nEs tema de rendimiento\n\n\nException handling e interrupciones\nNo son control de flujo userland básico",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "08 · Control de flujo",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/control-flujo/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/control-flujo/index.html#preparación-para-presentación",
-    "title": "08 · Control de flujo y programación estructurada",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/control-flujo/overview/slides.md\nEsa presentación debe practicar lectura visual de etiquetas, ramas, flags y loops; no debe reemplazar estas lecciones.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -12953,19 +12901,6 @@
     "title": "04 · GNU Assembly, directivas y pseudo-instrucciones",
     "section": "Qué no estudiaremos todavía",
     "text": "Qué no estudiaremos todavía\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nELF completo\nPrimero hay que reconocer secciones y símbolos\n\n\nLinker scripts\nTodavía no controlaremos layout completo\n\n\nRelocations binarias\nSolo veremos idea conceptual\n\n\nABI/AAPCS64\nEsta unidad trata sintaxis y assembler\n\n\nGOT/PLT, PIC/PIE\nRequieren linker y loading más avanzados\n\n\nMacros avanzadas\nQueremos claridad, no metaprogramación",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "04 · GNU Assembly",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/gnu-assembly/index.html#presentación-de-apoyo",
-    "href": "courses/aarch64/gnu-assembly/index.html#presentación-de-apoyo",
-    "title": "04 · GNU Assembly, directivas y pseudo-instrucciones",
-    "section": "Presentación de apoyo",
-    "text": "Presentación de apoyo\nLa página Quarto es la fuente principal. La presentación sirve como repaso visual de directivas y estructura GNU Assembly.\nVer presentación",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -16737,19 +16672,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/modelo-aarch64/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/modelo-aarch64/index.html#preparación-para-presentación",
-    "title": "03 · Modelo ARMv8-A / AArch64",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto es la fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/modelo-aarch64/overview/slides.md\nEsa presentación debe resumir el mapa de registros, no reemplazar estas lecciones.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "03 · Modelo ARMv8-A / AArch64",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/modelo-aarch64/index.html#para-investigar-más",
     "href": "courses/aarch64/modelo-aarch64/index.html#para-investigar-más",
     "title": "03 · Modelo ARMv8-A / AArch64",
@@ -17080,19 +17002,6 @@
     "title": "05 · Primeros programas en Linux AArch64",
     "section": "Qué no estudiaremos todavía",
     "text": "Qué no estudiaremos todavía\n\n\n\n\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nTabla completa de syscalls\nPrimero usaremos solo exit y write\n\n\nerrno y errores avanzados\nMás adelante veremos retorno y errores\n\n\nABI/AAPCS64 completo\nAquí basta el contrato práctico de syscalls\n\n\nELF, linker scripts y loader\nUsamos as y ld sin entrar en formato completo\n\n\nStack frames\nNo llamaremos funciones todavía\n\n\nI/O con libc\nEsta unidad usa syscalls directas",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "05 · Primeros programas",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/primeros-programas/index.html#presentación-de-apoyo",
-    "href": "courses/aarch64/primeros-programas/index.html#presentación-de-apoyo",
-    "title": "05 · Primeros programas en Linux AArch64",
-    "section": "Presentación de apoyo",
-    "text": "Presentación de apoyo\nLa página Quarto es la fuente principal. La presentación sirve como apoyo visual para practicar el flujo de primeros programas.\nVer presentación",
     "crumbs": [
       "Roadmap",
       "AArch64",
