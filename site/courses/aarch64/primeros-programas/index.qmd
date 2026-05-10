@@ -131,16 +131,12 @@ Clasifica registros usados por `exit` y `write`.
 | Stack frames | No llamaremos funciones todavía |
 | I/O con `libc` | Esta unidad usa syscalls directas |
 
-## Preparación para presentación
+## Presentación de apoyo
 
-La página Quarto es la fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
+La página Quarto es la fuente principal. La presentación sirve como apoyo visual
+para practicar el flujo de primeros programas.
 
-```bash
-site/slides/aarch64/primeros-programas/overview/slides.md
-```
-
-Esa presentación debe practicar el flujo, no reemplazar estas páginas.
+[Ver presentación](../../../slides/aarch64/primeros-programas/05-primeros-programas/){.lab-button .secondary}
 
 ## Checklist de cierre
 

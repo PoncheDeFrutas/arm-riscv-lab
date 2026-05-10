@@ -156,16 +156,12 @@ programador debe saber qué tamaño leer y qué interpretación aplicar.
 | GDB avanzado | Aquí solo se prepara la lectura de registros y memoria |
 | NEON/SIMD | No es necesario para representación básica |
 
-## Preparación para presentación
+## Presentación de apoyo
 
-La página Quarto es la fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
+La página Quarto es la fuente principal. La presentación sirve como apoyo visual
+para clase y repaso.
 
-```bash
-site/slides/aarch64/bases-binarias/overview/slides.md
-```
-
-Esa presentación debe resumir y practicar la unidad, no reemplazarla.
+[Ver presentación](../../../slides/aarch64/bases-binarias/02-bases-binarias-representacion/){.lab-button .secondary}
 
 ## Para investigar más
 

@@ -148,17 +148,12 @@ cargas, stores y recorrido.
 | Estructuras complejas | Primero arrays simples y bytes |
 | Cachés, barreras y atomics | Son temas posteriores de rendimiento y concurrencia |
 
-## Preparación para presentación
+## Presentación de apoyo
 
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
+La página Quarto queda como fuente principal. La presentación sirve como apoyo
+visual para practicar lectura de memoria.
 
-```bash
-site/slides/aarch64/memoria-direccionamiento/overview/slides.md
-```
-
-Esa presentación debe practicar lectura visual de memoria; no debe reemplazar
-estas lecciones.
+[Ver presentación](../../../slides/aarch64/memoria-direccionamiento/06-memoria-direccionamiento/){.lab-button .secondary}
 
 ## Checklist de cierre
 

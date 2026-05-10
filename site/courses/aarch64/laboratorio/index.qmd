@@ -21,7 +21,7 @@ AArch64 existe y corre.
 
 [Primer ejemplo](03-primer-programa.qmd){.lab-button .secondary}
 
-[Ver presentación](../../../slides/aarch64/laboratorio/overview/){.lab-button .secondary}
+[Ver presentación](../../../slides/aarch64/laboratorio/01-laboratorio-arm64-reproducible/){.lab-button .secondary}
 :::
 :::
 

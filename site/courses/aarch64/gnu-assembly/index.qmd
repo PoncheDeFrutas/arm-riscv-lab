@@ -165,16 +165,12 @@ digraph G {
 | GOT/PLT, PIC/PIE | Requieren linker y loading más avanzados |
 | Macros avanzadas | Queremos claridad, no metaprogramación |
 
-## Preparación para presentación
+## Presentación de apoyo
 
-La página Quarto es la fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
+La página Quarto es la fuente principal. La presentación sirve como repaso
+visual de directivas y estructura GNU Assembly.
 
-```bash
-site/slides/aarch64/gnu-assembly/overview/slides.md
-```
-
-Esa presentación debe servir como repaso visual, no reemplazar estas lecciones.
+[Ver presentación](../../../slides/aarch64/gnu-assembly/04-gnu-assembly-directivas/){.lab-button .secondary}
 
 ## Para investigar más
 
