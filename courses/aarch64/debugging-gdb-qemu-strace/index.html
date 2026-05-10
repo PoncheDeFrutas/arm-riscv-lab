@@ -1210,7 +1210,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
-  <li><a href="#preparación-para-presentación" id="toc-preparación-para-presentación" class="nav-link" data-scroll-target="#preparación-para-presentación">Preparación para presentación</a></li>
   <li><a href="#checklist-de-salida" id="toc-checklist-de-salida" class="nav-link" data-scroll-target="#checklist-de-salida">Checklist de salida</a></li>
   </ul>
 </nav>
@@ -1248,6 +1247,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="hero-lab">
 <p>Hasta ahora escribiste programas, entendiste registros, memoria, stack, heap, <code>mmap</code>, ABI y ELF. Esta unidad cambia el punto de vista: ya no basta con saber qué debería hacer el programa. Ahora debes observar qué está haciendo realmente mientras corre.</p>
+</div>
+<div class="callout callout-style-simple callout-tip callout-titled" title="Material de apoyo para clase">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Material de apoyo para clase
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Esta presentación resume el mapa de la unidad para clase. Usa esta página como referencia completa y el deck como apoyo visual.</p>
+<p>Para iniciar la presentación, abre el enlace y avanza con las flechas del teclado o la barra espaciadora.</p>
+<p><a href="../../../slides/aarch64/debugging-gdb-qemu-strace/17-debugging-gdb-qemu-strace/" class="lab-button">Ver presentación Slidev</a></p>
+</div>
 </div>
 <section id="objetivo-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="objetivo-de-la-unidad">Objetivo de la unidad</h2>
@@ -1584,12 +1598,6 @@ Figura&nbsp;1: Flujo básico de depuración: detener, observar, avanzar e interp
 </tr>
 </tbody>
 </table>
-</section>
-<section id="preparación-para-presentación" class="level2">
-<h2 class="anchored" data-anchor-id="preparación-para-presentación">Preparación para presentación</h2>
-<p>La página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">site/slides/aarch64/debugging-gdb-qemu-strace/overview/slides.md</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>No crear presentación todavía. La presentación debe visualizar el flujo <code>programa -&gt; breakpoint -&gt; registros -&gt; memoria</code>, la conexión GDB/QEMU, el stack con <code>sp</code>/<code>x29</code>/<code>x30</code>, <code>strace</code> por syscall y el flujo <code>core dump -&gt; GDB -&gt; bt</code>.</p>
 </section>
 <section id="checklist-de-salida" class="level2">
 <h2 class="anchored" data-anchor-id="checklist-de-salida">Checklist de salida</h2>

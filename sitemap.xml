@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/syscalls-esenciales/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:29.915Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/syscalls-esenciales/05-errores-minimos.html</loc>
@@ -78,7 +78,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/mmap-paginas-permisos/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.494Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/mmap-paginas-permisos/06-errores-y-diagnostico.html</loc>
@@ -110,7 +110,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/linux-api-kernel/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.049Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/linux-api-kernel/05-procesos-tiempo.html</loc>
@@ -158,7 +158,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/heap-memoria-dinamica/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.352Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/heap-memoria-dinamica/05-errores-memoria.html</loc>
@@ -190,7 +190,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/elf-linking-loading/index.html</loc>
-    <lastmod>2026-05-09T02:31:11.575Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.868Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/elf-linking-loading/06-got-plt-pie.html</loc>
@@ -206,7 +206,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/debugging-gdb-qemu-strace/index.html</loc>
-    <lastmod>2026-05-09T02:42:42.035Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.994Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/debugging-gdb-qemu-strace/07-core-dumps.html</loc>
@@ -270,7 +270,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/abi-aapcs64-c/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.738Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.html</loc>
@@ -446,7 +446,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/layout-datos-structs/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.612Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.html</loc>
@@ -534,7 +534,7 @@
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/stack-funciones-frames/index.html</loc>
-    <lastmod>2026-05-09T01:25:02.012Z</lastmod>
+    <lastmod>2026-05-10T02:24:30.226Z</lastmod>
   </url>
   <url>
     <loc>https://PoncheDeFrutas.github.io/arm-riscv-lab/courses/aarch64/syscalls-esenciales/02-exit-write.html</loc>

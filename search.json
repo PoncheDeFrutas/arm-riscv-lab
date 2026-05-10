@@ -403,19 +403,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/syscalls-esenciales/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/syscalls-esenciales/index.html#preparación-para-presentación",
-    "title": "09 · Syscalls esenciales",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/syscalls-esenciales/overview/slides.md\nEsa presentación debe practicar lectura visual del contrato de syscall, registros, buffers y errores; no debe reemplazar estas lecciones.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "09 · Syscalls esenciales",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/syscalls-esenciales/index.html#checklist-de-cierre",
     "href": "courses/aarch64/syscalls-esenciales/index.html#checklist-de-cierre",
     "title": "09 · Syscalls esenciales",
@@ -2036,19 +2023,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/mmap-paginas-permisos/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/mmap-paginas-permisos/index.html#preparación-para-presentación",
-    "title": "13 · mmap, munmap, mprotect, páginas y permisos",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/mmap-paginas-permisos/overview/slides.md\nNo crear presentación todavía. Debe servir como apoyo visual, no reemplazo de estas lecciones.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "13 · mmap, munmap, mprotect y permisos",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/mmap-paginas-permisos/index.html#checklist-de-cierre",
     "href": "courses/aarch64/mmap-paginas-permisos/index.html#checklist-de-cierre",
     "title": "13 · mmap, munmap, mprotect, páginas y permisos",
@@ -3133,19 +3107,6 @@
     "title": "10 · Linux como API del kernel",
     "section": "Qué no estudiaremos todavía",
     "text": "Qué no estudiaremos todavía\n\n\n\n\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nlibc completa\nAquí queremos ver el contrato directo con Linux\n\n\nerrno real con TLS\nPrimero basta entender retorno negativo\n\n\nBuffered I/O\nread y write trabajan con buffers directos\n\n\nPipes, sockets y señales\nSon recursos Linux más avanzados\n\n\nmmap y memoria virtual\nRequieren otra base de páginas y permisos\n\n\nProcesos completos\nexecve y wait4 solo aparecen como mapa inicial\n\n\nDirectorios con getdents64\nSe menciona, no será tema central",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "10 · Linux como API del kernel",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/linux-api-kernel/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/linux-api-kernel/index.html#preparación-para-presentación",
-    "title": "10 · Linux como API del kernel",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/linux-api-kernel/overview/slides.md\nEsa presentación debe practicar visualmente file descriptors, rutas de error, cleanup y recursos del kernel; no debe reemplazar estas lecciones.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -4883,19 +4844,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/heap-memoria-dinamica/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/heap-memoria-dinamica/index.html#preparación-para-presentación",
-    "title": "12 · Heap y memoria dinámica",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/heap-memoria-dinamica/overview/slides.md\nEsa presentación debe visualizar mapa de memoria, bloques dinámicos, ownership, leaks, use-after-free, double free y puente a mmap.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "12 · Heap y memoria dinámica",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/heap-memoria-dinamica/index.html#checklist-de-cierre",
     "href": "courses/aarch64/heap-memoria-dinamica/index.html#checklist-de-cierre",
     "title": "12 · Heap y memoria dinámica",
@@ -5975,19 +5923,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/elf-linking-loading/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/elf-linking-loading/index.html#preparación-para-presentación",
-    "title": "16 · ELF, linking, loading y binarios",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/elf-linking-loading/overview/slides.md\nNo crear presentación todavía. Debe visualizar flujo, secciones vs segmentos, permisos, linker vs loader, dynamic loader, GOT/PLT y PIE; no reemplazar estas lecciones.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "16 · ELF, linking, loading y binarios",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/elf-linking-loading/index.html#para-investigar-más",
     "href": "courses/aarch64/elf-linking-loading/index.html#para-investigar-más",
     "title": "16 · ELF, linking, loading y binarios",
@@ -6500,19 +6435,6 @@
     "title": "17 · Debugging con GDB, QEMU, strace y lectura de memoria",
     "section": "Qué no estudiaremos todavía",
     "text": "Qué no estudiaremos todavía\n\n\n\n\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nscripting avanzado de GDB\nprimero importa leer estado manualmente\n\n\nPython API de GDB\nautomatización viene después\n\n\nDWARF completo\nsolo usaremos símbolos básicos\n\n\nreverse engineering avanzado\naquí depuramos programas conocidos\n\n\nexploit development, ROP, heap exploitation\nseguridad ofensiva requiere otra unidad\n\n\ndebugging de kernel o bare metal completo\neste bloque es Linux userland\n\n\nperf, sanitizers, rr, eBPF\nherramientas avanzadas para unidades posteriores",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "17 · Debugging con GDB, QEMU y strace",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/debugging-gdb-qemu-strace/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/debugging-gdb-qemu-strace/index.html#preparación-para-presentación",
-    "title": "17 · Debugging con GDB, QEMU, strace y lectura de memoria",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/debugging-gdb-qemu-strace/overview/slides.md\nNo crear presentación todavía. La presentación debe visualizar el flujo programa -&gt; breakpoint -&gt; registros -&gt; memoria, la conexión GDB/QEMU, el stack con sp/x29/x30, strace por syscall y el flujo core dump -&gt; GDB -&gt; bt.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -8762,19 +8684,6 @@
     "title": "15 · ABI, AAPCS64 e interoperabilidad con C",
     "section": "Programas de práctica",
     "text": "Programas de práctica\n\n\n\n\n\n\n\n\nCaso\nRuta\nQué valida\n\n\n\n\nC llama assembly\nexamples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src\nargumentos en x0, x1 y retorno en x0\n\n\nPreservar x19\nexamples/aarch64/15-abi-aapcs64/01-preservar-x19/src\ncallee-saved restaurado\n\n\nprintf desde assembly\nexamples/aarch64/15-abi-aapcs64/02-printf-desde-assembly/src\nmain assembly llama libc\n\n\nC desde assembly\nexamples/aarch64/15-abi-aapcs64/03-c-desde-assembly/src\nbl funcion_c desde assembly\n\n\nArgumentos por stack\nexamples/aarch64/15-abi-aapcs64/04-argumentos-stack/src\nnoveno argumento fuera de x0-x7\n\n\nLibrería estática\nexamples/aarch64/15-abi-aapcs64/05-libreria-estatica/src\n.a con función assembly\n\n\nLibrería compartida\nexamples/aarch64/15-abi-aapcs64/06-libreria-compartida/src\n.so con función assembly\n\n\n\nFlujo común:\n$ cd examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src\n$ make\n$ make run\n$ echo $?\n0",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "15 · ABI, AAPCS64 e interoperabilidad con C",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/abi-aapcs64-c/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/abi-aapcs64-c/index.html#preparación-para-presentación",
-    "title": "15 · ABI, AAPCS64 e interoperabilidad con C",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/abi-aapcs64-c/overview/slides.md\nEsa presentación debe visualizar mapa de registros, caller/callee, main vs _start, C llamando assembly, assembly llamando printf y librerías. No debe reemplazar estas lecciones.",
     "crumbs": [
       "Roadmap",
       "AArch64",
@@ -14683,19 +14592,6 @@
     ]
   },
   {
-    "objectID": "courses/aarch64/layout-datos-structs/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/layout-datos-structs/index.html#preparación-para-presentación",
-    "title": "14 · Layout de datos, structs, ADTs y objetos manuales",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/layout-datos-structs/overview/slides.md\nNo crear presentación todavía. Debe visualizar bloques de bytes, offsets, padding, self y descriptores.",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "14 · Layout de datos y structs",
-      "Mapa de la unidad"
-    ]
-  },
-  {
     "objectID": "courses/aarch64/layout-datos-structs/index.html#checklist-de-cierre",
     "href": "courses/aarch64/layout-datos-structs/index.html#checklist-de-cierre",
     "title": "14 · Layout de datos, structs, ADTs y objetos manuales",
@@ -17535,19 +17431,6 @@
     "title": "11 · Stack, funciones y stack frames",
     "section": "Qué no estudiaremos todavía",
     "text": "Qué no estudiaremos todavía\n\n\n\n\n\n\n\nTema\nPor qué queda fuera\n\n\n\n\nABI/AAPCS64 completo\nAquí usamos reglas mínimas para entender funciones\n\n\nTabla exhaustiva caller/callee-saved\nPrimero importa entender por qué se preserva\n\n\nVarargs\nRequiere reglas ABI más amplias\n\n\nDWARF y unwinding avanzado\nGDB se usará de forma básica\n\n\nTail calls y optimización\nPueden ocultar frames y confundir al inicio\n\n\nInteroperabilidad completa con C\nSerá una unidad posterior\n\n\nStack canaries y exploits\nSeguridad queda fuera de esta base",
-    "crumbs": [
-      "Roadmap",
-      "AArch64",
-      "11 · Stack, funciones y stack frames",
-      "Mapa de la unidad"
-    ]
-  },
-  {
-    "objectID": "courses/aarch64/stack-funciones-frames/index.html#preparación-para-presentación",
-    "href": "courses/aarch64/stack-funciones-frames/index.html#preparación-para-presentación",
-    "title": "11 · Stack, funciones y stack frames",
-    "section": "Preparación para presentación",
-    "text": "Preparación para presentación\nLa página Quarto queda como fuente principal. Más adelante puede agregarse una presentación de apoyo en:\nsite/slides/aarch64/stack-funciones-frames/overview/slides.md\nEsa presentación debe visualizar caller -&gt; bl -&gt; callee -&gt; ret, LR, SP, FP, prólogo, epílogo y backtrace. No debe reemplazar estas lecciones.",
     "crumbs": [
       "Roadmap",
       "AArch64",
