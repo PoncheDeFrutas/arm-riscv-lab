@@ -277,11 +277,15 @@ Para mantener esto, se insertan bytes de "relleno" o <strong>Padding</strong>.
   <div v-click class="compare-card">
     <div class="card-kicker">Ejemplo de Layout con Padding</div>
     <table class="w-full text-sm">
-      <tr><th>Campo</th><th>Offset</th><th>Tamaño</th><th>Nota</th></tr>
-      <tr><td><code>flag</code></td><td><code>0</code></td><td><code>1</code></td><td>Byte</td></tr>
-      <tr class="text-gray-400"><td><em>padding</em></td><td><em>1</em></td><td><em>7</em></td><td><em>Relleno inútil</em></td></tr>
-      <tr><td><code>value</code></td><td><code>8</code></td><td><code>8</code></td><td>Alineado a 8</td></tr>
-      <tr><td><code>SIZE</code></td><td><code>16</code></td><td>-</td><td>Alineación final</td></tr>
+      <thead>
+        <tr><th>Campo</th><th>Offset</th><th>Tamaño</th><th>Nota</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>flag</code></td><td><code>0</code></td><td><code>1</code></td><td>Byte</td></tr>
+        <tr class="text-gray-400"><td><em>padding</em></td><td><em>1</em></td><td><em>7</em></td><td><em>Relleno inútil</em></td></tr>
+        <tr><td><code>value</code></td><td><code>8</code></td><td><code>8</code></td><td>Alineado a 8</td></tr>
+        <tr><td><code>SIZE</code></td><td><code>16</code></td><td>-</td><td>Alineación final</td></tr>
+      </tbody>
     </table>
   </div>
   <div v-click class="compare-card">
@@ -475,7 +479,7 @@ El método usa <code>x0</code> como base del objeto y accede a sus campos median
 
 ---
 
-# Checklist mental
+###### Checklist mental
 
 <div class="slide-center-block">
 
