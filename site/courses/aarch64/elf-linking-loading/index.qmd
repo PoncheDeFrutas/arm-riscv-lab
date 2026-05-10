@@ -15,6 +15,16 @@ el binario. No como curiosidad, sino como parte del contrato técnico que une
 assembler, linker, loader, memoria virtual y proceso Linux.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/elf-linking-loading/16-elf-linking-loading/){.lab-button}
+:::
+
 ## Qué debe quedar claro
 
 Esta unidad no trata de memorizar `readelf`, `objdump` y `nm`. Trata de
@@ -221,19 +231,6 @@ Método completo con `readelf`, `objdump`, `nm`, `ldd` y `strip`.
 | exploits, ROP, loader manual | seguridad avanzada requiere otra base |
 | linker scripts avanzados | aquí usamos layout producido por herramientas estándar |
 | TLS y symbol versioning | pertenecen a dynamic linking avanzado |
-
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/elf-linking-loading/overview/slides.md
-```
-
-No crear presentación todavía. Debe visualizar flujo, secciones vs segmentos,
-permisos, linker vs loader, dynamic loader, GOT/PLT y PIE; no reemplazar estas
-lecciones.
 
 ## Para investigar más
 

@@ -15,6 +15,16 @@ qué debería hacer el programa. Ahora debes observar qué está haciendo realme
 mientras corre.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/debugging-gdb-qemu-strace/17-debugging-gdb-qemu-strace/){.lab-button}
+:::
+
 ## Objetivo de la unidad
 
 El objetivo central es:
@@ -195,19 +205,6 @@ Un recorrido completo de registros, memoria, stack y syscalls.
 | exploit development, ROP, heap exploitation | seguridad ofensiva requiere otra unidad |
 | debugging de kernel o bare metal completo | este bloque es Linux userland |
 | perf, sanitizers, rr, eBPF | herramientas avanzadas para unidades posteriores |
-
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/debugging-gdb-qemu-strace/overview/slides.md
-```
-
-No crear presentación todavía. La presentación debe visualizar el flujo
-`programa -> breakpoint -> registros -> memoria`, la conexión GDB/QEMU, el stack
-con `sp`/`x29`/`x30`, `strace` por syscall y el flujo `core dump -> GDB -> bt`.
 
 ## Checklist de salida
 

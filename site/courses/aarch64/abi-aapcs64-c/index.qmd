@@ -14,6 +14,16 @@ usar una regla compartida: qué espera una función antes de ser llamada, qué d
 preservar y dónde deja el resultado.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/abi-aapcs64-c/15-abi-aapcs64-c/){.lab-button}
+:::
+
 ## Qué debe quedar claro
 
 Una ABI no es una instrucción. Es un contrato entre piezas de código.
@@ -205,19 +215,6 @@ $ echo $?
 0
 ```
 
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/abi-aapcs64-c/overview/slides.md
-```
-
-Esa presentación debe visualizar mapa de registros, caller/callee, `main` vs
-`_start`, C llamando assembly, assembly llamando `printf` y librerías. No debe
-reemplazar estas lecciones.
-
 ## Checklist de cierre
 
 - [ ] Puedo explicar qué problema resuelve una ABI.
@@ -237,4 +234,3 @@ reemplazar estas lecciones.
 ## Siguiente paso
 
 Empieza por [ABI, AAPCS64 y registros](01-abi-aapcs64-registros.qmd).
-

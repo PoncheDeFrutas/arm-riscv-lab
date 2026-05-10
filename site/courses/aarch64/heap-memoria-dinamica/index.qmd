@@ -14,6 +14,16 @@ pregunta central: ¿qué pasa cuando un dato debe vivir más que una función, o
 cuando su tamaño se decide mientras el programa corre? Para eso existe el heap.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/heap-memoria-dinamica/12-heap-memoria-dinamica/){.lab-button}
+:::
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -222,18 +232,6 @@ Leaks, use-after-free, double free y pérdida de punteros.
 | Páginas, page faults y MMU | Requieren unidad propia |
 | Seguridad avanzada de heap | Primero entendemos errores conceptuales |
 | Interoperabilidad completa con C | Se estudiará más adelante |
-
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/heap-memoria-dinamica/overview/slides.md
-```
-
-Esa presentación debe visualizar mapa de memoria, bloques dinámicos, ownership,
-leaks, use-after-free, double free y puente a `mmap`.
 
 ## Checklist de cierre
 

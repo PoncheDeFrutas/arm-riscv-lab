@@ -15,6 +15,16 @@ vamos a ordenar el contrato completo: qué registros mira Linux, qué hace
 `close` con manejo mínimo de errores.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/syscalls-esenciales/09-syscalls-esenciales/){.lab-button}
+:::
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -158,18 +168,6 @@ Archivo completo con `openat`, `write`, `close`, error mínimo y salida.
 | Buffered I/O | `write` escribe bytes directos |
 | `mmap`, pipes, sockets, procesos | Son temas posteriores de Linux |
 | ABI/AAPCS64 y stack frames | No llamaremos funciones C todavía |
-
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/syscalls-esenciales/overview/slides.md
-```
-
-Esa presentación debe practicar lectura visual del contrato de syscall,
-registros, buffers y errores; no debe reemplazar estas lecciones.
 
 ## Checklist de cierre
 

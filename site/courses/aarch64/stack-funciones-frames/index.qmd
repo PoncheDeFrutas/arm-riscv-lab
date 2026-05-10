@@ -15,6 +15,16 @@ guarda contexto, el frame organiza datos temporales y GDB puede reconstruir la
 cadena de llamadas.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/stack-funciones-frames/11-stack-funciones-frames/){.lab-button}
+:::
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -153,18 +163,6 @@ Ver `sp`, `x29`, `x30`, frames, backtrace y corrupción conceptual.
 | Tail calls y optimización | Pueden ocultar frames y confundir al inicio |
 | Interoperabilidad completa con C | Será una unidad posterior |
 | Stack canaries y exploits | Seguridad queda fuera de esta base |
-
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/stack-funciones-frames/overview/slides.md
-```
-
-Esa presentación debe visualizar `caller -> bl -> callee -> ret`, `LR`, `SP`,
-`FP`, prólogo, epílogo y backtrace. No debe reemplazar estas lecciones.
 
 ## Checklist de cierre
 
