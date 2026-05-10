@@ -15,6 +15,16 @@ directivas para el assembler, otras nombran direcciones, otras declaran bytes y
 otras son atajos que el assembler resuelve.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/gnu-assembly/04-gnu-assembly-directivas/){.lab-button}
+:::
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -164,13 +174,6 @@ digraph G {
 | ABI/AAPCS64 | Esta unidad trata sintaxis y assembler |
 | GOT/PLT, PIC/PIE | Requieren linker y loading más avanzados |
 | Macros avanzadas | Queremos claridad, no metaprogramación |
-
-## Presentación de apoyo
-
-La página Quarto es la fuente principal. La presentación sirve como repaso
-visual de directivas y estructura GNU Assembly.
-
-[Ver presentación](../../../slides/aarch64/gnu-assembly/04-gnu-assembly-directivas/){.lab-button .secondary}
 
 ## Para investigar más
 

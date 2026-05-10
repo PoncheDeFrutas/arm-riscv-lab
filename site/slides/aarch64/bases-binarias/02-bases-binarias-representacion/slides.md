@@ -851,8 +851,6 @@ class: text-center
 
 ###### Ejemplo Práctico
 
-###### Ejemplo Práctico
-
 <div class="slide-center-block">
 
 <div class="content-stack-lg">

@@ -15,6 +15,16 @@ bloque o elegir entre dos caminos según flags. Esa es la base para escribir
 `if`, `while`, `for` y llamadas a funciones en assembly.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/control-flujo/08-control-flujo/){.lab-button}
+:::
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -151,18 +161,6 @@ Introducción a `bl`, `br`, `blr`, `ret` y `LR/X30`.
 | Jump tables reales | `switch` queda conceptual |
 | Predicción de branches | Es tema de rendimiento |
 | Exception handling e interrupciones | No son control de flujo userland básico |
-
-## Preparación para presentación
-
-La página Quarto queda como fuente principal. Más adelante puede agregarse una
-presentación de apoyo en:
-
-```bash
-site/slides/aarch64/control-flujo/overview/slides.md
-```
-
-Esa presentación debe practicar lectura visual de etiquetas, ramas, flags y
-loops; no debe reemplazar estas lecciones.
 
 ## Checklist de cierre
 

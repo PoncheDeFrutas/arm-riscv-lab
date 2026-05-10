@@ -3,7 +3,7 @@
 SITE_DIR ?= site
 LESSON ?= projects/aarch64/minimo/src
 SLIDES ?= $(SITE_DIR)/slides/aarch64/laboratorio/01-laboratorio-arm64-reproducible/slides.md
-SLIDE_DECKS ?= $(SITE_DIR)/slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md $(SITE_DIR)/slides/aarch64/laboratorio/01-laboratorio-arm64-reproducible/slides.md $(SITE_DIR)/slides/aarch64/bases-binarias/02-bases-binarias-representacion/slides.md $(SITE_DIR)/slides/aarch64/gnu-assembly/04-gnu-assembly-directivas/slides.md $(SITE_DIR)/slides/aarch64/primeros-programas/05-primeros-programas/slides.md $(SITE_DIR)/slides/aarch64/memoria-direccionamiento/06-memoria-direccionamiento/slides.md
+SLIDE_DECKS ?= $(SITE_DIR)/slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md $(SITE_DIR)/slides/aarch64/laboratorio/01-laboratorio-arm64-reproducible/slides.md $(SITE_DIR)/slides/aarch64/bases-binarias/02-bases-binarias-representacion/slides.md $(SITE_DIR)/slides/aarch64/modelo-aarch64/03-modelo-aarch64/slides.md $(SITE_DIR)/slides/aarch64/gnu-assembly/04-gnu-assembly-directivas/slides.md $(SITE_DIR)/slides/aarch64/primeros-programas/05-primeros-programas/slides.md $(SITE_DIR)/slides/aarch64/memoria-direccionamiento/06-memoria-direccionamiento/slides.md $(SITE_DIR)/slides/aarch64/aritmetica-logica-bits/07-aritmetica-logica-bits/slides.md $(SITE_DIR)/slides/aarch64/control-flujo/08-control-flujo/slides.md
 SLIDEV ?= node_modules/.bin/slidev
 
 help:

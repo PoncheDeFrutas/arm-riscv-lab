@@ -15,6 +15,16 @@ por qué los mismos bytes pueden representar un número sin signo, un número co
 signo, texto, una dirección o datos sin interpretar.
 :::
 
+::: {.callout-tip title="Material de apoyo para clase"}
+Esta presentación resume el mapa de la unidad para clase. Usa esta página como
+referencia completa y el deck como apoyo visual.
+
+Para iniciar la presentación, abre el enlace y avanza con las flechas del
+teclado o la barra espaciadora.
+
+[Ver presentación Slidev](../../../slides/aarch64/bases-binarias/02-bases-binarias-representacion/){.lab-button}
+:::
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -155,13 +165,6 @@ programador debe saber qué tamaño leer y qué interpretación aplicar.
 | MMU y páginas | La unidad solo usa direcciones como modelo inicial |
 | GDB avanzado | Aquí solo se prepara la lectura de registros y memoria |
 | NEON/SIMD | No es necesario para representación básica |
-
-## Presentación de apoyo
-
-La página Quarto es la fuente principal. La presentación sirve como apoyo visual
-para clase y repaso.
-
-[Ver presentación](../../../slides/aarch64/bases-binarias/02-bases-binarias-representacion/){.lab-button .secondary}
 
 ## Para investigar más
 
