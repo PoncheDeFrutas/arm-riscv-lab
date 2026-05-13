@@ -1,36 +1,6 @@
-/*
-  Global Slidev CSS — ARM64 course
-
-  Versión corregida SIN depender de variables CSS para colores.
-
-  Motivo:
-  - En algunos contextos de Slidev, las variables pueden no aplicarse como se espera,
-    especialmente si el tema, UnoCSS, scoped styles o reglas internas pisan los valores.
-  - Por eso los colores principales están escritos directamente en cada regla.
-  - Las variables se dejan solo como referencia/documentación, pero NO son necesarias
-    para que el estilo funcione.
-
-  Estilo:
-  - Fondo oscuro neutro compatible con Slidev dark default
-  - Cards gris oscuro, no azul
-  - Bordes visibles pero discretos
-  - Acento dorado suave
-  - Diseño plano/minimalista
-*/
-
 :root {
   color-scheme: dark;
 
-  /* Referencia visual. El CSS funcional usa colores directos abajo. */
-  --arm-bg: #0f0f0f;
-  --arm-bg-soft: #151515;
-  --arm-surface: #181818;
-  --arm-surface-soft: #202020;
-  --arm-surface-muted: #121212;
-  --arm-border: #3f3f3f;
-  --arm-border-soft: #2c2c2c;
-  --arm-text: #f3f4f6;
-  --arm-text-soft: #d4d4d4;
   --arm-muted: #a3a3a3;
   --arm-accent: #c9a46c;
   --arm-accent-soft: #e2c48e;
@@ -52,19 +22,6 @@
   --arm-shadow: none;
 }
 
-/* ==============================
-   Base page
-   ============================== */
-
-html,
-body {
-  color: #f3f4f6 !important;
-}
-
-:global(.slidev-layout) {
-  background: #0f0f0f !important;
-  color: #f3f4f6 !important;
-}
 
 :global(.slidev-layout.default),
 :global(.slidev-layout.center),
@@ -77,7 +34,6 @@ body {
 :global(.slidev-layout h1),
 :global(.slidev-layout h2),
 :global(.slidev-layout h3) {
-  color: #f3f4f6 !important;
   letter-spacing: -0.02em;
 }
 
@@ -91,12 +47,7 @@ body {
 
 :global(.slidev-layout p),
 :global(.slidev-layout li) {
-  color: #d4d4d4 !important;
   line-height: 1.55;
-}
-
-:global(.slidev-layout strong) {
-  color: #f3f4f6 !important;
 }
 
 :global(.slidev-layout a) {
@@ -108,7 +59,6 @@ body {
 :global(.slidev-layout code) {
   padding: 0.08rem 0.32rem;
   border-radius: 8px;
-  color: #f3f4f6 !important;
 }
 
 /* ==============================
@@ -126,7 +76,6 @@ body {
   padding: 0.32rem 0.65rem;
   border-radius: 999px;
   border: 1px solid #3f3f3f !important;
-  background: #121212 !important;
   color: #a3a3a3 !important;
   font-size: 0.7rem;
   font-weight: 700;
@@ -141,7 +90,6 @@ body {
   padding: 0.22rem 0.55rem;
   border-radius: 999px;
   border: 1px solid #2c2c2c !important;
-  background: #121212 !important;
   color: #a3a3a3 !important;
   font-size: 0.7rem;
   font-weight: 700;
@@ -185,7 +133,6 @@ body {
 :global(.cover-clean) {
   min-height: auto;
   background: transparent !important;
-  color: #f3f4f6 !important;
 }
 
 :global(.ecys-cover-bg) {
@@ -194,7 +141,6 @@ body {
   z-index: 0;
   pointer-events: none;
   background-image: url("../assets/slides/Fondo_ECYS.png") !important;
-  background-color: #e7e7e7 !important;
   background-size: contain !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -204,7 +150,6 @@ body {
   position: relative;
   z-index: 1;
   max-width: 46rem;
-  color: #f3f4f6 !important;
 }
 
 :global(.ecys-title-cover) {
@@ -254,8 +199,6 @@ body {
   padding: 1rem 1.15rem;
   border-radius: 14px;
   border: 1px solid #3f3f3f !important;
-  background: #121212 !important;
-  color: #d4d4d4 !important;
   box-shadow: none !important;
 }
 
@@ -272,7 +215,6 @@ body {
   gap: 1rem;
   padding: clamp(1.8rem, 3.5vw, 3rem);
   text-align: center;
-  background: transparent !important;
   overflow: hidden;
 }
 
@@ -289,7 +231,6 @@ body {
 :global(.review-slide p) {
   max-width: 44rem;
   margin: 0;
-  color: #d4d4d4 !important;
 }
 
 :global(.question-points) {
@@ -303,9 +244,7 @@ body {
   padding: 0.95rem 1.1rem;
   border-radius: 14px;
   border: 1px solid #3f3f3f !important;
-  background: #202020 !important;
   text-align: left;
-  color: #d4d4d4 !important;
 }
 
 :global(.question-points > div::before) {
@@ -392,7 +331,6 @@ body {
   padding: 1.05rem 1.15rem;
   border-radius: 14px;
   border: 1.5px solid #3f3f3f !important;
-  background: #181818 !important;
   outline: none !important;
   box-shadow: none !important;
 }
@@ -401,14 +339,12 @@ body {
 :global(.tool-card),
 :global(.objective-item),
 :global(.numbered-card) {
-  background: #181818 !important;
   border-color: #3f3f3f !important;
 }
 
 :global(.compare-card),
 :global(.flow-step),
 :global(.key-idea) {
-  background: #202020 !important;
   border-color: #3f3f3f !important;
 }
 
@@ -417,14 +353,12 @@ body {
 }
 
 :global(.callout) {
-  background: #202020 !important;
   border-color: #8f7652 !important;
 }
 
 :global(.callout::before) {
   display: block;
   margin-bottom: 0.35rem;
-  color: #a3a3a3 !important;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -436,7 +370,6 @@ body {
 }
 
 :global(.callout.tip) {
-  background: #18211b !important;
   border-color: #5f8f6a !important;
 }
 
@@ -445,7 +378,6 @@ body {
 }
 
 :global(.callout.warning) {
-  background: #251f13 !important;
   border-color: #8f7652 !important;
 }
 
@@ -460,7 +392,6 @@ body {
 :global(.numbered-card h3) {
   margin: 0 0 0.45rem;
   font-size: 1rem;
-  color: #f3f4f6 !important;
 }
 
 :global(.concept-card p),
@@ -471,7 +402,6 @@ body {
 :global(.key-idea p),
 :global(.callout p) {
   margin: 0;
-  color: #d4d4d4 !important;
   line-height: 1.55;
 }
 
@@ -511,9 +441,7 @@ body {
 :global(.tool-card code) {
   display: inline-block;
   margin: 0.12rem 0;
-  background: #101010 !important;
   border: 1px solid #2c2c2c !important;
-  color: #f3f4f6 !important;
 }
 
 /* ==============================
@@ -545,7 +473,6 @@ body {
   width: 2rem;
   height: 2rem;
   border-radius: 8px;
-  background: #121212 !important;
   border: 1px solid #8f7652 !important;
   color: #c9a46c !important;
   font-size: 0.9rem;
@@ -611,28 +538,6 @@ body {
   font-size: 0.86rem;
 }
 
-/* ==============================
-   Optional card variants
-   Use only when you need stronger visual separation.
-   ============================== */
-
-:global(.card-soft) {
-  background: #202020 !important;
-}
-
-:global(.card-muted) {
-  background: #121212 !important;
-}
-
-:global(.card-accent) {
-  border-color: #8f7652 !important;
-}
-
-/* ==============================
-   Presentation layout helpers
-   Add these classes in the markdown when a slide needs more visual control.
-   ============================== */
-
 :global(.slide-center-block) {
   min-height: 64vh;
   display: grid;
@@ -660,7 +565,6 @@ body {
   padding: 1rem 1.15rem;
   border-radius: 14px;
   border: 1.5px solid #3f3f3f !important;
-  background: #181818 !important;
   max-width: 52rem;
 }
 
@@ -702,14 +606,11 @@ body {
   padding: 0.85rem 1rem;
   border-radius: 12px;
   border: 1px solid #3f3f3f !important;
-  background: #181818 !important;
-  color: #d4d4d4 !important;
 }
 
 :global(.lead-text) {
   max-width: 48rem;
   margin-top: 0.35rem;
-  color: #d4d4d4 !important;
   font-size: 1.1rem;
   line-height: 1.55;
 }
