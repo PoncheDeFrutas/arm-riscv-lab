@@ -541,3 +541,37 @@
   font-weight: 700;
   margin-right: 0.5rem;
 }
+
+/* Mascot corner image */
+.slidev-layout .mascot-corner {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 1rem;
+  width: 7rem;
+  height: auto;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+}
+
+/* Mascot inline with content (flex row) */
+.slidev-layout .mascot-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+.slidev-layout .mascot-row .mascot-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.slidev-layout .mascot-row .mascot-img {
+  width: 6rem;
+  height: auto;
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+  flex-shrink: 0;
+}

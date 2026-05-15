@@ -15,9 +15,9 @@ author: "ARM RISC-V Lab"
 ---
 
 <CoverSlide
-  note="Unidad 00 · Contexto, historia y objetivos"
-  title="Arquitectura de Computadores y Ensambladores 1"
-  subtitle="Escuela de Ingeniería de Ciencias y Sistemas"
+  title="Unidad 00 · Contexto, historia y objetivos"
+  subtitle="Arquitectura de Computadores y Ensambladores 1"
+  note="Escuela de Ingeniería de Ciencias y Sistemas"
 />
 
 ---
@@ -118,6 +118,8 @@ layout: aarch64-question
 
 </v-clicks>
 
+<Mascot emotion="pensando" />
+
 ---
 layout: aarch64-statement
 ---
@@ -128,6 +130,10 @@ layout: aarch64-statement
 
 # Qué es assembly
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 Assembly describe instrucciones cercanas al procesador con menos capas intermedias que C o Python.
 
 <v-clicks>
@@ -137,6 +143,12 @@ Assembly describe instrucciones cercanas al procesador con menos capas intermedi
 - **Sirve para observar** — No solo para escribir programas completos
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_idea.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 layout: aarch64-two-cols
@@ -159,6 +171,8 @@ layout: aarch64-two-cols
 - Valores binarios reales
 - Lo ejecuta procesador
 - No suele leerse directo
+
+<Mascot emotion="idea" />
 
 ---
 
@@ -188,6 +202,10 @@ layout: aarch64-statement
 
 # Qué es una ISA
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 La ISA es el contrato visible entre software y hardware.
 
 <v-clicks>
@@ -197,6 +215,12 @@ La ISA es el contrato visible entre software y hardware.
 - Define comportamiento observable que el programa puede asumir
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_leyendo.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 
@@ -261,6 +285,10 @@ Qué es ARM, por qué importa y cómo se organizan nombres
 
 # Qué es ARM
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 <v-clicks>
 
 - **Familia RISC** — Modelo regular y extendido
@@ -268,6 +296,12 @@ Qué es ARM, por qué importa y cómo se organizan nombres
 - **También hoy** — Laptops, servidores e IoT
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_contento.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 
@@ -493,6 +527,8 @@ A64 describe las instrucciones que se ejecutan dentro de ese estado.
 
 </div>
 
+<Mascot emotion="confundido" />
+
 ---
 layout: aarch64-statement
 ---
@@ -692,6 +728,7 @@ Primero cargas con `LDR`, luego operas con instrucciones como `ADD`, `SUB` o `AN
 
 </InfoBox>
 
+
 ---
 
 # Cuidado con simplificación excesiva
@@ -717,6 +754,10 @@ Uso real, valor educativo y conexión con resto del curso
 
 # Dónde se usa ARM64
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 <v-clicks>
 
 - **Teléfonos y tablets** — Presencia masiva
@@ -725,6 +766,12 @@ Uso real, valor educativo y conexión con resto del curso
 - **Servidores, IoT y embebidos** — Más allá de móviles
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_contento.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 
@@ -749,6 +796,10 @@ layout: aarch64-statement
 
 # Qué problemas te ayuda a entender
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 <v-clicks>
 
 - **Compilador** — Cómo traduce programa a instrucciones
@@ -757,6 +808,12 @@ layout: aarch64-statement
 - **Depuración** — Errores difíciles y código generado
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 
@@ -854,6 +911,10 @@ Assembly permite observar la frontera entre el código generado por el compilado
 
 # Relación con hardware y sistemas
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 <v-clicks>
 
 - **Registros** — Estado inmediato del programa
@@ -862,6 +923,12 @@ Assembly permite observar la frontera entre el código generado por el compilado
 - **Herramientas** — Conectan software con comportamiento observable
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_leyendo.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 layout: aarch64-two-cols
@@ -908,6 +975,8 @@ _start:
 
 </CodeAnnotation>
 
+<Mascot emotion="leyendo" />
+
 ---
 
 # Qué podrás hacer al avanzar
@@ -927,11 +996,21 @@ layout: aarch64-checklist
 
 ### Checklist mental
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 - <span class="check-icon">✓</span> Puedo explicar qué es assembly
 - <span class="check-icon">✓</span> Puedo definir qué es una ISA
 - <span class="check-icon">✓</span> Puedo distinguir ISA de implementación
 - <span class="check-icon">✓</span> Puedo diferenciar ARMv8-A, AArch64 y A64
 - <span class="check-icon">✓</span> Puedo decir por qué esta ruta empieza con fundamentos
+
+</div>
+
+<img src="../../assets/armandopi_solucinado.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 layout: aarch64-statement
@@ -945,6 +1024,10 @@ layout: aarch64-question
 
 ## Preguntas de repaso
 
+<div class="mascot-row">
+
+<div class="mascot-content">
+
 <v-clicks>
 
 - ¿Qué contrato define una ISA?
@@ -953,6 +1036,12 @@ layout: aarch64-question
 - ¿Qué relación tiene assembly con C, Linux y compiladores?
 
 </v-clicks>
+
+</div>
+
+<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+
+</div>
 
 ---
 

@@ -82,6 +82,8 @@ layout: aarch64-question
 
 </v-clicks>
 
+<Mascot emotion="contento" />
+
 ---
 layout: aarch64-section
 ---
@@ -115,6 +117,8 @@ Esta evaluación **no tiene impacto** en su nota final. Nos sirve como punto de 
 </div>
 
 </v-click>
+
+<Mascot emotion="confundido" />
 
 ---
 layout: aarch64-section
@@ -207,6 +211,8 @@ layout: aarch64-statement
 
 # El diagnóstico no es un examen, es un mapa
 
+<Mascot emotion="contento" />
+
 ---
 layout: aarch64-section
 ---
@@ -263,6 +269,8 @@ layout: aarch64-checklist
 - <span class="check-icon">✓</span> Registré mis horarios disponibles
 - <span class="check-icon">✓</span> Entiendo el contenido del curso
 - <span class="check-icon">✓</span> Sé qué instalar para la próxima clase
+
+<Mascot emotion="solucionado" />
 
 ---
 layout: aarch64-statement
