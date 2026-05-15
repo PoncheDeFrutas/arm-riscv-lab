@@ -138,7 +138,7 @@ Un bit es 0 o 1. Un byte agrupa 8 bits. Un nibble agrupa 4 bits y coincide con u
 
 </div>
 
-<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+<Mascot emotion="pensando" />
 
 </div>
 
@@ -207,7 +207,7 @@ En AArch64: `mov w0, #0x2A` guarda `0x0000002A` en un registro de 32 bits.
 
 </div>
 
-<img src="../../assets/armandopi_idea.png" class="mascot-img" alt="" />
+<Mascot emotion="idea" />
 
 </div>
 
@@ -333,7 +333,7 @@ Cuando el resultado no cabe, los bits visibles se recortan
 
 </div>
 
-<img src="../../assets/armandopi_confundido.png" class="mascot-img" alt="" />
+<Mascot emotion="confundido" />
 
 </div>
 
@@ -540,7 +540,7 @@ Valor como int32 little endian: 42
 
 </div>
 
-<img src="../../assets/armandopi_leyendo.png" class="mascot-img" alt="" />
+<Mascot emotion="leyendo" />
 
 </div>
 
@@ -654,7 +654,7 @@ El depurador muestra bytes. El programador decide la interpretación.
 
 </div>
 
-<img src="../../assets/armandopi_sorprendido.png" class="mascot-img" alt="" />
+<Mascot emotion="sorprendido" />
 
 </div>
 
@@ -677,7 +677,7 @@ layout: aarch64-checklist
 
 </div>
 
-<img src="../../assets/armandopi_solucinado.png" class="mascot-img" alt="" />
+<Mascot emotion="solucionado" />
 
 </div>
 
@@ -709,7 +709,7 @@ layout: aarch64-question
 
 </div>
 
-<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+<Mascot emotion="pensando" />
 
 </div>
 
