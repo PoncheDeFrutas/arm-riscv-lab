@@ -15,164 +15,66 @@ seoMeta:
   ogDescription: "Traduce decisiones y ciclos a etiquetas, branches y condiciones AArch64."
 ---
 
-<style>
-@import "../styles/index.css";
-</style>
-
-<div class="ecys-cover-bg"></div>
-
-<div class="ecys-title-cover">
-
-<div class="muted">Escuela de Ingeniería de Ciencias y Sistemas</div>
-
 # Arquitectura de Computadores y Ensambladores 1
 
-</div>
+Escuela de Ingeniería de Ciencias y Sistemas
 
 ---
 layout: center
 ---
 
-<div class="muted">Arquitectura de Computadores y Ensambladores 1</div>
+Arquitectura de Computadores y Ensambladores 1
 
 ## Unidad 08
 ## Control de flujo y programación estructurada
 
-Traduce `if`, `while`, `for` y llamadas a etiquetas,
-branches y condiciones AArch64.
+Traduce `if`, `while`, `for` y llamadas a etiquetas, branches y condiciones AArch64.
 
-<div class="cover-note">
 Unidad práctica: etiquetas, branches condicionales, if/else, loops, cbz/tbz, csel y bl/ret.
-</div>
 
 ---
 
 # Anuncios importantes
 
-<div class="numbered-grid">
-  <div class="numbered-card">
-    <div class="card-number">1</div>
-    <h3>Anuncio 1</h3>
-    <p></p>
-  </div>
-</div>
+1. **Anuncio 1**
 
 ---
 
 # Agenda
 
-<div class="numbered-grid">
-  <div class="numbered-card">
-    <div class="card-number">1</div>
-    <h3>Branching y etiquetas</h3>
-    <p>Saltos hacia adelante, hacia atrás y flujo no lineal.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">2</div>
-    <h3>Condiciones y flags</h3>
-    <p><code>cmp</code>, NZCV, condiciones signed vs unsigned.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">3</div>
-    <h3>if, else y loops</h3>
-    <p>Traducción de decisiones y ciclos a assembly.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">4</div>
-    <h3>Branches especializados y csel</h3>
-    <p><code>cbz</code>, <code>tbz</code>, <code>csel</code>, <code>cset</code> y selección sin rama.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">5</div>
-    <h3>bl, ret y branch por registro</h3>
-    <p>Introducción a llamadas, retorno y <code>LR/X30</code>.</p>
-  </div>
-</div>
+1. **Branching y etiquetas** — Saltos hacia adelante, hacia atrás y flujo no lineal.
+2. **Condiciones y flags** — `cmp`, NZCV, condiciones signed vs unsigned.
+3. **if, else y loops** — Traducción de decisiones y ciclos a assembly.
+4. **Branches especializados y csel** — `cbz`, `tbz`, `csel`, `cset` y selección sin rama.
+5. **bl, ret y branch por registro** — Introducción a llamadas, retorno y `LR/X30`.
 
 ---
 
 # Competencias
 
-<div class="concept-grid vertical-center">
-  <div class="concept-card">
-    <h3>Competencia 1</h3>
-    <p>
-      Aplica el set de instrucciones ARM-64 utilizando instrucciones aritméticas,
-      lógicas, de carga/almacenamiento, desplazamientos y rotaciones para
-      construir programas funcionales que manipulen datos a nivel de registros
-      y memoria.
-    </p>
-  </div>
+### Competencia 1
+Aplica el set de instrucciones ARM-64 utilizando instrucciones aritméticas, lógicas, de carga/almacenamiento, desplazamientos y rotaciones para construir programas funcionales que manipulen datos a nivel de registros y memoria.
 
-  <div class="concept-card">
-    <h3>Competencia 2</h3>
-    <p>
-      El estudiante desarrolla soluciones eficientes en sistemas computacionales
-      integrando arquitectura de computadores, programación en bajo nivel y
-      herramientas modernas de análisis y simulación para resolver problemas
-      complejos en sistemas embebidos e IoT.
-    </p>
-  </div>
-</div>
+### Competencia 2
+El estudiante desarrolla soluciones eficientes en sistemas computacionales integrando arquitectura de computadores, programación en bajo nivel y herramientas modernas de análisis y simulación para resolver problemas complejos en sistemas embebidos e IoT.
 
 ---
 
 # Valor de la semana
 
-<div class="callout tip">
-  <strong>Análisis.</strong>
-  Capacidad de interpretar información técnica y comprender el funcionamiento
-  interno de un sistema.
-</div>
+**Análisis.** Capacidad de interpretar información técnica y comprender el funcionamiento interno de un sistema.
 
-<div class="concept-grid">
-  <div class="concept-card">
-    <h3>Aplicación en clase</h3>
-    <p>
-      Leer un programa con branches requiere trazar mentalmente cada camino
-      posible. El análisis de flujo convierte etiquetas y condiciones en una
-      historia clara del comportamiento del programa.
-    </p>
-  </div>
-</div>
+### Aplicación en clase
+Leer un programa con branches requiere trazar mentalmente cada camino posible. El análisis de flujo convierte etiquetas y condiciones en una historia clara del comportamiento del programa.
 
 ---
 
 # Qué buscamos hoy
 
-<div class="slide-center-block">
-
-<div class="objective-grid">
-  <div v-click class="objective-item">
-    <div class="item-number">1</div>
-    <h3>Etiquetas y branches</h3>
-    <p>Entender saltos hacia adelante, hacia atrás y flujo no lineal.</p>
-  </div>
-
-  <div v-click class="objective-item">
-    <div class="item-number">2</div>
-    <h3>Condiciones signed vs unsigned</h3>
-    <p>Elegir correctamente entre <code>b.lt</code>/<code>b.ge</code> y <code>b.lo</code>/<code>b.hs</code>.</p>
-  </div>
-
-  <div v-click class="objective-item">
-    <div class="item-number">3</div>
-    <h3>Traducir estructuras</h3>
-    <p>Convertir <code>if</code>, <code>while</code>, <code>for</code> a comparaciones + ramas + etiquetas.</p>
-  </div>
-
-  <div v-click class="objective-item">
-    <div class="item-number">4</div>
-    <h3>bl y ret</h3>
-    <p>Entender llamada y retorno como preparación para funciones.</p>
-  </div>
-</div>
-
-</div>
+1. **Etiquetas y branches** — Entender saltos hacia adelante, hacia atrás y flujo no lineal.
+2. **Condiciones signed vs unsigned** — Elegir correctamente entre `b.lt`/`b.ge` y `b.lo`/`b.hs`.
+3. **Traducir estructuras** — Convertir `if`, `while`, `for` a comparaciones + ramas + etiquetas.
+4. **bl y ret** — Entender llamada y retorno como preparación para funciones.
 
 ---
 layout: section
@@ -187,61 +89,28 @@ layout: center
 class: text-center
 ---
 
-<div class="big-question">
-  <div class="muted">Pregunta de arranque</div>
-  <h3>¿El procesador entiende if, while o for?</h3>
-  <div class="question-points">
-    <div v-click>No. Son palabras de lenguajes de alto nivel.</div>
-    <div v-click>En assembly se construyen con comparaciones, flags y branches.</div>
-    <div v-click>Todo control de flujo se reduce a: ¿salto o no salto?</div>
-  </div>
-</div>
+### Pregunta de arranque
+
+## ¿El procesador entiende if, while o for?
+
+- No. Son palabras de lenguajes de alto nivel.
+- En assembly se construyen con comparaciones, flags y branches.
+- Todo control de flujo se reduce a: ¿salto o no salto?
 
 ---
 
 # Flujo normal vs branch
 
-<div class="slide-center-block">
+- **Sin branch** — `A → B → C → D`. El procesador ejecuta la siguiente instrucción.
+- **Con branch** — `A → b destino → destino → ...`. Una rama cambia qué se ejecuta después.
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Sin branch</div>
-
-```bash
-A → B → C → D
-```
-
-<p>El procesador ejecuta la siguiente instrucción.</p>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker">Con branch</div>
-
-```bash
-A → b destino → destino → ...
-```
-
-<p>Una rama cambia qué se ejecuta después.</p>
-  </div>
-</div>
-
-<div v-click class="callout info centered-narrow">
 Una etiqueta no ejecuta nada. Solo nombra una posición. La rama es la instrucción que cambia el flujo.
-</div>
-
-</div>
 
 ---
 
-##### Salto adelante vs salto atrás
+# Salto adelante vs salto atrás
 
-<div class="slide-center-block">
-
-<div class="two-column-layout">
-
-<div class="content-stack-md">
-
-<div class="muted">Salto hacia adelante — omitir código</div>
-
+**Salto hacia adelante — omitir código**
 ```asm
 _start:
     b salir
@@ -254,12 +123,7 @@ salir:
     svc #0
 ```
 
-</div>
-
-<div class="content-stack-md">
-
-<div class="muted">Salto hacia atrás — repetir código</div>
-
+**Salto hacia atrás — repetir código**
 ```asm
 mov x0, #0
 
@@ -269,15 +133,7 @@ loop:
     b.lt loop
 ```
 
-<div v-click class="callout tip">
 Un loop no es magia. Es una rama hacia atrás controlada por una condición.
-</div>
-
-</div>
-
-</div>
-
-</div>
 
 ---
 layout: section
@@ -291,42 +147,23 @@ La rama condicional consulta flags que otra instrucción preparó.
 
 # Signed vs unsigned
 
-<div class="slide-center-block">
+**Signed**
+- `b.gt` — mayor
+- `b.ge` — mayor o igual
+- `b.lt` — menor
+- `b.le` — menor o igual
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Signed</div>
-    <ul>
-      <li><code>b.gt</code> — mayor</li>
-      <li><code>b.ge</code> — mayor o igual</li>
-      <li><code>b.lt</code> — menor</li>
-      <li><code>b.le</code> — menor o igual</li>
-    </ul>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker">Unsigned</div>
-    <ul>
-      <li><code>b.hi</code> — mayor</li>
-      <li><code>b.hs</code> — mayor o igual</li>
-      <li><code>b.lo</code> — menor</li>
-      <li><code>b.ls</code> — menor o igual</li>
-    </ul>
-  </div>
-</div>
+**Unsigned**
+- `b.hi` — mayor
+- `b.hs` — mayor o igual
+- `b.lo` — menor
+- `b.ls` — menor o igual
 
-<div v-click class="callout warning centered-narrow">
-<code>b.ge</code> y <code>b.hs</code> NO son sinónimos. <code>b.ge</code> es signed (usa N y V). <code>b.hs</code> es unsigned (usa C).
-</div>
-
-</div>
+`b.ge` y `b.hs` NO son sinónimos. `b.ge` es signed (usa N y V). `b.hs` es unsigned (usa C).
 
 ---
 
 # cmp prepara, b.cond consulta
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
 mov x0, #-1
@@ -334,28 +171,10 @@ mov x1, #1
 cmp x0, x1       // actualiza NZCV como x0 - x1
 ```
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Lectura signed</div>
-    <ul>
-      <li><code>-1 < 1</code> → <code>b.lt</code> salta.</li>
-    </ul>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker">Lectura unsigned</div>
-    <ul>
-      <li><code>0xFFFF...FF > 1</code> → <code>b.hi</code> salta.</li>
-    </ul>
-  </div>
-</div>
+- **Lectura signed** — `-1 < 1` → `b.lt` salta.
+- **Lectura unsigned** — `0xFFFF...FF > 1` → `b.hi` salta.
 
-<div v-click class="key-idea centered-narrow">
 Mismos bits, misma comparación, distinta interpretación. Tú decides al elegir la condición.
-</div>
-
-</div>
-
-</div>
 
 ---
 layout: section
@@ -368,10 +187,6 @@ El procesador no tiene `if`. Lo construyes con comparación, rama y etiquetas.
 ---
 
 # Patrón if/else
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
     cmp x0, #10
@@ -387,8 +202,6 @@ menor:
 fin_if:
 ```
 
-<div class="diagram-block">
-
 ```mermaid {theme: 'dark', scale: 0.78}
 flowchart TD
   CMP["cmp x0, #10"] --> LT{x0 < 10?}
@@ -398,27 +211,13 @@ flowchart TD
   MENOR --> FIN
 ```
 
-<div class="diagram-caption">
-<code>b fin_if</code> evita que el flujo caiga al bloque <code>menor</code> después de ejecutar <code>mayor_o_igual</code>.
-</div>
-
-</div>
-
-</div>
-
-</div>
+`b fin_if` evita que el flujo caiga al bloque `menor` después de ejecutar `mayor_o_igual`.
 
 ---
 
 # Loops: while, do-while, for
 
-<div class="slide-center-block">
-
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3>while</h3>
-    <p>Probar antes de ejecutar. Puede no ejecutarse nunca.</p>
-
+**while** — Probar antes de ejecutar. Puede no ejecutarse nunca.
 ```asm
 loop:
     cmp x0, x1
@@ -428,11 +227,7 @@ loop:
 fin:
 ```
 
-  </div>
-  <div v-click class="concept-card">
-    <h3>do-while</h3>
-    <p>Ejecutar antes de probar. Siempre al menos una vez.</p>
-
+**do-while** — Ejecutar antes de probar. Siempre al menos una vez.
 ```asm
 loop:
     add x0, x0, #1
@@ -440,18 +235,9 @@ loop:
     b.lt loop
 ```
 
-  </div>
-</div>
-
-</div>
-
 ---
 
 # Loop con puntero y array
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
     ldr x0, =array       // puntero actual
@@ -468,28 +254,8 @@ loop:
 fin:
 ```
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Registros</div>
-    <ul>
-      <li><code>x0</code> = puntero al elemento actual.</li>
-      <li><code>x1</code> = elementos restantes.</li>
-      <li><code>x3</code> = acumulador.</li>
-    </ul>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker">Patrón</div>
-    <ul>
-      <li><code>cbz x1, fin</code> → sale si terminó.</li>
-      <li><code>[x0], #8</code> → post-index avanza.</li>
-      <li><code>b loop</code> → rama hacia atrás.</li>
-    </ul>
-  </div>
-</div>
-
-</div>
-
-</div>
+- **Registros** — `x0` = puntero al elemento actual. `x1` = elementos restantes. `x3` = acumulador.
+- **Patrón** — `cbz x1, fin` → sale si terminó. `[x0], #8` → post-index avanza. `b loop` → rama hacia atrás.
 
 ---
 layout: section
@@ -503,72 +269,28 @@ Casos frecuentes con instrucciones más directas.
 
 # cbz, cbnz, tbz, tbnz
 
-<div class="slide-center-block">
+- `cbz` — Salta si registro = 0. Sin necesidad de `cmp`.
+- `cbnz` — Salta si registro ≠ 0.
+- `tbz` — Salta si bit N del registro = 0.
+- `tbnz` — Salta si bit N del registro = 1.
 
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3><code>cbz</code></h3>
-    <p>Salta si registro = 0. Sin necesidad de <code>cmp</code>.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>cbnz</code></h3>
-    <p>Salta si registro ≠ 0.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>tbz</code></h3>
-    <p>Salta si bit N del registro = 0.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>tbnz</code></h3>
-    <p>Salta si bit N del registro = 1.</p>
-  </div>
-</div>
-
-<div v-click class="callout info centered-narrow">
-<code>cbz</code> reemplaza <code>cmp x0, #0</code> + <code>b.eq</code>. <code>tbz</code> reemplaza <code>tst</code> + <code>b.eq</code> para un bit concreto.
-</div>
-
-</div>
+`cbz` reemplaza `cmp x0, #0` + `b.eq`. `tbz` reemplaza `tst` + `b.eq` para un bit concreto.
 
 ---
 
 # Conditional select: csel y familia
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
 cmp x0, x1
 csel x2, x0, x1, gt    // si x0 > x1 (signed), x2 = x0; si no, x2 = x1
 ```
 
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3><code>csel</code></h3>
-    <p>Elige entre dos registros según condición.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>cset</code></h3>
-    <p>Escribe 1 si condición se cumple, 0 si no.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>cinc</code></h3>
-    <p>Elige registro o registro + 1.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>cneg</code></h3>
-    <p>Elige registro o su negación (valor absoluto).</p>
-  </div>
-</div>
+- `csel` — Elige entre dos registros según condición.
+- `cset` — Escribe 1 si condición se cumple, 0 si no.
+- `cinc` — Elige registro o registro + 1.
+- `cneg` — Elige registro o su negación (valor absoluto).
 
-<div v-click class="callout tip centered-narrow">
-<code>csel</code> no reemplaza toda estructura <code>if</code>. Reemplaza decisiones pequeñas donde solo necesitas elegir un valor.
-</div>
-
-</div>
-
-</div>
+`csel` no reemplaza toda estructura `if`. Reemplaza decisiones pequeñas donde solo necesitas elegir un valor.
 
 ---
 layout: section
@@ -581,10 +303,6 @@ Preparación para funciones: saltar, guardar retorno y volver.
 ---
 
 # bl y ret
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
 _start:
@@ -599,117 +317,51 @@ funcion_simple:
     ret                   // vuelve a la dirección en lr
 ```
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker"><code>b</code> vs <code>bl</code></div>
-    <ul>
-      <li><code>b</code> solo salta.</li>
-      <li><code>bl</code> salta Y guarda retorno en <code>x30/lr</code>.</li>
-    </ul>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker"><code>br</code> vs <code>blr</code></div>
-    <ul>
-      <li><code>br xN</code> salta a dirección en registro.</li>
-      <li><code>blr xN</code> salta Y guarda retorno.</li>
-    </ul>
-  </div>
-</div>
-
-</div>
-
-</div>
+- `b` vs `bl` — `b` solo salta. `bl` salta Y guarda retorno en `x30/lr`.
+- `br` vs `blr` — `br xN` salta a dirección en registro. `blr xN` salta Y guarda retorno.
 
 ---
 
 # Checklist mental
 
-<div class="slide-center-block">
-
-<div class="reveal-list centered-narrow">
-  <div v-click class="reveal-item">Puedo explicar etiquetas y branches.</div>
-  <div v-click class="reveal-item">Puedo separar condiciones signed y unsigned.</div>
-  <div v-click class="reveal-item">Puedo traducir <code>if</code>, <code>if/else</code>, <code>while</code> y <code>for</code>.</div>
-  <div v-click class="reveal-item">Puedo usar <code>cbz</code>, <code>tbz</code> y <code>csel</code> en casos apropiados.</div>
-  <div v-click class="reveal-item">Puedo explicar <code>bl</code> y <code>ret</code> como mecanismo de llamada/retorno.</div>
-  <div v-click class="reveal-item">Puedo escribir un loop con puntero y post-index.</div>
-</div>
-
-</div>
+- Puedo explicar etiquetas y branches.
+- Puedo separar condiciones signed y unsigned.
+- Puedo traducir `if`, `if/else`, `while` y `for`.
+- Puedo usar `cbz`, `tbz` y `csel` en casos apropiados.
+- Puedo explicar `bl` y `ret` como mecanismo de llamada/retorno.
+- Puedo escribir un loop con puntero y post-index.
 
 ---
 
 # Siguiente paso
 
-<div class="slide-center-block">
-
-<div class="flow-column">
-  <div v-click class="flow-step">Branches y condiciones dominados</div>
-  <div v-click class="flow-arrow">→</div>
-  <div v-click class="flow-step">Loops y recorrido de arrays</div>
-  <div v-click class="flow-arrow">→</div>
-  <div v-click class="flow-step">bl y ret como base de llamadas</div>
-  <div v-click class="flow-arrow">→</div>
-  <div v-click class="flow-step">Stack frames, funciones y ABI</div>
-</div>
-
-</div>
+Branches y condiciones dominados → Loops y recorrido de arrays → bl y ret como base de llamadas → Stack frames, funciones y ABI
 
 ---
 layout: center
 class: text-center
 ---
 
-<div class="muted">Actividad de cierre</div>
+### Actividad de cierre
 
 # Preguntas de repaso
 
-<div class="question-points mx-auto mt-6 max-w-2xl text-left">
-  <div v-click>¿Una etiqueta ejecuta código por sí sola?</div>
-  <div v-click>¿Cuál es la diferencia entre <code>b.lt</code> y <code>b.lo</code>?</div>
-  <div v-click>¿Por qué necesitas <code>b fin_if</code> en un patrón if/else?</div>
-  <div v-click>¿Cuándo usarías <code>csel</code> en lugar de un branch?</div>
-  <div v-click>¿Qué guarda <code>bl</code> que <code>b</code> no guarda?</div>
-</div>
+- ¿Una etiqueta ejecuta código por sí sola?
+- ¿Cuál es la diferencia entre `b.lt` y `b.lo`?
+- ¿Por qué necesitas `b fin_if` en un patrón if/else?
+- ¿Cuándo usarías `csel` en lugar de un branch?
+- ¿Qué guarda `bl` que `b` no guarda?
 
 ---
 
-###### Ejemplo Práctico
+### Ejemplo Práctico
 
-<div class="slide-center-block">
+Escribir un programa con if/else y un loop que recorra un array sumando elementos.
 
-<div class="content-stack-lg">
-
-<div class="key-idea centered-narrow">
-  <div class="muted">Actividad guiada</div>
-  <p>Escribir un programa con if/else y un loop que recorra un array sumando elementos.</p>
-</div>
-
-<div class="concept-grid concept-grid-4">
-  <div v-click class="concept-card">
-    <h3>if/else</h3>
-    <p>Comparar un valor, dos caminos, salida común.</p>
-  </div>
-
-  <div v-click class="concept-card">
-    <h3>Loop</h3>
-    <p>Recorrer array con puntero, post-index y <code>cbz</code>.</p>
-  </div>
-
-  <div v-click class="concept-card">
-    <h3>csel</h3>
-    <p>Elegir el mayor de dos valores sin rama.</p>
-  </div>
-
-  <div v-click class="concept-card">
-    <h3>bl + ret</h3>
-    <p>Extraer el cuerpo del loop a una función simple.</p>
-  </div>
-</div>
-
-</div>
-
-</div>
+1. **if/else** — Comparar un valor, dos caminos, salida común.
+2. **Loop** — Recorrer array con puntero, post-index y `cbz`.
+3. **csel** — Elegir el mayor de dos valores sin rama.
+4. **bl + ret** — Extraer el cuerpo del loop a una función simple.
 
 ---
 

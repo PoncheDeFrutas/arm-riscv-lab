@@ -15,162 +15,66 @@ seoMeta:
   ogDescription: "Carga direcciones, lee contenido, escribe bytes y recorre memoria con instrucciones load/store."
 ---
 
-<style>
-@import "../styles/index.css";
-</style>
-
-<div class="ecys-cover-bg"></div>
-
-<div class="ecys-title-cover">
-
-<div class="muted">Escuela de Ingeniería de Ciencias y Sistemas</div>
-
 # Arquitectura de Computadores y Ensambladores 1
 
-</div>
+Escuela de Ingeniería de Ciencias y Sistemas
 
 ---
 layout: center
 ---
 
-<div class="muted">Arquitectura de Computadores y Ensambladores 1</div>
+Arquitectura de Computadores y Ensambladores 1
 
 ## Unidad 06
 ## Memoria básica, secciones y direccionamiento
 
-AArch64 es load/store: la ALU trabaja con registros y la memoria
-se toca de forma explícita.
+AArch64 es load/store: la ALU trabaja con registros y la memoria se toca de forma explícita.
 
-<div class="cover-note">
 Unidad práctica: dirección vs contenido, secciones, ldr/str, tamaños, modos de direccionamiento y arrays.
-</div>
 
 ---
 
 # Anuncios importantes
 
-<div class="numbered-grid">
-  <div class="numbered-card">
-    <div class="card-number">1</div>
-    <h3>Anuncio 1</h3>
-    <p></p>
-  </div>
-</div>
+1. **Anuncio 1**
 
 ---
 
 # Agenda
 
-<div class="numbered-grid">
-  <div class="numbered-card">
-    <div class="card-number">1</div>
-    <h3>Dirección y contenido</h3>
-    <p>Memoria como bytes, punteros y diferencia entre cargar dirección y contenido.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">2</div>
-    <h3>Secciones y mapa de memoria</h3>
-    <p><code>.text</code>, <code>.rodata</code>, <code>.data</code>, <code>.bss</code>, stack y heap.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">3</div>
-    <h3>Load/store básico</h3>
-    <p><code>ldr</code>, <code>str</code>, cargar-modificar-guardar.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">4</div>
-    <h3>Tamaños y modos de direccionamiento</h3>
-    <p><code>ldrb</code>, <code>ldrh</code>, <code>ldrsw</code>, offsets, pre-index y post-index.</p>
-  </div>
-
-  <div class="numbered-card">
-    <div class="card-number">5</div>
-    <h3>Arrays y recorrido</h3>
-    <p>Base + índice × tamaño, escalas y lectura guiada.</p>
-  </div>
-</div>
+1. **Dirección y contenido** — Memoria como bytes, punteros y diferencia entre cargar dirección y contenido.
+2. **Secciones y mapa de memoria** — `.text`, `.rodata`, `.data`, `.bss`, stack y heap.
+3. **Load/store básico** — `ldr`, `str`, cargar-modificar-guardar.
+4. **Tamaños y modos de direccionamiento** — `ldrb`, `ldrh`, `ldrsw`, offsets, pre-index y post-index.
+5. **Arrays y recorrido** — Base + índice × tamaño, escalas y lectura guiada.
 
 ---
 
 # Competencias
 
-<div class="concept-grid vertical-center">
-  <div class="concept-card">
-    <h3>Competencia 1</h3>
-    <p>
-      Aplica el set de instrucciones ARM-64 utilizando instrucciones aritméticas,
-      lógicas, de carga/almacenamiento, desplazamientos y rotaciones para
-      construir programas funcionales que manipulen datos a nivel de registros
-      y memoria.
-    </p>
-  </div>
+### Competencia 1
+Aplica el set de instrucciones ARM-64 utilizando instrucciones aritméticas, lógicas, de carga/almacenamiento, desplazamientos y rotaciones para construir programas funcionales que manipulen datos a nivel de registros y memoria.
 
-  <div class="concept-card">
-    <h3>Competencia 2</h3>
-    <p>
-      Analiza el comportamiento de arquitecturas modernas (ARM y RISC-V)
-      utilizando simuladores como Gem5, QEMU, registros e instrucciones
-      optimizando programas a bajo nivel en microprocesadores.
-    </p>
-  </div>
-</div>
+### Competencia 2
+Analiza el comportamiento de arquitecturas modernas (ARM y RISC-V) utilizando simuladores como Gem5, QEMU, registros e instrucciones optimizando programas a bajo nivel en microprocesadores.
 
 ---
 
 # Valor de la semana
 
-<div class="callout tip">
-  <strong>Precisión.</strong>
-  Exactitud al escribir y ejecutar instrucciones a nivel de máquina.
-</div>
+**Precisión.** Exactitud al escribir y ejecutar instrucciones a nivel de máquina.
 
-<div class="concept-grid">
-  <div class="concept-card">
-    <h3>Aplicación en clase</h3>
-    <p>
-      En ensamblador, un error de un bit o una instrucción mal escrita puede
-      producir resultados completamente inesperados. La precisión es esencial
-      al trabajar con instrucciones aritméticas, lógicas y de memoria.
-    </p>
-  </div>
-</div>
+### Aplicación en clase
+En ensamblador, un error de un bit o una instrucción mal escrita puede producir resultados completamente inesperados. La precisión es esencial al trabajar con instrucciones aritméticas, lógicas y de memoria.
 
 ---
 
 # Qué buscamos hoy
 
-<div class="slide-center-block">
-
-<div class="objective-grid">
-  <div v-click class="objective-item">
-    <div class="item-number">1</div>
-    <h3>Dirección vs contenido</h3>
-    <p>Distinguir dirección, contenido y valor interpretado en memoria.</p>
-  </div>
-
-  <div v-click class="objective-item">
-    <div class="item-number">2</div>
-    <h3>Load/store</h3>
-    <p>Cargar datos a registros y escribir resultados de vuelta a memoria.</p>
-  </div>
-
-  <div v-click class="objective-item">
-    <div class="item-number">3</div>
-    <h3>Tamaños de acceso</h3>
-    <p>Elegir <code>ldrb</code>, <code>ldrh</code>, <code>ldr w</code> o <code>ldr x</code> según el dato.</p>
-  </div>
-
-  <div v-click class="objective-item">
-    <div class="item-number">4</div>
-    <h3>Direccionamiento y arrays</h3>
-    <p>Calcular offsets, usar escalas y recorrer memoria con post-index.</p>
-  </div>
-</div>
-
-</div>
+1. **Dirección vs contenido** — Distinguir dirección, contenido y valor interpretado en memoria.
+2. **Load/store** — Cargar datos a registros y escribir resultados de vuelta a memoria.
+3. **Tamaños de acceso** — Elegir `ldrb`, `ldrh`, `ldr w` o `ldr x` según el dato.
+4. **Direccionamiento y arrays** — Calcular offsets, usar escalas y recorrer memoria con post-index.
 
 ---
 layout: section
@@ -185,55 +89,30 @@ layout: center
 class: text-center
 ---
 
-<div class="big-question">
-  <div class="muted">Pregunta de arranque</div>
-  <h3>¿Qué diferencia hay entre cargar una dirección y cargar lo que hay en esa dirección?</h3>
-  <div class="question-points">
-    <div v-click>Una dirección es un número que indica posición.</div>
-    <div v-click>El contenido son bytes guardados en esa posición.</div>
-    <div v-click>El valor depende de la instrucción y el tamaño de lectura.</div>
-  </div>
-</div>
+### Pregunta de arranque
+
+## ¿Qué diferencia hay entre cargar una dirección y cargar lo que hay en esa dirección?
+
+- Una dirección es un número que indica posición.
+- El contenido son bytes guardados en esa posición.
+- El valor depende de la instrucción y el tamaño de lectura.
 
 ---
 
 # Memoria como arreglo de bytes
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```bash
 Dirección:   0x400120  0x400121  0x400122  0x400123
 Contenido:      2A        00        00        00
 ```
 
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3>Dirección</h3>
-    <p>Número que indica posición. Ej: <code>0x400120</code></p>
-  </div>
-  <div v-click class="concept-card">
-    <h3>Contenido</h3>
-    <p>Bytes guardados. Ej: <code>2A 00 00 00</code></p>
-  </div>
-  <div v-click class="concept-card">
-    <h3>Valor</h3>
-    <p>Interpretación. Ej: <code>42</code> como int32 LE.</p>
-  </div>
-</div>
-
-</div>
-
-</div>
+- **Dirección** — Número que indica posición. Ej: `0x400120`
+- **Contenido** — Bytes guardados. Ej: `2A 00 00 00`
+- **Valor** — Interpretación. Ej: `42` como int32 LE.
 
 ---
 
-###### Cargar dirección vs cargar contenido
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
+# Cargar dirección vs cargar contenido
 
 ```asm
 .data
@@ -246,57 +125,17 @@ _start:
     ldr x1, [x0]      // x1 = contenido de 64 bits guardado allí
 ```
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker"><code>ldr x0, =valor</code></div>
-    <ul>
-      <li>Carga una dirección.</li>
-      <li><code>x0</code> = puntero, ej: <code>0x410158</code></li>
-    </ul>
-  </div>
-
-  <div v-click class="compare-card">
-    <div class="card-kicker"><code>ldr x1, [x0]</code></div>
-    <ul>
-      <li>Usa corchetes → acceso a memoria.</li>
-      <li><code>x1</code> = valor leído: <code>42</code></li>
-    </ul>
-  </div>
-</div>
-
-</div>
-
-</div>
+- `ldr x0, =valor` — Carga una dirección. `x0` = puntero, ej: `0x410158`
+- `ldr x1, [x0]` — Usa corchetes → acceso a memoria. `x1` = valor leído: `42`
 
 ---
 
-###### La diferencia está en los corchetes
+# La diferencia está en los corchetes
 
-<div class="slide-center-block">
+- **Sin corchetes** — `ldr x0, =valor` → Obtienes la **dirección** asociada al símbolo.
+- **Con corchetes** — `ldr x1, [x0]` → Lees el **contenido** almacenado en esa dirección.
 
-<div class="content-stack-lg">
-
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Sin corchetes</div>
-    <p><code>ldr x0, =valor</code></p>
-    <p>Obtienes la <strong>dirección</strong> asociada al símbolo.</p>
-  </div>
-
-  <div v-click class="compare-card">
-    <div class="card-kicker">Con corchetes</div>
-    <p><code>ldr x1, [x0]</code></p>
-    <p>Lees el <strong>contenido</strong> almacenado en esa dirección.</p>
-  </div>
-</div>
-
-<div v-click class="callout info centered-narrow">
-Los corchetes indican acceso a memoria: “ve a esa dirección y lee lo que hay allí”.
-</div>
-
-</div>
-
-</div>
+Los corchetes indican acceso a memoria: "ve a esa dirección y lee lo que hay allí".
 
 ---
 layout: section
@@ -310,62 +149,15 @@ Dónde viven código, datos constantes, datos modificables y espacio reservado.
 
 # Mapa inicial de memoria
 
-<div class="slide-center-block">
+**Regiones de un proceso Linux**
+- `.text` — Instrucciones ejecutables.
+- `.rodata` — Datos constantes (solo lectura).
+- `.data` — Datos inicializados modificables.
+- `.bss` — Espacio reservado (sin bytes en archivo).
 
-<div class="two-column-layout">
-
-<div class="content-stack-md">
-
-<div class="muted">Regiones de un proceso Linux</div>
-
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3><code>.text</code></h3>
-    <p>Instrucciones ejecutables.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>.rodata</code></h3>
-    <p>Datos constantes (solo lectura).</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>.data</code></h3>
-    <p>Datos inicializados modificables.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>.bss</code></h3>
-    <p>Espacio reservado (sin bytes en archivo).</p>
-  </div>
-</div>
-
-</div>
-
-<div class="content-stack-md">
-
-<div class="muted">Zonas adicionales</div>
-
-<div class="compare-grid compare-grid-stacked">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Stack</div>
-    <ul>
-      <li>Existe desde <code>_start</code>.</li>
-      <li><code>sp</code> apunta a esta zona.</li>
-    </ul>
-  </div>
-
-  <div v-click class="compare-card">
-    <div class="card-kicker">Heap</div>
-    <ul>
-      <li>Memoria dinámica futura.</li>
-      <li>No la usaremos aún.</li>
-    </ul>
-  </div>
-</div>
-
-</div>
-
-</div>
-
-</div>
+**Zonas adicionales**
+- **Stack** — Existe desde `_start`. `sp` apunta a esta zona.
+- **Heap** — Memoria dinámica futura. No la usaremos aún.
 
 ---
 layout: section
@@ -379,10 +171,6 @@ AArch64 calcula en registros y accede a memoria con instrucciones explícitas.
 
 # Arquitectura load/store
 
-<div class="slide-center-block">
-
-<div class="diagram-block">
-
 ```mermaid {theme: 'dark', scale: 0.78}
 flowchart LR
   MEM1["Memoria"] --> LOAD["ldr"]
@@ -393,26 +181,13 @@ flowchart LR
   STORE --> MEM2["Memoria"]
 ```
 
-<div class="diagram-caption">
 La ALU trabaja con registros. Si un valor está en memoria, primero lo cargas. Si quieres conservar el resultado, lo escribes de vuelta.
-</div>
-
-</div>
-
-</div>
 
 ---
 
-##### Patrón cargar-modificar-guardar
+# Patrón cargar-modificar-guardar
 
-<div class="slide-center-block">
-
-<div class="two-column-layout">
-
-<div class="content-stack-md">
-
-<div class="muted">Código</div>
-
+**Código**
 ```asm
 ldr x0, =contador
 ldr x1, [x0]       // cargar
@@ -420,24 +195,11 @@ add x1, x1, #1     // modificar
 str x1, [x0]       // guardar
 ```
 
-</div>
-
-<div class="content-stack-md">
-
-<div class="muted">Secuencia</div>
-
-<div class="reveal-list">
-  <div v-click class="reveal-item">1. Cargar dirección.</div>
-  <div v-click class="reveal-item">2. Cargar contenido al registro.</div>
-  <div v-click class="reveal-item">3. Modificar en registro.</div>
-  <div v-click class="reveal-item">4. Guardar resultado en memoria.</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
+**Secuencia**
+1. Cargar dirección.
+2. Cargar contenido al registro.
+3. Modificar en registro.
+4. Guardar resultado en memoria.
 
 ---
 layout: section
@@ -451,36 +213,14 @@ La instrucción decide cuántos bytes leer o escribir.
 
 # Instrucciones por tamaño
 
-<div class="slide-center-block">
-
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3><code>ldrb</code> / <code>strb</code></h3>
-    <p>1 byte.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>ldrh</code> / <code>strh</code></h3>
-    <p>2 bytes (halfword).</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>ldr w</code> / <code>str w</code></h3>
-    <p>4 bytes (word).</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>ldr x</code> / <code>str x</code></h3>
-    <p>8 bytes (doubleword).</p>
-  </div>
-</div>
-
-</div>
+- `ldrb` / `strb` — 1 byte.
+- `ldrh` / `strh` — 2 bytes (halfword).
+- `ldr w` / `str w` — 4 bytes (word).
+- `ldr x` / `str x` — 8 bytes (doubleword).
 
 ---
 
 # Mismos bytes, lecturas distintas
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
 .data
@@ -495,42 +235,16 @@ _start:
     ldr  w3, [x0]    // w3 = 0x44332211
 ```
 
-<div v-click class="callout warning centered-narrow">
 No existe "leer una variable". Existen instrucciones que leen 1, 2, 4 u 8 bytes desde una dirección. Elegir tamaño correcto es parte del programa.
-</div>
-
-</div>
-
-</div>
 
 ---
 
 # ldrsw: sign extension a 64 bits
 
-<div class="slide-center-block">
+- `ldr w1, [x0]` — Lee 32 bits, limpia mitad alta. `0xFFFFFFFF` → `x1 = 0x00000000FFFFFFFF`
+- `ldrsw x2, [x0]` — Lee 32 bits, extiende signo a 64. `0xFFFFFFFF` → `x2 = 0xFFFFFFFFFFFFFFFF`
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker"><code>ldr w1, [x0]</code></div>
-    <ul>
-      <li>Lee 32 bits, limpia mitad alta.</li>
-      <li><code>0xFFFFFFFF</code> → <code>x1 = 0x00000000FFFFFFFF</code></li>
-    </ul>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker"><code>ldrsw x2, [x0]</code></div>
-    <ul>
-      <li>Lee 32 bits, extiende signo a 64.</li>
-      <li><code>0xFFFFFFFF</code> → <code>x2 = 0xFFFFFFFFFFFFFFFF</code></li>
-    </ul>
-  </div>
-</div>
-
-<div v-click class="callout info centered-narrow">
 La diferencia no está en los bytes guardados. Está en cómo se extiende el valor al registro de 64 bits.
-</div>
-
-</div>
 
 ---
 layout: section
@@ -544,67 +258,28 @@ Cómo AArch64 calcula la dirección efectiva de un acceso a memoria.
 
 # Formas principales
 
-<div class="slide-center-block">
-
-<div class="concept-grid">
-  <div v-click class="concept-card">
-    <h3><code>[x0]</code></h3>
-    <p>Base sola. Dirección en <code>x0</code>.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>[x0, #8]</code></h3>
-    <p>Offset inmediato. <code>x0 + 8</code>.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>[x0, x1]</code></h3>
-    <p>Offset en registro. <code>x0 + x1</code>.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>[x0, x1, lsl #3]</code></h3>
-    <p>Offset escalado. <code>x0 + x1 × 8</code>.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>[x0, #8]!</code></h3>
-    <p>Pre-index. Actualiza <code>x0</code>, luego lee.</p>
-  </div>
-  <div v-click class="concept-card">
-    <h3><code>[x0], #8</code></h3>
-    <p>Post-index. Lee, luego actualiza <code>x0</code>.</p>
-  </div>
-</div>
-
-</div>
+- `[x0]` — Base sola. Dirección en `x0`.
+- `[x0, #8]` — Offset inmediato. `x0 + 8`.
+- `[x0, x1]` — Offset en registro. `x0 + x1`.
+- `[x0, x1, lsl #3]` — Offset escalado. `x0 + x1 × 8`.
+- `[x0, #8]!` — Pre-index. Actualiza `x0`, luego lee.
+- `[x0], #8` — Post-index. Lee, luego actualiza `x0`.
 
 ---
 
 # Pre-index vs post-index
 
-<div class="slide-center-block">
+**Pre-index `[x0, #8]!`**
+- Primero: `x0 = x0 + 8`
+- Luego: lee desde nuevo `x0`.
+- Avanza el puntero antes del acceso.
 
-<div class="compare-grid">
-  <div v-click class="compare-card">
-    <div class="card-kicker">Pre-index <code>[x0, #8]!</code></div>
-    <ul>
-      <li>Primero: <code>x0 = x0 + 8</code></li>
-      <li>Luego: lee desde nuevo <code>x0</code>.</li>
-      <li>Avanza el puntero antes del acceso.</li>
-    </ul>
-  </div>
-  <div v-click class="compare-card">
-    <div class="card-kicker">Post-index <code>[x0], #8</code></div>
-    <ul>
-      <li>Primero: lee desde <code>x0</code> actual.</li>
-      <li>Luego: <code>x0 = x0 + 8</code></li>
-      <li>Avanza el puntero después del acceso.</li>
-    </ul>
-  </div>
-</div>
+**Post-index `[x0], #8`**
+- Primero: lee desde `x0` actual.
+- Luego: `x0 = x0 + 8`
+- Avanza el puntero después del acceso.
 
-<div v-click class="callout tip centered-narrow">
 Post-index es cómodo para recorrer memoria linealmente: lee y avanza en una sola instrucción.
-</div>
-
-</div>
 
 ---
 layout: section
@@ -622,41 +297,18 @@ Un array es memoria consecutiva. La dirección del elemento depende de base + í
 
 ---
 
-##### Fórmula de acceso a arrays
-
-<div class="slide-center-block">
-
-<div class="split-visual">
-
-<div>
-
-<div class="muted">Fórmula</div>
-
-<div class="key-idea">
+# Fórmula de acceso a arrays
 
 $$
 \text{dir}[i] = \text{base} + i \times \text{tamaño}
 $$
 
-</div>
+**Escalas comunes**
+- `.byte` — sin escala
+- `.word` — `lsl #2` (×4)
+- `.quad` — `lsl #3` (×8)
 
-<br>
-
-<div v-click class="compare-card compact-card">
-  <div class="card-kicker">Escalas comunes</div>
-  <ul>
-    <li><code>.byte</code> — sin escala</li>
-    <li><code>.word</code> — <code>lsl #2</code> (×4)</li>
-    <li><code>.quad</code> — <code>lsl #3</code> (×8)</li>
-  </ul>
-</div>
-
-</div>
-
-<div>
-
-<div class="muted">Ejemplo con offset escalado</div>
-
+**Ejemplo con offset escalado**
 ```asm
 .data
 array:
@@ -670,20 +322,9 @@ _start:
     // x2 = array[2] = 30
 ```
 
-</div>
-
-</div>
-
-</div>
-
-
 ---
 
 # Recorrido con post-index
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
 ldr x0, =array
@@ -699,17 +340,9 @@ Después 2:  x0 → array[2]
 Después 3:  x0 → después del array
 ```
 
-</div>
-
-</div>
-
 ---
 
 # ldp y stp: pares de registros
-
-<div class="slide-center-block">
-
-<div class="content-stack-lg">
 
 ```asm
 .data
@@ -722,105 +355,51 @@ _start:
     ldp x1, x2, [x0]    // x1 = 11, x2 = 22
 ```
 
-<div v-click class="callout info centered-narrow">
-<code>ldp</code> carga dos registros consecutivos. <code>stp</code> guarda dos. Aparecerán mucho con stack frames.
-</div>
-
-</div>
-
-</div>
+`ldp` carga dos registros consecutivos. `stp` guarda dos. Aparecerán mucho con stack frames.
 
 ---
 
-###### Checklist mental
+# Checklist mental
 
-<div class="slide-center-block">
-
-<div class="reveal-list centered-narrow">
-  <div v-click class="reveal-item">Puedo distinguir dirección, contenido y valor.</div>
-  <div v-click class="reveal-item">Puedo cargar una dirección con <code>ldr =symbol</code>.</div>
-  <div v-click class="reveal-item">Puedo cargar contenido con <code>ldr xN, [xM]</code>.</div>
-  <div v-click class="reveal-item">Puedo escribir memoria con <code>str</code>.</div>
-  <div v-click class="reveal-item">Puedo elegir entre <code>ldrb</code>, <code>ldrh</code>, <code>ldr</code> y <code>ldrsw</code>.</div>
-  <div v-click class="reveal-item">Puedo calcular offsets para arrays.</div>
-  <div v-click class="reveal-item">Puedo distinguir pre-index de post-index.</div>
-</div>
-
-</div>
+- Puedo distinguir dirección, contenido y valor.
+- Puedo cargar una dirección con `ldr =symbol`.
+- Puedo cargar contenido con `ldr xN, [xM]`.
+- Puedo escribir memoria con `str`.
+- Puedo elegir entre `ldrb`, `ldrh`, `ldr` y `ldrsw`.
+- Puedo calcular offsets para arrays.
+- Puedo distinguir pre-index de post-index.
 
 ---
 
 # Siguiente paso
 
-<div class="slide-center-block">
-
-<div class="flow-column">
-  <div v-click class="flow-step">Dirección vs contenido dominados</div>
-  <div v-click class="flow-arrow">→</div>
-  <div v-click class="flow-step">Load/store y tamaños claros</div>
-  <div v-click class="flow-arrow">→</div>
-  <div v-click class="flow-step">Modos de direccionamiento y arrays</div>
-  <div v-click class="flow-arrow">→</div>
-  <div v-click class="flow-step">Control de flujo, stack y funciones</div>
-</div>
-
-</div>
+Dirección vs contenido dominados → Load/store y tamaños claros → Modos de direccionamiento y arrays → Control de flujo, stack y funciones
 
 ---
 layout: center
 class: text-center
 ---
 
-<div class="muted">Actividad de cierre</div>
+### Actividad de cierre
 
 # Preguntas de repaso
 
-<div class="question-points mx-auto mt-6 max-w-2xl text-left">
-  <div v-click>¿Qué diferencia hay entre <code>ldr x0, =valor</code> y <code>ldr x1, [x0]</code>?</div>
-  <div v-click>¿Qué lee <code>ldrb w1, [x0]</code> vs <code>ldr w2, [x0]</code> desde los mismos bytes?</div>
-  <div v-click>¿Qué escala usarías para un array de <code>.word</code>?</div>
-  <div v-click>¿Qué diferencia hay entre pre-index y post-index?</div>
-  <div v-click>¿Por qué AArch64 se llama arquitectura load/store?</div>
-</div>
+- ¿Qué diferencia hay entre `ldr x0, =valor` y `ldr x1, [x0]`?
+- ¿Qué lee `ldrb w1, [x0]` vs `ldr w2, [x0]` desde los mismos bytes?
+- ¿Qué escala usarías para un array de `.word`?
+- ¿Qué diferencia hay entre pre-index y post-index?
+- ¿Por qué AArch64 se llama arquitectura load/store?
 
 ---
 
-###### Ejemplo Práctico
+### Ejemplo Práctico
 
-<div class="slide-center-block">
+Declarar datos, cargar, modificar, guardar y recorrer un array en AArch64.
 
-<div class="content-stack-lg">
-
-<div class="key-idea centered-narrow">
-  <div class="muted">Actividad guiada</div>
-  <p>Declarar datos, cargar, modificar, guardar y recorrer un array en AArch64.</p>
-</div>
-
-<div class="concept-grid concept-grid-4">
-  <div v-click class="concept-card">
-    <h3>Cargar</h3>
-    <p><code>ldr x0, =dato</code> y <code>ldr x1, [x0]</code> para dirección y contenido.</p>
-  </div>
-
-  <div v-click class="concept-card">
-    <h3>Modificar</h3>
-    <p><code>add x1, x1, #1</code> y <code>str x1, [x0]</code> para leer-modificar-guardar.</p>
-  </div>
-
-  <div v-click class="concept-card">
-    <h3>Recorrer</h3>
-    <p>Array con post-index: <code>ldr x1, [x0], #8</code> y acumular.</p>
-  </div>
-
-  <div v-click class="concept-card">
-    <h3>Inspeccionar</h3>
-    <p><code>objdump -s -j .data</code> para ver bytes antes y después.</p>
-  </div>
-</div>
-
-</div>
-
-</div>
+1. **Cargar** — `ldr x0, =dato` y `ldr x1, [x0]` para dirección y contenido.
+2. **Modificar** — `add x1, x1, #1` y `str x1, [x0]` para leer-modificar-guardar.
+3. **Recorrer** — Array con post-index: `ldr x1, [x0], #8` y acumular.
+4. **Inspeccionar** — `objdump -s -j .data` para ver bytes antes y después.
 
 ---
 
