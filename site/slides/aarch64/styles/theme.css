@@ -1,0 +1,160 @@
+/* Theme palette for AArch64 slides - Light/Dark mode support */
+
+:root {
+  /* Background colors */
+  --aa-bg-primary: #ffffff;
+  --aa-bg-secondary: #f8fafc;
+  --aa-bg-tertiary: #f1f5f9;
+  --aa-bg-card: #ffffff;
+  --aa-bg-code: #1e293b;
+  --aa-bg-code-inline: #f1f5f9;
+
+  /* Text colors */
+  --aa-text-primary: #0f172a;
+  --aa-text-secondary: #334155;
+  --aa-text-muted: #64748b;
+  --aa-text-on-accent: #ffffff;
+
+  /* Border colors */
+  --aa-border-color: #e2e8f0;
+  --aa-border-strong: #cbd5e1;
+
+  /* Accent colors */
+  --aa-accent-blue: #2563eb;
+  --aa-accent-blue-light: #dbeafe;
+  --aa-accent-green: #16a34a;
+  --aa-accent-green-light: #dcfce7;
+  --aa-accent-amber: #d97706;
+  --aa-accent-amber-light: #fef3c7;
+  --aa-accent-purple: #9333ea;
+  --aa-accent-purple-light: #f3e8ff;
+  --aa-accent-red: #dc2626;
+  --aa-accent-red-light: #fee2e2;
+
+  /* Highlight backgrounds */
+  --aa-highlight-reg-bg: #dbeafe;
+  --aa-highlight-reg-text: #1d4ed8;
+  --aa-highlight-syscall-bg: #dcfce7;
+  --aa-highlight-syscall-text: #15803d;
+  --aa-highlight-instr-bg: #fef3c7;
+  --aa-highlight-instr-text: #92400e;
+  --aa-highlight-addr-bg: #f3e8ff;
+  --aa-highlight-addr-text: #7e22ce;
+
+  /* Table styles */
+  --aa-table-header-bg: #0f172a;
+  --aa-table-header-text: #ffffff;
+  --aa-table-stripe: #f8fafc;
+  --aa-table-first-cell-bg: #f1f5f9;
+
+  /* Component specific */
+  --aa-step-number-bg: #2563eb;
+  --aa-step-row-bg: #f8fafc;
+  --aa-annotation-bg: #f8fafc;
+  --aa-annotation-num-bg: #dbeafe;
+  --aa-annotation-num-text: #2563eb;
+  --aa-timeline-line: #93c5fd;
+  --aa-timeline-dot-bg: #2563eb;
+  --aa-section-gradient-start: #f8fafc;
+  --aa-section-gradient-end: #e2e8f0;
+
+  /* Memory map region colors */
+  --aa-mm-red-bg: #fee2e2;
+  --aa-mm-red-border: #ef4444;
+  --aa-mm-red-text: #991b1b;
+  --aa-mm-blue-bg: #dbeafe;
+  --aa-mm-blue-border: #3b82f6;
+  --aa-mm-blue-text: #1e40af;
+  --aa-mm-green-bg: #dcfce7;
+  --aa-mm-green-border: #22c55e;
+  --aa-mm-green-text: #166534;
+  --aa-mm-yellow-bg: #fef9c3;
+  --aa-mm-yellow-border: #eab308;
+  --aa-mm-yellow-text: #854d0e;
+  --aa-mm-gray-bg: #f3f4f6;
+  --aa-mm-gray-border: #9ca3af;
+  --aa-mm-gray-text: #374151;
+  --aa-mm-purple-bg: #f3e8ff;
+  --aa-mm-purple-border: #a855f7;
+  --aa-mm-purple-text: #6b21a8;
+}
+
+/* Dark mode overrides - pure black background */
+.dark {
+  /* Background colors - black scale */
+  --aa-bg-primary: #000000;
+  --aa-bg-secondary: #0a0a0a;
+  --aa-bg-tertiary: #141414;
+  --aa-bg-card: #111111;
+  --aa-bg-code: #0a0a0a;
+  --aa-bg-code-inline: #1a1a1a;
+
+  /* Text colors - gray scale, not pure white */
+  --aa-text-primary: #e5e5e5;
+  --aa-text-secondary: #a3a3a3;
+  --aa-text-muted: #737373;
+  --aa-text-on-accent: #ffffff;
+
+  /* Border colors - subtle on black */
+  --aa-border-color: #262626;
+  --aa-border-strong: #404040;
+
+  /* Accent colors - brighter for black background */
+  --aa-accent-blue: #60a5fa;
+  --aa-accent-blue-light: #172554;
+  --aa-accent-green: #4ade80;
+  --aa-accent-green-light: #052e16;
+  --aa-accent-amber: #fbbf24;
+  --aa-accent-amber-light: #451a03;
+  --aa-accent-purple: #c084fc;
+  --aa-accent-purple-light: #3b0764;
+  --aa-accent-red: #f87171;
+  --aa-accent-red-light: #450a0a;
+
+  /* Highlight backgrounds - dark tints with bright text */
+  --aa-highlight-reg-bg: #172554;
+  --aa-highlight-reg-text: #60a5fa;
+  --aa-highlight-syscall-bg: #052e16;
+  --aa-highlight-syscall-text: #4ade80;
+  --aa-highlight-instr-bg: #451a03;
+  --aa-highlight-instr-text: #fbbf24;
+  --aa-highlight-addr-bg: #3b0764;
+  --aa-highlight-addr-text: #c084fc;
+
+  /* Table styles */
+  --aa-table-header-bg: #111111;
+  --aa-table-header-text: #e5e5e5;
+  --aa-table-stripe: #0a0a0a;
+  --aa-table-first-cell-bg: #141414;
+
+  /* Component specific */
+  --aa-step-number-bg: #60a5fa;
+  --aa-step-row-bg: #111111;
+  --aa-annotation-bg: #111111;
+  --aa-annotation-num-bg: #172554;
+  --aa-annotation-num-text: #60a5fa;
+  --aa-timeline-line: #1e3a5f;
+  --aa-timeline-dot-bg: #60a5fa;
+  --aa-section-gradient-start: #0a0a0a;
+  --aa-section-gradient-end: #000000;
+
+  /* Memory map region colors - dark mode */
+  --aa-mm-red-bg: #450a0a;
+  --aa-mm-red-border: #f87171;
+  --aa-mm-red-text: #fca5a5;
+  --aa-mm-blue-bg: #172554;
+  --aa-mm-blue-border: #60a5fa;
+  --aa-mm-blue-text: #93c5fd;
+  --aa-mm-green-bg: #052e16;
+  --aa-mm-green-border: #4ade80;
+  --aa-mm-green-text: #86efac;
+  --aa-mm-yellow-bg: #451a03;
+  --aa-mm-yellow-border: #fbbf24;
+  --aa-mm-yellow-text: #fcd34d;
+  --aa-mm-gray-bg: #262626;
+  --aa-mm-gray-border: #737373;
+  --aa-mm-gray-text: #d4d4d4;
+  --aa-mm-purple-bg: #3b0764;
+  --aa-mm-purple-border: #c084fc;
+  --aa-mm-purple-text: #d8b4fe;
+}

@@ -1,0 +1,209 @@
+/* Layout-specific styles for AArch64 slides - uses theme.css variables */
+
+/* ===================== */
+/* SECTION LAYOUT        */
+/* ===================== */
+
+.slidev-layout.aarch64-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  background: linear-gradient(135deg, var(--aa-section-gradient-start) 0%, var(--aa-section-gradient-end) 100%);
+}
+
+.slidev-layout.aarch64-section h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--aa-text-primary);
+}
+
+.slidev-layout.aarch64-section p {
+  font-size: 1.125rem;
+  color: var(--aa-text-muted);
+  max-width: 40rem;
+}
+
+.slidev-layout.aarch64-section .section-icon {
+  font-size: 3.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ===================== */
+/* STATEMENT LAYOUT      */
+/* ===================== */
+
+.slidev-layout.aarch64-statement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  background-color: var(--aa-bg-secondary);
+  border-top: 2px solid var(--aa-border-color);
+  border-bottom: 2px solid var(--aa-border-color);
+}
+
+.slidev-layout.aarch64-statement h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--aa-text-primary);
+}
+
+/* ===================== */
+/* CODE LAYOUT           */
+/* ===================== */
+
+.slidev-layout.aarch64-code {
+  padding: 2rem 2.5rem;
+  background-color: var(--aa-bg-primary);
+}
+
+.slidev-layout.aarch64-code h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--aa-text-secondary);
+}
+
+.slidev-layout.aarch64-code pre {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ===================== */
+/* TWO COLUMNS LAYOUT    */
+/* ===================== */
+
+.slidev-layout.aarch64-two-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  padding: 2rem 2.5rem;
+  background-color: var(--aa-bg-primary);
+}
+
+.slidev-layout.aarch64-two-cols .col-left {
+  padding-right: 1rem;
+}
+
+.slidev-layout.aarch64-two-cols .col-right {
+  padding-left: 1rem;
+  border-left: 2px solid var(--aa-border-color);
+}
+
+/* ===================== */
+/* QUESTION LAYOUT       */
+/* ===================== */
+
+.slidev-layout.aarch64-question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  background-color: var(--aa-bg-secondary);
+}
+
+.slidev-layout.aarch64-question .question-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--aa-accent-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: 1rem;
+}
+
+.slidev-layout.aarch64-question h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--aa-text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.slidev-layout.aarch64-question ul {
+  text-align: left;
+  font-size: 1.125rem;
+  color: var(--aa-text-primary);
+}
+
+/* ===================== */
+/* CHECKLIST LAYOUT      */
+/* ===================== */
+
+.slidev-layout.aarch64-checklist {
+  padding: 2.5rem 3.5rem;
+  background-color: var(--aa-bg-primary);
+}
+
+.slidev-layout.aarch64-checklist h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--aa-text-primary);
+}
+
+.slidev-layout.aarch64-checklist ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.slidev-layout.aarch64-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  color: var(--aa-text-primary);
+}
+
+.slidev-layout.aarch64-checklist .check-icon {
+  color: var(--aa-accent-green);
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+/* ===================== */
+/* SUMMARY LAYOUT        */
+/* ===================== */
+
+.slidev-layout.aarch64-summary {
+  padding: 2.5rem 3.5rem;
+  background-color: var(--aa-bg-primary);
+}
+
+.slidev-layout.aarch64-summary .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.slidev-layout.aarch64-summary .summary-item {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--aa-border-color);
+  background-color: var(--aa-bg-secondary);
+}
+
+.slidev-layout.aarch64-summary .summary-item h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--aa-text-primary);
+}
+
+.slidev-layout.aarch64-summary .summary-item p {
+  font-size: 0.875rem;
+  color: var(--aa-text-muted);
+}
+
+
