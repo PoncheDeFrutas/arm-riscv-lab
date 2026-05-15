@@ -3,6 +3,10 @@ defineProps({
   regions: {
     type: Array,
     default: () => []
+  },
+  animate: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
@@ -13,7 +17,8 @@ defineProps({
       v-for="(region, index) in regions"
       :key="index"
       class="memory-region"
-      :class="`region-${region.color || 'gray'}`"
+      :class="[`region-${region.color || 'gray'}`, { 'slidev-vclick-target': animate }]"
+      v-click="animate ? index + 1 : undefined"
     >
       <div class="region-label">{{ region.label }}</div>
       <div class="region-range">

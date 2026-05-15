@@ -6,6 +6,9 @@ drawings:
   persist: false
 transition: slide-left
 mdc: true
+comark: true
+clickAnimation: up
+magicMoveCopy: 'final'
 title: "Referencia de estilos y componentes"
 info: "Presentación de referencia para definir layouts, componentes y estilos de las presentaciones AArch64."
 author: "ARM RISC-V Lab"
@@ -446,7 +449,7 @@ Desglose completo de una instrucción assembly:
 
 Visualización del layout de memoria de un proceso:
 
-<MemoryMap :regions="[
+<MemoryMap :animate="true" :regions="[
   { label: 'Kernel Space', start: '0xFFFFFFFFFFFFFFFF', end: '0xFFFF000000000000', color: 'red' },
   { label: 'Stack', start: '0x00007FFFFFFFFFFF', end: 'crece hacia abajo', color: 'blue' },
   { label: 'Heap', start: 'fin de .bss', end: 'crece hacia arriba', color: 'green' },
@@ -462,7 +465,7 @@ Visualización del layout de memoria de un proceso:
 
 Ejecución paso a paso con estado de registros:
 
-<StepByStep :steps="[
+<StepByStep :animate="true" :steps="[
   {
     label: 'mov x0, #1',
     registers: { x0: '1 (stdout)', x1: '?', x2: '?', x8: '?' },
@@ -525,7 +528,7 @@ Comparación lado a lado de conceptos:
 
 Secuencia de ejecución de un programa:
 
-<Timeline :events="[
+<Timeline :animate="true" :events="[
   { step: 1, label: 'Carga', desc: 'El loader carga el ELF en memoria', detail: 'Se mapean .text, .data, .bss' },
   { step: 2, label: 'Entry Point', desc: 'PC salta a _start', detail: 'Primera instrucción del programa' },
   { step: 3, label: 'Setup', desc: 'Se preparan registros para syscall', detail: 'x0, x1, x2, x8 configurados' },
@@ -618,6 +621,8 @@ Para visualizar flujos y estructuras
 
 # Flujo de compilación
 
+<div v-click>
+
 ```mermaid {theme: 'default', scale: 0.85}
 flowchart LR
   SRC["main.s"] --> AS["as -o main.o"]
@@ -626,9 +631,13 @@ flowchart LR
   RUN --> OUT["Hola AArch64"]
 ```
 
+</div>
+
 ---
 
 # Arquitectura de syscalls
+
+<div v-click>
 
 ```mermaid {theme: 'default', scale: 0.85}
 flowchart TD
@@ -645,9 +654,13 @@ flowchart TD
   RESULT --> USER
 ```
 
+</div>
+
 ---
 
 # Registros Xn y Wn
+
+<div v-click>
 
 ```mermaid {theme: 'default', scale: 0.85}
 flowchart LR
@@ -662,6 +675,8 @@ flowchart LR
   style HIGH fill:#f3f4f6
 ```
 
+</div>
+
 ---
 layout: aarch64-section
 ---
@@ -673,6 +688,8 @@ Para diagramas de secuencia y actividades más complejos
 ---
 
 # PlantUML: Secuencia de syscall
+
+<div v-click>
 
 ```plantuml
 @startuml
@@ -695,9 +712,13 @@ Prog -> Prog: continúa ejecución
 @enduml
 ```
 
+</div>
+
 ---
 
 # PlantUML: Flujo de control
+
+<div v-click>
 
 ```plantuml
 @startuml
@@ -718,6 +739,8 @@ endif
 stop
 @enduml
 ```
+
+</div>
 
 ---
 layout: aarch64-section
@@ -806,6 +829,827 @@ layout: aarch64-checklist
 3. ¿Qué hace `svc #0` por sí solo, sin contexto de registros?
 4. ¿Por qué no usamos `printf` en estos programas?
 5. ¿Qué pasa si un programa no llama `exit`?
+
+---
+layout: aarch64-section
+---
+
+# Animaciones y Código Avanzado
+
+Click animations, Shiki Magic Move, Code Groups y más
+
+---
+layout: aarch64-section
+---
+
+# v-clicks: Listas progresivas
+
+Revelar items uno por uno con cada click
+
+---
+
+# Agenda del día
+
+<v-clicks>
+
+1. **Entorno Linux ARM64** — Raspberry Pi real o x86_64 con QEMU user mode
+2. **Toolchain y herramientas** — Qué instalar según tu ruta
+3. **Primer programa** — Compilar y ejecutar un binario AArch64 mínimo
+4. **Inspección y debugging** — Mirar el binario por dentro y detenerte en `_start`
+5. **Estructura del repositorio** — Cómo organizar carpetas, Makefiles y VS Code
+
+</v-clicks>
+
+---
+
+# Checklist mental
+
+<v-clicks>
+
+- <span class="check-icon">✓</span> Puedo escribir un programa con `exit` y `write`
+- <span class="check-icon">✓</span> Puedo explicar la diferencia entre `x0` y `w0`
+- <span class="check-icon">✓</span> Puedo identificar los registros de syscall
+- <span class="check-icon">✓</span> Puedo compilar con `as` y enlazar con `ld`
+- <span class="check-icon">✓</span> Puedo depurar con GDB paso a paso
+
+</v-clicks>
+
+---
+
+# v-click: Bloques de contenido
+
+Controlar cuándo aparece cada bloque de texto
+
+---
+
+# Contrato de syscall AArch64
+
+<v-click>
+
+**Antes de `svc #0`:**
+
+</v-click>
+
+<v-click>
+
+- `x0`–`x5` → Argumentos de la syscall
+- `x8` → Número de syscall
+
+</v-click>
+
+<v-click>
+
+**Después de `svc #0`:**
+
+</v-click>
+
+<v-click>
+
+- `x0` → Valor de retorno (o error si < 0)
+- El kernel restaura el contexto y vuelve a EL0
+
+</v-click>
+
+---
+
+# v-after: Secuencia automática
+
+El primer click revela el primer elemento, los demás aparecen automáticamente
+
+---
+
+# Flujo de una syscall
+
+<div v-click>
+
+**1. Preparar registros**
+
+</div>
+
+<div v-after>
+
+**2. Ejecutar `svc #0`** → Trap al kernel
+
+</div>
+
+<div v-after>
+
+**3. Kernel procesa** → Lee `x8`, ejecuta la syscall
+
+</div>
+
+<div v-after>
+
+**4. Retorno a EL0** → Resultado en `x0`
+
+</div>
+
+---
+
+# v-click.hide: Ocultar después de click
+
+Elementos visibles que desaparecen al hacer click
+
+---
+
+# Concepto clave
+
+<div v-click>
+
+Las syscalls son el puente entre tu programa y el kernel
+
+</div>
+
+<div v-click.hide>
+
+~~Esto es una abstracción~~ → En realidad es un trap de hardware controlado
+
+</div>
+
+<div v-after>
+
+`svc #0` cambia el exception level de EL0 a EL1 instantáneamente
+
+</div>
+
+---
+
+# Posicionamiento relativo y absoluto
+
+Controlar el orden exacto de aparición con `at`
+
+---
+
+# Orden personalizado con `at`
+
+<div v-click>
+
+Aparece en click **1** (default `+1`)
+
+</div>
+
+<v-click at="+2">
+
+Aparece en click **3** (salta un click)
+
+</v-click>
+
+<div v-click="'-1'">
+
+Aparece en click **1** también (mismo click que el primero)
+
+</div>
+
+<v-click at="5">
+
+Aparece en click **5** absoluto
+
+</v-click>
+
+---
+
+# v-switch: Alternar contenido
+
+Mostrar diferente contenido en diferentes clicks
+
+---
+
+# Estado de registros durante ejecución
+
+<v-switch>
+
+<template #1>
+
+**Antes de `mov x0, #1`:**
+`x0 = ?` — Sin inicializar
+
+</template>
+
+<template #2>
+
+**Después de `mov x0, #1`:**
+`x0 = 1` — File descriptor stdout
+
+</template>
+
+<template #3>
+
+**Después de `mov x8, #64`:**
+`x0 = 1`, `x8 = 64` — Listo para `write`
+
+</template>
+
+<template #4>
+
+**Después de `svc #0`:**
+`x0 = 14` — Bytes escritos correctamente
+
+</template>
+
+</v-switch>
+
+---
+layout: aarch64-section
+---
+
+# Shiki Magic Move
+
+Código que evoluciona con cada click
+
+---
+
+# Magic Move: Construir syscall paso a paso
+
+````md magic-move [main.s]
+```asm
+.global _start
+.text
+_start:
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #1
+    ldr x1, =msg
+    mov x2, #len
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #1
+    ldr x1, =msg
+    mov x2, #len
+    mov x8, #64
+    svc #0
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #1
+    ldr x1, =msg
+    mov x2, #len
+    mov x8, #64
+    svc #0
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+.section .rodata
+msg:    .ascii "Hola AArch64\n"
+len = . - msg
+```
+````
+
+---
+
+# Magic Move: Loop con control de flujo
+
+````md magic-move [loop.s]
+```asm
+.global _start
+.text
+_start:
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #0
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #0
+loop:
+    adds x0, x0, #1
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #0
+loop:
+    adds x0, x0, #1
+    cmp x0, #10
+    b.lt loop
+```
+```asm
+.global _start
+.text
+_start:
+    mov x0, #0
+loop:
+    adds x0, x0, #1
+    cmp x0, #10
+    b.lt loop
+
+    mov x8, #93
+    svc #0
+```
+````
+
+---
+
+# Magic Move con line highlighting
+
+````md magic-move {at: 2}
+```asm {*|1-2|3-4|5-6}
+mov x0, #5
+mov x1, #10
+adds x0, x0, x1
+b.eq done
+mov x8, #93
+svc #0
+```
+
+Comentario entre pasos — se ignora en el morph.
+
+```asm {*}{lines: false}
+mov x0, #5
+mov x1, #10
+adds x0, x0, x1
+b.eq done
+mov x8, #93
+svc #0
+```
+````
+
+---
+layout: aarch64-section
+---
+
+# Code Groups
+
+Múltiples variantes de código con tabs
+
+---
+
+# Compilar: Pi vs QEMU
+
+::code-group
+
+```bash [Raspberry Pi]
+as main.s -o main.o
+ld main.o -o main
+./main
+```
+
+```bash [x86_64 + QEMU]
+aarch64-linux-gnu-as main.s -o main.o
+aarch64-linux-gnu-ld main.o -o main
+qemu-aarch64 ./main
+```
+
+```bash [Makefile]
+make
+make run
+make clean
+```
+
+::
+
+---
+
+# Debugging: nativo vs remoto
+
+::code-group
+
+```bash [GDB nativo]
+gdb ./main
+break _start
+run
+info registers x0 x8 pc
+stepi
+```
+
+```bash [GDB + QEMU]
+# Terminal 1:
+qemu-aarch64 -g 1234 ./main
+
+# Terminal 2:
+gdb-multiarch ./main
+target remote localhost:1234
+break _start
+continue
+```
+
+::
+
+---
+layout: aarch64-section
+---
+
+# maxHeight: Código con scroll
+
+Para bloques de código que no caben en una slide
+
+---
+
+# Código largo con scroll
+
+```asm {maxHeight: '350px'}
+.global _start
+
+.section .data
+filename:   .asciz "salida.txt"
+msg:        .asciz "Hola desde AArch64\n"
+msg_len = . - msg
+err_msg:    .asciz "Error al abrir archivo\n"
+err_len = . - err_msg
+
+.section .text
+.equ AT_FDCWD, -100
+.equ O_WRONLY, 1
+.equ O_CREAT, 64
+.equ O_TRUNC, 512
+
+_start:
+    // openat
+    mov x0, #AT_FDCWD
+    ldr x1, =filename
+    mov x2, #(O_WRONLY | O_CREAT | O_TRUNC)
+    mov x3, #0644
+    mov x8, #56
+    svc #0
+    cmp x0, #0
+    b.lt error
+    mov x19, x0
+
+    // write
+    mov x0, x19
+    ldr x1, =msg
+    mov x2, #msg_len
+    mov x8, #64
+    svc #0
+
+    // close
+    mov x0, x19
+    mov x8, #57
+    svc #0
+
+    // exit
+    mov x0, #0
+    mov x8, #93
+    svc #0
+
+error:
+    mov x0, #2
+    ldr x1, =err_msg
+    mov x2, #err_len
+    mov x8, #64
+    svc #0
+    mov x0, #1
+    mov x8, #93
+    svc #0
+```
+
+---
+layout: aarch64-section
+---
+
+# v-motion: Animaciones de movimiento
+
+Elementos que se deslizan al entrar
+
+---
+
+# v-motion: Entrada desde la izquierda
+
+<div
+  v-motion
+  :initial="{ x: -80, opacity: 0 }"
+  :enter="{ x: 0, opacity: 1 }"
+  :leave="{ x: 80, opacity: 0 }"
+>
+
+### Arquitectura AArch64
+
+- 31 registros generales de 64 bits
+- Registros especiales: SP, PC, LR
+- Flags NZCV en PSTATE
+- Exception levels EL0–EL3
+
+</div>
+
+---
+
+# v-motion con clicks
+
+<div
+  v-motion
+  :initial="{ x: -50, opacity: 0 }"
+  :enter="{ x: 0, opacity: 1 }"
+  :click-1="{ y: 0 }"
+  :click-2="{ y: 20 }"
+  :leave="{ x: 50, opacity: 0 }"
+>
+
+### Registros X0–X30
+
+Cada `Xn` tiene un alias `Wn` para operaciones de 32 bits
+
+</div>
+
+<v-click>
+
+Escribir en `Wn` limpia los 32 bits altos de `Xn`
+
+</v-click>
+
+<v-click>
+
+Esto se llama **zero-extension** y evita valores residuales
+
+</v-click>
+
+---
+layout: aarch64-section
+---
+
+# Animaciones con componentes
+
+Cómo interactúan v-click con componentes Vue
+
+---
+
+# InfoBox con v-click
+
+<v-click>
+
+<InfoBox type="info" title="Paso 1: Setup">
+Prepara los argumentos en x0–x5 y el número de syscall en x8
+</InfoBox>
+
+</v-click>
+
+<v-click>
+
+<InfoBox type="warning" title="Paso 2: Ejecutar">
+Ejecuta `svc #0` — el kernel toma control y cambia a EL1
+</InfoBox>
+
+</v-click>
+
+<v-click>
+
+<InfoBox type="success" title="Paso 3: Retorno">
+El resultado está en x0. Si es negativo, hubo un error
+</InfoBox>
+
+</v-click>
+
+---
+
+# Register con v-clicks
+
+### Registros de syscall
+
+<v-clicks>
+
+- <Register name="x0" bits="64" description="Argumento 0 / retorno" /> — fd stdout / bytes escritos
+- <Register name="x1" bits="64" description="Argumento 1" /> — dirección del buffer
+- <Register name="x2" bits="64" description="Argumento 2" /> — longitud del buffer
+- <Register name="x8" bits="64" description="Número de syscall" /> — 64 = write, 93 = exit
+
+</v-clicks>
+
+---
+
+# SyscallCard con v-click
+
+<div class="grid grid-cols-2 gap-4">
+
+<v-click>
+
+<SyscallCard number="64" name="write" :args="['fd', 'buffer', 'len']" description="Escribe bytes a un file descriptor." />
+
+</v-click>
+
+<v-click>
+
+<SyscallCard number="93" name="exit" :args="['code']" description="Termina el proceso." />
+
+</v-click>
+
+</div>
+
+---
+
+# MemoryMap con :animate="true"
+
+Cada región aparece con un click:
+
+<MemoryMap :animate="true" :regions="[
+  { label: 'Kernel Space', start: '0xFFFF...FFFF', end: '0xFFFF...0000', color: 'red' },
+  { label: 'Stack', start: '0x7FFF...FFFF', end: 'crece ↓', color: 'blue' },
+  { label: 'Heap', start: 'fin .bss', end: 'crece ↑', color: 'green' },
+  { label: '.text', start: '0x00400000', end: 'código', color: 'purple' }
+]" />
+
+---
+
+# Timeline con :animate="true"
+
+Cada evento aparece con un click:
+
+<Timeline :animate="true" :events="[
+  { step: 1, label: 'Setup', desc: 'x0=1, x1=msg, x2=len, x8=64', detail: 'Argumentos listos' },
+  { step: 2, label: 'svc #0', desc: 'Trap al kernel EL0→EL1', detail: 'Cambio de privilege level' },
+  { step: 3, label: 'Kernel', desc: 'Linux ejecuta write()', detail: 'Escribe bytes a stdout' },
+  { step: 4, label: 'Retorno', desc: 'x0 = bytes escritos', detail: 'Vuelve a EL0' }
+]" />
+
+---
+
+# StepByStep con :animate="true"
+
+Cada paso aparece con un click:
+
+<StepByStep :animate="true" :steps="[
+  { label: 'mov x0, #1', registers: { x0: '1', x8: '?' }, note: 'fd = stdout' },
+  { label: 'mov x8, #64', registers: { x0: '1', x8: '64' }, note: 'syscall write' },
+  { label: 'svc #0', registers: { x0: '14', x8: '64' }, note: '14 bytes escritos' }
+]" />
+
+---
+layout: aarch64-section
+---
+
+# Click Animation Presets
+
+Diferentes estilos de animación
+
+---
+
+# Presets disponibles
+
+<div v-click.fade>
+
+**fade** — Aparece con opacidad gradual
+
+</div>
+
+<div v-click.scale>
+
+**scale** — Aparece escalando desde 0.9
+
+</div>
+
+<div v-click.fade.right>
+
+**fade.right** — Fade + deslizamiento desde derecha
+
+</div>
+
+<div v-click.down>
+
+**down** — Desliza desde arriba 20px
+
+</div>
+
+<div v-click.none>
+
+**none** — Sin animación (aparece instantáneo)
+
+</div>
+
+---
+layout: aarch64-section
+---
+
+# Clicks personalizados
+
+Control total con `clicks` en frontmatter
+
+---
+
+# Clicks personalizados
+
+<div v-click="1">
+
+Click **1**: Código assembly
+
+</div>
+
+```asm {at: 1}
+mov x0, #1
+mov x8, #64
+svc #0
+```
+
+<div v-click="3">
+
+Click **3**: Explicación del retorno
+
+</div>
+
+<div v-click="4">
+
+Click **4**: `x0` contiene bytes escritos
+
+</div>
+
+<div v-click="5">
+
+Click **5**: Continuar con exit
+
+</div>
+
+---
+
+# Enter & Leave: Visibilidad temporal
+
+<div v-click.hide="[2, 4]">
+
+Este bloque se oculta en clicks 2 y 3, visible en los demás
+
+</div>
+
+<div v-click />
+
+<div v-click="['+1', '+1']">
+
+Este bloque solo es visible en click 2
+
+</div>
+
+---
+layout: aarch64-section
+---
+
+# Animaciones con Mermaid
+
+Mermaid + v-click para diagramas progresivos
+
+---
+
+# Mermaid con v-click wrapper
+
+Cada diagrama aparece con un click:
+
+<div v-click>
+
+```mermaid {theme: 'default', scale: 0.85}
+flowchart LR
+  SRC["main.s"] -->|as| OBJ["main.o"]
+  OBJ -->|ld| BIN["build/main"]
+  BIN -->|qemu-aarch64| OUT["Hola ARM64"]
+
+  style SRC fill:#dbeafe
+  style OBJ fill:#fef9c3
+  style BIN fill:#dcfce7
+  style OUT fill:#f3e8ff
+```
+
+</div>
+
+---
+
+# Mermaid: múltiples diagramas por slide
+
+<div v-click>
+
+**Paso 1:** Código fuente
+
+```mermaid {theme: 'default', scale: 0.7}
+flowchart LR
+  A["main.s"] --> B["main.o"]
+  style A fill:#dbeafe
+  style B fill:#fef9c3
+```
+
+</div>
+
+<div v-click>
+
+**Paso 2:** Enlazado
+
+```mermaid {theme: 'default', scale: 0.7}
+flowchart LR
+  B["main.o"] --> C["build/main"]
+  style B fill:#fef9c3
+  style C fill:#dcfce7
+```
+
+</div>
+
+<div v-click>
+
+**Paso 3:** Ejecución
+
+```mermaid {theme: 'default', scale: 0.7}
+flowchart LR
+  C["build/main"] --> D["Hola ARM64"]
+  style C fill:#dcfce7
+  style D fill:#f3e8ff
+```
+
+</div>
 
 ---
 

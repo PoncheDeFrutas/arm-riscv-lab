@@ -3,6 +3,10 @@ defineProps({
   events: {
     type: Array,
     default: () => []
+  },
+  animate: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
@@ -13,6 +17,8 @@ defineProps({
       v-for="(event, index) in events"
       :key="index"
       class="timeline-event"
+      :class="{ 'slidev-vclick-target': animate }"
+      v-click="animate ? index + 1 : undefined"
     >
       <div class="timeline-marker">
         <div class="marker-dot">{{ event.step }}</div>

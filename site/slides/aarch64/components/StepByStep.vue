@@ -3,6 +3,10 @@ defineProps({
   steps: {
     type: Array,
     default: () => []
+  },
+  animate: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
@@ -13,6 +17,8 @@ defineProps({
       v-for="(step, index) in steps"
       :key="index"
       class="step-row"
+      :class="{ 'slidev-vclick-target': animate }"
+      v-click="animate ? index + 1 : undefined"
     >
       <div class="step-index">{{ index + 1 }}</div>
       <div class="step-content">
