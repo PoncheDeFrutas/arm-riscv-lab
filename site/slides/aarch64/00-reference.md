@@ -1652,6 +1652,244 @@ flowchart LR
 </div>
 
 ---
+layout: aarch64-section
+---
+
+# LaTeX / KaTeX
+
+Fórmulas matemáticas y ecuaciones
+
+---
+
+# LaTeX: fórmulas inline
+
+Fórmulas dentro del texto con `$...$`:
+
+- Rango de `Wn`: $0$ a $2^{32} - 1$
+- Rango de `Xn`: $0$ a $2^{64} - 1$
+- Dirección de stack: $SP_{new} = SP_{old} - 16$
+- Offset de struct: $\text{offset} = \sum_{i=0}^{n-1} \text{size}_i$
+- Valor de syscall: $x8 = 64 \Rightarrow \text{write}(x0, x1, x2)$
+
+---
+
+# LaTeX: bloques de fórmulas
+
+Fórmulas en bloque centrado con `$$...$$`:
+
+$$
+\begin{aligned}
+\text{write}(fd, buf, len) &\rightarrow \text{bytes escritos} \\
+\text{exit}(code) &\rightarrow \text{termina proceso} \\
+\text{openat}(dirfd, path, flags, mode) &\rightarrow fd \geq 0 \text{ o } < 0 \text{ (error)}
+\end{aligned}
+$$
+
+---
+
+# LaTeX: resaltar líneas
+
+$$ {1|2|3|all}
+\begin{aligned}
+\text{EL0} &\rightarrow \text{User mode (nuestros programas)} \\
+\text{EL1} &\rightarrow \text{Kernel mode (Linux)} \\
+\text{EL2} &\rightarrow \text{Hypervisor (virtualización)} \\
+\text{EL3} &\rightarrow \text{Secure monitor}
+\end{aligned}
+$$
+
+---
+layout: aarch64-section
+---
+
+# Import Code Snippets
+
+Importar código directamente desde archivos del repositorio
+
+---
+
+# Import: código desde archivo real
+
+```asm src/00-hello-minimo/src/main.s{lineNumbers: true, maxHeight: '350px'}
+```
+
+**Ventaja:** si el código del laboratorio cambia, la slide se actualiza automáticamente.
+
+**Sintaxis:**
+```md
+```lang path/to/file.ext{opciones}
+```
+
+---
+
+# Import: con opciones avanzadas
+
+Opciones disponibles:
+
+- `{1-5}` — importar solo líneas 1 a 5
+- `{lineNumbers: true}` — mostrar números de línea
+- `{maxHeight: '300px'}` — scroll si es muy largo
+- `{title: 'main.s'}` — título del bloque
+- `{1,3,7-10}` — líneas específicas no consecutivas
+
+**Ejemplo:**
+```md
+```asm src/00-hello-minimo/src/main.s{1-10, lineNumbers: true, title: 'main.s'}
+```
+
+---
+layout: aarch64-section
+---
+
+# Tabla de Contenidos (Toc)
+
+Índice automático de la presentación
+
+---
+
+# Toc: básico
+
+<Toc />
+
+Generada automáticamente de los títulos h1/h2.
+
+---
+
+# Toc: columnas y filtros
+
+<Toc columns="2" maxDepth="1" />
+
+- `columns="2"` — dos columnas
+- `maxDepth="1"` — solo h1
+- `minDepth="1"` — profundidad mínima
+- `mode="onlyCurrentTree"` — solo sección activa
+- `mode="onlySiblings"` — solo hermanos del activo
+
+**Ocultar slide del Toc:**
+```yaml
+---
+hideInToc: true
+---
+```
+
+---
+layout: aarch64-section
+---
+
+# Videos
+
+Videos locales y de YouTube embebidos
+
+---
+
+# SlidevVideo: video local
+
+<SlidevVideo controls>
+  <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+  Tu navegador no soporta videos.
+</SlidevVideo>
+
+**Props:**
+- `controls` — mostrar controles de reproducción
+- `autoplay="once"` — reproducir una vez al entrar
+- `poster="/poster.png"` — imagen antes de reproducir
+- `autoreset="slide"` — reiniciar al volver a la slide
+- `autoreset="click"` — reiniciar al retroceder click
+
+---
+
+# YouTube: video embebido
+
+<Youtube id="luoMHjh-XcQ" />
+
+**Con tiempo específico:**
+
+<Youtube id="luoMHjh-XcQ?start=120" />
+
+- `id` — ID del video (requerido)
+- `?start=120` — empezar en segundo 120 (2 min)
+- `width` y `height` — dimensiones opcionales
+
+---
+
+# YouTube: ejemplo del curso
+
+<Youtube id="g1lBSDKzVeM" />
+
+Videos útiles para:
+- Demostraciones en vivo durante la clase
+- Explicaciones complementarias
+- Referencias externas de conceptos complejos
+
+---
+layout: aarch64-section
+---
+
+# Navegación interna
+
+Links entre slides de la misma presentación
+
+---
+
+# Link: navegar entre slides
+
+<Link to="5" title="Ir a slide 5" />
+
+<Link to="solutions" title="Ir a soluciones" />
+
+**Con routeAlias en frontmatter:**
+```yaml
+---
+routeAlias: solutions
+---
+
+# Soluciones del ejercicio
+```
+
+Útil para:
+- Saltar a ejercicios prácticos
+- Ir a sección de preguntas
+- Navegación no lineal durante la clase
+
+---
+layout: aarch64-section
+---
+
+# RenderWhen: contenido condicional
+
+Mostrar contenido solo en ciertos contextos
+
+---
+
+# RenderWhen: notas para el tutor
+
+<RenderWhen context="presenter">
+
+**Nota para el tutor:**
+- Recordar hacer la demo de GDB aquí
+- Tiempo estimado: 10 minutos
+- Preguntas clave: ¿Qué registro contiene el número de syscall?
+
+</RenderWhen>
+
+<div v-click>
+
+Este contenido **sí** se proyecta a los estudiantes.
+
+</div>
+
+**Contextos disponibles:**
+- `main` — slide + presenter
+- `visible` — cuando es visible
+- `print` — al imprimir/exportar
+- `slide` — solo en slide principal
+- `overview` — vista de resumen
+- `presenter` — solo en vista presenter
+- `previewNext` — preview de siguiente slide
+
+---
+layout: aarch64-section
+---
 
 # Siguiente paso
 
