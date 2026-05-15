@@ -654,7 +654,7 @@ author: "ARM RISC-V Lab"
 ---
 
 <style>
-@import "../../../../styles/index.css";
+@import "../styles/index.css";
 </style>
 
 <!-- 1. Portada institucional -->
@@ -752,4 +752,3 @@ Antes de considerar lista una presentación, comprobar:
 # 13. Regla final
 
 Una buena presentación de este curso no es la que contiene más información, sino la que organiza mejor la explicación para que el estudiante pueda seguir el razonamiento, distinguir los conceptos importantes y conectar la teoría con la práctica.
-

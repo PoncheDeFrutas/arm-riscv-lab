@@ -9,6 +9,7 @@ site/site_libs/
 site/**/*.html
 site/**/*.xml
 site/**/*.json
+!site/slides/package.json
 
 build/
 **/build/

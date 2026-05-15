@@ -2,8 +2,28 @@
 
 SITE_DIR ?= site
 LESSON ?= projects/aarch64/minimo/src
-SLIDES ?= $(SITE_DIR)/slides/aarch64/laboratorio/01-laboratorio-arm64-reproducible/slides.md
-SLIDE_DECKS ?= $(SITE_DIR)/slides/aarch64/fundamentos/contexto-historia-objetivos/slides.md $(SITE_DIR)/slides/aarch64/laboratorio/01-laboratorio-arm64-reproducible/slides.md $(SITE_DIR)/slides/aarch64/bases-binarias/02-bases-binarias-representacion/slides.md $(SITE_DIR)/slides/aarch64/modelo-aarch64/03-modelo-aarch64/slides.md $(SITE_DIR)/slides/aarch64/gnu-assembly/04-gnu-assembly-directivas/slides.md $(SITE_DIR)/slides/aarch64/primeros-programas/05-primeros-programas/slides.md $(SITE_DIR)/slides/aarch64/memoria-direccionamiento/06-memoria-direccionamiento/slides.md $(SITE_DIR)/slides/aarch64/aritmetica-logica-bits/07-aritmetica-logica-bits/slides.md $(SITE_DIR)/slides/aarch64/control-flujo/08-control-flujo/slides.md $(SITE_DIR)/slides/aarch64/syscalls-esenciales/09-syscalls-esenciales/slides.md $(SITE_DIR)/slides/aarch64/linux-api-kernel/10-linux-api-kernel/slides.md $(SITE_DIR)/slides/aarch64/stack-funciones-frames/11-stack-funciones-frames/slides.md $(SITE_DIR)/slides/aarch64/heap-memoria-dinamica/12-heap-memoria-dinamica/slides.md $(SITE_DIR)/slides/aarch64/mmap-paginas-permisos/13-mmap-paginas-permisos/slides.md $(SITE_DIR)/slides/aarch64/layout-datos-structs/14-layout-datos-structs/slides.md $(SITE_DIR)/slides/aarch64/abi-aapcs64-c/15-abi-aapcs64-c/slides.md $(SITE_DIR)/slides/aarch64/elf-linking-loading/16-elf-linking-loading/slides.md $(SITE_DIR)/slides/aarch64/debugging-gdb-qemu-strace/17-debugging-gdb-qemu-strace/slides.md
+SLIDE_ROOT ?= $(SITE_DIR)/slides
+SLIDES ?= $(SLIDE_ROOT)/aarch64/01-laboratorio-arm64-reproducible.md
+SLIDE_DECKS ?= \
+	$(SLIDE_ROOT)/aarch64/00-semana-diagnostico.md \
+	$(SLIDE_ROOT)/aarch64/contexto-historia-objetivos.md \
+	$(SLIDE_ROOT)/aarch64/01-laboratorio-arm64-reproducible.md \
+	$(SLIDE_ROOT)/aarch64/02-bases-binarias-representacion.md \
+	$(SLIDE_ROOT)/aarch64/03-modelo-aarch64.md \
+	$(SLIDE_ROOT)/aarch64/04-gnu-assembly-directivas.md \
+	$(SLIDE_ROOT)/aarch64/05-primeros-programas.md \
+	$(SLIDE_ROOT)/aarch64/06-memoria-direccionamiento.md \
+	$(SLIDE_ROOT)/aarch64/07-aritmetica-logica-bits.md \
+	$(SLIDE_ROOT)/aarch64/08-control-flujo.md \
+	$(SLIDE_ROOT)/aarch64/09-syscalls-esenciales.md \
+	$(SLIDE_ROOT)/aarch64/10-linux-api-kernel.md \
+	$(SLIDE_ROOT)/aarch64/11-stack-funciones-frames.md \
+	$(SLIDE_ROOT)/aarch64/12-heap-memoria-dinamica.md \
+	$(SLIDE_ROOT)/aarch64/13-mmap-paginas-permisos.md \
+	$(SLIDE_ROOT)/aarch64/14-layout-datos-structs.md \
+	$(SLIDE_ROOT)/aarch64/15-abi-aapcs64-c.md \
+	$(SLIDE_ROOT)/aarch64/16-elf-linking-loading.md \
+	$(SLIDE_ROOT)/aarch64/17-debugging-gdb-qemu-strace.md
 SLIDEV ?= node_modules/.bin/slidev
 
 help:
@@ -30,11 +50,12 @@ preview:
 
 slides:
 	@if [ -f "$(SLIDES)" ]; then \
-		deck="$$(printf '%s\n' "$(SLIDES)" | sed 's#^$(SITE_DIR)/##')"; \
-		if [ -x "$(SITE_DIR)/$(SLIDEV)" ]; then \
-			cd "$(SITE_DIR)" && "./$(SLIDEV)" "$$deck"; \
+		deck="$(SLIDES)"; \
+		deck="$${deck#$(SLIDE_ROOT)/}"; \
+		if [ -x "$(SLIDE_ROOT)/$(SLIDEV)" ]; then \
+			(cd "$(SLIDE_ROOT)" && "./$(SLIDEV)" "$$deck"); \
 		else \
-			cd "$(SITE_DIR)" && pnpm exec slidev "$$deck"; \
+			(cd "$(SLIDE_ROOT)" && pnpm exec slidev "$$deck"); \
 		fi; \
 	else \
 		echo "Slidev deck not found at $(SLIDES); skipping."; \
@@ -45,13 +66,13 @@ slides-build:
 	for deck in $(SLIDE_DECKS); do \
 		if [ -f "$$deck" ]; then \
 			rel="$${deck#$(SITE_DIR)/}"; \
-			inner="$${deck#$(SITE_DIR)/}"; \
-			out="$(CURDIR)/_site/$${rel%/slides.md}"; \
-			tmp="$(CURDIR)/$${deck%/slides.md}/.slidev-dist"; \
-			if [ -x "$(SITE_DIR)/$(SLIDEV)" ]; then \
-				cd "$(SITE_DIR)" && "./$(SLIDEV)" build "$$inner" --out "$$tmp" --base ./ --router-mode hash; \
+			inner="$${deck#$(SLIDE_ROOT)/}"; \
+			out="$(CURDIR)/_site/$${rel%.md}"; \
+			tmp="$$(mktemp -d "$(CURDIR)/.slidev-dist.XXXXXX")"; \
+			if [ -x "$(SLIDE_ROOT)/$(SLIDEV)" ]; then \
+				(cd "$(SLIDE_ROOT)" && "./$(SLIDEV)" build "$$inner" --out "$$tmp" --base ./ --router-mode hash); \
 			else \
-				cd "$(SITE_DIR)" && pnpm exec slidev build "$$inner" --out "$$tmp" --base ./ --router-mode hash; \
+				(cd "$(SLIDE_ROOT)" && pnpm exec slidev build "$$inner" --out "$$tmp" --base ./ --router-mode hash); \
 			fi; \
 			rm -rf "$$out"; \
 			mkdir -p "$$out"; \
