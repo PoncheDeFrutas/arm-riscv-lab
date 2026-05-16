@@ -4,14 +4,21 @@
     "href": "index.html",
     "title": "ARM RISC-V Lab",
     "section": "",
-    "text": "Aprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.\n\nEntrar a AArch64 Entrar a RISC-V\n\n\n\n\nRepresentación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware.\n\n\n\n\n\n\nRuta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V\n\n\n\n\n\nSi quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.\n\n\n\nLa Figura 1 resume el recorrido general sin mezclarlo con la navegación de cada ruta.\n\n\n\n\n\n\nflowchart LR\n  A[\"Fundamentos\"] --&gt; B[\"Programas mínimos\"]\n  B --&gt; C[\"Memoria y control de flujo\"]\n  C --&gt; D[\"Funciones y ABI\"]\n  D --&gt; E[\"Binarios y debugging\"]\n  E --&gt; F[\"Sistemas avanzados\"]\n\n\n\n\nFigura 1: Flujo general de aprendizaje del laboratorio.\n\n\n\n\n\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+    "text": "low-level · assembly · architecture\n\n\n\n\nAprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.\n\n\n18+ unidades\n\n\n8 bloques temáticos\n\n\n2 arquitecturas\n\n\n5+ herramientas\n\n\n\nEntrar a AArch64 Entrar a RISC-V\n\n\n\n\n\n\n\n\nNunca has tocado ensamblador o quieres entender desde cero cómo funciona un computador a nivel de registros, memoria e instrucciones.\nEmpieza aquí si quieres construir una base sólida de computación de bajo nivel.\n\n\n\nYa conoces los fundamentos pero quieres dominar la ABI, stack frames, heap, ELF, linking y debugging profesional con GDB y QEMU.\nAvanza aquí si quieres convertirte en un programador ARM64 competente.\n\n\n\nTe interesa bare metal, hardware real, kernel internals, reversing, seguridad o virtualización sobre ARM y RISC-V.\nExplora aquí cuando completes los niveles base y busques retos reales.\n\n\n\n\n\n\n\nRegistros Entiende los registros generales, especiales y de estado de AArch64 y RISC-V.\n\n\nMemoria Secciones, load/store, direccionamiento, stack, heap y mmap.\n\n\nInstrucciones Aritmética, lógica, branches, loops y control de flujo a bajo nivel.\n\n\nSyscalls Llamadas al kernel de Linux: exit, write, read, openat, brk, mmap.\n\n\nBinarios Formato ELF, linking estático y dinámico, GOT, PLT y PIE.\n\n\nDebugging GDB, QEMU con gdbserver, strace, core dumps y análisis de memoria.\n\n\n\n\n\n\n\n\nRuta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V\n\n\n\n\n\n\nQEMU GDB VS Code Linux AArch64 RISC-V GNU AS strace readelf / objdump Docker Make\n\n\n\n\n\n\nSi quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.\nEntrar a AArch64 Entrar a RISC-V\n\n\n\n\n\n\n1 · Fundamentos Bits, registros y modelo AArch64\n\n\n2 · Programas mínimos Syscalls, hello world y binarios\n\n\n3 · Memoria y control Load/store, aritmética, branches y loops\n\n\n4 · Funciones y ABI Stack frames, heap, structs y AAPCS64\n\n\n5 · Binarios y debugging ELF, linking, GDB, QEMU y strace\n\n\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+  },
+  {
+    "objectID": "index.html#para-quién-es-este-laboratorio",
+    "href": "index.html#para-quién-es-este-laboratorio",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "Nunca has tocado ensamblador o quieres entender desde cero cómo funciona un computador a nivel de registros, memoria e instrucciones.\nEmpieza aquí si quieres construir una base sólida de computación de bajo nivel.\n\n\n\nYa conoces los fundamentos pero quieres dominar la ABI, stack frames, heap, ELF, linking y debugging profesional con GDB y QEMU.\nAvanza aquí si quieres convertirte en un programador ARM64 competente.\n\n\n\nTe interesa bare metal, hardware real, kernel internals, reversing, seguridad o virtualización sobre ARM y RISC-V.\nExplora aquí cuando completes los niveles base y busques retos reales."
   },
   {
     "objectID": "index.html#qué-aprenderás",
     "href": "index.html#qué-aprenderás",
     "title": "ARM RISC-V Lab",
     "section": "",
-    "text": "Representación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware."
+    "text": "Registros Entiende los registros generales, especiales y de estado de AArch64 y RISC-V.\n\n\nMemoria Secciones, load/store, direccionamiento, stack, heap y mmap.\n\n\nInstrucciones Aritmética, lógica, branches, loops y control de flujo a bajo nivel.\n\n\nSyscalls Llamadas al kernel de Linux: exit, write, read, openat, brk, mmap.\n\n\nBinarios Formato ELF, linking estático y dinámico, GOT, PLT y PIE.\n\n\nDebugging GDB, QEMU con gdbserver, strace, core dumps y análisis de memoria."
   },
   {
     "objectID": "index.html#rutas-disponibles",
@@ -21,18 +28,25 @@
     "text": "Ruta centrada en ARM64, Linux, QEMU, GDB y progresivamente bare metal, hardware real, kernel y seguridad.\nEntrar a AArch64\n\n\n\nRuta centrada en ISA RISC-V, registros, memoria, ensamblador, simulación, toolchain y fundamentos de arquitectura abierta.\nEntrar a RISC-V"
   },
   {
+    "objectID": "index.html#herramientas-que-usarás",
+    "href": "index.html#herramientas-que-usarás",
+    "title": "ARM RISC-V Lab",
+    "section": "",
+    "text": "QEMU GDB VS Code Linux AArch64 RISC-V GNU AS strace readelf / objdump Docker Make"
+  },
+  {
     "objectID": "index.html#por-dónde-empezar",
     "href": "index.html#por-dónde-empezar",
     "title": "ARM RISC-V Lab",
     "section": "",
-    "text": "Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V."
+    "text": "Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.\nEntrar a AArch64 Entrar a RISC-V"
   },
   {
-    "objectID": "index.html#cómo-se-organiza-el-aprendizaje",
-    "href": "index.html#cómo-se-organiza-el-aprendizaje",
+    "objectID": "index.html#flujo-de-aprendizaje",
+    "href": "index.html#flujo-de-aprendizaje",
     "title": "ARM RISC-V Lab",
     "section": "",
-    "text": "La Figura 1 resume el recorrido general sin mezclarlo con la navegación de cada ruta.\n\n\n\n\n\n\nflowchart LR\n  A[\"Fundamentos\"] --&gt; B[\"Programas mínimos\"]\n  B --&gt; C[\"Memoria y control de flujo\"]\n  C --&gt; D[\"Funciones y ABI\"]\n  D --&gt; E[\"Binarios y debugging\"]\n  E --&gt; F[\"Sistemas avanzados\"]\n\n\n\n\nFigura 1: Flujo general de aprendizaje del laboratorio.\n\n\n\n\n\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
+    "text": "1 · Fundamentos Bits, registros y modelo AArch64\n\n\n2 · Programas mínimos Syscalls, hello world y binarios\n\n\n3 · Memoria y control Load/store, aritmética, branches y loops\n\n\n4 · Funciones y ABI Stack frames, heap, structs y AAPCS64\n\n\n5 · Binarios y debugging ELF, linking, GDB, QEMU y strace\n\n\nCada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio."
   },
   {
     "objectID": "guides/setup/qemu-x86_64.html",
@@ -13209,7 +13223,7 @@
     "href": "courses/aarch64/index.html#bloques-de-la-ruta",
     "title": "Ruta AArch64",
     "section": "Bloques de la ruta",
-    "text": "Bloques de la ruta\n\n\nA — Fundamentos\nContexto, laboratorio, bases binarias, modelo AArch64 y GNU Assembly.\n\n\nB — Linux userland\nProgramas mínimos, memoria, aritmética, control de flujo y syscalls.\n\n\nC — ABI y binarios\nStack, heap, mmap, structs, AAPCS64, ELF y debugging.\n\n\nD — Algoritmos y rendimiento\nStrings, arrays, SIMD básico, profiling, concurrencia, seguridad y proyectos.\n\n\nE — Hardware y bare metal\nGPIO, Raspberry Pi, interrupciones, MMU, caches y memoria de dispositivos.\n\n\nF — Sistemas avanzados\nSincronización SMP, RTOS mínimo, kernel internals y drivers.\n\n\nG — Reversing y seguridad\nNEON avanzado, PMU, análisis binario, mitigaciones y side channels.\n\n\nH — Arquitectura avanzada ARM\nVirtualización, TrustZone, compiladores, intrinsics y proyectos integradores.",
+    "text": "Bloques de la ruta\n\n\nA — Fundamentos\nContexto, laboratorio, bases binarias, modelo AArch64 y GNU Assembly.\n\n\ndisponible\n\n\n\n\nB — Linux userland\nProgramas mínimos, memoria, aritmética, control de flujo y syscalls.\n\n\ndisponible\n\n\n\n\nC — ABI y binarios\nStack, heap, mmap, structs, AAPCS64, ELF y debugging.\n\n\ndisponible\n\n\n\n\nD — Algoritmos y rendimiento\nStrings, arrays, SIMD básico, profiling, concurrencia, seguridad y proyectos.\n\n\nplanificado\n\n\n\n\nE — Hardware y bare metal\nGPIO, Raspberry Pi, interrupciones, MMU, caches y memoria de dispositivos.\n\n\nplanificado\n\n\n\n\nF — Sistemas avanzados\nSincronización SMP, RTOS mínimo, kernel internals y drivers.\n\n\nplanificado\n\n\n\n\nG — Reversing y seguridad\nNEON avanzado, PMU, análisis binario, mitigaciones y side channels.\n\n\nplanificado\n\n\n\n\nH — Arquitectura avanzada ARM\nVirtualización, TrustZone, compiladores, intrinsics y proyectos integradores.\n\n\nplanificado",
     "crumbs": [
       "AArch64",
       "Inicio del curso"

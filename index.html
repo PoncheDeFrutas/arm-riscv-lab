@@ -44,9 +44,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-c3d799a9a5ff4ceaeed3e80b454ae49f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-1dce8d0ea3bbb7bb9b0d9faa752b3f9e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-697bffcbc2762b6df5fdfda37fd8eced.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-1dce8d0ea3bbb7bb9b0d9faa752b3f9e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-7810b89cad4a4cbb4192e2ed5999560c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-5426b64255ce648d42354fe923601d9f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-7810b89cad4a4cbb4192e2ed5999560c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -73,9 +73,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Buscar"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -354,14 +351,75 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="home-portal">
 <div class="hero-lab portal-hero">
+<div class="hero-kicker">
+<blockquote class="blockquote">
+<p>low-level · assembly · architecture</p>
+</blockquote>
+</div>
+<section id="arm-risc-v-lab" class="level1">
+<h1>ARM RISC-V Lab</h1>
 <p>Aprende cómo funcionan los programas cerca del hardware: registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o emulados.</p>
+<div class="hero-stats">
+<div class="stat-item">
+<p><strong>18+</strong> unidades</p>
+</div>
+<div class="stat-item">
+<p><strong>8</strong> bloques temáticos</p>
+</div>
+<div class="stat-item">
+<p><strong>2</strong> arquitecturas</p>
+</div>
+<div class="stat-item">
+<p><strong>5+</strong> herramientas</p>
+</div>
+</div>
 <div class="hero-actions">
 <p><a href="./courses/aarch64/index.html" class="lab-button">Entrar a AArch64</a> <a href="./courses/riscv/index.html" class="lab-button secondary">Entrar a RISC-V</a></p>
 </div>
+</section>
 </div>
+<section id="para-quién-es-este-laboratorio" class="level2">
+<h2 class="anchored" data-anchor-id="para-quién-es-este-laboratorio">Para quién es este laboratorio</h2>
+<div class="profile-grid">
+<section id="principiante" class="level3 profile-card">
+<h3 class="anchored" data-anchor-id="principiante">Principiante</h3>
+<p>Nunca has tocado ensamblador o quieres entender desde cero cómo funciona un computador a nivel de registros, memoria e instrucciones.</p>
+<p><strong>Empieza aquí</strong> si quieres construir una base sólida de computación de bajo nivel.</p>
+</section>
+<section id="intermedio" class="level3 profile-card">
+<h3 class="anchored" data-anchor-id="intermedio">Intermedio</h3>
+<p>Ya conoces los fundamentos pero quieres dominar la ABI, stack frames, heap, ELF, linking y debugging profesional con GDB y QEMU.</p>
+<p><strong>Avanza aquí</strong> si quieres convertirte en un programador ARM64 competente.</p>
+</section>
+<section id="avanzado" class="level3 profile-card">
+<h3 class="anchored" data-anchor-id="avanzado">Avanzado</h3>
+<p>Te interesa bare metal, hardware real, kernel internals, reversing, seguridad o virtualización sobre ARM y RISC-V.</p>
+<p><strong>Explora aquí</strong> cuando completes los niveles base y busques retos reales.</p>
+</section>
+</div>
+</section>
 <section id="qué-aprenderás" class="level2">
 <h2 class="anchored" data-anchor-id="qué-aprenderás">Qué aprenderás</h2>
-<p>Representación de datos, registros, memoria, instrucciones, llamadas al sistema, debugging y ejecución de programas cerca del hardware.</p>
+<div class="learn-grid">
+<div class="learn-card">
+<p><strong>Registros</strong> Entiende los registros generales, especiales y de estado de AArch64 y RISC-V.</p>
+</div>
+<div class="learn-card">
+<p><strong>Memoria</strong> Secciones, load/store, direccionamiento, stack, heap y mmap.</p>
+</div>
+<div class="learn-card">
+<p><strong>Instrucciones</strong> Aritmética, lógica, branches, loops y control de flujo a bajo nivel.</p>
+</div>
+<div class="learn-card">
+<p><strong>Syscalls</strong> Llamadas al kernel de Linux: exit, write, read, openat, brk, mmap.</p>
+</div>
+<div class="learn-card">
+<p><strong>Binarios</strong> Formato ELF, linking estático y dinámico, GOT, PLT y PIE.</p>
+</div>
+<div class="learn-card">
+<p><strong>Debugging</strong> GDB, QEMU con gdbserver, strace, core dumps y análisis de memoria.</p>
+</div>
+</div>
 </section>
 <section id="rutas-disponibles" class="level2">
 <h2 class="anchored" data-anchor-id="rutas-disponibles">Rutas disponibles</h2>
@@ -378,33 +436,37 @@ ul.task-list li input[type="checkbox"] {
 </section>
 </div>
 </section>
+<section id="herramientas-que-usarás" class="level2">
+<h2 class="anchored" data-anchor-id="herramientas-que-usarás">Herramientas que usarás</h2>
+<div class="tool-chip-row">
+<p><a href="https://www.qemu.org/" class="tool-chip">QEMU</a> <a href="https://www.gnu.org/software/gdb/" class="tool-chip">GDB</a> <a href="https://code.visualstudio.com/" class="tool-chip">VS Code</a> <a href="https://www.arm.com/" class="tool-chip">Linux AArch64</a> <a href="https://riscv.org/" class="tool-chip">RISC-V</a> <a href="https://www.gnu.org/software/binutils/" class="tool-chip">GNU AS</a> <a href="https://strace.io/" class="tool-chip">strace</a> <a href="https://www.gnu.org/software/binutils/" class="tool-chip">readelf / objdump</a> <a href="https://www.docker.com/" class="tool-chip">Docker</a> <a href="https://www.gnu.org/software/make/" class="tool-chip">Make</a></p>
+</div>
+</section>
 <section id="por-dónde-empezar" class="level2">
 <h2 class="anchored" data-anchor-id="por-dónde-empezar">Por dónde empezar</h2>
+<section id="empieza-por-aarch64" class="level3 featured-start">
+<h3 class="anchored" data-anchor-id="empieza-por-aarch64">Empieza por AArch64</h3>
 <p>Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.</p>
+<p><a href="./courses/aarch64/index.html" class="lab-button">Entrar a AArch64</a> <a href="./courses/riscv/index.html" class="lab-button secondary">Entrar a RISC-V</a></p>
 </section>
-<section id="cómo-se-organiza-el-aprendizaje" class="level2">
-<h2 class="anchored" data-anchor-id="cómo-se-organiza-el-aprendizaje">Cómo se organiza el aprendizaje</h2>
-<p>La <a href="#fig-home-learning-flow" class="quarto-xref">Figura&nbsp;1</a> resume el recorrido general sin mezclarlo con la navegación de cada ruta.</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div id="fig-home-learning-flow" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-home-learning-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div>
-<pre class="mermaid mermaid-js" data-label="fig-home-learning-flow">flowchart LR
-  A["Fundamentos"] --&gt; B["Programas mínimos"]
-  B --&gt; C["Memoria y control de flujo"]
-  C --&gt; D["Funciones y ABI"]
-  D --&gt; E["Binarios y debugging"]
-  E --&gt; F["Sistemas avanzados"]
-</pre>
+</section>
+<section id="flujo-de-aprendizaje" class="level2">
+<h2 class="anchored" data-anchor-id="flujo-de-aprendizaje">Flujo de aprendizaje</h2>
+<div class="route-steps">
+<div class="route-step">
+<p><strong>1 · Fundamentos</strong> Bits, registros y modelo AArch64</p>
 </div>
+<div class="route-step">
+<p><strong>2 · Programas mínimos</strong> Syscalls, hello world y binarios</p>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-home-learning-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figura&nbsp;1: Flujo general de aprendizaje del laboratorio.
-</figcaption>
-</figure>
+<div class="route-step">
+<p><strong>3 · Memoria y control</strong> Load/store, aritmética, branches y loops</p>
 </div>
+<div class="route-step">
+<p><strong>4 · Funciones y ABI</strong> Stack frames, heap, structs y AAPCS64</p>
+</div>
+<div class="route-step">
+<p><strong>5 · Binarios y debugging</strong> ELF, linking, GDB, QEMU y strace</p>
 </div>
 </div>
 <p>Cada ruta crecerá por bloques y unidades. La home solo muestra las rutas para mantener una entrada clara al laboratorio.</p>
