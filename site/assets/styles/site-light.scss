@@ -1,0 +1,48 @@
+/*-- scss:defaults --*/
+$body-bg: #ffffff !default;
+$body-color: #0f172a !default;
+$link-color: #2563eb !default;
+$font-family-sans-serif: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif !default;
+$font-family-monospace: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace !default;
+$headings-font-weight: 700 !default;
+$headings-color: #0f172a !default;
+$code-block-bg: #f8fafc !default;
+$code-color: #0f172a !default;
+$border-color: #e2e8f0 !default;
+$primary: #2563eb !default;
+
+/*-- scss:rules --*/
+:root {
+  --lab-bg: #ffffff;
+  --lab-surface: #ffffff;
+  --lab-surface-2: #f8fafc;
+  --lab-text: #0f172a;
+  --lab-text-soft: #334155;
+  --lab-muted: #64748b;
+  --lab-border: #e2e8f0;
+  --lab-navbar-bg: #ffffff;
+  --lab-navbar-fg: #334155;
+  --lab-navbar-icon: #0f172a;
+  --lab-navbar-icon-hover: #2563eb;
+  --lab-navbar-tool-bg-hover: rgba(37, 99, 235, 0.08);
+  --lab-navbar-tool-border-hover: rgba(37, 99, 235, 0.26);
+  --lab-accent: #2563eb;
+  --lab-accent-soft: rgba(37, 99, 235, 0.1);
+  --lab-accent-strong: rgba(37, 99, 235, 0.38);
+  --lab-accent-wash: rgba(37, 99, 235, 0.07);
+  --lab-link-hover: #1d4ed8;
+  --lab-code-bg: #f8fafc;
+  --lab-code-inline-bg: #f1f5f9;
+  --lab-code-text: #0f172a;
+  --lab-button-text: #ffffff;
+  --lab-subtle-bg: #f8fafc;
+  --lab-callout-bg: #f8fafc;
+  --lab-muted-border: rgba(100, 116, 139, 0.3);
+  --lab-success: #15803d;
+  --lab-success-border: rgba(22, 163, 74, 0.35);
+  --lab-warning: #b45309;
+  --lab-warning-border: rgba(217, 119, 6, 0.35);
+  --lab-danger: #b91c1c;
+  --lab-danger-border: rgba(220, 38, 38, 0.35);
+  --lab-radius: 8px;
+}

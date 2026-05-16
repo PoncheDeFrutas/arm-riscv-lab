@@ -39,7 +39,7 @@ help:
 	@echo "  make hello-gdb  Start first AArch64 lesson under GDB server"
 	@echo "  make clean      Clean generated lesson artifacts"
 
-site: quarto-site
+site: quarto-site slides-build nojekyll
 
 quarto-site:
 	quarto render $(SITE_DIR)
@@ -101,7 +101,7 @@ nojekyll:
 	touch _site/.nojekyll
 
 publish: site
-	quarto publish gh-pages $(SITE_DIR) --no-browser --no-prompt
+	quarto publish gh-pages $(SITE_DIR) --no-render --no-browser --no-prompt
 
 hello:
 	$(MAKE) -C $(LESSON)

@@ -1,0 +1,51 @@
+/*-- scss:defaults --*/
+$body-bg: #000000 !default;
+$body-color: #e5e5e5 !default;
+$link-color: #60a5fa !default;
+$font-family-sans-serif: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif !default;
+$font-family-monospace: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace !default;
+$headings-font-weight: 700 !default;
+$headings-color: #e5e5e5 !default;
+$code-block-bg: #0a0a0a !default;
+$code-color: #e5e5e5 !default;
+$border-color: #262626 !default;
+$primary: #60a5fa !default;
+$navbar-dark-color: #d4d4d4 !default;
+$navbar-dark-hover-color: #f5f5f5 !default;
+$navbar-dark-active-color: #ffffff !default;
+
+/*-- scss:rules --*/
+:root {
+  --lab-bg: #000000;
+  --lab-surface: #111111;
+  --lab-surface-2: #141414;
+  --lab-text: #e5e5e5;
+  --lab-text-soft: #d4d4d4;
+  --lab-muted: #a3a3a3;
+  --lab-border: #262626;
+  --lab-navbar-bg: #000000;
+  --lab-navbar-fg: #d4d4d4;
+  --lab-navbar-icon: #e5e5e5;
+  --lab-navbar-icon-hover: #60a5fa;
+  --lab-navbar-tool-bg-hover: rgba(96, 165, 250, 0.12);
+  --lab-navbar-tool-border-hover: rgba(96, 165, 250, 0.35);
+  --lab-accent: #60a5fa;
+  --lab-accent-soft: rgba(96, 165, 250, 0.13);
+  --lab-accent-strong: rgba(96, 165, 250, 0.48);
+  --lab-accent-wash: rgba(96, 165, 250, 0.1);
+  --lab-link-hover: #93c5fd;
+  --lab-code-bg: #0a0a0a;
+  --lab-code-inline-bg: #1a1a1a;
+  --lab-code-text: #e5e5e5;
+  --lab-button-text: #061018;
+  --lab-subtle-bg: rgba(255, 255, 255, 0.025);
+  --lab-callout-bg: rgba(255, 255, 255, 0.03);
+  --lab-muted-border: rgba(163, 163, 163, 0.35);
+  --lab-success: #86efac;
+  --lab-success-border: rgba(34, 197, 94, 0.45);
+  --lab-warning: #fde68a;
+  --lab-warning-border: rgba(250, 204, 21, 0.45);
+  --lab-danger: #fca5a5;
+  --lab-danger-border: rgba(248, 113, 113, 0.45);
+  --lab-radius: 8px;
+}

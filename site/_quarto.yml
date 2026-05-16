@@ -2,7 +2,6 @@ project:
   type: website
   output-dir: ../_site
   post-render:
-    - make -C .. slides-build
     - make -C .. nojekyll
   render:
     - "*.qmd"
@@ -20,8 +19,6 @@ website:
     type: overlay
   navbar:
     title: "ARM RISC-V Lab"
-    background: "#0b0f14"
-    foreground: "#e5e7eb"
     pinned: true
     collapse: true
     left:
@@ -31,10 +28,10 @@ website:
         menu:
           - href: courses/aarch64/index.qmd
             text: Ruta AArch64
+          - href: courses/aarch64/roadmap.qmd
+            text: Roadmap AArch64
           - href: courses/riscv/index.qmd
             text: Ruta RISC-V
-      - href: courses/aarch64/roadmap.qmd
-        text: Roadmap
       - text: Guías
         menu:
           - href: guides/setup/index.qmd
@@ -54,9 +51,8 @@ website:
   sidebar:
     - title: "Curso AArch64"
       style: docked
-      background: "#0b0f14"
-      foreground: "#d1d5db"
-      collapse-level: 2
+      search: true
+      collapse-level: 1
       contents:
         - section: "AArch64"
           contents:
@@ -64,305 +60,295 @@ website:
               href: courses/aarch64/index.qmd
             - text: "Roadmap"
               href: courses/aarch64/roadmap.qmd
-            - text: "00 · Contexto, historia y objetivos"
-              href: courses/aarch64/fundamentos/contexto-historia-objetivos.qmd
-            - section: "01 · Laboratorio ARM64 reproducible"
+            - section: "Fundamentos"
               contents:
-                - text: "Mapa de la unidad"
+                - text: "00 · Contexto, historia y objetivos"
+                  href: courses/aarch64/fundamentos/contexto-historia-objetivos.qmd
+                - section: "01 · Laboratorio ARM64 reproducible"
                   href: courses/aarch64/laboratorio/index.qmd
-                - text: "Entorno Linux ARM64"
-                  href: courses/aarch64/laboratorio/01-entorno-linux-arm64.qmd
-                - text: "Instalación toolchain"
-                  href: courses/aarch64/laboratorio/02-instalacion-toolchain.qmd
-                - text: "Primer programa"
-                  href: courses/aarch64/laboratorio/03-primer-programa.qmd
-                - text: "Inspección del binario"
-                  href: courses/aarch64/laboratorio/04-inspeccion-binario.qmd
-                - text: "Debugging mínimo"
-                  href: courses/aarch64/laboratorio/05-debugging-minimo.qmd
-                - text: "Estructura del repositorio"
-                  href: courses/aarch64/laboratorio/06-estructura-repositorio.qmd
-            - section: "02 · Bases binarias y representación"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Entorno Linux ARM64"
+                      href: courses/aarch64/laboratorio/01-entorno-linux-arm64.qmd
+                    - text: "Instalación toolchain"
+                      href: courses/aarch64/laboratorio/02-instalacion-toolchain.qmd
+                    - text: "Primer programa"
+                      href: courses/aarch64/laboratorio/03-primer-programa.qmd
+                    - text: "Inspección del binario"
+                      href: courses/aarch64/laboratorio/04-inspeccion-binario.qmd
+                    - text: "Debugging mínimo"
+                      href: courses/aarch64/laboratorio/05-debugging-minimo.qmd
+                    - text: "Estructura del repositorio"
+                      href: courses/aarch64/laboratorio/06-estructura-repositorio.qmd
+                - section: "02 · Bases binarias y representación"
                   href: courses/aarch64/bases-binarias/index.qmd
-                - text: "Bits, bytes y bases"
-                  href: courses/aarch64/bases-binarias/01-bits-bytes-bases.qmd
-                - text: "Enteros, signo y rangos"
-                  href: courses/aarch64/bases-binarias/02-enteros-signo-rangos.qmd
-                - text: "Overflow y extensiones"
-                  href: courses/aarch64/bases-binarias/03-overflow-extensiones.qmd
-                - text: "Bytes y texto"
-                  href: courses/aarch64/bases-binarias/04-bytes-texto.qmd
-                - text: "Endianness y alineación"
-                  href: courses/aarch64/bases-binarias/05-endianness-alineacion.qmd
-                - text: "Direcciones y punteros"
-                  href: courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.qmd
-            - section: "03 · Modelo ARMv8-A / AArch64"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Bits, bytes y bases"
+                      href: courses/aarch64/bases-binarias/01-bits-bytes-bases.qmd
+                    - text: "Enteros, signo y rangos"
+                      href: courses/aarch64/bases-binarias/02-enteros-signo-rangos.qmd
+                    - text: "Overflow y extensiones"
+                      href: courses/aarch64/bases-binarias/03-overflow-extensiones.qmd
+                    - text: "Bytes y texto"
+                      href: courses/aarch64/bases-binarias/04-bytes-texto.qmd
+                    - text: "Endianness y alineación"
+                      href: courses/aarch64/bases-binarias/05-endianness-alineacion.qmd
+                    - text: "Direcciones y punteros"
+                      href: courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.qmd
+                - section: "03 · Modelo ARMv8-A / AArch64"
                   href: courses/aarch64/modelo-aarch64/index.qmd
-                - text: "Registros generales"
-                  href: courses/aarch64/modelo-aarch64/01-registros-generales.qmd
-                - text: "Registros especiales"
-                  href: courses/aarch64/modelo-aarch64/02-registros-especiales.qmd
-                - text: "PSTATE y flags"
-                  href: courses/aarch64/modelo-aarch64/03-pstate-flags.qmd
-                - text: "SIMD/Floating Point"
-                  href: courses/aarch64/modelo-aarch64/04-simd-floating-registers.qmd
-                - text: "Exception levels"
-                  href: courses/aarch64/modelo-aarch64/05-exception-levels.qmd
-                - text: "Lectura con GDB"
-                  href: courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.qmd
-            - section: "04 · GNU Assembly"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Registros generales"
+                      href: courses/aarch64/modelo-aarch64/01-registros-generales.qmd
+                    - text: "Registros especiales"
+                      href: courses/aarch64/modelo-aarch64/02-registros-especiales.qmd
+                    - text: "PSTATE y flags"
+                      href: courses/aarch64/modelo-aarch64/03-pstate-flags.qmd
+                    - text: "SIMD/Floating Point"
+                      href: courses/aarch64/modelo-aarch64/04-simd-floating-registers.qmd
+                    - text: "Exception levels"
+                      href: courses/aarch64/modelo-aarch64/05-exception-levels.qmd
+                    - text: "Lectura con GDB"
+                      href: courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.qmd
+                - section: "04 · GNU Assembly"
                   href: courses/aarch64/gnu-assembly/index.qmd
-                - text: "Estructura de archivo .s"
-                  href: courses/aarch64/gnu-assembly/01-estructura-archivo-s.qmd
-                - text: "Secciones"
-                  href: courses/aarch64/gnu-assembly/02-secciones.qmd
-                - text: "Directivas básicas"
-                  href: courses/aarch64/gnu-assembly/03-directivas-basicas.qmd
-                - text: "Definición de datos"
-                  href: courses/aarch64/gnu-assembly/04-definicion-datos.qmd
-                - text: "Pseudo-instrucciones"
-                  href: courses/aarch64/gnu-assembly/05-pseudo-instrucciones-direcciones.qmd
-                - text: "Include y macros"
-                  href: courses/aarch64/gnu-assembly/06-include-macros.qmd
-                - text: "Lectura de archivo completo"
-                  href: courses/aarch64/gnu-assembly/07-lectura-archivo-completo.qmd
-            - section: "05 · Primeros programas"
+                  contents:
+                    - text: "Estructura de archivo .s"
+                      href: courses/aarch64/gnu-assembly/01-estructura-archivo-s.qmd
+                    - text: "Secciones"
+                      href: courses/aarch64/gnu-assembly/02-secciones.qmd
+                    - text: "Directivas básicas"
+                      href: courses/aarch64/gnu-assembly/03-directivas-basicas.qmd
+                    - text: "Definición de datos"
+                      href: courses/aarch64/gnu-assembly/04-definicion-datos.qmd
+                    - text: "Pseudo-instrucciones"
+                      href: courses/aarch64/gnu-assembly/05-pseudo-instrucciones-direcciones.qmd
+                    - text: "Include y macros"
+                      href: courses/aarch64/gnu-assembly/06-include-macros.qmd
+                    - text: "Lectura de archivo completo"
+                      href: courses/aarch64/gnu-assembly/07-lectura-archivo-completo.qmd
+            - section: "Programas y memoria"
               contents:
-                - text: "Mapa de la unidad"
+                - section: "05 · Primeros programas"
                   href: courses/aarch64/primeros-programas/index.qmd
-                - text: "Programa mínimo con exit"
-                  href: courses/aarch64/primeros-programas/01-programa-minimo-exit.qmd
-                - text: "Hello World con write"
-                  href: courses/aarch64/primeros-programas/02-hello-world-write.qmd
-                - text: "stdout, stderr y exit codes"
-                  href: courses/aarch64/primeros-programas/03-stdout-stderr-exit-codes.qmd
-                - text: "_start, main y libc"
-                  href: courses/aarch64/primeros-programas/04-start-main-libc.qmd
-                - text: "Lectura guiada de syscalls"
-                  href: courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.qmd
-            - section: "06 · Memoria y direccionamiento"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Programa mínimo con exit"
+                      href: courses/aarch64/primeros-programas/01-programa-minimo-exit.qmd
+                    - text: "Hello World con write"
+                      href: courses/aarch64/primeros-programas/02-hello-world-write.qmd
+                    - text: "stdout, stderr y exit codes"
+                      href: courses/aarch64/primeros-programas/03-stdout-stderr-exit-codes.qmd
+                    - text: "_start, main y libc"
+                      href: courses/aarch64/primeros-programas/04-start-main-libc.qmd
+                    - text: "Lectura guiada de syscalls"
+                      href: courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.qmd
+                - section: "06 · Memoria y direccionamiento"
                   href: courses/aarch64/memoria-direccionamiento/index.qmd
-                - text: "Dirección y contenido"
-                  href: courses/aarch64/memoria-direccionamiento/01-memoria-direccion-contenido.qmd
-                - text: "Secciones y mapa inicial"
-                  href: courses/aarch64/memoria-direccionamiento/02-secciones-mapa-memoria.qmd
-                - text: "Load/store básico"
-                  href: courses/aarch64/memoria-direccionamiento/03-load-store-basico.qmd
-                - text: "Tamaños de acceso"
-                  href: courses/aarch64/memoria-direccionamiento/04-tamanos-acceso.qmd
-                - text: "Modos de direccionamiento"
-                  href: courses/aarch64/memoria-direccionamiento/05-modos-direccionamiento.qmd
-                - text: "Arrays y recorrido"
-                  href: courses/aarch64/memoria-direccionamiento/06-arrays-recorrido-memoria.qmd
-                - text: "Lectura guiada de memoria"
-                  href: courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.qmd
-            - section: "07 · Aritmética, lógica y bits"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Dirección y contenido"
+                      href: courses/aarch64/memoria-direccionamiento/01-memoria-direccion-contenido.qmd
+                    - text: "Secciones y mapa inicial"
+                      href: courses/aarch64/memoria-direccionamiento/02-secciones-mapa-memoria.qmd
+                    - text: "Load/store básico"
+                      href: courses/aarch64/memoria-direccionamiento/03-load-store-basico.qmd
+                    - text: "Tamaños de acceso"
+                      href: courses/aarch64/memoria-direccionamiento/04-tamanos-acceso.qmd
+                    - text: "Modos de direccionamiento"
+                      href: courses/aarch64/memoria-direccionamiento/05-modos-direccionamiento.qmd
+                    - text: "Arrays y recorrido"
+                      href: courses/aarch64/memoria-direccionamiento/06-arrays-recorrido-memoria.qmd
+                    - text: "Lectura guiada de memoria"
+                      href: courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.qmd
+                - section: "07 · Aritmética, lógica y bits"
                   href: courses/aarch64/aritmetica-logica-bits/index.qmd
-                - text: "Movimiento de constantes"
-                  href: courses/aarch64/aritmetica-logica-bits/01-movimiento-constantes.qmd
-                - text: "Aritmética y flags"
-                  href: courses/aarch64/aritmetica-logica-bits/02-aritmetica-flags.qmd
-                - text: "Multiplicación y división"
-                  href: courses/aarch64/aritmetica-logica-bits/03-multiplicacion-division.qmd
-                - text: "Lógica y máscaras"
-                  href: courses/aarch64/aritmetica-logica-bits/04-logica-mascaras.qmd
-                - text: "Shifts y rotates"
-                  href: courses/aarch64/aritmetica-logica-bits/05-shifts-rotates.qmd
-                - text: "Extensiones"
-                  href: courses/aarch64/aritmetica-logica-bits/06-extensiones.qmd
-                - text: "Bit manipulation"
-                  href: courses/aarch64/aritmetica-logica-bits/07-bit-manipulation.qmd
-                - text: "Lectura guiada de operaciones"
-                  href: courses/aarch64/aritmetica-logica-bits/08-lectura-guiada-operaciones.qmd
-            - section: "08 · Control de flujo"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Movimiento de constantes"
+                      href: courses/aarch64/aritmetica-logica-bits/01-movimiento-constantes.qmd
+                    - text: "Aritmética y flags"
+                      href: courses/aarch64/aritmetica-logica-bits/02-aritmetica-flags.qmd
+                    - text: "Multiplicación y división"
+                      href: courses/aarch64/aritmetica-logica-bits/03-multiplicacion-division.qmd
+                    - text: "Lógica y máscaras"
+                      href: courses/aarch64/aritmetica-logica-bits/04-logica-mascaras.qmd
+                    - text: "Shifts y rotates"
+                      href: courses/aarch64/aritmetica-logica-bits/05-shifts-rotates.qmd
+                    - text: "Extensiones"
+                      href: courses/aarch64/aritmetica-logica-bits/06-extensiones.qmd
+                    - text: "Bit manipulation"
+                      href: courses/aarch64/aritmetica-logica-bits/07-bit-manipulation.qmd
+                    - text: "Lectura guiada de operaciones"
+                      href: courses/aarch64/aritmetica-logica-bits/08-lectura-guiada-operaciones.qmd
+                - section: "08 · Control de flujo"
                   href: courses/aarch64/control-flujo/index.qmd
-                - text: "Branching y etiquetas"
-                  href: courses/aarch64/control-flujo/01-branching-etiquetas.qmd
-                - text: "Condiciones y flags"
-                  href: courses/aarch64/control-flujo/02-condiciones-flags.qmd
-                - text: "if e if/else"
-                  href: courses/aarch64/control-flujo/03-if-else.qmd
-                - text: "Loops y recorrido"
-                  href: courses/aarch64/control-flujo/04-loops-recorrido.qmd
-                - text: "Branches especializados y select"
-                  href: courses/aarch64/control-flujo/05-branches-especializados-csel.qmd
-                - text: "Link y branch por registro"
-                  href: courses/aarch64/control-flujo/06-branch-link-register.qmd
-            - section: "09 · Syscalls esenciales"
+                  contents:
+                    - text: "Branching y etiquetas"
+                      href: courses/aarch64/control-flujo/01-branching-etiquetas.qmd
+                    - text: "Condiciones y flags"
+                      href: courses/aarch64/control-flujo/02-condiciones-flags.qmd
+                    - text: "if e if/else"
+                      href: courses/aarch64/control-flujo/03-if-else.qmd
+                    - text: "Loops y recorrido"
+                      href: courses/aarch64/control-flujo/04-loops-recorrido.qmd
+                    - text: "Branches especializados y select"
+                      href: courses/aarch64/control-flujo/05-branches-especializados-csel.qmd
+                    - text: "Link y branch por registro"
+                      href: courses/aarch64/control-flujo/06-branch-link-register.qmd
+            - section: "Linux y sistemas"
               contents:
-                - text: "Mapa de la unidad"
+                - section: "09 · Syscalls esenciales"
                   href: courses/aarch64/syscalls-esenciales/index.qmd
-                - text: "Contrato de syscall"
-                  href: courses/aarch64/syscalls-esenciales/01-contrato-syscall.qmd
-                - text: "exit y write"
-                  href: courses/aarch64/syscalls-esenciales/02-exit-write.qmd
-                - text: "read y buffers"
-                  href: courses/aarch64/syscalls-esenciales/03-read-buffers.qmd
-                - text: "openat y close"
-                  href: courses/aarch64/syscalls-esenciales/04-openat-close.qmd
-                - text: "Errores mínimos"
-                  href: courses/aarch64/syscalls-esenciales/05-errores-minimos.qmd
-                - text: "Programa guiado"
-                  href: courses/aarch64/syscalls-esenciales/06-programa-guiado.qmd
-            - section: "10 · Linux como API del kernel"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Contrato de syscall"
+                      href: courses/aarch64/syscalls-esenciales/01-contrato-syscall.qmd
+                    - text: "exit y write"
+                      href: courses/aarch64/syscalls-esenciales/02-exit-write.qmd
+                    - text: "read y buffers"
+                      href: courses/aarch64/syscalls-esenciales/03-read-buffers.qmd
+                    - text: "openat y close"
+                      href: courses/aarch64/syscalls-esenciales/04-openat-close.qmd
+                    - text: "Errores mínimos"
+                      href: courses/aarch64/syscalls-esenciales/05-errores-minimos.qmd
+                    - text: "Programa guiado"
+                      href: courses/aarch64/syscalls-esenciales/06-programa-guiado.qmd
+                - section: "10 · Linux como API del kernel"
                   href: courses/aarch64/linux-api-kernel/index.qmd
-                - text: "File descriptors y recursos"
-                  href: courses/aarch64/linux-api-kernel/01-file-descriptors-recursos.qmd
-                - text: "Archivos con syscalls"
-                  href: courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.qmd
-                - text: "Errores y cleanup"
-                  href: courses/aarch64/linux-api-kernel/03-errores-cleanup.qmd
-                - text: "Posición y metadatos"
-                  href: courses/aarch64/linux-api-kernel/04-posicion-metadatos.qmd
-                - text: "Procesos y tiempo"
-                  href: courses/aarch64/linux-api-kernel/05-procesos-tiempo.qmd
-                - text: "Programa guiado con recursos"
-                  href: courses/aarch64/linux-api-kernel/06-programa-guiado-recursos.qmd
-            - section: "11 · Stack, funciones y stack frames"
-              contents:
-                - text: "Mapa de la unidad"
-                  href: courses/aarch64/stack-funciones-frames/index.qmd
-                - text: "Llamadas y retorno"
-                  href: courses/aarch64/stack-funciones-frames/01-llamadas-retorno.qmd
-                - text: "Stack básico"
-                  href: courses/aarch64/stack-funciones-frames/02-stack-basico.qmd
-                - text: "Stack frames"
-                  href: courses/aarch64/stack-funciones-frames/03-stack-frames.qmd
-                - text: "Funciones no hoja y registros"
-                  href: courses/aarch64/stack-funciones-frames/04-funciones-no-hoja-registros.qmd
-                - text: "Recursión básica"
-                  href: courses/aarch64/stack-funciones-frames/05-recursion-basica.qmd
-                - text: "Debugging de frames con GDB"
-                  href: courses/aarch64/stack-funciones-frames/06-debugging-frames-gdb.qmd
-            - section: "12 · Heap y memoria dinámica"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "File descriptors y recursos"
+                      href: courses/aarch64/linux-api-kernel/01-file-descriptors-recursos.qmd
+                    - text: "Archivos con syscalls"
+                      href: courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.qmd
+                    - text: "Errores y cleanup"
+                      href: courses/aarch64/linux-api-kernel/03-errores-cleanup.qmd
+                    - text: "Posición y metadatos"
+                      href: courses/aarch64/linux-api-kernel/04-posicion-metadatos.qmd
+                    - text: "Procesos y tiempo"
+                      href: courses/aarch64/linux-api-kernel/05-procesos-tiempo.qmd
+                    - text: "Programa guiado con recursos"
+                      href: courses/aarch64/linux-api-kernel/06-programa-guiado-recursos.qmd
+                - section: "12 · Heap y memoria dinámica"
                   href: courses/aarch64/heap-memoria-dinamica/index.qmd
-                - text: "Stack vs heap"
-                  href: courses/aarch64/heap-memoria-dinamica/01-stack-vs-heap.qmd
-                - text: "Bloques y ownership"
-                  href: courses/aarch64/heap-memoria-dinamica/02-bloques-ownership.qmd
-                - text: "Allocation y deallocation"
-                  href: courses/aarch64/heap-memoria-dinamica/03-allocation-deallocation.qmd
-                - text: "Buffers y strings dinámicos"
-                  href: courses/aarch64/heap-memoria-dinamica/04-buffers-strings-dinamicos.qmd
-                - text: "Errores de memoria"
-                  href: courses/aarch64/heap-memoria-dinamica/05-errores-memoria.qmd
-                - text: "De brk a mmap"
-                  href: courses/aarch64/heap-memoria-dinamica/06-brk-malloc-mmap.qmd
-            - section: "13 · mmap, munmap, mprotect y permisos"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Stack vs heap"
+                      href: courses/aarch64/heap-memoria-dinamica/01-stack-vs-heap.qmd
+                    - text: "Bloques y ownership"
+                      href: courses/aarch64/heap-memoria-dinamica/02-bloques-ownership.qmd
+                    - text: "Allocation y deallocation"
+                      href: courses/aarch64/heap-memoria-dinamica/03-allocation-deallocation.qmd
+                    - text: "Buffers y strings dinámicos"
+                      href: courses/aarch64/heap-memoria-dinamica/04-buffers-strings-dinamicos.qmd
+                    - text: "Errores de memoria"
+                      href: courses/aarch64/heap-memoria-dinamica/05-errores-memoria.qmd
+                    - text: "De brk a mmap"
+                      href: courses/aarch64/heap-memoria-dinamica/06-brk-malloc-mmap.qmd
+                - section: "13 · mmap, munmap, mprotect y permisos"
                   href: courses/aarch64/mmap-paginas-permisos/index.qmd
-                - text: "Páginas y memoria virtual"
-                  href: courses/aarch64/mmap-paginas-permisos/01-paginas-memoria-virtual.qmd
-                - text: "mmap anónimo privado"
-                  href: courses/aarch64/mmap-paginas-permisos/02-mmap-anonimo-privado.qmd
-                - text: "munmap y ciclo de vida"
-                  href: courses/aarch64/mmap-paginas-permisos/03-munmap-ciclo-vida-region.qmd
-                - text: "mprotect y permisos"
-                  href: courses/aarch64/mmap-paginas-permisos/04-mprotect-permisos.qmd
-                - text: "mmap con archivo"
-                  href: courses/aarch64/mmap-paginas-permisos/05-mmap-con-archivo.qmd
-                - text: "Errores y diagnóstico"
-                  href: courses/aarch64/mmap-paginas-permisos/06-errores-y-diagnostico.qmd
-                - text: "Programa guiado"
-                  href: courses/aarch64/mmap-paginas-permisos/07-programa-guiado.qmd
-            - section: "14 · Layout de datos y structs"
+                  contents:
+                    - text: "Páginas y memoria virtual"
+                      href: courses/aarch64/mmap-paginas-permisos/01-paginas-memoria-virtual.qmd
+                    - text: "mmap anónimo privado"
+                      href: courses/aarch64/mmap-paginas-permisos/02-mmap-anonimo-privado.qmd
+                    - text: "munmap y ciclo de vida"
+                      href: courses/aarch64/mmap-paginas-permisos/03-munmap-ciclo-vida-region.qmd
+                    - text: "mprotect y permisos"
+                      href: courses/aarch64/mmap-paginas-permisos/04-mprotect-permisos.qmd
+                    - text: "mmap con archivo"
+                      href: courses/aarch64/mmap-paginas-permisos/05-mmap-con-archivo.qmd
+                    - text: "Errores y diagnóstico"
+                      href: courses/aarch64/mmap-paginas-permisos/06-errores-y-diagnostico.qmd
+                    - text: "Programa guiado"
+                      href: courses/aarch64/mmap-paginas-permisos/07-programa-guiado.qmd
+            - section: "ABI, binarios y debugging"
               contents:
-                - text: "Mapa de la unidad"
+                - section: "11 · Stack, funciones y stack frames"
+                  href: courses/aarch64/stack-funciones-frames/index.qmd
+                  contents:
+                    - text: "Llamadas y retorno"
+                      href: courses/aarch64/stack-funciones-frames/01-llamadas-retorno.qmd
+                    - text: "Stack básico"
+                      href: courses/aarch64/stack-funciones-frames/02-stack-basico.qmd
+                    - text: "Stack frames"
+                      href: courses/aarch64/stack-funciones-frames/03-stack-frames.qmd
+                    - text: "Funciones no hoja y registros"
+                      href: courses/aarch64/stack-funciones-frames/04-funciones-no-hoja-registros.qmd
+                    - text: "Recursión básica"
+                      href: courses/aarch64/stack-funciones-frames/05-recursion-basica.qmd
+                    - text: "Debugging de frames con GDB"
+                      href: courses/aarch64/stack-funciones-frames/06-debugging-frames-gdb.qmd
+                - section: "14 · Layout de datos y structs"
                   href: courses/aarch64/layout-datos-structs/index.qmd
-                - text: "Structs y layout"
-                  href: courses/aarch64/layout-datos-structs/01-structs-layout.qmd
-                - text: "Acceso a campos"
-                  href: courses/aarch64/layout-datos-structs/02-acceso-campos-punteros.qmd
-                - text: "ADTs e invariantes"
-                  href: courses/aarch64/layout-datos-structs/03-adts-invariantes.qmd
-                - text: "Objetos manuales"
-                  href: courses/aarch64/layout-datos-structs/04-objetos-manuales.qmd
-                - text: "Descriptores"
-                  href: courses/aarch64/layout-datos-structs/05-descriptores.qmd
-                - text: "Buffer, String y Matrix"
-                  href: courses/aarch64/layout-datos-structs/06-buffer-string-matrix.qmd
-                - text: "File wrapper y arena"
-                  href: courses/aarch64/layout-datos-structs/07-file-wrapper-arena.qmd
-                - text: "Lectura guiada"
-                  href: courses/aarch64/layout-datos-structs/08-lectura-guiada.qmd
-            - section: "15 · ABI, AAPCS64 e interoperabilidad con C"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Structs y layout"
+                      href: courses/aarch64/layout-datos-structs/01-structs-layout.qmd
+                    - text: "Acceso a campos"
+                      href: courses/aarch64/layout-datos-structs/02-acceso-campos-punteros.qmd
+                    - text: "ADTs e invariantes"
+                      href: courses/aarch64/layout-datos-structs/03-adts-invariantes.qmd
+                    - text: "Objetos manuales"
+                      href: courses/aarch64/layout-datos-structs/04-objetos-manuales.qmd
+                    - text: "Descriptores"
+                      href: courses/aarch64/layout-datos-structs/05-descriptores.qmd
+                    - text: "Buffer, String y Matrix"
+                      href: courses/aarch64/layout-datos-structs/06-buffer-string-matrix.qmd
+                    - text: "File wrapper y arena"
+                      href: courses/aarch64/layout-datos-structs/07-file-wrapper-arena.qmd
+                    - text: "Lectura guiada"
+                      href: courses/aarch64/layout-datos-structs/08-lectura-guiada.qmd
+                - section: "15 · ABI, AAPCS64 e interoperabilidad con C"
                   href: courses/aarch64/abi-aapcs64-c/index.qmd
-                - text: "ABI, AAPCS64 y registros"
-                  href: courses/aarch64/abi-aapcs64-c/01-abi-aapcs64-registros.qmd
-                - text: "Argumentos y retornos"
-                  href: courses/aarch64/abi-aapcs64-c/02-argumentos-retornos-stack.qmd
-                - text: "Caller y callee"
-                  href: courses/aarch64/abi-aapcs64-c/03-caller-callee-saved.qmd
-                - text: "main, _start y libc"
-                  href: courses/aarch64/abi-aapcs64-c/04-main-start-libc-runtime.qmd
-                - text: "Assembly desde C"
-                  href: courses/aarch64/abi-aapcs64-c/05-assembly-desde-c.qmd
-                - text: "C desde assembly y printf"
-                  href: courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.qmd
-                - text: "Librerías y lectura guiada"
-                  href: courses/aarch64/abi-aapcs64-c/07-librerias-y-lectura-guiada.qmd
-            - section: "16 · ELF, linking, loading y binarios"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "ABI, AAPCS64 y registros"
+                      href: courses/aarch64/abi-aapcs64-c/01-abi-aapcs64-registros.qmd
+                    - text: "Argumentos y retornos"
+                      href: courses/aarch64/abi-aapcs64-c/02-argumentos-retornos-stack.qmd
+                    - text: "Caller y callee"
+                      href: courses/aarch64/abi-aapcs64-c/03-caller-callee-saved.qmd
+                    - text: "main, _start y libc"
+                      href: courses/aarch64/abi-aapcs64-c/04-main-start-libc-runtime.qmd
+                    - text: "Assembly desde C"
+                      href: courses/aarch64/abi-aapcs64-c/05-assembly-desde-c.qmd
+                    - text: "C desde assembly y printf"
+                      href: courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.qmd
+                    - text: "Librerías y lectura guiada"
+                      href: courses/aarch64/abi-aapcs64-c/07-librerias-y-lectura-guiada.qmd
+                - section: "16 · ELF, linking, loading y binarios"
                   href: courses/aarch64/elf-linking-loading/index.qmd
-                - text: "Flujo .s, .o y ELF"
-                  href: courses/aarch64/elf-linking-loading/01-flujo-assembly-objeto-ejecutable.qmd
-                - text: "ELF header y entry point"
-                  href: courses/aarch64/elf-linking-loading/02-elf-header-entry-point.qmd
-                - text: "Secciones y símbolos"
-                  href: courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.qmd
-                - text: "Segmentos y loader"
-                  href: courses/aarch64/elf-linking-loading/04-segmentos-loader-permisos.qmd
-                - text: "Linking estático y dinámico"
-                  href: courses/aarch64/elf-linking-loading/05-linking-estatico-dinamico.qmd
-                - text: "GOT, PLT y PIE"
-                  href: courses/aarch64/elf-linking-loading/06-got-plt-pie.qmd
-                - text: "Herramientas y lectura guiada"
-                  href: courses/aarch64/elf-linking-loading/07-herramientas-lectura-guiada.qmd
-            - section: "17 · Debugging con GDB, QEMU y strace"
-              contents:
-                - text: "Mapa de la unidad"
+                  contents:
+                    - text: "Flujo .s, .o y ELF"
+                      href: courses/aarch64/elf-linking-loading/01-flujo-assembly-objeto-ejecutable.qmd
+                    - text: "ELF header y entry point"
+                      href: courses/aarch64/elf-linking-loading/02-elf-header-entry-point.qmd
+                    - text: "Secciones y símbolos"
+                      href: courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.qmd
+                    - text: "Segmentos y loader"
+                      href: courses/aarch64/elf-linking-loading/04-segmentos-loader-permisos.qmd
+                    - text: "Linking estático y dinámico"
+                      href: courses/aarch64/elf-linking-loading/05-linking-estatico-dinamico.qmd
+                    - text: "GOT, PLT y PIE"
+                      href: courses/aarch64/elf-linking-loading/06-got-plt-pie.qmd
+                    - text: "Herramientas y lectura guiada"
+                      href: courses/aarch64/elf-linking-loading/07-herramientas-lectura-guiada.qmd
+                - section: "17 · Debugging con GDB, QEMU y strace"
                   href: courses/aarch64/debugging-gdb-qemu-strace/index.qmd
-                - text: "Flujo básico de GDB"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/01-gdb-flujo-basico.qmd
-                - text: "Registros e instrucciones"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/02-registros-instrucciones.qmd
-                - text: "Lectura de memoria"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/03-lectura-memoria.qmd
-                - text: "Stack frames en GDB"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/04-stack-frames-gdb.qmd
-                - text: "QEMU y gdbserver"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/05-qemu-gdbserver.qmd
-                - text: "strace y syscalls"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/06-strace-syscalls.qmd
-                - text: "Core dumps"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/07-core-dumps.qmd
-                - text: "Práctica guiada"
-                  href: courses/aarch64/debugging-gdb-qemu-strace/08-practica-guiada.qmd
+                  contents:
+                    - text: "Flujo básico de GDB"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/01-gdb-flujo-basico.qmd
+                    - text: "Registros e instrucciones"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/02-registros-instrucciones.qmd
+                    - text: "Lectura de memoria"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/03-lectura-memoria.qmd
+                    - text: "Stack frames en GDB"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/04-stack-frames-gdb.qmd
+                    - text: "QEMU y gdbserver"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/05-qemu-gdbserver.qmd
+                    - text: "strace y syscalls"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/06-strace-syscalls.qmd
+                    - text: "Core dumps"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/07-core-dumps.qmd
+                    - text: "Práctica guiada"
+                      href: courses/aarch64/debugging-gdb-qemu-strace/08-practica-guiada.qmd
     - title: "Curso RISC-V"
       style: docked
-      background: "#0b0f14"
-      foreground: "#d1d5db"
-      collapse-level: 2
+      search: true
+      collapse-level: 1
       contents:
         - section: "RISC-V"
           contents:
@@ -370,9 +356,8 @@ website:
               href: courses/riscv/index.qmd
     - title: "Guías"
       style: docked
-      background: "#0b0f14"
-      foreground: "#d1d5db"
-      collapse-level: 2
+      search: true
+      collapse-level: 1
       contents:
         - section: "Entorno"
           contents:
@@ -398,9 +383,17 @@ website:
 format:
   html:
     theme:
-      - default
-      - assets/styles/site.scss
-    highlight-style: breezedark
+      light:
+        - default
+        - assets/styles/site-light.scss
+        - assets/styles/site-common.scss
+      dark:
+        - default
+        - assets/styles/site-dark.scss
+        - assets/styles/site-common.scss
+    highlight-style:
+      light: github
+      dark: breezedark
     toc: true
     toc-depth: 3
     toc-location: right
