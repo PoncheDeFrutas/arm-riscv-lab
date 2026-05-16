@@ -146,7 +146,7 @@ Assembly describe instrucciones cercanas al procesador con menos capas intermedi
 
 </div>
 
-<img src="../../assets/armandopi_idea.png" class="mascot-img" alt="" />
+<Mascot emotion="idea" />
 
 </div>
 
@@ -218,7 +218,7 @@ La ISA es el contrato visible entre software y hardware.
 
 </div>
 
-<img src="../../assets/armandopi_leyendo.png" class="mascot-img" alt="" />
+<Mascot emotion="leyendo" />
 
 </div>
 
@@ -299,7 +299,7 @@ Qué es ARM, por qué importa y cómo se organizan nombres
 
 </div>
 
-<img src="../../assets/armandopi_contento.png" class="mascot-img" alt="" />
+<Mascot emotion="contento" />
 
 </div>
 
@@ -769,7 +769,7 @@ Uso real, valor educativo y conexión con resto del curso
 
 </div>
 
-<img src="../../assets/armandopi_contento.png" class="mascot-img" alt="" />
+<Mascot emotion="contento" />
 
 </div>
 
@@ -811,7 +811,7 @@ layout: aarch64-statement
 
 </div>
 
-<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+<Mascot emotion="pensando" />
 
 </div>
 
@@ -926,7 +926,7 @@ Assembly permite observar la frontera entre el código generado por el compilado
 
 </div>
 
-<img src="../../assets/armandopi_leyendo.png" class="mascot-img" alt="" />
+<Mascot emotion="leyendo" />
 
 </div>
 
@@ -1008,7 +1008,7 @@ layout: aarch64-checklist
 
 </div>
 
-<img src="../../assets/armandopi_solucinado.png" class="mascot-img" alt="" />
+<Mascot emotion="solucinado" />
 
 </div>
 
@@ -1039,7 +1039,7 @@ layout: aarch64-question
 
 </div>
 
-<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+<Mascot emotion="pensando" />
 
 </div>
 

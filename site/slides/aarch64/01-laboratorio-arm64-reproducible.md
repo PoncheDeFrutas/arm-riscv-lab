@@ -507,7 +507,7 @@ continue
 
 </div>
 
-<img src="../../assets/armandopi_leyendo.png" class="mascot-img" alt="" />
+<Mascot emotion="leyendo" />
 
 </div>
 
@@ -656,7 +656,7 @@ layout: aarch64-checklist
 
 </div>
 
-<img src="../../assets/armandopi_solucinado.png" class="mascot-img" alt="" />
+<Mascot emotion="solucinado" />
 
 </div>
 
@@ -688,7 +688,7 @@ layout: aarch64-question
 
 </div>
 
-<img src="../../assets/armandopi_pensando.png" class="mascot-img" alt="" />
+<Mascot emotion="pensando" />
 
 </div>
 
