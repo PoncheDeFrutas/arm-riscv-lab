@@ -1904,6 +1904,22 @@ Una vez aprobados estos estilos y componentes, se aplicarán a todas las present
 - ... y todas las demás
 
 ---
+layout: aarch64-activity-register
+activityName: "Laboratorio de Introducción a AArch64"
+startTime: "14:00"
+participants: "35"
+endTime: "16:30"
+planned: "Sí"
+duration: "150"
+---
+
+---
+
+# Registro de Actividad: ejemplo vacío
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 
