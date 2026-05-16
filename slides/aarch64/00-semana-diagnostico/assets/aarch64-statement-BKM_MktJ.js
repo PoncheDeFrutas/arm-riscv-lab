@@ -1,0 +1,1 @@
+import{B as e,U as t,x as n}from"./modules/shiki-BJVPiDca.js";import{n as r}from"./slidev/context-CwPdKnSj.js";var i={class:`slidev-layout aarch64-statement`},a={__name:`aarch64-statement`,setup(a){let{$slidev:o,$nav:s,$clicksContext:c,$clicks:l,$page:u,$renderContext:d,$frontmatter:f}=r();return(r,a)=>(e(),n(`div`,i,[t(r.$slots,`default`)]))}};export{a as t};
