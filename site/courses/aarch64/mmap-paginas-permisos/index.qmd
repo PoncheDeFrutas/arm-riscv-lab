@@ -22,7 +22,7 @@ referencia completa y el deck como apoyo visual.
 Para iniciar la presentación, abre el enlace y avanza con las flechas del
 teclado o la barra espaciadora.
 
-[Ver presentación Slidev](../../../slides/aarch64/mmap-paginas-permisos/13-mmap-paginas-permisos/){.lab-button}
+[Ver presentación Slidev](../../../slides/aarch64/13-mmap-paginas-permisos/){.lab-button}
 :::
 
 ## Qué debe quedar claro

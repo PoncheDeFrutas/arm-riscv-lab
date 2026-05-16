@@ -42,7 +42,6 @@ help:
 site: quarto-site
 
 quarto-site:
-	rm -rf _site
 	quarto render $(SITE_DIR)
 
 preview:
@@ -63,25 +62,40 @@ slides:
 
 slides-build:
 	@set -e; \
+	export JOBS=$$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4); \
+	echo "Building $$JOBS slide decks in parallel..."; \
 	for deck in $(SLIDE_DECKS); do \
 		if [ -f "$$deck" ]; then \
 			rel="$${deck#$(SITE_DIR)/}"; \
 			inner="$${deck#$(SLIDE_ROOT)/}"; \
 			out="$(CURDIR)/_site/$${rel%.md}"; \
-			tmp="$$(mktemp -d "$(CURDIR)/.slidev-dist.XXXXXX")"; \
-			if [ -x "$(SLIDE_ROOT)/$(SLIDEV)" ]; then \
-				(cd "$(SLIDE_ROOT)" && "./$(SLIDEV)" build "$$inner" --out "$$tmp" --base ./ --router-mode hash); \
-			else \
-				(cd "$(SLIDE_ROOT)" && pnpm exec slidev build "$$inner" --out "$$tmp" --base ./ --router-mode hash); \
+			src_mod=$$(stat -c %Y "$$deck" 2>/dev/null || stat -f %m "$$deck" 2>/dev/null || echo 0); \
+			if [ -d "$$out" ]; then \
+				out_mod=$$(find "$$out" -type f -newer "$$deck" 2>/dev/null | head -1); \
+				if [ -n "$$out_mod" ]; then \
+					echo "SKIP (up to date): $$inner"; \
+					continue; \
+				fi; \
 			fi; \
+			echo "BUILD: $$inner"; \
+			tmp="$$(mktemp -d "$(CURDIR)/.slidev-dist.XXXXXX")"; \
+			(cd "$(SLIDE_ROOT)" && pnpm exec slidev build "$$inner" --out "$$tmp" --base ./ --router-mode hash) & \
+			while [ $$(jobs -r | wc -l) -ge $$JOBS ]; do sleep 0.5; done; \
+			echo "$$tmp $$out" >> "$(CURDIR)/.slidev-pending"; \
+		else \
+			echo "Slidev deck not found at $$deck; skipping."; \
+		fi; \
+	done; \
+	wait; \
+	if [ -f "$(CURDIR)/.slidev-pending" ]; then \
+		while IFS=' ' read -r tmp out; do \
 			rm -rf "$$out"; \
 			mkdir -p "$$out"; \
 			cp -R "$$tmp/." "$$out"; \
 			rm -rf "$$tmp"; \
-		else \
-			echo "Slidev deck not found at $$deck; skipping."; \
-		fi; \
-	done
+		done < "$(CURDIR)/.slidev-pending"; \
+		rm -f "$(CURDIR)/.slidev-pending"; \
+	fi
 
 nojekyll:
 	touch _site/.nojekyll

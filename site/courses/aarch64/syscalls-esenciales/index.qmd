@@ -22,7 +22,7 @@ referencia completa y el deck como apoyo visual.
 Para iniciar la presentación, abre el enlace y avanza con las flechas del
 teclado o la barra espaciadora.
 
-[Ver presentación Slidev](../../../slides/aarch64/syscalls-esenciales/09-syscalls-esenciales/){.lab-button}
+[Ver presentación Slidev](../../../slides/aarch64/09-syscalls-esenciales/){.lab-button}
 :::
 
 ## Mapa rápido
