@@ -583,6 +583,10 @@ Escribir un programa con if/else y un loop que recorra un array sumando elemento
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

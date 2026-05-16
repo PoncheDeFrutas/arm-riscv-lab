@@ -630,6 +630,10 @@ Declarar datos, cargar, modificar, guardar y recorrer un array en AArch64.
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

@@ -502,6 +502,10 @@ _start:
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

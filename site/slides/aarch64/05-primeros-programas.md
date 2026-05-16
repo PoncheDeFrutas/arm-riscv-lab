@@ -729,6 +729,10 @@ Escribir, ensamblar, ejecutar y modificar programas con exit y write.
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

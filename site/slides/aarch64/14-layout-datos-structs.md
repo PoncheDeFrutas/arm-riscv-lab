@@ -451,6 +451,10 @@ punto_get_x:
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

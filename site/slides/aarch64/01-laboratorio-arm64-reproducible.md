@@ -717,6 +717,10 @@ Abrir terminal, entrar al ejemplo, compilar, ejecutar e inspeccionar.
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

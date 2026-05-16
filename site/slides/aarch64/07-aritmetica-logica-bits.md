@@ -484,6 +484,10 @@ Leer y ejecutar un programa que combina constantes, aritmética, máscaras, shif
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

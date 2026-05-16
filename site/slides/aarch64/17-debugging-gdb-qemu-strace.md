@@ -462,6 +462,10 @@ QEMU ejecuta el programa; GDB lo observa, lo detiene y permite inspeccionarlo in
 - Slidev: documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

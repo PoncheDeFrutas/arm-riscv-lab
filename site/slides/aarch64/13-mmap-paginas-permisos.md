@@ -534,6 +534,10 @@ Crear una región dinámica para un mensaje, escribirlo, cambiarlo a solo-lectur
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

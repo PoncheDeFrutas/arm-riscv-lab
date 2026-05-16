@@ -523,6 +523,10 @@ Programa que abre `entrada.txt`, lee un bloque, escribe en stdout, cierra fd y m
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

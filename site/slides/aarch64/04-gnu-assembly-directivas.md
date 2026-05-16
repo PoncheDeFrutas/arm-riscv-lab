@@ -622,6 +622,10 @@ Ensamblar, inspeccionar y clasificar líneas de un archivo .s real.
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

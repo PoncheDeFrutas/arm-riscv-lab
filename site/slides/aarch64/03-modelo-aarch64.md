@@ -479,6 +479,10 @@ Observar registros, flags y estado del procesador con GDB en un programa mínimo
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

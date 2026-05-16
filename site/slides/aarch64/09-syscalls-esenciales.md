@@ -597,6 +597,10 @@ Crear un archivo con `openat`, escribir un mensaje con `write`, cerrar con `clos
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

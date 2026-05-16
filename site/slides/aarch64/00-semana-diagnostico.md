@@ -273,6 +273,10 @@ layout: aarch64-checklist
 <Mascot emotion="solucionado" />
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

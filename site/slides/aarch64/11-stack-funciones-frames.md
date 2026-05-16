@@ -488,6 +488,10 @@ Escribir un programa con una función `calcular` (no hoja) que llame a `duplicar
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

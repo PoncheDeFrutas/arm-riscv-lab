@@ -738,6 +738,10 @@ Verificar interpretaciones con herramientas de terminal y con registros.
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 

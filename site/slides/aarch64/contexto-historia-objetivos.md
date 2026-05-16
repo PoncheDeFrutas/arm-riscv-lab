@@ -1055,6 +1055,10 @@ layout: aarch64-question
 - Slidev, documentación oficial
 
 ---
+
+<ActivityRegister />
+
+---
 layout: aarch64-statement
 ---
 
