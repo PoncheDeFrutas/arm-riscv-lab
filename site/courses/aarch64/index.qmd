@@ -32,6 +32,11 @@ arquitectura.
 La ruta ya contiene las unidades públicas desde contexto inicial hasta ELF,
 linking, loading y debugging con GDB, QEMU y `strace`. Las unidades posteriores
 siguen en roadmap y se enlazarán solo cuando existan como páginas reales.
+
+::: {.meter-bar}
+::: {.meter-fill style="width: 24%"}
+:::
+:::
 :::
 
 ## Cómo se organiza
@@ -121,48 +126,96 @@ inline assembly y proyectos avanzados.
 ### A — Fundamentos
 
 Contexto, laboratorio, bases binarias, modelo AArch64 y GNU Assembly.
+
+::: {.status-row}
+::: {.status-badge .done}
+disponible
+:::
+:::
 :::
 
-::: {.course-card}
+::: {.course-card .active}
 ### B — Linux userland
 
 Programas mínimos, memoria, aritmética, control de flujo y syscalls.
+
+::: {.status-row}
+::: {.status-badge .done}
+disponible
+:::
+:::
 :::
 
-::: {.course-card}
+::: {.course-card .active}
 ### C — ABI y binarios
 
 Stack, heap, mmap, structs, AAPCS64, ELF y debugging.
+
+::: {.status-row}
+::: {.status-badge .done}
+disponible
+:::
+:::
 :::
 
 ::: {.course-card}
 ### D — Algoritmos y rendimiento
 
 Strings, arrays, SIMD básico, profiling, concurrencia, seguridad y proyectos.
+
+::: {.status-row}
+::: {.status-badge .pending}
+planificado
+:::
+:::
 :::
 
 ::: {.course-card}
 ### E — Hardware y bare metal
 
 GPIO, Raspberry Pi, interrupciones, MMU, caches y memoria de dispositivos.
+
+::: {.status-row}
+::: {.status-badge .pending}
+planificado
+:::
+:::
 :::
 
 ::: {.course-card}
 ### F — Sistemas avanzados
 
 Sincronización SMP, RTOS mínimo, kernel internals y drivers.
+
+::: {.status-row}
+::: {.status-badge .pending}
+planificado
+:::
+:::
 :::
 
 ::: {.course-card}
 ### G — Reversing y seguridad
 
 NEON avanzado, PMU, análisis binario, mitigaciones y side channels.
+
+::: {.status-row}
+::: {.status-badge .pending}
+planificado
+:::
+:::
 :::
 
 ::: {.course-card}
 ### H — Arquitectura avanzada ARM
 
 Virtualización, TrustZone, compiladores, intrinsics y proyectos integradores.
+
+::: {.status-row}
+::: {.status-badge .pending}
+planificado
+:::
+:::
 :::
 :::
 

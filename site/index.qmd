@@ -7,9 +7,30 @@ toc: false
 
 ::: {.home-portal}
 ::: {.hero-lab .portal-hero}
+::: {.hero-kicker}
+> low-level · assembly · architecture
+:::
+
+# ARM RISC-V Lab
+
 Aprende cómo funcionan los programas cerca del hardware: registros, memoria,
 instrucciones, llamadas al sistema, debugging y ejecución en entornos reales o
 emulados.
+
+::: {.hero-stats}
+::: {.stat-item}
+**18+** unidades
+:::
+::: {.stat-item}
+**8** bloques temáticos
+:::
+::: {.stat-item}
+**2** arquitecturas
+:::
+::: {.stat-item}
+**5+** herramientas
+:::
+:::
 
 ::: {.hero-actions}
 [Entrar a AArch64](courses/aarch64/index.qmd){.lab-button}
@@ -17,10 +38,70 @@ emulados.
 :::
 :::
 
+## Para quién es este laboratorio
+
+::: {.profile-grid}
+::: {.profile-card}
+### Principiante
+
+Nunca has tocado ensamblador o quieres entender desde cero cómo funciona un
+computador a nivel de registros, memoria e instrucciones.
+
+**Empieza aquí** si quieres construir una base sólida de computación de bajo nivel.
+:::
+
+::: {.profile-card}
+### Intermedio
+
+Ya conoces los fundamentos pero quieres dominar la ABI, stack frames, heap,
+ELF, linking y debugging profesional con GDB y QEMU.
+
+**Avanza aquí** si quieres convertirte en un programador ARM64 competente.
+:::
+
+::: {.profile-card}
+### Avanzado
+
+Te interesa bare metal, hardware real, kernel internals, reversing, seguridad
+o virtualización sobre ARM y RISC-V.
+
+**Explora aquí** cuando completes los niveles base y busques retos reales.
+:::
+:::
+
 ## Qué aprenderás
 
-Representación de datos, registros, memoria, instrucciones, llamadas al sistema,
-debugging y ejecución de programas cerca del hardware.
+::: {.learn-grid}
+::: {.learn-card}
+**Registros**
+Entiende los registros generales, especiales y de estado de AArch64 y RISC-V.
+:::
+
+::: {.learn-card}
+**Memoria**
+Secciones, load/store, direccionamiento, stack, heap y mmap.
+:::
+
+::: {.learn-card}
+**Instrucciones**
+Aritmética, lógica, branches, loops y control de flujo a bajo nivel.
+:::
+
+::: {.learn-card}
+**Syscalls**
+Llamadas al kernel de Linux: exit, write, read, openat, brk, mmap.
+:::
+
+::: {.learn-card}
+**Binarios**
+Formato ELF, linking estático y dinámico, GOT, PLT y PIE.
+:::
+
+::: {.learn-card}
+**Debugging**
+GDB, QEMU con gdbserver, strace, core dumps y análisis de memoria.
+:::
+:::
 
 ## Rutas disponibles
 
@@ -44,26 +125,61 @@ toolchain y fundamentos de arquitectura abierta.
 :::
 :::
 
+## Herramientas que usarás
+
+::: {.tool-chip-row}
+[QEMU](https://www.qemu.org/){.tool-chip}
+[GDB](https://www.gnu.org/software/gdb/){.tool-chip}
+[VS Code](https://code.visualstudio.com/){.tool-chip}
+[Linux AArch64](https://www.arm.com/){.tool-chip}
+[RISC-V](https://riscv.org/){.tool-chip}
+[GNU AS](https://www.gnu.org/software/binutils/){.tool-chip}
+[strace](https://strace.io/){.tool-chip}
+[readelf / objdump](https://www.gnu.org/software/binutils/){.tool-chip}
+[Docker](https://www.docker.com/){.tool-chip}
+[Make](https://www.gnu.org/software/make/){.tool-chip}
+:::
+
 ## Por dónde empezar
+
+::: {.featured-start}
+### Empieza por AArch64
 
 Si quieres avanzar por una ruta práctica de bajo nivel en Linux, empieza con
 AArch64. Si quieres comparar una ISA abierta desde el inicio, entra a RISC-V.
 
-## Cómo se organiza el aprendizaje
+[Entrar a AArch64](courses/aarch64/index.qmd){.lab-button}
+[Entrar a RISC-V](courses/riscv/index.qmd){.lab-button .secondary}
+:::
 
-La @fig-home-learning-flow resume el recorrido general sin mezclarlo con la
-navegación de cada ruta.
+## Flujo de aprendizaje
 
-```{mermaid}
-%%| label: fig-home-learning-flow
-%%| fig-cap: "Flujo general de aprendizaje del laboratorio."
-flowchart LR
-  A["Fundamentos"] --> B["Programas mínimos"]
-  B --> C["Memoria y control de flujo"]
-  C --> D["Funciones y ABI"]
-  D --> E["Binarios y debugging"]
-  E --> F["Sistemas avanzados"]
-```
+::: {.route-steps}
+::: {.route-step}
+**1 · Fundamentos**
+Bits, registros y modelo AArch64
+:::
+
+::: {.route-step}
+**2 · Programas mínimos**
+Syscalls, hello world y binarios
+:::
+
+::: {.route-step}
+**3 · Memoria y control**
+Load/store, aritmética, branches y loops
+:::
+
+::: {.route-step}
+**4 · Funciones y ABI**
+Stack frames, heap, structs y AAPCS64
+:::
+
+::: {.route-step}
+**5 · Binarios y debugging**
+ELF, linking, GDB, QEMU y strace
+:::
+:::
 
 Cada ruta crecerá por bloques y unidades. La home solo muestra las rutas para
 mantener una entrada clara al laboratorio.
