@@ -40,6 +40,18 @@ Mientras lees, sigue tres datos:
 | tamaño | `4096` | longitud usada en `mmap`, `mprotect`, `munmap` |
 | estado | etiquetas de flujo | decide si hace falta cleanup |
 
+## Estados de la región
+
+| Fase | Estado | Acceso válido |
+|---|---|---|
+| antes de `mmap` | sin región | no usar puntero |
+| después de `mmap` exitoso | región viva `RW` | leer y escribir |
+| después de `mprotect` exitoso | región viva `R` | leer, no escribir |
+| después de `munmap` | sin región | no acceder |
+
+El programa no necesita imprimir para ser útil. La lectura correcta es seguir
+cómo cambia el contrato de la región.
+
 ## Programa completo
 
 Guarda como `mmap-demo.s`.
@@ -239,6 +251,17 @@ exit 1
 
 Si `mmap` falla, no hay región. Por eso va directo a `error_sin_region`.
 
+## Rutas del programa
+
+| Ruta | Cuándo ocurre | Qué debe hacer |
+|---|---|---|
+| normal | todas las syscalls funcionan | `mmap`, escribir, `mprotect`, `munmap`, `exit 0` |
+| `cleanup` | falló algo después de `mmap` | liberar región y salir con error |
+| `error_sin_region` | `mmap` falló o ya no hay región que liberar | salir con error |
+
+La diferencia entre `cleanup` y `error_sin_region` evita liberar una región que
+nunca existió y evita perder una región que sí fue creada.
+
 ## Qué no hace este programa
 
 | Tema | Motivo |
@@ -256,9 +279,19 @@ Si `mmap` falla, no hay región. Por eso va directo a `error_sin_region`.
 3. Explica qué ruta se toma si `mmap` falla.
 4. Explica qué ruta se toma si `mprotect` falla.
 5. Explica por qué `munmap` usa `4096`.
+6. Señala en el programa cuándo `x0` es argumento y cuándo es retorno.
+7. Agrega una nota de qué pasaría si se escribe después de `mprotect`.
 
 ## Cierre
 
 Este programa muestra el ciclo completo de una región virtual: pedir, usar,
 proteger, liberar. Ese ciclo prepara temas futuros de MMU, permisos, loaders,
 seguridad y memoria dinámica real.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `mprotect(2)`: <https://www.man7.org/linux/man-pages/man2/mprotect.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>
+- Linux man-pages, `write(2)`: <https://www.man7.org/linux/man-pages/man2/write.2.html>
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>

@@ -101,6 +101,21 @@ No llames `munmap` con un puntero movido dentro de la región como si fuera la
 base. Guarda la dirección original retornada por `mmap`.
 :::
 
+## Ejercicio guiado: base contra cursor
+
+Lee este patrón y decide qué registro debe ir a `munmap`:
+
+```asm
+mov x19, x0        // base retornada por mmap
+mov x20, x19       // cursor
+add x20, x20, #64  // avanzar cursor
+```
+
+La región sigue empezando en `x19`. `x20` apunta dentro de la región y sirve
+para recorrer, pero no describe el rango original. Si `munmap` recibe `x20`,
+estás entregando al kernel una dirección distinta de la base que quieres
+liberar.
+
 ## Acceso después de `munmap`
 
 Después de `munmap`, la región ya no pertenece al proceso.
@@ -203,8 +218,15 @@ ignorar el retorno; es revisar qué rango estás entregando al kernel.
 3. ¿Qué pasa si usas `x19` después de `munmap`?
 4. ¿Cuándo saltas a `error_sin_region`?
 5. ¿Cuándo saltas a `cleanup`?
+6. En el ejemplo `x19`/`x20`, ¿cuál registro representa la base?
 
 ## Cierre
 
 `munmap` completa la mitad que `mmap` empezó. Una región mapeada sin ruta de
 liberación es un recurso mal administrado.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `strace(1)`: <https://man7.org/linux/man-pages/man1/strace.1.html>

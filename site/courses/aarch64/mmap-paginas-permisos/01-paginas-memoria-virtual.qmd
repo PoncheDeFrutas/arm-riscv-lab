@@ -77,6 +77,18 @@ regiones.
 No memorices `4096` como regla de arquitectura. Memoriza la idea: `length` está
 en bytes, pero el sistema protege y administra memoria en páginas.
 
+## Cómo consultar el tamaño real
+
+En programas C o herramientas de sistema puedes consultar el tamaño de página
+con APIs como `sysconf(_SC_PAGESIZE)` o comandos del entorno. En esta ruta
+seguimos usando syscalls directas y ejemplos pequeños, así que fijamos `4096`
+como valor didáctico.
+
+La regla profesional es distinta: si tu programa necesita ser portable entre
+configuraciones de página, no debe asumir que toda máquina usa el mismo tamaño.
+Para aprender `mmap`, sí conviene mantener una página típica para no mezclar el
+contrato de memoria con detección de plataforma.
+
 ## Dirección virtual
 
 Una dirección virtual es un número que tiene sentido dentro del proceso.
@@ -241,9 +253,17 @@ usable dentro del proceso.
 3. ¿Qué diferencia hay entre región mapeada y bytes usados?
 4. ¿Qué permiso necesitas para escribir?
 5. ¿Por qué no toda memoria debe tener `X`?
+6. ¿Por qué `length` está en bytes aunque el sistema administre páginas?
 
 ## Cierre
 
 `mmap` se entiende mejor si primero ves el terreno: páginas, direcciones
 virtuales y permisos. La syscall no crea variables; crea regiones virtuales que
 tu programa puede usar como memoria.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `sysconf(3)`: <https://www.man7.org/linux/man-pages/man3/sysconf.3.html>
+- Linux man-pages, `getpagesize(2)`: <https://www.man7.org/linux/man-pages/man2/getpagesize.2.html>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>

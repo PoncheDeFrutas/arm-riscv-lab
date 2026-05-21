@@ -167,6 +167,22 @@ Esta diferencia evita confusiones. Pedir 4096 bytes no significa que tengas una
 estructura de 4096 bytes “llena”. Igual que en Unidad 12, capacidad y uso siguen
 separados.
 
+## Mapa de diagnóstico
+
+Cuando algo falla en esta unidad, revisa la región como recurso:
+
+| Pregunta | Dato que debes conservar |
+|---|---|
+| ¿existe la región? | retorno no negativo de `mmap` |
+| ¿cuál es la base original? | dirección guardada, por ejemplo en `x19` |
+| ¿cuánto mide? | `length`, normalmente `4096` en ejemplos |
+| ¿qué permisos tiene ahora? | `PROT_READ`, `PROT_WRITE`, `PROT_EXEC` |
+| ¿sigue viva? | no se ha llamado `munmap` con ese rango |
+| ¿hay cleanup si algo falla? | etiqueta que libera antes de salir |
+
+Este mapa evita dos errores frecuentes: tratar un retorno negativo como puntero
+y llamar `munmap` con un cursor movido en vez de la base original.
+
 ## Lecciones de esta unidad
 
 ::: {.resource-grid}
@@ -256,3 +272,11 @@ Programa completo con `mmap`, escritura, `mprotect`, `munmap` y errores.
 ## Siguiente paso
 
 Empieza por [Páginas y memoria virtual](01-paginas-memoria-virtual.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>
+- Linux man-pages, `mprotect(2)`: <https://www.man7.org/linux/man-pages/man2/mprotect.2.html>
+- Linux man-pages, `openat(2)`: <https://www.man7.org/linux/man-pages/man2/openat.2.html>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>

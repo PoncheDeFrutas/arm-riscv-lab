@@ -134,6 +134,19 @@ b.lt error
 Si es negativo, no tienes región. Si no es negativo, `x0` es la dirección base
 del mapeo y debes guardarla antes de que otra syscall la sobrescriba.
 
+## `addr = 0` no es retorno
+
+El registro `x0` aparece dos veces con significados distintos:
+
+| Momento | `x0` significa |
+|---|---|
+| antes de `svc #0` | sugerencia de dirección, aquí `0` para que el kernel elija |
+| después de `svc #0` | dirección mapeada o retorno negativo de error |
+
+No guardes `x0` antes de revisar el retorno. Si `mmap` falla, ese valor no es
+una base usable. En C se habla de `MAP_FAILED`; en assembly directo basta la
+lectura mínima de esta unidad: retorno negativo significa error.
+
 ## Programa completo
 
 Guarda como `mmap-anonimo.s`.
@@ -243,8 +256,16 @@ munmap -> x0 = x19
 3. ¿Qué contiene `x0` después de `mmap` si funciona?
 4. ¿Por qué se copia `x0` a `x19`?
 5. ¿Qué syscall usa `x8 = 215`?
+6. ¿Qué error aparece si interpretas `addr = 0` como “mapear en cero”?
 
 ## Cierre
 
 `mmap` anónimo privado es el primer puente entre heap conceptual y memoria real
 desde Linux: pedir región, guardar dirección, usar bytes, liberar región.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>
+- Linux man-pages, `errno(3)`: <https://www.man7.org/linux/man-pages/man3/errno.3.html>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>

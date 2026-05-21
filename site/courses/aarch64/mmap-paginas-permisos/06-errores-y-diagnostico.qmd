@@ -213,6 +213,32 @@ Antes de culpar a QEMU, pregunta:
 5. ¿La región sigue viva?
 6. ¿`fd` y `offset` tienen sentido para el tipo de mapeo?
 
+## Apoyo con herramientas
+
+GDB y `strace` responden preguntas distintas:
+
+| Pregunta | Herramienta | Ejemplo |
+|---|---|---|
+| ¿qué valor retornó la syscall? | GDB | `info registers x0 x8` después de `svc #0` |
+| ¿qué argumentos llegaron al kernel? | `strace` | `strace -e trace=mmap,munmap,mprotect` |
+| ¿la dirección base se perdió? | GDB | revisar `x19`, `x20` o registros de diseño |
+| ¿la región sigue viva? | GDB/strace | revisar si ya ocurrió `munmap` |
+| ¿falló por permisos? | GDB | revisar instrucción que intenta `ldr`, `str` o ejecución |
+
+Si usas QEMU en host cruzado, recuerda que `strace qemu-aarch64 ...` puede
+mostrar la capa del emulador. Úsalo como pista, no como única verdad.
+
+## Tabla de cleanup
+
+| Punto de fallo | ¿Hay región viva? | Ruta correcta |
+|---|---|---|
+| falla `mmap` | no | `error_sin_region` |
+| falla escritura posterior | sí, si `mmap` funcionó | `cleanup` |
+| falla `mprotect` | sí | `cleanup` |
+| falla `munmap` | incierto | salir con error y revisar rango |
+| falla `openat` antes de `mmap` | no | cerrar nada, salir |
+| falla `mmap` con fd abierto | no hay región, sí hay fd | cerrar fd antes de salir |
+
 ## Mini ejercicios
 
 1. ¿Por qué no debes usar `x0` como puntero si es negativo?
@@ -220,9 +246,18 @@ Antes de culpar a QEMU, pregunta:
 3. ¿Por qué conviene separar base y cursor?
 4. ¿Qué significa usar memoria después de `munmap`?
 5. ¿Qué revisarías si `mprotect` retorna negativo?
+6. ¿Qué herramienta usarías para ver argumentos de `mprotect`?
 
 ## Cierre
 
 Diagnosticar memoria virtual no empieza con MMU interna. Empieza con contrato:
 argumentos correctos, permisos correctos, retorno revisado y ciclo de vida
 respetado.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `mprotect(2)`: <https://www.man7.org/linux/man-pages/man2/mprotect.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>
+- Linux man-pages, `strace(1)`: <https://man7.org/linux/man-pages/man1/strace.1.html>
+- GDB documentation: <https://sourceware.org/gdb/documentation/>

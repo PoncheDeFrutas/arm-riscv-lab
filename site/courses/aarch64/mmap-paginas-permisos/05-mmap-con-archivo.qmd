@@ -174,6 +174,18 @@ fd abierto
 
 La idea importante: fd y mapeo son recursos relacionados, pero no idénticos.
 
+## Dos recursos, dos cierres
+
+| Recurso | Se obtiene con | Se cierra con | Qué pasa si lo olvidas |
+|---|---|---|---|
+| descriptor de archivo | `openat` | `close` | fuga de fd |
+| región virtual | `mmap` | `munmap` | fuga de mapeo |
+
+Cerrar el fd no equivale a liberar el mapeo. Liberar el mapeo no debe usarse
+como sustituto de cerrar el fd si tu programa ya no lo necesita. En programas
+pequeños esto puede pasar inadvertido; en programas largos se vuelve una fuga de
+recursos.
+
 ## Tamaño de archivo y tamaño de mapeo
 
 `length` sigue siendo tamaño en bytes de la región. Si mapeas archivo, ese
@@ -206,9 +218,17 @@ que `mmap` no adivina mágicamente cuánto querías leer. Tú pasas `length`.
 3. ¿Qué significa `offset = 0`?
 4. ¿Cerrar fd libera la región mapeada?
 5. ¿Qué syscall libera la región?
+6. ¿Qué recurso libera `close` y cuál libera `munmap`?
 
 ## Cierre
 
 `mmap` con archivo une dos ideas: fd como recurso de Linux y memoria virtual como
 forma de acceso. El fd abre la puerta; la región mapeada se administra con
 `munmap`.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `openat(2)`: <https://www.man7.org/linux/man-pages/man2/openat.2.html>
+- Linux man-pages, `close(2)`: <https://www.man7.org/linux/man-pages/man2/close.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>

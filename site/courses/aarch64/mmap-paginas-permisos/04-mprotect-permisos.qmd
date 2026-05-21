@@ -119,6 +119,22 @@ En esta unidad usaremos `RW -> R` porque es fácil de leer: primero escribimos u
 byte, luego quitamos escritura. No hace falta ejecutar nada para entender que el
 permiso cambió.
 
+## Diagnóstico de permisos
+
+Si un acceso falla después de `mprotect`, revisa:
+
+| Pregunta | Lectura |
+|---|---|
+| ¿`mprotect` retornó negativo? | si falló, no asumas permisos nuevos |
+| ¿la región sigue viva? | no debe haberse llamado `munmap` |
+| ¿la dirección es la base correcta? | `addr` debe describir el rango correcto |
+| ¿el permiso permite la operación? | `str` necesita `PROT_WRITE` |
+| ¿el tamaño cubre el acceso? | `length` debe incluir la dirección usada |
+
+La clave es separar dos fallos: `mprotect` puede fallar al cambiar permisos, o
+una instrucción posterior puede fallar porque los permisos sí cambiaron y ya no
+permiten esa operación.
+
 ## W^X
 
 W^X significa write xor execute: una región no debería ser escribible y
@@ -180,8 +196,15 @@ No ejecutamos ese patrón en ejemplos seguros. Lo usamos para explicar permisos.
 3. ¿`mprotect` cambia bytes existentes?
 4. ¿Qué significa W^X?
 5. ¿Por qué `PROT_EXEC` no debe usarse por defecto?
+6. Si una región quedó `R`, ¿qué esperas de un `strb` sobre esa región?
 
 ## Cierre
 
 `mprotect` enseña que memoria no es solo dirección. También es política de
 acceso. Esa idea será clave para seguridad, loaders, JIT y MMU futura.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `mprotect(2)`: <https://www.man7.org/linux/man-pages/man2/mprotect.2.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
