@@ -100,6 +100,37 @@ direcciones bajas
 El stack crece hacia direcciones menores. Reservar espacio normalmente resta a
 `sp`; liberar espacio suma a `sp`.
 
+## Convención visual de la unidad
+
+Usaremos una convención fija para no mezclar ideas:
+
+```bash
+direcciones altas
+  datos del caller
+  x29 anterior        <- [x29]
+  x30 anterior / LR   <- [x29, #8]
+  locales             <- espacio reservado por la función
+direcciones bajas
+```
+
+`x29` da una referencia estable dentro del frame. `sp` marca el tope actual y
+puede moverse cuando reservas locales. `x30` no vive en el stack por sí solo:
+`bl` lo escribe en el registro y el prólogo decide guardarlo si la función lo
+necesita después.
+
+## Cómo leer una función en esta unidad
+
+Cuando encuentres una función, revisa en este orden:
+
+1. ¿Es hoja o no hoja?
+2. ¿Ejecuta `bl` dentro del cuerpo?
+3. ¿Guarda `x30` antes de perderlo?
+4. ¿Mueve `sp` en múltiplos de 16 bytes?
+5. ¿Deshace el stack en orden inverso antes de `ret`?
+
+Ese orden evita el error más común: mirar solo el `ret` final y olvidar que el
+valor de retorno pudo haberse sobrescrito mucho antes.
+
 ## Lecciones de esta unidad
 
 ::: {.resource-grid}
@@ -206,3 +237,11 @@ Comprueba si puedes leer el prólogo, el epílogo y la reserva local.
 [Resolver preguntas](03-stack-frames.qmd#sec-stack-frame-ejercicios){.resource-action}
 :::
 :::
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GDB documentation: <https://sourceware.org/gdb/documentation/>

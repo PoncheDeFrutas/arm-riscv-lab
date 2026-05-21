@@ -14,6 +14,12 @@ registros preservados, variables locales y datos extra. Su regla principal es
 disciplina: lo último que reservas debe ser lo primero que liberas.
 :::
 
+## Qué vas a aprender
+
+Vas a leer el stack como memoria normal controlada por una regla estricta:
+`sp` marca el tope, las reservas se deshacen en orden inverso y la alineación
+importa para que las llamadas funcionen bien.
+
 ## LIFO
 
 LIFO significa last in, first out: último en entrar, primero en salir.
@@ -27,6 +33,16 @@ pop  A
 
 En AArch64 no usamos una instrucción `push` universal como concepto principal.
 Usamos instrucciones de memoria y actualizamos `sp`.
+
+## Stack como memoria normal
+
+El stack no es un lugar especial separado del resto de la memoria. Es una región
+de direcciones que el programa usa con disciplina. Puedes guardar con `str`,
+cargar con `ldr`, guardar pares con `stp` y recuperar pares con `ldp`.
+
+La diferencia está en el contrato: si reservas espacio moviendo `sp`, también
+eres responsable de liberarlo antes de retornar o antes de que otro código
+espere ver el stack como estaba.
 
 ## `SP`
 
@@ -91,6 +107,25 @@ No trates `sp` como registro general. Si lo mueves y no lo restauras, puedes
 romper retornos, variables locales o llamadas futuras.
 :::
 
+## Reservar y escribir son pasos distintos
+
+Esta instrucción abre espacio:
+
+```asm
+sub sp, sp, #16
+```
+
+Pero todavía no guardó ningún dato. Para usar ese espacio necesitas una
+instrucción de memoria:
+
+```asm
+str x0, [sp]
+```
+
+Separar estos dos pasos ayuda a depurar. Si el valor esperado no aparece en el
+stack, primero pregunta si reservaste espacio y luego si escribiste en la
+dirección correcta.
+
 ## Guardar un valor local
 
 ```asm
@@ -131,6 +166,20 @@ sub sp, sp, #16
 Después de reservar, tú decides qué escribir. No asumas que el espacio contiene
 cero.
 
+## Diagnóstico rápido con GDB
+
+Si estás detenido dentro de una función, estas preguntas ayudan:
+
+| Pregunta | Comando útil |
+|---|---|
+| ¿dónde apunta el stack? | `info registers sp` |
+| ¿qué hay en el tope? | `x/4gx $sp` |
+| ¿el stack parece alineado? | revisar que `sp` termine en múltiplo de `0x10` |
+| ¿liberé lo mismo que reservé? | comparar prólogo y epílogo |
+
+No necesitas memorizar direcciones exactas. Necesitas reconocer si `sp` baja al
+reservar, sube al liberar y termina donde debía.
+
 ## Mini ejercicios
 
 1. ¿Hacia qué lado crece el stack en AArch64?
@@ -138,8 +187,16 @@ cero.
 3. ¿Qué instrucción libera esos 16 bytes?
 4. ¿Por qué no conviene dejar `sp` modificado al salir?
 5. ¿Reservar stack escribe ceros automáticamente?
+6. ¿Qué comando de GDB usarías para ver palabras desde `$sp`?
 
 ## Cierre
 
 El stack no es una pila abstracta separada de la memoria. Es memoria normal con
 una regla fuerte: `sp` marca el tope y tu código debe dejarlo como lo encontró.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

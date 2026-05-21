@@ -169,6 +169,22 @@ sp, #16` libera el espacio local, ese valor deja de pertenecer a la función. No
 se "borra" necesariamente de memoria; simplemente ya no forma parte de un frame
 válido.
 
+## Checklist para leer un frame
+
+Cuando revises un frame didáctico, no empieces por los offsets. Empieza por el
+orden:
+
+| Pregunta | Qué confirma |
+|---|---|
+| ¿el prólogo guarda `x29` y `x30`? | el retorno y el frame anterior quedan protegidos |
+| ¿`x29` copia el valor de `sp`? | hay una base estable para leer el frame |
+| ¿se reservan locales después del prólogo? | `sp` baja sin mover `x29` |
+| ¿los locales se liberan antes del epílogo? | `ldp` leerá desde el lugar correcto |
+| ¿el epílogo restaura antes de `ret`? | `ret` usará el `LR` recuperado |
+
+Si una de esas respuestas falla, el problema no suele estar en `ret`; suele
+estar en una reserva, escritura o restauración anterior.
+
 ## Orden correcto al salir
 
 El orden importa:
@@ -199,6 +215,13 @@ Eso puede destruir el retorno.
 
 Un frame es orden. Guarda el frame anterior, guarda retorno, reserva locales y
 deshace todo en orden inverso antes de `ret`.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
 
 ## Recursos
 

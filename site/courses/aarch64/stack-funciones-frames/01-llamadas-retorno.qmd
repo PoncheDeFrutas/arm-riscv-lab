@@ -14,6 +14,18 @@ a la que se salta, con una forma de regresar al punto correcto. En AArch64 ese
 regreso empieza con `bl`, `x30/LR` y `ret`.
 :::
 
+## Qué vas a aprender
+
+En esta lección vas a separar tres ideas que suelen mezclarse al inicio:
+
+- una etiqueta solo nombra una dirección de código;
+- una llamada necesita recordar dónde debe continuar;
+- una función bien formada debe regresar sin destruir el camino de vuelta.
+
+El objetivo no es aprender ABI completo todavía. El objetivo es entender por qué
+`bl` y `ret` bastan para una función hoja, pero no bastan para todas las
+funciones.
+
 ## Caller y callee
 
 | Rol | Significado |
@@ -33,6 +45,30 @@ callee
 
 El caller necesita continuar después de la llamada. Por eso una llamada no puede
 ser solo un salto normal.
+
+## Etiqueta no siempre significa función
+
+En assembly una etiqueta puede servir para varias cosas: inicio de un loop,
+destino de un `if`, ruta de error o entrada de una función. Lo que la convierte
+en función no es el nombre, sino el contrato de llamada y retorno.
+
+```asm
+loop:
+    subs x0, x0, #1
+    b.ne loop
+```
+
+`loop` es una etiqueta de control de flujo. No espera ser llamada con `bl` ni
+termina con `ret`.
+
+```asm
+doble:
+    add x0, x0, x0
+    ret
+```
+
+`doble` sí puede tratarse como función simple: recibe un valor de trabajo en
+`x0`, produce otro en `x0` y retorna al caller.
 
 ## `b` vs `bl`
 
@@ -69,6 +105,23 @@ ret
 
 Lee la dirección de retorno desde `x30/LR` y vuelve ahí. Si `LR` contiene basura
 o fue sobrescrito por otra llamada, el flujo se rompe.
+
+## Vida útil de `LR`
+
+`LR` es útil solo mientras conserva la dirección correcta. Cada `bl` escribe una
+nueva dirección de retorno en `x30`. Eso significa que una función puede usar
+`ret` directamente solo si no necesita sobrevivir a otra llamada.
+
+```bash
+_start ejecuta bl funcion_a
+  x30 = volver a _start
+
+funcion_a ejecuta bl funcion_b
+  x30 = volver dentro de funcion_a
+```
+
+Después del segundo `bl`, el retorno original de `funcion_a` ya no está en
+`x30`. Si no se guardó antes, se perdió.
 
 ## Programa completo: función simple
 
@@ -132,6 +185,20 @@ Aquí `x0` y `x1` entran como valores de trabajo, y `x0` queda como resultado.
 Todavía no estamos explicando ABI completo; solo usamos una convención mínima
 para ejemplos pequeños.
 
+## Responsabilidad mínima del caller y callee
+
+Por ahora usa esta lectura práctica:
+
+| Parte | Responsabilidad mínima |
+|---|---|
+| caller | ejecuta `bl` y espera continuar después de la llamada |
+| callee hoja | hace su trabajo y retorna con `ret` |
+| callee no hoja | guarda `LR` si va a ejecutar otro `bl` |
+
+Más adelante AAPCS64 formaliza qué registros se usan para argumentos, retornos
+y preservación. Aquí basta recordar que `x30` es especial porque sostiene el
+camino de vuelta.
+
 ## Cuándo esto deja de ser suficiente
 
 El ejemplo simple funciona porque `funcion_simple` no ejecuta otro `bl`. Si una
@@ -145,6 +212,15 @@ funcion_a -> bl funcion_b
 En ese caso `funcion_a` debe guardar su propio retorno antes de llamar a
 `funcion_b`. Para eso aparece el stack frame.
 
+## Errores comunes
+
+| Error | Síntoma probable |
+|---|---|
+| usar `b funcion` cuando se esperaba retorno | la función no sabe a dónde volver |
+| ejecutar otro `bl` sin guardar `LR` | `ret` vuelve al lugar incorrecto |
+| tratar cualquier etiqueta como función | saltos internos terminan con flujo confuso |
+| modificar `x30` como registro temporal | se rompe el retorno |
+
 ## Mini ejercicios
 
 1. ¿Qué guarda `bl` que `b` no guarda?
@@ -152,9 +228,16 @@ En ese caso `funcion_a` debe guardar su propio retorno antes de llamar a
 3. ¿Qué usa `ret` para volver?
 4. ¿Por qué `sumar_simple` es función hoja?
 5. ¿Qué riesgo aparece si una función ejecuta otro `bl`?
+6. ¿Por qué `loop` no es necesariamente una función?
 
 ## Cierre
 
 Una función empieza como control de flujo disciplinado: saltar, recordar dónde
 volver y retornar. El stack aparece cuando ese retorno debe sobrevivir a más
 trabajo.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

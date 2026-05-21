@@ -123,6 +123,20 @@ Regla práctica inicial:
 `x0`-`x7` suelen usarse para argumentos y retornos. Si guardas algo importante
 ahí y llamas otra función, puedes perderlo.
 
+## Caller-saved y callee-saved, sin tabla completa
+
+La idea de fondo es reparto de responsabilidad:
+
+| Familia | Lectura práctica inicial |
+|---|---|
+| caller-saved | el caller no debe asumir que sobreviven a una llamada |
+| callee-saved | si el callee los usa, debe restaurarlos antes de retornar |
+| `x30/LR` | cada `bl` lo sobrescribe, así que una no hoja debe protegerlo |
+
+Esta página evita la tabla completa para no adelantar la unidad de ABI. Aun así,
+la regla pedagógica es suficiente: si necesitas un valor después de `bl`, no lo
+dejes sin protección en un registro que la llamada puede usar.
+
 ## Guardar un valor temporal
 
 ```asm
@@ -144,6 +158,26 @@ funcion_a:
 
 Este patrón enseña la idea sin convertir la página en ABI completo.
 
+## Error guiado: perder un temporal
+
+Supón que `funcion_a` recibe un valor en `x0`, llama a `funcion_b` y luego
+quiere usar el valor original:
+
+```asm
+funcion_a:
+    stp x29, x30, [sp, #-16]!
+    mov x29, sp
+
+    bl funcion_b
+    add x0, x0, #1
+
+    ldp x29, x30, [sp], #16
+    ret
+```
+
+El `add` usa el `x0` que dejó `funcion_b`, no necesariamente el original. Si el
+valor anterior importaba, debió guardarse antes del `bl`.
+
 ## Mini ejercicios
 
 1. ¿Qué diferencia una función hoja de una no hoja?
@@ -151,9 +185,16 @@ Este patrón enseña la idea sin convertir la página en ABI completo.
 3. ¿Qué instrucción sobrescribe `LR`?
 4. ¿Por qué no debes asumir que `x0` sobrevive después de `bl`?
 5. ¿Qué dos registros restaura el epílogo mínimo?
+6. ¿Qué harías si necesitas un valor de `x0` después de llamar a otra función?
 
 ## Cierre
 
 Función no hoja significa responsabilidad extra. Si tu función llama a otra, ya
 no basta con `ret`; debes proteger el retorno y cualquier valor que necesites
 después de la llamada.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

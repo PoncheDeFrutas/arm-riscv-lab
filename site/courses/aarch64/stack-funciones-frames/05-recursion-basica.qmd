@@ -14,6 +14,12 @@ necesita su propio retorno y su propio estado temporal, por eso el stack frame
 se vuelve visible.
 :::
 
+## Qué vas a aprender
+
+La meta es leer recursión como una serie de llamadas normales. Cada llamada
+tiene su propio frame, su propio `LR` guardado y su propio punto de retorno. La
+diferencia es que el callee tiene el mismo nombre que el caller.
+
 ## Idea base
 
 Una función recursiva necesita:
@@ -92,6 +98,21 @@ cuenta(0): caso base, retorna
 
 Cada llamada ejecuta su propio prólogo. Cada retorno ejecuta su propio epílogo.
 
+## Qué guarda cada llamada
+
+Aunque todas las llamadas entren por la misma etiqueta `cuenta`, no comparten el
+mismo contexto activo.
+
+| Llamada | Necesita conservar |
+|---|---|
+| `cuenta(3)` | retorno hacia `_start` |
+| `cuenta(2)` | retorno hacia el cuerpo de `cuenta(3)` |
+| `cuenta(1)` | retorno hacia el cuerpo de `cuenta(2)` |
+| `cuenta(0)` | retorno hacia el cuerpo de `cuenta(1)` |
+
+Por eso el prólogo se ejecuta varias veces y cada ejecución reserva una nueva
+porción del stack.
+
 ## Por qué no basta una sola copia de `LR`
 
 Cada llamada tiene una dirección de retorno distinta. Si todos usaran el mismo
@@ -124,6 +145,15 @@ cuenta(3)
 En un sistema real eso termina fallando. Aquí solo necesitamos la idea: stack es
 finito.
 
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| olvidar el caso base | el stack crece hasta fallar |
+| cambiar `x0` antes de comprobar la condición | el caso base puede no alcanzarse |
+| no guardar `LR` | cada llamada destruye el retorno anterior |
+| liberar mal el frame | los retornos se deshacen desde direcciones incorrectas |
+
 ::: {.callout-warning title="Error común"}
 No pienses que recursión reutiliza el mismo frame. Cada llamada activa necesita
 su propio contexto hasta que retorna.
@@ -136,8 +166,15 @@ su propio contexto hasta que retorna.
 3. ¿Cuántas llamadas activas hay antes de llegar a `cuenta(0)`?
 4. ¿En qué orden se cierran los frames?
 5. ¿Qué pasa si el caso base nunca se cumple?
+6. ¿Por qué todas las llamadas pueden entrar por la misma etiqueta sin compartir frame?
 
 ## Cierre
 
 Recursión convierte stack frames en algo fácil de ver: una llamada encima de
 otra, cada una con su retorno, hasta que el caso base permite deshacer la pila.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

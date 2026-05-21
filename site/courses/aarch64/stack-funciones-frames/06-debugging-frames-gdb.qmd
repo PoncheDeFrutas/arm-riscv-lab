@@ -72,13 +72,20 @@ $ gdb-multiarch ./frames
 (gdb) bt
 ```
 
+La opción `-g` del assembler agrega información de depuración básica. Aun así,
+en estos ejemplos lo más importante no es depender de nombres bonitos, sino
+relacionar instrucciones, registros y memoria.
+
 ## Qué mirar
 
 | Comando | Qué muestra |
 |---|---|
 | `info registers sp x29 x30` | stack pointer, frame pointer y link register |
 | `bt` | backtrace o cadena de llamadas |
+| `frame 0` | selecciona el frame actual |
+| `frame 1` | sube al caller inmediato |
 | `x/4gx $sp` | palabras de 8 bytes desde el stack actual |
+| `x/4gx $x29` | palabras desde la base del frame actual |
 | `disassemble funcion_b` | instrucciones de la función |
 
 ```bash
@@ -109,6 +116,25 @@ _start
 No significa que el programa esté ejecutando las tres funciones a la vez en el
 sentido de instrucciones simultáneas. Significa que hay llamadas activas en la
 cadena.
+
+## Sesión mínima de lectura
+
+Una lectura ordenada puede seguir estos pasos:
+
+```bash
+(gdb) break funcion_b
+(gdb) continue
+(gdb) info registers sp x29 x30
+(gdb) x/4gx $x29
+(gdb) bt
+(gdb) frame 1
+(gdb) info registers sp x29 x30
+```
+
+Primero miras el frame actual. Luego confirmas la cadena de llamadas con `bt`.
+Después cambias al caller con `frame 1` y vuelves a mirar registros. La meta es
+ver que cada nivel tiene su propio contexto, no encontrar una dirección exacta
+que deba repetirse en todas las máquinas.
 
 ## Por qué `x29` ayuda
 
@@ -145,6 +171,21 @@ str x0, [sp, #8]    // puede pisar x30 guardado si estás en el frame mínimo
 
 No lo uses como patrón. Sirve para entender por qué offsets importan.
 
+## Cómo diagnosticar un retorno roto
+
+Si el programa falla al ejecutar `ret`, revisa en este orden:
+
+| Revisión | Qué busca |
+|---|---|
+| `disassemble` | confirmar prólogo y epílogo reales |
+| `info registers sp x29 x30` | ver si `sp`, `fp` o `lr` parecen incoherentes |
+| `x/4gx $sp` | mirar qué cargará el epílogo |
+| `bt` | comprobar si GDB puede reconstruir la cadena |
+| comparar reservas/liberaciones | detectar un `sub sp` sin su `add sp` |
+
+Cuando `bt` aparece incompleto o extraño, no siempre significa que GDB falló. A
+veces significa que el programa dañó la información que GDB intenta seguir.
+
 ::: {.callout-warning title="Error común"}
 Backtrace no es ejecución paso a paso. Es una reconstrucción de la cadena de
 llamadas activa cuando el programa está detenido.
@@ -157,9 +198,17 @@ llamadas activa cuando el programa está detenido.
 3. ¿Qué comando muestra `sp`, `x29` y `x30`?
 4. ¿Qué responde `bt`?
 5. ¿Por qué sobrescribir `[sp, #8]` puede ser peligroso en un frame mínimo?
+6. ¿Qué comando usarías para cambiar del frame actual al caller?
 
 ## Cierre
 
 GDB convierte stack frames en evidencia visible. Si sabes qué hacen `SP`, `FP`,
 `LR`, prólogo y epílogo, un backtrace deja de ser una lista misteriosa y se
 vuelve una lectura del camino que siguió el programa.
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
