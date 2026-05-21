@@ -14,6 +14,14 @@ es leer cada bloque: abrir archivo, revisar error, escribir bytes, cerrar fd y
 terminar con código de salida.
 :::
 
+## Qué vas a aprender
+
+Vas a leer un programa completo por bloques de syscall. Cada bloque prepara
+argumentos, ejecuta `svc #0`, revisa retorno y decide el siguiente paso.
+
+No es un programa robusto de producción. Es un mapa de lectura para juntar
+`openat`, `write`, `close`, `exit` y manejo mínimo de error.
+
 ## Programa completo
 
 Guarda este archivo como `crear-archivo.s`.
@@ -99,9 +107,26 @@ Creado con syscalls AArch64
 |---|---|---|
 | abrir | `openat` | `x0 = fd` |
 | revisar | `cmp x0, #0` + `b.lt` | error si negativo |
+| guardar | `mov x19, x0` | fd conservado |
 | escribir | `write` | `x0 = bytes escritos` |
 | cerrar | `close` | `x0 = 0` si funciona |
 | salir | `exit` | proceso termina |
+
+## Bloque `openat`
+
+```asm
+mov x0, #AT_FDCWD
+ldr x1, =nombre
+mov x2, #(O_WRONLY | O_CREAT | O_TRUNC)
+mov x3, #0644
+mov x8, #56
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+Este bloque convierte `nombre` en fd. Si `x0` es negativo, no hay fd válido y el
+programa salta a error.
 
 ## Por qué se guarda `x19`
 
@@ -115,6 +140,21 @@ lo reemplaza con retorno. Si no guardas el fd, no sabrás qué cerrar.
 En una unidad futura veremos qué registros debe preservar una función según ABI.
 Aquí no llamamos funciones externas; usamos `x19` como lugar claro para guardar
 el fd en un programa pequeño.
+
+## Bloque `write`
+
+```asm
+mov x0, x19
+ldr x1, =mensaje
+mov x2, #len
+mov x8, #64
+svc #0
+cmp x0, #0
+b.lt error
+```
+
+Aquí `x0` vuelve a ser argumento: el fd. Después de `svc #0`, `x0` vuelve a
+cambiar: ahora es retorno de `write`.
 
 ## Manejo de error compartido
 
@@ -136,6 +176,19 @@ Esto evita duplicar mensaje de error. Si algo falla, el programa escribe en
 | No reintenta `write` parcial | queda para I/O más robusto |
 | No usa `libc` | todo va directo por syscall |
 | No procesa argumentos | eso requiere stack/ABI futuros |
+| No garantiza cerrar fd si falla `write` | manejo robusto queda para unidad posterior |
+
+## Diagnóstico guiado
+
+Si el programa no crea el archivo:
+
+1. revisa `x8 = 56` en `openat`;
+2. revisa dirección de `nombre`;
+3. revisa flags y modo;
+4. revisa si `x0` fue negativo;
+5. revisa que `x19` conserve fd válido;
+6. revisa que `write` use `x0 = x19`;
+7. revisa que el bloque de error escriba a fd `2`.
 
 ## Mini ejercicios
 
@@ -144,9 +197,27 @@ Esto evita duplicar mensaje de error. Si algo falla, el programa escribe en
 3. Quita `O_CREAT` y predice qué ocurre si el archivo no existe.
 4. Explica qué pasaría si no se guardara el fd en `x19`.
 5. Explica por qué el bloque `error` escribe a fd `2`.
+6. Explica qué retorno esperas de `close` si funciona.
+
+## Checklist
+
+- [ ] Puedo leer el bloque `openat`.
+- [ ] Puedo explicar por qué se revisa `x0`.
+- [ ] Puedo explicar por qué se guarda fd.
+- [ ] Puedo leer el bloque `write`.
+- [ ] Puedo leer el bloque `close`.
+- [ ] Puedo explicar el bloque `error`.
 
 ## Cierre
 
 Este programa muestra la idea central de la unidad: Linux es una API de kernel.
 Tu programa prepara registros, entra con `svc #0`, lee retorno y decide el
 siguiente paso.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, [`openat(2)`](https://www.man7.org/linux/man-pages/man2/openat.2.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).
+- Linux man-pages, [`close(2)`](https://www.man7.org/linux/man-pages/man2/close.2.html).
+- Linux man-pages, [`exit(2)`](https://www.man7.org/linux/man-pages/man2/exit.2.html).
+- Linux man-pages, [`errno(3)`](https://www.man7.org/linux/man-pages/man3/errno.3.html).

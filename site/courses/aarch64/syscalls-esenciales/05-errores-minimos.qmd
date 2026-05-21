@@ -14,6 +14,15 @@ inválido o una operación puede fallar. En esta unidad usaremos una regla míni
 si el retorno en `x0` es negativo, saltamos a un bloque de error.
 :::
 
+## Qué vas a aprender
+
+Vas a agregar el primer manejo de error real. Hasta ahora muchos ejemplos
+asumían éxito. Eso sirve para aprender el contrato, pero un programa debe leer
+el retorno antes de seguir.
+
+La regla de esta unidad: después de una syscall que puede fallar, compara `x0`
+contra cero. Si es negativo, toma otro camino.
+
 ## Regla mínima
 
 | Retorno en `x0` | Lectura |
@@ -129,15 +138,60 @@ Manejo mínimo significa detectar error y tomar otro camino. No significa
 implementar `perror`, `strerror` ni wrappers completos.
 :::
 
+## Dónde revisar
+
+No todas las syscalls terminan el proceso al fallar. Por eso el programa debe
+decidir:
+
+| Syscall | Si falla... |
+|---|---|
+| `openat` | no hay fd válido para usar |
+| `read` | no hay bytes confiables para procesar |
+| `write` | no sabes si el mensaje salió completo |
+| `close` | el recurso pudo no cerrarse correctamente |
+
+En programas de práctica basta saltar a un bloque común de error. En programas
+reales, cada caso puede necesitar respuesta distinta.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Revisar `x0` después de sobrescribirlo | comparar inmediatamente después de `svc #0` |
+| Tratar `0` como error en `read` | `0` puede ser EOF |
+| Usar `stderr` como código de salida | fd `2` y exit code son conceptos distintos |
+| Convertir a `errno` sin entender retorno negativo | primero domina el patrón mínimo |
+| Saltar a error sin terminar proceso | el bloque de error debe cerrar o salir |
+
 ## Mini ejercicios
 
 1. ¿Por qué debes revisar `x0` antes de reutilizarlo?
 2. ¿Por qué `b.lt error` tiene sentido para retorno negativo?
 3. ¿Qué fd se usa para escribir mensajes de error?
 4. ¿Qué queda fuera cuando decimos “sin `errno` completo”?
+5. ¿Qué pasa si `openat` falla y usas ese valor como fd?
+6. ¿Por qué `read` con retorno `0` no debe ir necesariamente a `error`?
+
+## Checklist
+
+- [ ] Puedo detectar retorno negativo.
+- [ ] Puedo usar `cmp x0, #0`.
+- [ ] Puedo usar `b.lt error`.
+- [ ] Puedo escribir error a `stderr`.
+- [ ] Puedo salir con código distinto de cero.
+- [ ] Puedo explicar qué parte queda fuera de `errno`.
 
 ## Cierre
 
 Una syscall útil no termina en `svc #0`. Termina cuando lees su retorno y decides
 qué hacer si falló. Esta unidad usa el patrón mínimo: comparar `x0` contra cero
 y saltar si es negativo.
+
+Siguiente: [Programa guiado](06-programa-guiado.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, [`intro(2)`](https://www.man7.org/linux/man-pages/man2/intro.2.html).
+- Linux man-pages, [`errno(3)`](https://www.man7.org/linux/man-pages/man3/errno.3.html).
+- Linux man-pages, [`openat(2)`](https://www.man7.org/linux/man-pages/man2/openat.2.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).

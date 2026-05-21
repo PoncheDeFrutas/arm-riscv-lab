@@ -14,6 +14,15 @@ luego se usa con `read`, `write` o `close`. En esta unidad usaremos flags
 mínimos y `AT_FDCWD` sin entrar a directorios avanzados.
 :::
 
+## Qué vas a aprender
+
+Vas a ver el ciclo mínimo de un archivo: abrir, usar y cerrar. Hasta ahora
+usamos file descriptors ya existentes (`0`, `1`, `2`). Con `openat`, el kernel
+crea un nuevo fd para un archivo.
+
+La idea clave: el nombre del archivo solo se usa al abrir. Después trabajas con
+el fd devuelto.
+
 ## Por qué `openat`
 
 En Linux AArch64 se usa `openat` como syscall básica para abrir archivos.
@@ -50,6 +59,19 @@ Constantes mínimas:
 
 `O_WRONLY | O_CREAT | O_TRUNC` significa: abrir para escritura, crear si no
 existe, truncar si ya existe.
+
+## Modo `0644`
+
+Cuando `O_CREAT` puede crear un archivo, `x3` contiene el modo inicial. En este
+ejemplo usamos:
+
+```asm
+mov x3, #0644
+```
+
+Lectura común: dueño puede leer/escribir, grupo y otros pueden leer. En esta
+unidad no estudiaremos permisos Unix a fondo; solo necesitas saber que el modo
+importa cuando se crea archivo.
 
 ## Abrir, escribir y cerrar
 
@@ -135,14 +157,43 @@ $ cat salida.txt
 Archivo creado desde syscall
 ```
 
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| No revisar retorno de `openat` | puedes guardar un error como si fuera fd |
+| No guardar fd | `write` sobrescribe `x0` con su retorno |
+| Olvidar `close` | recurso queda abierto hasta terminar proceso |
+| Usar `O_CREAT` sin modo claro | permisos iniciales quedan mal definidos |
+| Confundir nombre con fd | después de abrir, las syscalls usan fd |
+
 ## Mini ejercicios
 
 1. ¿Qué devuelve `openat` en `x0` si funciona?
 2. ¿Por qué se guarda el fd antes de llamar `write`?
 3. ¿Qué syscall usa número `57`?
 4. ¿Qué significa `AT_FDCWD` en esta unidad?
+5. ¿Qué cambia si quitas `O_TRUNC`?
+6. ¿Por qué `close` usa fd y no nombre de archivo?
+
+## Checklist
+
+- [ ] Puedo preparar `openat`.
+- [ ] Puedo explicar `AT_FDCWD`.
+- [ ] Puedo explicar flags mínimos.
+- [ ] Puedo guardar fd para uso posterior.
+- [ ] Puedo cerrar fd con `close`.
 
 ## Cierre
 
 `openat` transforma un nombre de archivo en un fd. Ese fd es el valor que las
 demás syscalls entienden. Abrir, usar y cerrar es el ciclo mínimo de archivo.
+
+Siguiente: [Errores mínimos](05-errores-minimos.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, [`openat(2)`](https://www.man7.org/linux/man-pages/man2/openat.2.html).
+- Linux man-pages, [`close(2)`](https://www.man7.org/linux/man-pages/man2/close.2.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).
+- Linux man-pages, [`inode(7)`](https://www.man7.org/linux/man-pages/man7/inode.7.html).

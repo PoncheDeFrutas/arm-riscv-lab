@@ -25,6 +25,16 @@ teclado o la barra espaciadora.
 [Ver presentación Slidev](../../../slides/aarch64/09-syscalls-esenciales/){.lab-button}
 :::
 
+## Qué vas a aprender
+
+Esta unidad trata a Linux como API del kernel. En vez de llamar funciones de
+`libc`, el programa prepara registros y usa `svc #0` para pedir servicios como
+leer, escribir, abrir, cerrar o terminar.
+
+El objetivo no es memorizar una tabla enorme de syscalls. El objetivo es leer el
+contrato: número en `x8`, argumentos en `x0`-`x5`, retorno en `x0` y error como
+valor negativo.
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -158,6 +168,19 @@ Archivo completo con `openat`, `write`, `close`, error mínimo y salida.
 :::
 :::
 
+## Diagnóstico básico
+
+Si una syscall no funciona, revisa en este orden:
+
+1. número correcto en `x8`;
+2. argumentos correctos en `x0`-`x5`;
+3. direcciones válidas para buffers o strings;
+4. longitudes correctas;
+5. retorno en `x0` antes de sobrescribirlo;
+6. salto a manejo de error si `x0 < 0`.
+
+Esta lista será más útil que buscar errores al azar.
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |
@@ -184,3 +207,11 @@ Archivo completo con `openat`, `write`, `close`, error mínimo y salida.
 ## Siguiente paso
 
 Empieza por [Contrato de syscall](01-contrato-syscall.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
+- Linux man-pages, [`read(2)`](https://www.man7.org/linux/man-pages/man2/read.2.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).

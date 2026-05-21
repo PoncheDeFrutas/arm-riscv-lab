@@ -14,6 +14,15 @@ bien necesitas memoria reservada, dirección del buffer, tamaño máximo y lectu
 del retorno.
 :::
 
+## Qué vas a aprender
+
+Vas a conectar syscalls con memoria modificable. `read` no crea un buffer por
+ti. Tu programa debe reservar espacio, pasar la dirección y limitar cuántos
+bytes puede recibir.
+
+La idea clave: después de `read`, `x0` ya no contiene el file descriptor. Ahora
+contiene cuántos bytes llegaron, `0` si terminó la entrada o un error negativo.
+
 ## Contrato de `read`
 
 | Registro | Uso |
@@ -46,6 +55,19 @@ ldr x1, =buffer
 
 No confundas dirección con contenido. `x1` apunta al buffer; los bytes llegarán
 a la memoria apuntada por `x1`.
+
+## Por qué limitar con `x2`
+
+`x2` protege el tamaño del buffer. Si el buffer tiene 64 bytes, no debes pedir
+que `read` escriba 200 bytes ahí. El kernel necesita saber el límite máximo.
+
+```bash
+buffer: 64 bytes
+x2:     máximo 64
+```
+
+Este valor no garantiza que lleguen 64 bytes. Solo dice cuántos bytes caben como
+máximo en esta llamada.
 
 ## Eco básico: stdin -> stdout
 
@@ -109,7 +131,7 @@ negativo.
 | Retorno | Lectura inicial |
 |---|---|
 | `> 0` | bytes leídos |
-| `0` | nada leído / fin de entrada |
+| `0` | fin de entrada |
 | `< 0` | error |
 
 ## Error mínimo
@@ -123,6 +145,18 @@ b.lt error
 ```
 
 Importante: revisa `x0` antes de usarlo como longitud si quieres detectar error.
+En el eco básico se omite para mantener el ejemplo corto, pero un programa más
+cuidadoso debe comprobarlo.
+
+## Errores comunes
+
+| Error | Consecuencia |
+|---|---|
+| No reservar buffer | dirección inválida o comportamiento incorrecto |
+| Pasar contenido en vez de dirección | el kernel escribe donde no esperas |
+| Pedir más bytes que el buffer | riesgo de sobrescritura |
+| Usar `x0` como fd después de `read` | `x0` ya contiene retorno |
+| No distinguir `0` de error | EOF no es error negativo |
 
 ## Mini ejercicios
 
@@ -130,8 +164,27 @@ Importante: revisa `x0` antes de usarlo como longitud si quieres detectar error.
 2. ¿Qué contiene `x0` antes de `read`?
 3. ¿Qué contiene `x0` después de `read`?
 4. ¿Por qué usamos el retorno de `read` como longitud para `write`?
+5. ¿Qué significa que `read` devuelva `0`?
+6. ¿Por qué `x2` debe coincidir con el tamaño real del buffer?
+
+## Checklist
+
+- [ ] Puedo reservar un buffer en `.bss`.
+- [ ] Puedo pasar dirección del buffer en `x1`.
+- [ ] Puedo limitar lectura con `x2`.
+- [ ] Puedo leer retorno de `read`.
+- [ ] Puedo usar retorno de `read` como longitud para `write`.
 
 ## Cierre
 
 `read` conecta syscalls con memoria. Linux no “crea” tu buffer: tú reservas
 espacio, pasas su dirección y luego lees cuántos bytes llegaron.
+
+Siguiente: [`openat` y `close`](04-openat-close.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, [`read(2)`](https://www.man7.org/linux/man-pages/man2/read.2.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

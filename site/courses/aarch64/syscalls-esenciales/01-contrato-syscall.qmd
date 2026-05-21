@@ -14,6 +14,15 @@ hacer todo directamente: para leer entrada, escribir salida, abrir archivos o
 terminar el proceso, prepara registros y ejecuta `svc #0`.
 :::
 
+## Qué vas a aprender
+
+Vas a formalizar el patrón que ya apareció en programas mínimos. Una syscall no
+es una función de C y `svc #0` no tiene significado completo por sí sola. Linux
+decide qué hacer leyendo registros.
+
+Al terminar, debes poder explicar qué va en `x8`, qué va en `x0`-`x5`, qué
+devuelve `x0` y cómo reconocer un error mínimo.
+
 ## Qué problema resuelve una syscall
 
 Un programa de usuario no escribe directamente en la terminal ni abre archivos
@@ -37,6 +46,17 @@ flowchart LR
 `EL0` y `EL1` vienen del mapa inicial de Unidad 03. Aquí no estudiaremos
 excepciones en detalle; solo usaremos la idea práctica: userland pide, kernel
 responde.
+
+## User mode y kernel mode
+
+En user mode, tu programa tiene permisos limitados. Puede calcular, mover datos
+entre registros y acceder a memoria válida del proceso, pero no debe controlar
+directamente recursos compartidos como archivos, terminal, memoria del kernel o
+dispositivos.
+
+El kernel mantiene esas reglas. Por eso el programa prepara una petición y entra
+por una puerta controlada. En AArch64 Linux, esa puerta para syscalls es
+`svc #0`.
 
 ## `svc #0`
 
@@ -124,15 +144,46 @@ b.lt error
 
 No convertiremos todavía ese valor a `errno`. Basta reconocer la rama de error.
 
+## Diagnóstico mínimo
+
+Cuando algo falla, pregunta:
+
+1. ¿`x8` tiene el número correcto?
+2. ¿Los argumentos están en registros correctos?
+3. ¿Un argumento es dirección o valor inmediato?
+4. ¿Leí `x0` antes de sobrescribirlo?
+5. ¿Estoy interpretando `x0` según la syscall correcta?
+
+Este orden ayuda a depurar sin adivinar.
+
 ## Mini ejercicios
 
 1. ¿Qué registro contiene número de syscall?
 2. ¿Qué registro contiene retorno?
 3. ¿Qué hace `svc #0` si no preparaste `x8`?
 4. ¿Por qué `printf` no es lo mismo que `write` syscall?
+5. Explica por qué `x0` puede ser argumento antes y retorno después.
+
+## Checklist
+
+- [ ] Puedo explicar qué es una syscall.
+- [ ] Puedo explicar qué hace `svc #0`.
+- [ ] Puedo ubicar número de syscall en `x8`.
+- [ ] Puedo ubicar argumentos en `x0`-`x5`.
+- [ ] Puedo leer retorno en `x0`.
+- [ ] Puedo reconocer error negativo.
 
 ## Cierre
 
 El contrato no cambia de una syscall a otra: preparas registros, pones número
 en `x8`, ejecutas `svc #0`, lees retorno en `x0`. Las lecciones siguientes solo
 cambian qué número y qué argumentos se usan.
+
+Siguiente: [`exit` y `write`](02-exit-write.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
+- Linux man-pages, [`intro(2)`](https://www.man7.org/linux/man-pages/man2/intro.2.html).
