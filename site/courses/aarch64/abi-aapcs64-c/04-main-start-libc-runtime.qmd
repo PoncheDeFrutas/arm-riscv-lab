@@ -14,6 +14,12 @@ Cuando usas C y `libc`, el programa tiene más capas: runtime, `main`, funciones
 de biblioteca y salida ordenada.
 :::
 
+## Qué vas a aprender
+
+Vas a separar dos mundos que se parecen en la terminal pero no en el arranque:
+programas mínimos con `_start` y programas enlazados con runtime de C. Esta
+diferencia explica por qué algunos ejemplos usan `ld` y otros deben usar `gcc`.
+
 ## `_start` en programas mínimos
 
 Cuando enlazas con `ld` directo, puedes escribir tu propia entrada:
@@ -54,6 +60,20 @@ $ aarch64-linux-gnu-gcc main.c sumar.s -o app
 GCC no es solo “compilador C” en este flujo. También actúa como driver para
 compilar, enlazar con runtime y resolver `libc`.
 
+## Qué hace el runtime por ti
+
+Para el curso basta con esta lista:
+
+| Trabajo | Por qué importa |
+|---|---|
+| preparar `argc`, `argv` y entorno | `main` recibe una interfaz C estable |
+| inicializar partes de `libc` | funciones como `printf` tienen contexto |
+| llamar `main` | tu código empieza en una convención conocida |
+| convertir retorno de `main` en salida del proceso | `return 0` termina ordenadamente |
+
+Esto no significa que `main` sea el primer byte ejecutado. Significa que es la
+entrada que el runtime ofrece al programa C.
+
 ## `printf` no es syscall
 
 `printf` es función de biblioteca. Recibe formato y argumentos, interpreta
@@ -82,6 +102,11 @@ add  x0, x0, :lo12:fmt
 mov  x1, #42
 bl printf
 ```
+
+`printf` sigue AAPCS64: `x0` lleva el puntero al formato y los argumentos
+siguientes van en los registros definidos por la ABI. La salida real puede
+terminar usando `write`, pero eso ocurre dentro de `libc`, no en tu llamada
+directa.
 
 ## `scanf` solo conceptual
 
@@ -132,14 +157,29 @@ si aparece C o libc
   usa gcc para enlazar
 ```
 
+`ld` directo es útil para ver el binario mínimo. `gcc` es la opción docente
+correcta cuando quieres que el runtime, las rutas de librería y `libc` se
+resuelvan de forma consistente.
+
+## Lectura rápida de errores
+
+| Situación | Causa probable |
+|---|---|
+| `undefined reference to printf` | se intentó enlazar sin `libc` o sin driver adecuado |
+| el programa entra por `_start` pero usa `printf` | falta runtime de C o enlace con GCC |
+| `errno` no cambia en syscall directa | no se está usando wrapper de `libc` |
+| `main` retorna basura | `x0` no quedó con código de salida claro |
+
 ## Errores comunes
 
-- Creer que `main` es siempre el símbolo inicial real.
-- Usar `ld` directo para un programa con `printf`.
-- Llamar `printf` como syscall.
-- Esperar que `errno` exista en syscalls directas sin `libc`.
-- Confundir stdout `1` con retorno de `printf`.
-- Meter `scanf` demasiado pronto y confundir punteros de salida.
+| Error | Corrección |
+|---|---|
+| creer que `main` es siempre el símbolo inicial real | distinguir entrada del runtime y entrada de tu programa |
+| usar `ld` directo para un programa con `printf` | enlazar con `gcc` |
+| llamar `printf` como syscall | usar `bl printf` y ABI |
+| esperar `errno` en syscalls directas | entender que `errno` es mecanismo de `libc` |
+| confundir stdout `1` con retorno de `printf` | stdout es descriptor; `printf` retorna cantidad/error |
+| meter `scanf` demasiado pronto | primero dominar punteros y formatos |
 
 ## Checklist
 
@@ -152,3 +192,10 @@ si aparece C o libc
 
 Siguiente: [Assembly llamado desde C](05-assembly-desde-c.qmd).
 
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>
+- GCC documentation: <https://gcc.gnu.org/onlinedocs/>
+- Linux man-pages, `errno(3)`: <https://www.man7.org/linux/man-pages/man3/errno.3.html>
+- Linux man-pages, `printf(3)`: <https://www.man7.org/linux/man-pages/man3/printf.3.html>

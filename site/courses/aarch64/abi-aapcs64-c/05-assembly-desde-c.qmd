@@ -13,6 +13,11 @@ Este es el primer caso de interoperabilidad real: C prepara argumentos, ejecuta
 una llamada y recibe el resultado desde una función escrita en GNU Assembly.
 :::
 
+## Qué vas a aprender
+
+Vas a construir una frontera limpia entre C y assembly. C declara una función,
+assembly exporta un símbolo, y AAPCS64 define cómo cruzan los valores.
+
 ## Contrato mínimo
 
 Para que C llame assembly, hacen falta tres piezas:
@@ -74,6 +79,23 @@ main
 La función assembly no sabe que fue llamada por C. Solo ve registros. C no sabe
 cómo está escrita la función. Solo confía en la ABI.
 
+## Coincidencia de prototipo y símbolo
+
+Estos dos nombres deben coincidir:
+
+```c
+extern long sumar(long a, long b);
+```
+
+```asm
+.global sumar
+sumar:
+```
+
+Si C declara `sumar` pero assembly exporta `sumar_enteros`, el linker no
+encuentra el símbolo esperado. Si el nombre coincide pero el prototipo no
+coincide, el programa puede enlazar y fallar por datos mal interpretados.
+
 ## Compilar con GCC
 
 ```bash
@@ -122,6 +144,19 @@ Si C cree que la función recibe dos `long`, pondrá argumentos como dos enteros
 de 64 bits. Si assembly interpreta otra cosa, el error no lo detecta el
 procesador.
 
+## Lectura con herramientas
+
+Cuando algo no enlaza o no llama bien, estas herramientas ayudan:
+
+| Comando | Qué confirma |
+|---|---|
+| `nm sumar.o` | si el símbolo `sumar` existe y es global |
+| `objdump -d sumar.o` | si el cuerpo tiene las instrucciones esperadas |
+| `readelf -s sumar.o` | tipo y visibilidad del símbolo |
+
+No hace falta usarlas en cada práctica, pero sí entender qué pregunta responde
+cada una.
+
 ## Objetos separados
 
 También puede compilarse en pasos:
@@ -136,12 +171,14 @@ Usa `gcc` para el enlace final porque el programa usa `printf` y runtime de C.
 
 ## Errores comunes
 
-- Olvidar `.global sumar`.
-- Escribir un prototipo C que no coincide.
-- Retornar en `x1`.
-- Destruir `x19` dentro de la función assembly.
-- Enlazar con `ld` directo aunque el programa usa `printf`.
-- Creer que `.type` y `.size` son instrucciones.
+| Error | Síntoma |
+|---|---|
+| olvidar `.global sumar` | el linker no ve la función desde C |
+| prototipo C distinto al contrato real | argumentos o retorno se interpretan mal |
+| retornar en `x1` | C lee resultado incorrecto desde `x0` |
+| destruir `x19` | bug aparece después de volver al caller |
+| enlazar con `ld` directo usando `printf` | faltan runtime o símbolos de `libc` |
+| creer que `.type` y `.size` son instrucciones | confundir metadatos de assembler con CPU |
 
 ## Checklist
 
@@ -153,3 +190,9 @@ Usa `gcc` para el enlace final porque el programa usa `printf` y runtime de C.
 
 Siguiente: [C desde assembly y printf](06-c-desde-assembly-printf.qmd).
 
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>
+- GCC documentation: <https://gcc.gnu.org/onlinedocs/>

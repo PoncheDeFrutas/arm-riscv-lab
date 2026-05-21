@@ -13,6 +13,12 @@ Ahora assembly será el caller. Eso significa preparar argumentos, mantener `sp`
 alineado y llamar funciones C con `bl`, no con `svc`.
 :::
 
+## Qué vas a aprender
+
+Ahora la responsabilidad cambia de lado. Tu código assembly prepara la llamada,
+respeta alineación, protege `LR` si llama a otra función y deja un valor de
+retorno válido para el runtime de C.
+
 ## `main` escrito en assembly
 
 Si compilas con GCC, puedes escribir `main` en assembly. El runtime de C llamará
@@ -36,6 +42,13 @@ main:
 
 No usas syscall `exit`. Retornar de `main` entrega el código de salida al
 runtime.
+
+## Por qué guardar `LR` en `main`
+
+Aunque `main` sea tu función, sigue siendo llamada por el runtime. Si dentro de
+`main` ejecutas `bl printf` o `bl funcion_c`, ese `bl` sobrescribe `x30`. Por
+eso el prólogo guarda `x30` antes de llamar a otra función y el epílogo lo
+restaura antes de `ret`.
 
 ## Llamar una función C
 
@@ -145,6 +158,21 @@ x1 = entero long para %ld
 Si el formato pide dos valores y solo preparas uno, `printf` leerá basura desde
 la convención de llamada.
 
+## Checklist antes de `bl printf`
+
+Antes de llamar `printf`, revisa:
+
+| Pregunta | Ejemplo |
+|---|---|
+| ¿`x0` apunta al formato? | `adrp/add` o carga de dirección válida |
+| ¿los argumentos coinciden con el formato? | `%ld` necesita un `long` en `x1` |
+| ¿`sp` está alineado a 16 bytes? | prólogo reserva múltiplos de 16 |
+| ¿`LR` está protegido? | función no hoja guarda `x30` |
+| ¿el retorno de `main` queda en `x0`? | `mov x0, #0` si todo salió bien |
+
+Esto no hace a `printf` especial como instrucción. Solo recuerda que es una
+función C variadic y exige que el caller sea disciplinado.
+
 ## `scanf` conceptual
 
 `scanf` también es variadic, pero además escribe resultados en direcciones:
@@ -158,12 +186,14 @@ conceptual en esta unidad. Primero importa dominar `printf`.
 
 ## Errores comunes
 
-- Llamar `printf` con `svc #0`.
-- Pasar valor directo donde `printf` espera puntero a formato.
-- Romper alineación de `sp` antes de `bl printf`.
-- Olvidar guardar `LR` en `main` assembly antes de llamar otra función.
-- Retornar de `main` sin código claro en `x0`.
-- Usar formato `%ld` pero preparar un argumento incorrecto.
+| Error | Consecuencia |
+|---|---|
+| llamar `printf` con `svc #0` | no se llama a `libc` |
+| pasar valor donde se espera formato | `printf` interpreta una dirección inválida |
+| romper alineación de `sp` | llamada ABI-incorrecta |
+| no guardar `LR` en función no hoja | `ret` vuelve mal |
+| retornar de `main` sin `x0` claro | código de salida indeterminado |
+| usar `%ld` con argumento incorrecto | salida basura o lectura inválida |
 
 ## Checklist
 
@@ -175,3 +205,11 @@ conceptual en esta unidad. Primero importa dominar `printf`.
 - [ ] Puedo explicar por qué `scanf` requiere punteros.
 
 Siguiente: [Librerías y lectura guiada](07-librerias-y-lectura-guiada.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GCC documentation: <https://gcc.gnu.org/onlinedocs/>
+- Linux man-pages, `printf(3)`: <https://www.man7.org/linux/man-pages/man3/printf.3.html>
+- Linux man-pages, `scanf(3)`: <https://www.man7.org/linux/man-pages/man3/scanf.3.html>

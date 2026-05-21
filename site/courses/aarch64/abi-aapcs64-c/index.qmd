@@ -109,6 +109,20 @@ función y responder:
 | `v8`-`v15` | preservación parcial según AAPCS64 |
 | `v16`-`v31` | temporales |
 
+## Syscall convention vs calling convention
+
+En unidades anteriores usaste syscalls directas. Eso no es lo mismo que llamar
+una función C:
+
+| Caso | Destino | Argumentos | Resultado |
+|---|---|---|---|
+| syscall Linux | `svc #0` con número en `x8` | `x0`-`x5` | `x0`, negativo si falla |
+| función C/AAPCS64 | símbolo llamado con `bl` | `x0`-`x7`, `v0`-`v7`, stack | `x0`, `v0` o mecanismo ABI |
+
+Esta diferencia explica por qué `printf` no se llama con `svc #0` y por qué
+`x8` no debe leerse siempre como “número de servicio”. En ABI C, `x8` tiene
+usos especiales y no reemplaza al símbolo de la función.
+
 ## Caller-saved y callee-saved
 
 | Concepto | Responsable | Idea |
@@ -118,6 +132,19 @@ función y responder:
 
 Esta tabla es pequeña, pero cambia cómo escribes funciones. Antes podías usar
 registros como espacio temporal local. Ahora debes pensar quién confía en ellos.
+
+## Lectura de responsabilidad
+
+Antes de escribir una función ABI-correcta, responde estas preguntas:
+
+1. ¿Qué argumentos llegan por registros y cuáles por stack?
+2. ¿Qué registro debe contener el resultado al retornar?
+3. ¿La función llama a otra función y por eso debe guardar `LR`?
+4. ¿Usa registros `x19`-`x28` y por eso debe restaurarlos?
+5. ¿Mantiene `sp` alineado a 16 bytes antes de cada `bl`?
+
+Si cualquiera de estas respuestas queda implícita, el bug puede aparecer fuera
+de la función, en el código C o en otra llamada posterior.
 
 ## Viene de unidades anteriores
 
@@ -234,3 +261,11 @@ $ echo $?
 ## Siguiente paso
 
 Empieza por [ABI, AAPCS64 y registros](01-abi-aapcs64-registros.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *ABI for the Arm Architecture*: <https://github.com/ARM-software/abi-aa>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>

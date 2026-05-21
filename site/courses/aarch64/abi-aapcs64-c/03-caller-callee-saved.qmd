@@ -13,6 +13,12 @@ El bug clásico de ABI no siempre está en la suma o en la resta. Muchas veces
 está en un registro que una función modificó y no debía dejar modificado.
 :::
 
+## Qué vas a aprender
+
+Vas a distinguir dos clases de registros por responsabilidad. Esta distinción es
+lo que permite que una función assembly sea confiable cuando C, otra función
+assembly o una librería la llaman.
+
 ## Dos responsabilidades distintas
 
 | Concepto | Responsable | Idea |
@@ -22,6 +28,14 @@ está en un registro que una función modificó y no debía dejar modificado.
 
 No leas caller-saved como “lo guarda el callee”. Es lo contrario: el caller sabe
 que esos registros pueden ser destruidos por la llamada.
+
+```bash
+caller-saved
+  el caller protege si le importa
+
+callee-saved
+  el callee restaura si lo toca
+```
 
 ## Registros caller-saved comunes
 
@@ -66,6 +80,22 @@ usar_x19:
 El frame reserva 32 bytes para mantener alineación. Los primeros 16 guardan
 `x29` y `x30`. El espacio restante guarda `x19`.
 
+## Lectura del frame de preservación
+
+```bash
+direcciones altas
+  frame anterior
+  x29 guardado
+  x30 guardado
+  x19 guardado
+  padding / espacio reservado
+direcciones bajas
+```
+
+Aunque `x19` ocupa 8 bytes, el frame reserva 32 bytes para conservar alineación
+de 16. La corrección ABI no es solo guardar el registro; también es restaurar
+`sp` con el mismo tamaño que se reservó.
+
 ## Por qué no basta con que el resultado sea correcto
 
 Esta función puede devolver `42`, pero seguir siendo mala:
@@ -79,6 +109,23 @@ usar_x19_mal:
 
 El resultado en `x0` puede estar bien. Pero si el caller tenía un valor vivo en
 `x19`, quedó destruido. Ese bug puede aparecer muchas instrucciones después.
+
+## Caso caller-saved
+
+Si el caller necesita conservar `x0` después de una llamada, debe guardarlo:
+
+```asm
+    sub sp, sp, #16
+    str x0, [sp]
+
+    bl funcion_que_puede_cambiar_x0
+
+    ldr x0, [sp]
+    add sp, sp, #16
+```
+
+La función llamada no tiene obligación de preservar `x0`, porque `x0` también se
+usa para retornos.
 
 ## Función hoja vs no hoja
 
@@ -122,12 +169,14 @@ restaura y retorna `42`.
 
 ## Errores comunes
 
-- Modificar `x19` sin restaurarlo.
-- Guardar `x19` con `str` y liberar `sp` con tamaño distinto.
-- Guardar 8 bytes y romper alineación de 16 bytes.
-- Olvidar que `bl` sobrescribe `x30`.
-- Creer que una función correcta solo debe devolver el valor correcto.
-- Usar `x16` o `x17` como almacenamiento persistente.
+| Error | Cómo aparece |
+|---|---|
+| modificar `x19` sin restaurarlo | el caller pierde un valor que esperaba conservar |
+| liberar `sp` con tamaño distinto | el epílogo carga desde dirección equivocada |
+| guardar solo 8 bytes en función ABI | `sp` queda desalineado antes de una llamada |
+| olvidar que `bl` sobrescribe `x30` | `ret` vuelve al lugar incorrecto |
+| mirar solo el resultado en `x0` | una función parece correcta pero rompe el entorno |
+| usar `x16` o `x17` como persistentes | linker/PLT u otra llamada puede usarlos |
 
 ## Checklist
 
@@ -140,3 +189,8 @@ restaura y retorna `42`.
 
 Siguiente: [`main`, `_start` y libc](04-main-start-libc-runtime.qmd).
 
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *ABI for the Arm Architecture*: <https://github.com/ARM-software/abi-aa>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

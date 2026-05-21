@@ -14,6 +14,13 @@ argumentos en lugares definidos. Después de `ret`, el caller mira el lugar de
 retorno definido.
 :::
 
+## Qué vas a aprender
+
+Esta lección responde una pregunta concreta: cuando C escribe `f(a, b, c)`,
+¿dónde aparecen esos valores para una función assembly? La respuesta empieza en
+registros, continúa en stack cuando no alcanzan, y termina en un lugar de
+retorno bien definido.
+
 ## Primeros argumentos
 
 Para enteros y punteros, AAPCS64 usa `x0`-`x7` para los primeros ocho
@@ -43,6 +50,24 @@ sumar3:
 
 El resultado queda en `x0`. No hay instrucción especial de retorno de valor.
 Solo se respeta el contrato.
+
+## Diagrama de una llamada simple
+
+Para `long sumar3(long a, long b, long c)`, el caller prepara:
+
+```bash
+antes de bl sumar3
+  x0 = a
+  x1 = b
+  x2 = c
+  x30 = retorno anterior del caller
+
+después de ret
+  x0 = resultado
+```
+
+Los registros `x1` y `x2` no son retornos secundarios. Pueden quedar con valores
+accidentales o temporales; el caller debe mirar `x0` para este caso.
 
 ## Retorno de enteros y punteros
 
@@ -117,6 +142,23 @@ $ echo $?
 La lección debe explicar este caso con diagrama antes de pedir al estudiante que
 lea el código.
 
+```bash
+caller antes de bl sum9
+  x0 = a
+  x1 = b
+  x2 = c
+  x3 = d
+  x4 = e
+  x5 = f
+  x6 = g
+  x7 = h
+  stack[0] = i
+```
+
+El detalle exacto de offsets depende del frame que construya el callee. Por eso
+la regla docente es: primero identifica si la función movió `sp`; después decide
+desde qué base leer el argumento extra.
+
 ## `sp` alineado a 16 bytes
 
 Antes de llamar otra función, `sp` debe estar alineado a 16 bytes.
@@ -166,6 +208,10 @@ struct de muchos bytes
   no cabe mágicamente en x0
 ```
 
+Cuando el resultado es complejo, una API de curso más legible suele ser pasar un
+puntero de salida. Esa forma hace visible quién reserva memoria y quién escribe
+los campos.
+
 ## Forma clara para curso: pasar puntero
 
 La forma más visible para aprender es pasar puntero a estructura:
@@ -187,12 +233,14 @@ offsets.
 
 ## Errores comunes
 
-- Retornar en `x1` y esperar que C lo vea.
-- Confundir retorno de puntero con copia de bloque.
-- Olvidar que `x0`-`x7` solo cubren primeros ocho argumentos.
-- Leer un argumento de stack con offset incorrecto después de mover `sp`.
-- Romper alineación de `sp` antes de `bl printf`.
-- Asumir que structs grandes retornan igual que enteros.
+| Error | Consecuencia |
+|---|---|
+| retornar en `x1` y esperar que C lo vea | C lee otro valor desde `x0` |
+| confundir retorno de puntero con copia de bloque | se interpreta una dirección como datos copiados |
+| olvidar que `x0`-`x7` solo cubren ocho argumentos | el noveno argumento se busca en el lugar equivocado |
+| leer stack args después de mover `sp` sin ajustar offsets | se carga basura o un valor del frame |
+| romper alineación antes de `bl printf` | llamada a libc con contrato inválido |
+| asumir que structs grandes retornan como enteros | interfaz C/assembly queda mal definida |
 
 ## Checklist
 
@@ -205,3 +253,8 @@ offsets.
 
 Siguiente: [Caller-saved y callee-saved](03-caller-callee-saved.qmd).
 
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *ABI for the Arm Architecture*: <https://github.com/ARM-software/abi-aa>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

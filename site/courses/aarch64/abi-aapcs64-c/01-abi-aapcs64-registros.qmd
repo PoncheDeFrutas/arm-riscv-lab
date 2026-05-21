@@ -14,6 +14,15 @@ programa. La ABI define qué debe esperar el caller y qué debe respetar el
 callee.
 :::
 
+## Qué vas a aprender
+
+Vas a leer los registros como parte de un contrato, no solo como lugares para
+guardar números. La lección conecta tres niveles:
+
+- ISA: instrucciones que el procesador ejecuta;
+- ABI: reglas que hacen compatible una llamada;
+- herramientas: assembler, linker, C y depurador leyendo el mismo contrato.
+
 ## ABI no es ISA
 
 La ISA te dice qué instrucciones existen:
@@ -71,6 +80,17 @@ mov x19, x0
 La instrucción es válida. Pero `x19` es callee-saved. Si una función modifica
 `x19`, debe devolverlo como estaba antes de retornar.
 
+```asm
+// válido para la ISA, incorrecto para la ABI si no restauras x19
+rompe_abi:
+    mov x19, x0
+    add x0, x19, #1
+    ret
+```
+
+El procesador no sabe que `x19` debía conservarse. Esa responsabilidad pertenece
+al programa que decidió hablar AAPCS64.
+
 ## Mapa de registros generales
 
 | Registro | Rol AAPCS64 inicial | Lectura práctica |
@@ -84,6 +104,22 @@ La instrucción es válida. Pero `x19` es callee-saved. Si una función modifica
 | `x29` | frame pointer | base del frame cuando se usa |
 | `x30` | link register | dirección de retorno escrita por `bl` |
 | `sp` | stack pointer | debe estar alineado a 16 bytes en llamadas |
+
+## Grupos por responsabilidad
+
+Una tabla de registros sirve más cuando se lee por responsabilidad:
+
+| Pregunta | Registros relevantes |
+|---|---|
+| ¿por dónde entran enteros y punteros? | `x0`-`x7` |
+| ¿dónde queda un retorno entero simple? | `x0` |
+| ¿qué puedo usar como temporal entre instrucciones? | `x9`-`x15`, con cuidado antes de llamadas |
+| ¿qué debo restaurar si lo modifico? | `x19`-`x28` |
+| ¿qué sostiene el retorno de `bl`? | `x30` |
+| ¿qué no debo desalinear? | `sp` |
+
+Esta lectura evita memorizar la ABI como lista suelta. Cada registro se entiende
+por quién puede confiar en él.
 
 ## `x8` no significa lo mismo siempre
 
@@ -154,12 +190,14 @@ La función no necesita stack porque es hoja y no usa registros callee-saved.
 
 ## Errores comunes
 
-- Creer que AAPCS64 es una instrucción.
-- Creer que todos los registros son temporales libres.
-- Usar `x8` como si llamar C fuera igual que llamar syscall.
-- Tratar `x18` como registro normal.
-- Modificar `x19` sin restaurarlo.
-- Olvidar que `v0`-`v7` participan en argumentos floating/SIMD.
+| Error | Diagnóstico |
+|---|---|
+| creer que AAPCS64 es una instrucción | buscar una instrucción inexistente en lugar de revisar contrato |
+| tratar todos los registros como temporales libres | valores del caller cambian después de `ret` |
+| usar `x8` como si llamar C fuera syscall | `printf` o funciones C no se ejecutan como se esperaba |
+| tratar `x18` como registro normal | código no portable o dependiente de plataforma |
+| modificar `x19` sin restaurarlo | el caller falla lejos del punto del bug |
+| olvidar `v0`-`v7` | funciones con `float`/`double` reciben valores incorrectos |
 
 ## Checklist
 
@@ -172,3 +210,8 @@ La función no necesita stack porque es hoja y no usa registros callee-saved.
 
 Siguiente: [Argumentos, retornos y stack](02-argumentos-retornos-stack.qmd).
 
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *ABI for the Arm Architecture*: <https://github.com/ARM-software/abi-aa>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>

@@ -14,6 +14,13 @@ Puede convertirse en objeto reutilizable, librería estática o librería
 compartida.
 :::
 
+## Qué vas a aprender
+
+Vas a conectar la ABI con empaquetado de código. La misma función assembly puede
+vivir como objeto `.o`, dentro de una librería estática `.a` o dentro de una
+librería compartida `.so`; en todos los casos debe respetar el contrato de
+llamada.
+
 ## Del archivo fuente al ejecutable
 
 ```bash
@@ -35,6 +42,17 @@ GCC puede manejar este flujo:
 ```bash
 $ aarch64-linux-gnu-gcc main.c sumar.s -o app
 ```
+
+## Objeto, estática y compartida
+
+| Forma | Qué contiene | Cuándo se resuelve |
+|---|---|---|
+| `.o` | un objeto compilado | al enlazar |
+| `.a` | archivo con varios `.o` | al enlazar, se copia lo necesario |
+| `.so` | librería compartida | al cargar o durante ejecución |
+
+La ABI es independiente del paquete. Si `sumar` rompe `x19` como objeto, también
+lo romperá dentro de una librería.
 
 ## Librería estática
 
@@ -89,6 +107,16 @@ $ echo $?
 Esta unidad no entra en GOT, PLT ni dynamic linker en profundidad. Solo muestra
 que el mismo contrato ABI permite empaquetar funciones.
 
+## Qué revisar cuando una librería no funciona
+
+| Revisión | Pregunta |
+|---|---|
+| símbolo exportado | ¿la función tiene `.global` y nombre esperado por C? |
+| prototipo | ¿C declara los mismos tipos que assembly implementa? |
+| enlace | ¿la librería aparece en el comando o Makefile correcto? |
+| ABI | ¿la función preserva lo que debe preservar? |
+| runtime | ¿se usa `gcc` cuando hay C o `libc`? |
+
 ## Lectura guiada: C + assembly + printf
 
 Programa:
@@ -137,6 +165,22 @@ main llama printf
 El estudiante debe poder explicar este programa sin ver C como magia ni
 assembly como bloque separado. Ambos lados hablan por ABI.
 
+## Lectura integrada
+
+Una forma útil de narrar el programa completo es:
+
+```bash
+main.c declara extern sumar
+linker encuentra sumar en assembly u otra librería
+main coloca argumentos en x0 y x1
+sumar calcula y deja resultado en x0
+main pasa formato y resultado a printf
+runtime recibe retorno de main
+```
+
+Si el estudiante puede contar esta historia, ya no está viendo archivos
+separados: está viendo el contrato que los une.
+
 ## Qué queda para unidad posterior
 
 | Tema | Por qué queda fuera |
@@ -149,12 +193,14 @@ assembly como bloque separado. Ambos lados hablan por ABI.
 
 ## Errores comunes
 
-- Creer que `.a` y `.so` son iguales.
-- Creer que una librería compartida copia todo al ejecutable.
-- Crear una función assembly en librería sin `.global`.
-- Romper ABI dentro de una librería y culpar al linker.
-- Esperar que `ld` directo resuelva runtime y `libc` sin configuración.
-- Meter GOT/PLT demasiado pronto.
+| Error | Corrección |
+|---|---|
+| creer que `.a` y `.so` son iguales | distinguir copia al enlace vs carga compartida |
+| creer que `.so` copia todo al ejecutable | recordar que se carga como dependencia |
+| omitir `.global` en función de librería | exportar el símbolo esperado |
+| romper ABI dentro de librería | revisar registros y stack antes de culpar al linker |
+| usar `ld` directo con `libc` sin contexto | enlazar con `gcc` para estos ejemplos |
+| meter GOT/PLT demasiado pronto | dejar linking dinámico profundo para ELF |
 
 ## Checklist
 
@@ -166,3 +212,10 @@ assembly como bloque separado. Ambos lados hablan por ABI.
 
 Fin de unidad. Siguiente tema natural: ELF, linking, loading y binarios.
 
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>
+- GCC documentation: <https://gcc.gnu.org/onlinedocs/>
