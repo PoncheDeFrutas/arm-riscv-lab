@@ -14,6 +14,12 @@ los ubica sin entrar todavía en stack frames, ABI ni llamadas a función en
 profundidad.
 :::
 
+## Qué vas a aprender
+
+Vas a reconocer nombres que aparecen mucho en código y en GDB: `xzr`, `sp`,
+`pc`, `x29/fp` y `x30/lr`. Algunos son registros con comportamiento especial;
+otros son roles convencionales que serán importantes al estudiar funciones.
+
 ## Mapa rápido
 
 | Nombre | Qué representa | Idea inicial |
@@ -90,11 +96,11 @@ real de construir un frame queda para una unidad posterior.
 guarda una dirección de retorno.
 
 ```asm
-mov x0, x30
+bl funcion
+// x30/lr queda con dirección de retorno
 ```
 
-Más adelante, instrucciones como `bl` y `ret` harán que `lr` sea central para
-llamadas a función. Aquí solo necesitas reconocerlo.
+Más adelante, `ret` usará `lr` para volver. Aquí solo necesitas reconocerlo.
 
 ## Qué registros tienen significado especial
 
@@ -107,7 +113,15 @@ llamadas a función. Aquí solo necesitas reconocerlo.
 | `pc` | Sí | No como general normal |
 | `xzr` / `wzr` | Conceptual | No almacena |
 
-## Error común
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Tratar `pc` como `x0` | en A64 no es registro general normal |
+| Usar `sp` como temporal cualquiera | `sp` debe conservar sentido de stack |
+| Pensar que `xzr` guarda valores | escribir ahí descarta |
+| Usar `x30` sin entender `bl`/`ret` | `x30/lr` tiene rol de retorno |
+| Creer que `fp/lr` implican ABI completa aquí | solo mapa inicial |
 
 ::: {.callout-warning title="PC no es un Xn más"}
 En A64, no programes pensando que `pc` se usa como un registro general. Puedes
@@ -121,6 +135,7 @@ observarlo y puedes generar direcciones relativas, pero no lo trates como `x0`.
 3. Di por qué `sp` no es un temporal normal.
 4. Explica para qué servirá `x30/lr` más adelante.
 5. Explica por qué `adr x0, .` es útil para hablar de `pc`.
+6. Explica qué diferencia conceptual hay entre `x29/fp` y `x30/lr`.
 
 ## Checklist
 
@@ -129,5 +144,18 @@ observarlo y puedes generar direcciones relativas, pero no lo trates como `x0`.
 - [ ] Puedo explicar por qué `pc` no es general.
 - [ ] Puedo reconocer `x29/fp`.
 - [ ] Puedo reconocer `x30/lr`.
+- [ ] Puedo decir qué queda para la unidad de ABI.
+
+## Cierre
+
+Estos nombres son parte del mapa mínimo para leer código y depurar. Algunos
+representan hardware especial, otros roles convencionales; todos necesitan
+contexto antes de interpretarse.
 
 Siguiente: [PSTATE y flags](03-pstate-flags.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).

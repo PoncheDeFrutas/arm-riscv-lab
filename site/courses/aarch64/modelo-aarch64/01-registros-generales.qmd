@@ -14,6 +14,13 @@ memoria. Esta lección presenta los registros generales: el lugar donde vivirán
 enteros, direcciones, resultados temporales y argumentos en unidades futuras.
 :::
 
+## Qué vas a aprender
+
+Vas a distinguir registros `Xn` de sus vistas `Wn`. También verás por qué
+escribir en `Wn` limpia la mitad alta del registro `Xn` correspondiente.
+
+Esta regla es importante para memoria, syscalls, aritmética, ABI y debugging.
+
 ## Registros `X0` a `X30`
 
 AArch64 tiene 31 registros generales visibles de 64 bits. Se escriben como
@@ -95,6 +102,19 @@ No queda `0xFFFFFFFF00000001`. Los bits altos se limpian.
 En Linux AArch64, las direcciones de userland se manejan como valores de 64
 bits, por eso se guardan en registros `Xn`.
 
+## Roles iniciales antes de ABI
+
+En syscalls Linux, `x0`-`x5` suelen llevar argumentos, `x8` lleva número de
+syscall y `x0` recibe retorno. En llamadas a funciones C, AAPCS64 dará otros
+roles específicos. No mezclaremos esas reglas todavía.
+
+Por ahora, piensa:
+
+```bash
+registro = caja de bits
+instrucción + contexto = significado
+```
+
 ## Qué registros puede tocar un programa
 
 Como mapa inicial, un programa puede usar registros generales para cálculos. Más
@@ -106,12 +126,15 @@ No estudiaremos AAPCS64 todavía. Por ahora solo importa reconocer registros
 generales y entender `Xn` contra `Wn`.
 :::
 
-## Error común
+## Errores comunes
 
-::: {.callout-warning title="No dupliques mentalmente registros"}
-No pienses que hay un `x0` separado y un `w0` separado. Es el mismo registro
-visto con tamaños distintos.
-:::
+| Error | Corrección |
+|---|---|
+| Pensar que `x0` y `w0` son registros separados | son dos vistas del mismo registro |
+| Guardar dirección en `w0` | usa `x0` para direcciones |
+| Escribir en `w0` esperando conservar bits altos | escritura en `Wn` limpia bits altos |
+| Leer un registro sin contexto | pregunta si es valor, dirección, argumento o retorno |
+| Creer que todos los `xN` son libres siempre | ABI dará reglas futuras |
 
 ## Mini ejercicios
 
@@ -119,6 +142,7 @@ visto con tamaños distintos.
 2. Explica qué pasa con `x5` después de escribir en `w5`.
 3. Indica si una dirección debería guardarse en `w0` o `x0`.
 4. Explica por qué `mov w0, #1` limpia los bits altos de `x0`.
+5. Explica por qué `x0` puede ser argumento antes de `svc #0` y retorno después.
 
 ## Checklist
 
@@ -127,5 +151,18 @@ visto con tamaños distintos.
 - [ ] Puedo dibujar `Wn` como los 32 bits bajos de `Xn`.
 - [ ] Puedo explicar zero-extension al escribir en `Wn`.
 - [ ] Sé que direcciones se manejan en registros `Xn`.
+- [ ] Puedo interpretar un registro según contexto.
+
+## Cierre
+
+Los registros generales son el espacio de trabajo inmediato del programa. El
+mismo registro puede contener entero, dirección, argumento o retorno; el tamaño
+`Xn/Wn` y la instrucción actual determinan cómo leerlo.
 
 Siguiente: [Registros especiales](02-registros-especiales.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).

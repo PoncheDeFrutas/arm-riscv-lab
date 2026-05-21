@@ -13,6 +13,14 @@ Esta página no reemplaza una unidad de debugging. Solo conecta el modelo de
 registros con una herramienta real: detener el programa y mirar estado visible.
 :::
 
+## Qué vas a aprender
+
+Vas a mirar registros con GDB y hacer preguntas correctas. GDB muestra números;
+el trabajo del programador es interpretarlos según instrucción, tamaño y rol.
+
+Esta lección prepara debugging futuro sin entrar todavía en watchpoints, stack
+frames ni core dumps.
+
 ## Preparación
 
 Usa el ejemplo mínimo de la Unidad 01.
@@ -106,7 +114,8 @@ memorizar la salida exacta todavía. Busca la relación con `NZCV`.
 
 | Si ves... | Pregunta correcta |
 |---|---|
-| `x0 = 0x1` | ¿Es entero, dirección o argumento? |
+| `x0 = 0x1` | ¿Es entero, dirección, argumento o retorno? |
+| `w0 = 0x1` | ¿Estoy mirando solo 32 bits bajos? |
 | `sp = 0x...` | ¿A qué región de stack apunta? |
 | `pc = 0x...` | ¿Qué instrucción está por ejecutarse? |
 | `x30 = 0x...` | ¿Podría ser dirección de retorno? |
@@ -116,6 +125,19 @@ memorizar la salida exacta todavía. Busca la relación con `NZCV`.
 GDB muestra valores. El curso te enseña a interpretarlos con contexto:
 registro, tamaño, instrucción actual y memoria asociada.
 :::
+
+## Flujo mínimo de lectura
+
+Cuando te detengas en `_start`:
+
+1. mira `pc`;
+2. desensambla cerca de `pc`;
+3. identifica la instrucción actual;
+4. mira registros que esa instrucción usa;
+5. ejecuta un paso;
+6. vuelve a mirar qué cambió.
+
+Este flujo enseña más que imprimir todos los registros sin contexto.
 
 ## Salir
 
@@ -132,6 +154,16 @@ No veremos watchpoints, stack frames completos, core dumps, macros de GDB,
 señales ni depuración de kernel. Esta página solo enseña a mirar registros.
 :::
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Interpretar `x0` siempre igual | depende de instrucción y syscall/función |
+| Mirar `pc` como dato normal | `pc` es posición de ejecución |
+| No desensamblar cerca de `pc` | usa `x/4i $pc` |
+| Leer flags sin saber instrucción previa | busca qué actualizó `NZCV` |
+| Dejar QEMU esperando | cierra sesión remota y terminal de QEMU |
+
 ## Mini ejercicios
 
 1. Muestra `x0`, `x1`, `x2` y `x8`.
@@ -139,6 +171,7 @@ señales ni depuración de kernel. Esta página solo enseña a mirar registros.
 3. Usa `x/4i $pc`.
 4. Explica por qué `x0` podría ser valor o dirección.
 5. Explica por qué `pc` no debe interpretarse como dato normal.
+6. Mira una instrucción, ejecuta un paso y anota qué registro cambió.
 
 ## Checklist
 
@@ -147,9 +180,17 @@ señales ni depuración de kernel. Esta página solo enseña a mirar registros.
 - [ ] Puedo mostrar registros generales.
 - [ ] Puedo mostrar `sp` y `pc`.
 - [ ] Puedo mirar instrucciones cerca de `pc`.
+- [ ] Puedo interpretar un registro con contexto.
 - [ ] Puedo salir de GDB sin dejar QEMU esperando.
 
 ## Cierre de la unidad
 
 Si puedes mirar `x0`, `w0`, `sp`, `pc`, `x29`, `x30`, `NZCV` y saber qué
 pregunta hacer, ya tienes el mapa básico del estado visible de AArch64.
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB, [Debugging with GDB](https://sourceware.org/gdb/documentation/).
+- QEMU, [User-mode emulation](https://www.qemu.org/docs/master/user/).
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).

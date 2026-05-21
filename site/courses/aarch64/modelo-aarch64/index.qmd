@@ -25,6 +25,15 @@ teclado o la barra espaciadora.
 [Ver presentación Slidev](../../../slides/aarch64/03-modelo-aarch64/){.lab-button}
 :::
 
+## Qué vas a aprender
+
+Vas a construir un mapa del estado visible de AArch64. Ese mapa permite leer
+programas pequeños, entender syscalls, seguir memoria y depurar con GDB sin
+perder contexto.
+
+La regla principal: un registro solo muestra bits. El significado depende de la
+instrucción, del tamaño usado y del rol que el programa le da en ese momento.
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -159,8 +168,19 @@ flowchart TB
 ```
 
 Depurar significa detener el programa y mirar parte de ese estado con contexto.
-Un número en `x0` puede ser un entero, una dirección o un valor temporal; la
-unidad anterior ayuda a interpretarlo.
+Un número en `x0` puede ser un entero, una dirección o un valor temporal; las
+unidades posteriores enseñan cómo interpretarlo.
+
+## Diagnóstico básico
+
+Cuando mires estado del procesador, pregunta:
+
+1. ¿el registro contiene valor, dirección, argumento o retorno?
+2. ¿estoy leyendo vista `Xn` o `Wn`?
+3. ¿una escritura en `Wn` limpió bits altos?
+4. ¿los flags todavía corresponden a la comparación que me interesa?
+5. ¿`sp`, `pc`, `fp` o `lr` tienen un rol especial aquí?
+6. ¿estoy mirando estado de userland (`EL0`) o pensando en kernel (`EL1`)?
 
 ## Qué no estudiaremos todavía
 
@@ -173,16 +193,6 @@ unidad anterior ayuda a interpretarlo.
 | MMU y páginas | No son necesarias para leer registros |
 | NEON avanzado | Solo se presentan registros vectoriales |
 | Kernel programming | Esta ruta empieza desde Linux userland |
-
-## Para investigar más
-
-| Fuente | Qué buscar |
-|---|---|
-| Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide* | Registros generales, `Xn/Wn`, SIMD/FP y PSTATE |
-| Larry D. Pyeatt, *ARM 64-Bit Assembly Language* | Registros AArch64, primeros ejemplos y uso de `SP`, `FP`, `LR` |
-| William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques* | Modelo del procesador y registros como estado visible |
-| Stephen Smith, *Raspberry Pi Assembly Language Programming* | Lectura práctica de registros en programas pequeños |
-| `gdb` / `gdb-multiarch` | Comandos `info registers` y lectura básica de estado |
 
 ## Checklist de cierre
 
@@ -200,3 +210,10 @@ unidad anterior ayuda a interpretarlo.
 
 Empieza por [Registros generales](01-registros-generales.qmd). Si ya entiendes
 `Xn` y `Wn`, avanza a [Registros especiales](02-registros-especiales.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).
+- GDB, [Debugging with GDB](https://sourceware.org/gdb/documentation/).

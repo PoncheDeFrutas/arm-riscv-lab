@@ -14,6 +14,14 @@ floating point y vectoriales. En esta unidad solo los ubicamos en el mapa; NEON,
 SIMD y floating point vendrán después.
 :::
 
+## Qué vas a aprender
+
+Vas a reconocer el banco de registros SIMD/Floating Point. No estudiarás todavía
+NEON ni IEEE 754 a fondo; solo aprenderás a no confundir `v0`, `d0` o `q0` con
+`x0`.
+
+Esto ayuda cuando GDB, objdump o documentación muestren registros vectoriales.
+
 ## Registros `V0` a `V31`
 
 AArch64 define 32 registros SIMD/Floating Point de 128 bits: `v0` a `v31`.
@@ -84,6 +92,9 @@ Aunque no estudiaremos NEON todavía, GDB, objdump o documentación pueden mostr
 registros `v0`-`v31`. Conviene reconocerlos para no confundirlos con registros
 generales.
 
+Además, AAPCS64 también define reglas para argumentos y retornos floating point.
+Eso se estudiará más adelante; aquí basta saber que existe otro banco.
+
 ## Límite de esta unidad
 
 ::: {.callout-note title="Solo mapa inicial"}
@@ -91,12 +102,23 @@ No veremos lanes, saturación, vectores, intrinsics, NEON avanzado ni formato
 floating point. Esta página solo ubica el banco de registros.
 :::
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Pensar que `x0` y `d0` son el mismo registro | son bancos distintos |
+| Creer que `d0` es registro completo | `d0` es vista de 64 bits de `v0` |
+| Confundir SIMD con enteros generales | usa registros `Vn` para SIMD/FP |
+| Interpretar GDB sin contexto | pregunta si el programa usa FP/SIMD |
+| Adelantar NEON avanzado | aquí solo mapa de registros |
+
 ## Mini ejercicios
 
 1. Explica cuántos registros `Vn` existen.
 2. Explica qué tamaño máximo tiene `v0`.
 3. Di si `x0` y `d0` son el mismo registro.
 4. Ordena `b0`, `h0`, `s0`, `d0`, `q0` por tamaño.
+5. Explica por qué `q0` y `v0` están relacionados.
 
 ## Checklist
 
@@ -106,4 +128,16 @@ floating point. Esta página solo ubica el banco de registros.
 - [ ] Puedo reconocer vistas `Bn`, `Hn`, `Sn`, `Dn`, `Qn`.
 - [ ] Sé que NEON y floating point quedan para después.
 
+## Cierre
+
+Los registros SIMD/Floating Point son parte del estado visible de AArch64, aunque
+no se usen en los primeros programas enteros. Reconocerlos evita confusiones al
+depurar o leer documentación.
+
 Siguiente: [Exception levels](05-exception-levels.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).

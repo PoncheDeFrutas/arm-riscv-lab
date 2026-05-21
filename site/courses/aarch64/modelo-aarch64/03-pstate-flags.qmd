@@ -14,6 +14,14 @@ permiten que una comparación deje señales para que una instrucción posterior
 decida si salta o no.
 :::
 
+## Qué vas a aprender
+
+Vas a ubicar `PSTATE` como parte del estado visible del procesador y a enfocarte
+en cuatro flags: `N`, `Z`, `C` y `V`. Estos flags explican por qué una rama
+condicional se toma o no se toma.
+
+Esta lección prepara control de flujo, aritmética con overflow y debugging.
+
 ## Qué es PSTATE
 
 `PSTATE` contiene estado del procesador visible a nivel arquitectónico. En esta
@@ -63,7 +71,7 @@ Como `5 - 5` da `0`, la comparación activa condición de igualdad.
 
 ## Flags `C` y `V`
 
-`C` y `V` vienen de la unidad anterior:
+`C` y `V` separan dos lecturas de la aritmética:
 
 | Flag | Relación principal |
 |---|---|
@@ -83,6 +91,7 @@ tienen variantes o formas que actualizan flags.
 | `cmp` | Actualiza flags para comparación |
 | `adds` | Suma y actualiza flags |
 | `subs` | Resta y actualiza flags |
+| `tst` | Prueba bits y actualiza flags |
 | `b.cond` | Consulta flags para decidir salto |
 
 ```asm
@@ -92,6 +101,19 @@ b.vs overflow_signed
 
 Este ejemplo prepara una unidad futura de aritmética y saltos. Aquí no se
 desarrollan todas las condiciones.
+
+## Flags sobrescritos
+
+Los flags no duran como una variable protegida. Si otra instrucción actualiza
+`NZCV`, la rama posterior usará los flags nuevos.
+
+```asm
+cmp x0, #10
+subs x2, x2, #1
+b.lt menor
+```
+
+`b.lt` ya no corresponde a `cmp x0, #10`; corresponde a `subs x2, x2, #1`.
 
 ## Qué verá GDB
 
@@ -105,12 +127,15 @@ info registers cpsr
 La forma exacta de presentación puede variar por GDB y entorno. Lo importante es
 que el depurador permite observar el estado de condición.
 
-## Error común
+## Errores comunes
 
-::: {.callout-warning title="Flags no duran como variables normales"}
-Una instrucción posterior puede cambiar flags. No pienses en `Z` o `C` como
-variables guardadas para siempre.
-:::
+| Error | Corrección |
+|---|---|
+| Pensar que flags son variables normales | cambian con instrucciones que actualizan `NZCV` |
+| Usar branch sin saber qué preparó flags | busca `cmp`, `subs`, `adds` o `tst` anterior |
+| Confundir `C` con `V` | `C` para unsigned, `V` para signed |
+| Creer que toda instrucción cambia flags | solo algunas formas lo hacen |
+| Mirar flags en GDB sin instrucción previa | interpreta con contexto |
 
 ## Mini ejercicios
 
@@ -119,6 +144,7 @@ variables guardadas para siempre.
 3. Indica qué flag se relaciona con overflow signed.
 4. Indica qué flag se relaciona con carry unsigned.
 5. Explica por qué no todas las instrucciones cambian flags.
+6. Explica qué pasa si `subs` aparece entre `cmp` y `b.eq`.
 
 ## Checklist
 
@@ -127,5 +153,18 @@ variables guardadas para siempre.
 - [ ] Puedo explicar `cmp` + `b.eq`.
 - [ ] Puedo distinguir `C` de `V`.
 - [ ] Sé que flags no son registros generales.
+- [ ] Puedo reconocer flags sobrescritos.
+
+## Cierre
+
+Los flags son pequeñas señales de estado. No reemplazan registros generales,
+pero hacen posible que una comparación afecte una rama posterior. Leer control
+de flujo exige saber qué instrucción actualizó `NZCV`.
 
 Siguiente: [SIMD/Floating Point](04-simd-floating-registers.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GDB, [Debugging with GDB](https://sourceware.org/gdb/documentation/).

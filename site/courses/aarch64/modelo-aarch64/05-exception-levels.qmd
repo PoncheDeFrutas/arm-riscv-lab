@@ -14,6 +14,15 @@ un programa de usuario, dónde corre el kernel y por qué no todo el estado del
 procesador está disponible para tu programa.
 :::
 
+## Qué vas a aprender
+
+Vas a ubicar `EL0`, `EL1`, `EL2` y `EL3` como niveles de privilegio. Para esta
+ruta, lo más importante es distinguir programa de usuario (`EL0`) y kernel
+(`EL1`).
+
+Esto explica por qué un programa usa syscalls para pedir servicios al sistema
+operativo.
+
 ## Mapa de niveles
 
 | Nivel | Nombre común | Uso típico |
@@ -75,6 +84,9 @@ Si GDB muestra registros de un programa, estás mirando estado de ese proceso en
 su contexto de usuario. No estás viendo todo el estado interno del kernel ni de
 hardware privilegiado.
 
+También explica por qué un fallo de acceso a memoria no permite al programa
+“arreglar” directamente las tablas de páginas: eso pertenece al sistema.
+
 ## Límite de esta unidad
 
 ::: {.callout-warning title="No es unidad de kernel"}
@@ -82,12 +94,23 @@ No estudiaremos excepciones reales, vectores, ESR, ELR, SPSR, MMU, tablas de
 páginas, virtualización ni TrustZone. Solo necesitamos el mapa.
 :::
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Pensar que userland controla todo | userland corre en `EL0` |
+| Confundir syscall con llamada normal | syscall entra al kernel |
+| Esperar ver todo estado del kernel en GDB de usuario | GDB muestra contexto del proceso |
+| Profundizar en EL2/EL3 demasiado pronto | primero domina EL0/EL1 |
+| Tratar registros de sistema como registros generales | muchos son privilegiados |
+
 ## Mini ejercicios
 
 1. Indica en qué nivel corre un programa normal de Linux.
 2. Indica en qué nivel corre el kernel.
 3. Explica por qué un programa de usuario no puede tocar todo el estado.
 4. Explica qué idea representa `svc #0` sin entrar en syscalls.
+5. Explica por qué GDB de usuario no muestra todo el estado del kernel.
 
 ## Checklist
 
@@ -96,5 +119,18 @@ páginas, virtualización ni TrustZone. Solo necesitamos el mapa.
 - [ ] Sé que `EL2` se relaciona con virtualización.
 - [ ] Sé que `EL3` se relaciona con secure monitor.
 - [ ] Puedo explicar user mode vs kernel mode.
+- [ ] Puedo explicar por qué existen syscalls.
+
+## Cierre
+
+Los exception levels explican el límite entre programa y sistema operativo. Para
+esta ruta, el punto central es simple: tus programas empiezan en `EL0` y piden
+servicios al kernel en `EL1`.
 
 Siguiente: [Lectura de registros con GDB](06-lectura-registros-gdb.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
