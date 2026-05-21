@@ -14,6 +14,16 @@ entender todos los detalles de `write`, `exit` o ELF. Solo queremos confirmar
 que el laboratorio puede construir y ejecutar un binario AArch64.
 :::
 
+## Qué vas a aprender
+
+Vas a recorrer el ciclo mínimo de trabajo: editar un archivo `.s`, compilarlo
+con `make`, ejecutar el binario y reconocer qué parte del resultado viene del
+programa. Este ciclo será la base de casi todas las prácticas posteriores.
+
+La meta no es memorizar todavía cada instrucción. La meta es que puedas ubicar
+las piezas: código fuente, Makefile, directorio `build/`, ejecutable y salida en
+terminal.
+
 ## Carpeta del ejemplo
 
 ```bash
@@ -32,6 +42,28 @@ Entra a la carpeta:
 cd 00-hello-minimo
 cd src
 ```
+
+Durante las primeras prácticas, `src/` será el lugar de trabajo. Ahí está el
+código fuente y ahí se ejecutan los comandos del Makefile.
+
+## Flujo de construcción
+
+El flujo general es:
+
+```bash
+main.s -> main.o -> build/main -> make run
+```
+
+| Paso | Qué produce | Para qué sirve |
+|---|---|---|
+| editar `main.s` | fuente assembly | programa escrito por ti |
+| ensamblar | archivo objeto | instrucciones traducidas parcialmente |
+| enlazar | ELF ejecutable | binario que Linux puede cargar |
+| ejecutar | proceso | salida visible o código de salida |
+
+`make` es el encargado de ejecutar los comandos correctos para tu entorno. En
+x86_64 usará herramientas cruzadas y QEMU; en ARM64 nativo usará herramientas
+locales.
 
 ## Código mínimo
 
@@ -63,9 +95,17 @@ Lectura mínima:
 | Parte | Qué hace ahora |
 |---|---|
 | `.data` | Guarda bytes del mensaje |
+| `msg` | Nombra la dirección inicial del mensaje |
+| `msg_len = . - msg` | Calcula cuántos bytes tiene el mensaje |
 | `.text` | Guarda instrucciones |
 | `_start` | Punto donde empieza el proceso |
+| `mov x8, #64` | Pide syscall `write` |
+| `mov x8, #93` | Pide syscall `exit` |
 | `svc #0` | Entra al kernel para pedir una syscall |
+
+Por ahora basta leerlo así: primero escribe `Hola ARM64\n`, después termina con
+código `0`. Las unidades siguientes explican syscalls y secciones con más
+detalle.
 
 ## Compilar
 
@@ -81,6 +121,9 @@ Resultado esperado:
 build/main
 ```
 
+Si ese archivo existe, el ciclo de construcción funcionó: el código fuente se
+transformó en un ejecutable.
+
 ## Ejecutar
 
 ```bash
@@ -93,9 +136,14 @@ Salida esperada:
 Hola ARM64
 ```
 
+En x86_64, `make run` normalmente ejecuta el binario con QEMU. En ARM64 nativo,
+lo ejecuta directamente. Esa diferencia vive dentro del Makefile; por eso el
+comando externo se mantiene igual.
+
 ::: {.callout-tip title="Por qué usamos make"}
-`make` evita escribir comandos largos. QEMU y Raspberry Pi usan comandos
-iguales; lo que cambia es el contenido de `src/Makefile`.
+`make` evita escribir comandos largos y reduce errores de copia. QEMU y
+Raspberry Pi usan comandos iguales; lo que cambia es el contenido de
+`src/Makefile`.
 :::
 
 ## Comandos útiles
@@ -108,14 +156,27 @@ make clean
 `make info` muestra ayuda del Makefile actual. `make clean` borra `build/` para
 reconstruir desde cero.
 
+Usa `make clean` cuando quieras confirmar que el binario se generó otra vez
+desde el código actual, no desde un resultado anterior.
+
 ## Errores comunes
 
 | Error | Qué revisar |
 |---|---|
-| `compiler not found` | Faltan paquetes de la ruta |
-| `Exec format error` | Intentaste ejecutar directo un binario AArch64 en x86_64 |
-| No imprime nada | Revisa longitud del mensaje y syscall `write` |
-| Copiaste template equivocado | Revisa la guía de Makefiles según tu máquina |
+| `compiler not found` | faltan paquetes de la ruta elegida |
+| `Exec format error` | intentaste ejecutar directo un binario AArch64 en x86_64 |
+| No imprime nada | revisa longitud del mensaje y syscall `write` |
+| Copiaste template equivocado | revisa guía de Makefiles según tu máquina |
+| `make` no encuentra reglas | confirma que estás dentro de `src/` |
+| Cambiaste `main.s` y no ves cambios | ejecuta `make clean` y vuelve a compilar |
+
+## Mini ejercicios
+
+1. Cambia `Hola ARM64` por tu nombre.
+2. Quita el salto de línea `\n` y observa cómo queda la terminal.
+3. Explica qué archivo se genera dentro de `build/`.
+4. Explica por qué el mismo `make run` puede funcionar en QEMU y ARM64 nativo.
+5. Explica qué parte del programa escribe y qué parte termina.
 
 ## Checklist
 
@@ -125,5 +186,20 @@ reconstruir desde cero.
 - [ ] `make run` imprimió `Hola ARM64`.
 - [ ] Puedo limpiar con `make clean`.
 - [ ] Entiendo que todavía no estamos estudiando syscalls a fondo.
+- [ ] Puedo explicar el flujo `main.s -> build/main -> make run`.
+
+## Cierre
+
+Este ejemplo confirma que tu laboratorio funciona. Todavía no necesitas dominar
+ELF, syscalls o secciones. Sí necesitas recordar el ciclo: editar, compilar,
+ejecutar, observar y limpiar cuando haga falta.
 
 Siguiente: [Inspección del binario](04-inspeccion-binario.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Make, [GNU Make Manual](https://www.gnu.org/software/make/manual/).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [Using ld](https://sourceware.org/binutils/docs/ld/).
+- QEMU, [User-mode emulation](https://www.qemu.org/docs/master/user/).
+- Linux man-pages, [`execve(2)`](https://www.man7.org/linux/man-pages/man2/execve.2.html).

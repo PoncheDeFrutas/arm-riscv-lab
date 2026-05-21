@@ -14,6 +14,16 @@ Antes de aprender más instrucciones, conviene leer bien el archivo fuente. Un
 assembler.
 :::
 
+## Qué vas a aprender
+
+Vas a separar cuatro elementos que aparecen juntos en un archivo assembly:
+directivas, etiquetas, símbolos e instrucciones. Esta separación evita una
+confusión común: creer que todo lo que aparece en un `.s` es ejecutado por la
+CPU.
+
+La CPU ejecuta instrucciones. El assembler interpreta directivas y etiquetas
+para construir el archivo objeto.
+
 ## Archivo mínimo
 
 ```asm
@@ -38,6 +48,22 @@ _start:
 | `mov x0, #0` | Instrucción A64 | CPU la ejecuta |
 | `.size _start, . - _start` | Directiva | Calcula tamaño del símbolo |
 
+## Directivas
+
+Una directiva empieza con punto y habla con el assembler. No es una instrucción
+A64. Por ejemplo:
+
+```asm
+.global _start
+.text
+.section .rodata
+.ascii "Hola\n"
+```
+
+Estas líneas controlan visibilidad, sección actual o bytes generados. El
+assembler las consume para producir el objeto. La CPU no ejecuta `.global` ni
+`.text`.
+
 ## Comentarios
 
 En GNU Assembly para AArch64, los comentarios suelen escribirse con `//`.
@@ -48,7 +74,9 @@ mov x8, #93     // syscall exit en Linux AArch64
 svc #0          // entrar al kernel
 ```
 
-Usa comentarios para explicar intención, no para repetir cada instrucción.
+Usa comentarios para explicar intención, no para repetir cada instrucción. Un
+buen comentario dice por qué ese valor importa, no solo que `mov` mueve un
+valor.
 
 ## Etiquetas
 
@@ -87,6 +115,9 @@ _start:
 | `SYS_exit` | Constante |
 | `_start` | Dirección de código |
 
+La diferencia práctica: `SYS_exit` representa un valor conocido por el
+assembler; `_start` representa una posición dentro del programa.
+
 ## Punto actual `.`
 
 En expresiones del assembler, `.` representa la posición actual.
@@ -97,14 +128,36 @@ msg:
 msg_len = . - msg
 ```
 
-Lectura: `msg_len` vale distancia entre posición actual y etiqueta `msg`.
+Lectura: `msg_len` vale distancia entre posición actual y etiqueta `msg`. Si
+`msg` marca el inicio del texto y `.` quedó al final, la resta calcula la
+longitud.
 
-## Error común
+Este patrón aparece mucho al usar `write`, porque la syscall necesita dirección
+y cantidad de bytes.
 
-::: {.callout-warning title="No todo símbolo es variable"}
-Una etiqueta como `_start` o `msg` nombra una dirección. No significa
-automáticamente “variable” en sentido de lenguaje de alto nivel.
-:::
+## `.type` y `.size`
+
+Estas directivas ayudan a herramientas como linker, depurador y utilidades de
+inspección.
+
+```asm
+.type _start, %function
+.size _start, . - _start
+```
+
+No son obligatorias para todos los programas mínimos, pero hacen que el símbolo
+quede mejor descrito. En material educativo ayudan a mostrar que un archivo
+objeto no solo contiene bytes: también puede contener metadatos sobre símbolos.
+
+## Errores comunes
+
+| Error | Corrección conceptual |
+|---|---|
+| Pensar que `.text` se ejecuta | `.text` es directiva para el assembler |
+| Pensar que una etiqueta es una variable | una etiqueta nombra dirección |
+| Usar `msg_len = . - msg` lejos del mensaje | la longitud saldrá mal |
+| Olvidar `.global _start` | el linker puede no encontrar el símbolo de entrada |
+| Comentar lo obvio | comenta intención y contrato, no cada operación mecánica |
 
 ## Mini ejercicios
 
@@ -112,6 +165,8 @@ automáticamente “variable” en sentido de lenguaje de alto nivel.
 2. Clasifica `_start:`.
 3. Clasifica `mov x0, #0`.
 4. Explica qué significa `msg_len = . - msg`.
+5. Explica por qué `.ascii` es directiva y `mov` es instrucción.
+6. Explica qué herramienta usa un símbolo: assembler, linker o depurador.
 
 ## Checklist
 
@@ -120,5 +175,19 @@ automáticamente “variable” en sentido de lenguaje de alto nivel.
 - [ ] Puedo reconocer etiqueta.
 - [ ] Puedo reconocer instrucción A64.
 - [ ] Puedo explicar `_start` como símbolo de entrada.
+- [ ] Puedo explicar el punto actual `.`.
+
+## Cierre
+
+Leer un archivo `.s` empieza por clasificar líneas. Si sabes distinguir
+directivas, etiquetas, símbolos e instrucciones, puedes seguir el flujo del
+assembler sin confundir metadatos con código ejecutado.
 
 Siguiente: [Secciones](02-secciones.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [Assembler Directives](https://sourceware.org/binutils/docs/as/Pseudo-Ops.html).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Arm, [ELF for the Arm 64-bit Architecture](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst).

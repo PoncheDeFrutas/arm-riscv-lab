@@ -14,6 +14,18 @@ no está creando variables de alto nivel; está generando contenido binario con
 nombres simbólicos.
 :::
 
+## Qué vas a aprender
+
+Vas a usar directivas para colocar bytes concretos o reservar espacio. También
+vas a separar tres ideas:
+
+- tamaño de almacenamiento;
+- interpretación del dato;
+- dirección donde empieza el dato.
+
+En assembly, `.word 10` no crea un `int` como en C. Coloca bytes. El significado
+depende de cómo el programa lea esos bytes después.
+
 ## Enteros por tamaño
 
 | Directiva | Tamaño | Uso |
@@ -35,8 +47,43 @@ q:
     .quad 0x1122334455667788
 ```
 
+Cada etiqueta nombra la dirección donde empieza el dato. La directiva define
+cuántos bytes se colocan.
+
+## Tamaño no es tipo
+
+```asm
+valor:
+    .word 10
+```
+
+Esto coloca 4 bytes. Que luego lo interpretes como signed, unsigned, contador o
+dirección depende del código que lo lea.
+
+::: {.callout-note title="Idea clave"}
+`.word` define tamaño de almacenamiento. No crea automáticamente un `int` como
+en un lenguaje de alto nivel.
+:::
+
+## Little endian
+
 En plataformas AArch64 Linux usuales, estos valores se verán en memoria como
 little endian cuando ocupen más de un byte.
+
+```asm
+w:
+    .word 0x12345678
+```
+
+En memoria, byte por byte, podrías observar:
+
+```bash
+78 56 34 12
+```
+
+El valor lógico es `0x12345678`, pero el byte menos significativo queda primero
+en memoria. Esta idea será importante al inspeccionar binarios o memoria con
+GDB.
 
 ## `.ascii` y `.asciz`
 
@@ -62,6 +109,24 @@ No asumas que `.ascii` termina string. Si necesitas byte cero, usa `.asciz` o
 agrega `.byte 0`.
 :::
 
+Para syscall `write`, el byte cero no marca el final. `write` necesita una
+longitud explícita. Para funciones C que esperan cadenas, el terminador cero sí
+importa.
+
+## Calcular longitudes
+
+```asm
+mensaje:
+    .ascii "Hola\n"
+mensaje_len = . - mensaje
+```
+
+El símbolo `mensaje_len` queda con la distancia entre el punto actual `.` y la
+etiqueta `mensaje`. Si el cálculo está inmediatamente después del texto, la
+longitud coincide con los bytes del mensaje.
+
+Este patrón evita contar bytes a mano.
+
 ## `.skip` y `.space`
 
 Reservan espacio.
@@ -86,20 +151,26 @@ En las prácticas iniciales, `.skip` y `.space` cumplen el mismo papel: separar 
 pedazo de memoria para usarlo después. Conviene ponerlos en `.bss` cuando el
 contenido inicial no importa y el programa solo necesita el espacio.
 
-## Datos no son tipos de lenguaje
+## Alineación básica
+
+Algunos datos se leen mejor cuando están alineados a su tamaño natural. Por
+ejemplo, una palabra de 4 bytes suele ubicarse en una dirección múltiplo de 4.
+El assembler ofrece directivas de alineación, pero en esta unidad basta conocer
+la idea: mezclar bytes sueltos y palabras puede cambiar la dirección del dato
+siguiente.
+
+Ejemplo conceptual:
 
 ```asm
-valor:
-    .word 10
+.data
+a:
+    .byte 1
+b:
+    .word 2
 ```
 
-Esto coloca 4 bytes. Que luego lo interpretes como signed, unsigned, contador o
-dirección depende del código que lo lea.
-
-::: {.callout-note title="Idea clave"}
-`.word` define tamaño de almacenamiento. No crea automáticamente un `int` como
-en un lenguaje de alto nivel.
-:::
+Más adelante verás cómo alinear explícitamente cuando haga falta. Por ahora,
+cuando declares tablas o structs manuales, revisa tamaños y offsets con cuidado.
 
 ## Ejemplo integrado
 
@@ -110,12 +181,32 @@ contador:
 
 .section .rodata
 mensaje:
-    .asciz "Hola AArch64\n"
+    .ascii "Hola AArch64\n"
+mensaje_len = . - mensaje
 
 .bss
 buffer:
     .skip 64
 ```
+
+Lectura:
+
+| Símbolo | Qué nombra |
+|---|---|
+| `contador` | dirección de 4 bytes inicializados |
+| `mensaje` | dirección del primer byte del texto |
+| `mensaje_len` | valor constante con longitud del texto |
+| `buffer` | dirección inicial de 64 bytes reservados |
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Confundir `.word` con variable de alto nivel | piensa en bytes y tamaño |
+| Usar `.ascii` esperando byte cero | usa `.asciz` o agrega `.byte 0` |
+| Contar longitud a mano | usa `. - etiqueta` |
+| Reservar buffers en `.rodata` | usa `.bss` para espacio de trabajo |
+| Ignorar endianness al inspeccionar memoria | recuerda little endian |
 
 ## Mini ejercicios
 
@@ -123,6 +214,8 @@ buffer:
 2. Elige directiva para guardar 8 bytes.
 3. Explica diferencia entre `.ascii "A"` y `.asciz "A"`.
 4. Reserva 128 bytes para un buffer.
+5. Calcula longitud de `"ABC\n"` usando `. - etiqueta`.
+6. Explica cómo se vería `0x12345678` en memoria little endian.
 
 ## Checklist
 
@@ -132,5 +225,19 @@ buffer:
 - [ ] Puedo usar `.quad`.
 - [ ] Puedo distinguir `.ascii` de `.asciz`.
 - [ ] Puedo reservar espacio con `.skip` o `.space`.
+- [ ] Puedo explicar tamaño, dirección e interpretación.
+
+## Cierre
+
+Definir datos en assembly es controlar bytes. Las etiquetas te dan direcciones,
+las directivas colocan o reservan memoria, y tu código decide cómo interpretar
+lo que lee.
 
 Siguiente: [Pseudo-instrucciones y direcciones](05-pseudo-instrucciones-direcciones.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [Assembler Directives](https://sourceware.org/binutils/docs/as/Pseudo-Ops.html).
+- Arm, [Learn the Architecture - Memory and data](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).

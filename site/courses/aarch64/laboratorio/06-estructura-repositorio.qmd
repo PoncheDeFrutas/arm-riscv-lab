@@ -14,6 +14,15 @@ Cada ejemplo pequeño puede vivir como una carpeta simple con `.vscode/` y
 `src/`.
 :::
 
+## Qué vas a aprender
+
+Esta lección explica cómo organizar prácticas y ejemplos. La estructura no es
+solo orden visual: reduce errores de ejecución, facilita depuración y permite
+que el mismo flujo funcione en QEMU o ARM64 nativo.
+
+El objetivo es que puedas crear una práctica nueva sin inventar rutas ni
+comandos cada vez.
+
 ## Proyecto mínimo
 
 ```bash
@@ -36,6 +45,20 @@ En `src/` solo necesitas dos archivos para empezar:
 El binario generado queda en `src/build/main` visto desde VS Code, y en
 `build/main` cuando ya estás dentro de `src/`.
 
+## Por qué separar `.vscode/` y `src/`
+
+`.vscode/` guarda configuración de editor y debugging. `src/` guarda el programa
+y su flujo de construcción. Mantenerlos separados evita mezclar configuración de
+herramientas con código fuente.
+
+Para un estudiante, la regla práctica es:
+
+```bash
+abrir carpeta del ejemplo en VS Code
+trabajar dentro de src/
+ejecutar make desde src/
+```
+
 ## Flujo único
 
 ```bash
@@ -48,6 +71,13 @@ make gdb
 
 QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile
 que copiaste como `src/Makefile`.
+
+| Comando | Intención |
+|---|---|
+| `make` | construir el binario |
+| `make run` | ejecutar el binario |
+| `make gdb` | iniciar flujo de depuración |
+| `make clean` | limpiar artefactos generados |
 
 ## Templates disponibles
 
@@ -76,6 +106,33 @@ No uses banderas especiales de `make` en las prácticas iniciales. Cambia el
 contenido de `src/Makefile` y conserva los comandos.
 :::
 
+## Cuándo usar `examples/` y `projects/`
+
+| Carpeta | Úsala para |
+|---|---|
+| `examples/` | programas pequeños que muestran una idea concreta |
+| `projects/` | prácticas más largas con varias partes o estructura propia |
+| `tooling/` | plantillas, Dockerfile y soporte reusable |
+
+Ejemplo autocontenido: un programa que muestra `write`, `read`, un loop o una
+operación de bits. Proyecto: una práctica con varias funciones, archivos,
+depuración y entregables.
+
+## Qué debe tener una práctica nueva
+
+Una práctica mínima debería incluir:
+
+- carpeta clara con nombre numerado;
+- `src/main.s`;
+- `src/Makefile` copiado desde un template;
+- salida esperada;
+- instrucciones para `make`, `make run` y `make clean`;
+- pasos de depuración si aplica;
+- explicación breve del concepto que practica.
+
+Si la práctica necesita varios archivos `.s`, usa un template `multi`. Si solo
+tiene `main.s`, usa uno `single`.
+
 ## Carpetas del curso
 
 | Carpeta | Uso |
@@ -87,6 +144,15 @@ contenido de `src/Makefile` y conserva los comandos.
 | `site/slides/` | Presentaciones Slidev |
 | `tooling/` | Templates y soporte técnico |
 
+## Errores comunes
+
+| Error | Consecuencia | Corrección |
+|---|---|---|
+| Ejecutar `make` desde carpeta equivocada | Makefile no encontrado | entra a `src/` |
+| Copiar template ARM64 en host x86_64 | ejecución falla o no usa QEMU | usa template `qemu` |
+| Copiar template `single` para varios `.s` | faltan objetos en enlace | usa template `multi` |
+| Guardar binarios fuera de `build/` | repo queda desordenado | mantener artefactos en `build/` |
+
 ## Checklist
 
 - [ ] Mi ejemplo tiene `.vscode/` y `src/`.
@@ -94,3 +160,17 @@ contenido de `src/Makefile` y conserva los comandos.
 - [ ] Uso `make`, `make run` y `make gdb`.
 - [ ] Si cambio de entorno, reemplazo `src/Makefile`.
 - [ ] VS Code apunta a `src/build/main`.
+- [ ] Sé cuándo usar `examples/`, `projects/` y `tooling/`.
+
+## Cierre
+
+Una estructura estable hace que el estudiante se concentre en el programa, no en
+adivinar comandos. En este repositorio, el Makefile define el entorno y la
+carpeta `src/` concentra el trabajo práctico.
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Make, [GNU Make Manual](https://www.gnu.org/software/make/manual/).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [Using ld](https://sourceware.org/binutils/docs/ld/).
+- QEMU, [User-mode emulation](https://www.qemu.org/docs/master/user/).

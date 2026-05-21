@@ -13,14 +13,27 @@ Las secciones no son decoración. Le dicen al assembler dónde colocar código,
 datos inicializados, datos de solo lectura o espacio reservado.
 :::
 
+## Qué vas a aprender
+
+Vas a usar secciones para separar instrucciones y datos. Esta separación ayuda
+al assembler, al linker, al loader y también a quien lee el programa.
+
+En esta lección no estudiaremos ELF a fondo. Solo veremos la idea práctica: un
+programa no es una bolsa de bytes sin orden. Código, constantes, variables y
+buffers tienen lugares distintos.
+
 ## Mapa de secciones
 
-| Sección | Uso inicial |
-|---|---|
-| `.text` | Instrucciones |
-| `.data` | Datos inicializados modificables |
-| `.rodata` | Datos inicializados de solo lectura |
-| `.bss` | Espacio reservado sin bytes explícitos en el archivo |
+| Sección | Uso inicial | Ejemplo |
+|---|---|---|
+| `.text` | instrucciones | `mov`, `ldr`, `svc` |
+| `.data` | datos inicializados modificables | contador con valor inicial |
+| `.rodata` | datos inicializados de solo lectura | mensajes constantes |
+| `.bss` | espacio reservado sin bytes explícitos | buffers |
+
+Las secciones expresan intención. Si algo no cambia, `.rodata` comunica mejor
+que `.data`. Si solo necesitas reservar espacio, `.bss` comunica mejor que
+escribir muchos ceros a mano.
 
 ## `.text`
 
@@ -35,6 +48,7 @@ _start:
 ```
 
 Las líneas `mov` y `svc` son instrucciones A64. La línea `.text` es directiva.
+Después de `.text`, las etiquetas suelen nombrar direcciones de código.
 
 ## `.data`
 
@@ -46,7 +60,8 @@ contador:
     .word 10
 ```
 
-`contador` nombra una dirección. `.word 10` coloca 4 bytes con ese valor.
+`contador` nombra una dirección. `.word 10` coloca 4 bytes con ese valor. Si una
+práctica va a cambiar el valor en memoria, `.data` es una opción razonable.
 
 ## `.rodata`
 
@@ -59,7 +74,9 @@ mensaje:
     .asciz "Hola AArch64\n"
 ```
 
-Úsala para mensajes o tablas constantes que no necesitas modificar.
+Úsala para mensajes o tablas constantes que no necesitas modificar. En un
+sistema moderno, el loader puede mapear estos datos con permisos distintos a una
+sección modificable.
 
 ## `.bss`
 
@@ -78,6 +95,22 @@ Lectura mínima: `buffer` nombra inicio de un espacio reservado de 64 bytes.
 `.bss` no significa “llenar el archivo con 64 bytes escritos”. Significa reservar
 espacio para datos que existirán al cargar el programa.
 :::
+
+## Relación con ELF
+
+Cuando enlazas, las secciones del objeto ayudan a construir el ejecutable ELF.
+Más adelante estudiarás secciones, segmentos y permisos con más detalle. Por
+ahora, piensa así:
+
+```bash
+.text   -> código
+.rodata -> constantes
+.data   -> datos inicializados modificables
+.bss    -> espacio reservado
+```
+
+El sistema operativo no necesita tratar igual al código y a un buffer. Separar
+secciones permite expresar esas diferencias desde el archivo fuente.
 
 ## Ejemplo integrado
 
@@ -101,7 +134,24 @@ buffer:
     .skip 64
 ```
 
-## Error común
+Lectura del ejemplo:
+
+| Elemento | Sección | Por qué |
+|---|---|---|
+| `_start` | `.text` | marca código ejecutable |
+| `contador` | `.data` | dato inicializado que podría cambiar |
+| `mensaje` | `.rodata` | texto constante |
+| `buffer` | `.bss` | espacio reservado |
+
+## Errores comunes
+
+| Error | Por qué importa |
+|---|---|
+| Poner instrucciones en `.data` | confunde código con datos |
+| Usar `.data` para mensajes constantes | pierde intención de solo lectura |
+| Reservar buffers con muchos `.byte 0` | `.bss` expresa mejor espacio reservado |
+| Creer que `.bss` ocupa lo mismo en archivo | reserva memoria sin escribir todos los bytes |
+| Olvidar cambiar de sección | etiquetas posteriores quedan en sección equivocada |
 
 ::: {.callout-warning title="No uses .data para todo"}
 Si algo es código, va en `.text`. Si es mensaje constante, suele ir en
@@ -114,6 +164,8 @@ Si algo es código, va en `.text`. Si es mensaje constante, suele ir en
 2. Indica sección correcta para mensaje constante.
 3. Indica sección correcta para buffer reservado.
 4. Explica qué diferencia hay entre `.data` y `.rodata`.
+5. Explica por qué `.bss` es útil para buffers.
+6. Clasifica `_start`, `mensaje`, `contador` y `buffer` en el ejemplo integrado.
 
 ## Checklist
 
@@ -122,5 +174,19 @@ Si algo es código, va en `.text`. Si es mensaje constante, suele ir en
 - [ ] Puedo explicar `.rodata`.
 - [ ] Puedo explicar `.bss`.
 - [ ] Puedo ubicar etiquetas de código y datos en secciones distintas.
+- [ ] Puedo explicar relación básica entre secciones y ELF.
+
+## Cierre
+
+Las secciones ordenan el programa antes de que exista el ejecutable final. Si
+eliges bien la sección, el archivo fuente comunica mejor qué es código, qué es
+dato constante, qué puede cambiar y qué solo reserva espacio.
 
 Siguiente: [Directivas básicas](03-directivas-basicas.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [Assembler Directives](https://sourceware.org/binutils/docs/as/Pseudo-Ops.html).
+- Arm, [ELF for the Arm 64-bit Architecture](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst).
+- System V ABI, [ELF gABI](https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html).
