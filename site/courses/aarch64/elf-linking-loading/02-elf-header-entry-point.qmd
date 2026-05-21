@@ -12,6 +12,12 @@ El ELF header es la tarjeta de identidad del archivo. Antes de mirar secciones,
 símbolos o instrucciones, debes saber qué clase de objeto tienes enfrente.
 :::
 
+## Qué vas a aprender
+
+Vas a usar el ELF header como primera lectura técnica. Antes de preguntar “qué
+instrucciones tiene”, confirmarás formato, arquitectura, tipo de archivo y punto
+de entrada.
+
 ## Qué pregunta responde `readelf -h`
 
 ```bash
@@ -89,6 +95,18 @@ inicialización y llamada posterior a `main`.
 entrada para loader/kernel.
 :::
 
+## `_start`, `main` y runtime
+
+| Programa | Símbolo que escribes | Entry point típico |
+|---|---|---|
+| assembly mínimo sin libc | `_start` | puede apuntar directamente a `_start` |
+| programa C con libc | `main` | suele apuntar a código de arranque |
+| PIE dinámico | `main` o funciones C | entry point reubicable dentro de objeto `DYN` |
+
+El loader no busca `main` por nombre. Lee el entry point del ELF y transfiere
+control ahí. Si hay runtime de C, ese runtime será quien termine llamando a
+`main`.
+
 ## Comparar `.o` y ejecutable
 
 ```bash
@@ -135,6 +153,16 @@ Ver `Entry point address` y asumir que es dirección fija en todos los sistemas.
 Con PIE y ASLR, la dirección efectiva de carga puede cambiar. Esta unidad lo
 prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo.
 
+## Lectura rápida del header
+
+Cuando revises una salida de `readelf -h`, usa este orden:
+
+1. `Class` y `Data` para confirmar ELF64 little-endian.
+2. `Machine` para confirmar AArch64.
+3. `Type` para saber si es `REL`, `EXEC` o `DYN`.
+4. `Entry point address` solo si el tipo puede ejecutarse.
+5. offsets de program/section headers para saber qué otras tablas existen.
+
 ## Checklist
 
 - [ ] Puedo usar `readelf -h`.
@@ -146,3 +174,9 @@ prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo
 ## Siguiente paso
 
 Abre [Secciones, símbolos y relocations](03-secciones-simbolos-relocations.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils, *readelf*: <https://sourceware.org/binutils/docs/binutils/readelf.html>

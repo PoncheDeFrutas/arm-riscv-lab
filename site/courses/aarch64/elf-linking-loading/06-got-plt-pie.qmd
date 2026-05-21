@@ -13,6 +13,12 @@ fijas al ensamblar o enlazar. El objetivo aquí no es dominar dynamic linker
 internals, sino entender por qué existen esas piezas.
 :::
 
+## Qué vas a aprender
+
+Vas a leer GOT, PLT y PIE como respuestas al mismo problema: algunas direcciones
+se conocen tarde o pueden cambiar. La meta es reconocer señales en herramientas,
+no implementar un dynamic linker.
+
 ## Problema
 
 Un programa dinámico puede llamar `printf`, pero `printf` vive en `libc`. La
@@ -151,11 +157,30 @@ la imagen, pero la base real se decide al cargar. Esto prepara debugging moderno
 una dirección vista en `objdump` y una dirección vista en GDB pueden requerir
 sumar la base de carga.
 
+## Señales en herramientas
+
+| Señal | Lectura inicial |
+|---|---|
+| `printf@plt` en `objdump` | llamada a función dinámica por stub |
+| `.got` o `.got.plt` en secciones | tabla relacionada con direcciones dinámicas |
+| `Type: DYN` en ejecutable | puede ser PIE o shared object; revisar contexto |
+| `INTERP` en program headers | participa dynamic loader |
+| `NEEDED libc.so.6` | dependencia dinámica |
+
+Ninguna señal aislada cuenta toda la historia. La lectura correcta cruza header,
+program headers, dynamic section y desensamblado.
+
 ## Error común
 
 Intentar explicar GOT/PLT como si ya estuviéramos escribiendo dynamic linker.
 No hace falta. En esta unidad basta con entender que son estructuras para
 conectar código propio con direcciones que pueden resolverse al cargar.
+
+## Límites de esta lección
+
+Quedan fuera lazy binding detallado, relocations dinámicas campo por campo,
+symbol versioning, RELRO, exploits y resolución manual. Se mencionan solo para
+no confundirlos con la meta actual: entender el modelo mental.
 
 ## Checklist
 
@@ -169,3 +194,11 @@ conectar código propio con direcciones que pueden resolverse al cargar.
 ## Siguiente paso
 
 Abre [Herramientas y lectura guiada](07-herramientas-lectura-guiada.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils, *objdump*: <https://sourceware.org/binutils/docs/binutils/objdump.html>
+- GNU Binutils, *readelf*: <https://sourceware.org/binutils/docs/binutils/readelf.html>
+- Linux man-pages, `ld.so(8)`: <https://www.man7.org/linux/man-pages/man8/ld.so.8.html>

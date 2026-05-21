@@ -13,6 +13,12 @@ Cuando Linux crea el proceso, lo que importa para mapear memoria son los program
 headers.
 :::
 
+## Qué vas a aprender
+
+Vas a cambiar de la vista del linker a la vista del loader. Las secciones
+explican organización; los segmentos `LOAD` explican qué rangos del archivo se
+convierten en memoria del proceso y con qué permisos.
+
 ## Leer program headers
 
 ```bash
@@ -130,12 +136,38 @@ Modelo inicial:
 Si el binario es dinámico, también participa el dynamic loader. Eso viene en la
 siguiente lección.
 
+## De program header a memoria
+
+Lee cada `LOAD` como una instrucción de carga para el sistema:
+
+```bash
+tomar bytes desde Offset
+mapearlos cerca de VirtAddr
+usar FileSiz como contenido inicial
+reservar MemSiz en memoria
+aplicar Flags
+```
+
+No es una llamada literal a `mmap` escrita en tu programa, pero conceptualmente
+conecta con permisos de memoria: rangos legibles, ejecutables o escribibles.
+Cuando `MemSiz` es mayor que `FileSiz`, el espacio adicional pertenece al
+proceso aunque no esté almacenado byte por byte en el archivo.
+
 ## Error común
 
 Creer que section headers son el mapa principal de ejecución. Para cargar el
 proceso, los program headers son el mapa crítico. Las secciones siguen siendo
 útiles para herramientas, linker y debugging, pero no son la guía principal del
 loader.
+
+## Errores de lectura
+
+| Error | Corrección |
+|---|---|
+| buscar permisos en `readelf -S` primero | usar `readelf -l` para mapa de carga |
+| creer que cada sección se mapea sola | un segmento puede agrupar varias secciones |
+| interpretar `FileSiz < MemSiz` como corrupción | suele indicar memoria cero como `.bss` |
+| asumir que `RX` y `RW` son decorativos | son permisos reales del proceso |
 
 ## Checklist
 
@@ -150,3 +182,10 @@ loader.
 ## Siguiente paso
 
 Abre [Linking estático y dinámico](05-linking-estatico-dinamico.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils, *readelf*: <https://sourceware.org/binutils/docs/binutils/readelf.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>

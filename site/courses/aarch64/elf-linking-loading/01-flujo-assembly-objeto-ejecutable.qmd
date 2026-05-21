@@ -13,6 +13,12 @@ unidad separaremos tres objetos: archivo fuente, archivo objeto y ejecutable.
 Cada uno resuelve un problema distinto.
 :::
 
+## Qué vas a aprender
+
+Vas a seguir el camino mínimo desde un archivo `.s` hasta un proceso ejecutable.
+La meta es distinguir qué decide el assembler, qué decide el linker y qué queda
+para el loader cuando Linux crea el proceso.
+
 ## Tres archivos, tres preguntas
 
 | Archivo | Pregunta que responde |
@@ -102,6 +108,22 @@ sección actual. Si encuentra una referencia que depende de una dirección final
 puede dejar una relocation para el linker. Ese resultado es técnico y legible
 con herramientas, aunque todavía no sea ejecutable final.
 
+## Qué queda pendiente en el `.o`
+
+Un objeto relocatable puede estar perfectamente ensamblado y aun así no estar
+listo para ejecutarse. Todavía pueden faltar:
+
+| Pendiente | Quién lo resuelve |
+|---|---|
+| dirección final de cada sección | linker |
+| símbolos definidos en otros objetos | linker |
+| relocations de direcciones | linker o dynamic loader |
+| program headers de ejecución | linker |
+| entry point final | linker |
+
+Por eso `min.o` es útil para inspección y enlace, pero no es el contrato que el
+kernel espera para iniciar un proceso.
+
 ## Qué hizo el linker
 
 El linker tomó `min.o` y creó un archivo ejecutable:
@@ -169,6 +191,15 @@ $ qemu-aarch64 ./min.o
 Eso falla porque `min.o` no es el contrato que Linux espera para ejecutar. Es
 una pieza de construcción, no el edificio terminado.
 
+## Lectura rápida de fallos
+
+| Mensaje o situación | Lectura probable |
+|---|---|
+| `undefined reference` | el linker no encontró un símbolo prometido |
+| `file` dice `relocatable` | todavía falta enlazar |
+| no aparece `Entry point` útil | no estás mirando un ejecutable final |
+| el binario no corre con QEMU | revisar si es ejecutable ELF y arquitectura correcta |
+
 ## Checklist
 
 - [ ] Puedo explicar qué contiene `min.s`.
@@ -181,3 +212,10 @@ una pieza de construcción, no el edificio terminado.
 ## Siguiente paso
 
 Abre [ELF header y entry point](02-elf-header-entry-point.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>

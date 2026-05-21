@@ -13,6 +13,12 @@ runtime de C y, normalmente, del dynamic loader. Esta lección separa qué queda
 fijo al linkear y qué se resuelve al cargar.
 :::
 
+## Qué vas a aprender
+
+Vas a distinguir dos preguntas: qué queda dentro del ejecutable al enlazar y qué
+queda como dependencia para tiempo de carga. Esa separación explica `NEEDED`,
+`INTERP`, `ldd`, `-static` y por qué `gcc` simplifica programas con `libc`.
+
 ## Dos modelos
 
 | Modelo | Idea | Consecuencia |
@@ -112,6 +118,19 @@ $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn
 `ldd` es útil, pero no universal. Además, no se debe usar sobre ejecutables no
 confiables; puede involucrar el dynamic loader.
 
+## Método seguro de inspección
+
+Para un binario AArch64 construido en un host que no es AArch64, prioriza:
+
+| Pregunta | Comando |
+|---|---|
+| ¿qué librerías declara? | `aarch64-linux-gnu-readelf -d hello_dyn` |
+| ¿qué loader espera? | `aarch64-linux-gnu-readelf -l hello_dyn` |
+| ¿puede ejecutarse con sysroot? | `qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn` |
+
+Usa `ldd` solo cuando entiendas qué loader se va a invocar y confíes en el
+binario.
+
 ## Qué hace el dynamic loader
 
 Modelo inicial:
@@ -154,6 +173,15 @@ en el sistema destino. En laboratorios cruzados esto puede simplificar algunas
 ejecuciones, pero también oculta el comportamiento real de dynamic loader que
 queremos estudiar en esta unidad.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| creer que dinámico significa “sin linker” | siempre hay enlace; cambia qué se difiere |
+| usar `ldd` sobre binarios no confiables | preferir `readelf -d` para inspección pasiva |
+| esperar que un dinámico corra sin sysroot | pasar `-L` a QEMU o usar entorno compatible |
+| concluir que `-static` siempre es mejor | considerar tamaño, despliegue y compatibilidad |
+
 ## Checklist
 
 - [ ] Puedo distinguir static linking y dynamic linking.
@@ -166,3 +194,11 @@ queremos estudiar en esta unidad.
 ## Siguiente paso
 
 Abre [GOT, PLT y PIE](06-got-plt-pie.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>
+- Linux man-pages, `ld.so(8)`: <https://www.man7.org/linux/man-pages/man8/ld.so.8.html>
+- Linux man-pages, `ldd(1)`: <https://www.man7.org/linux/man-pages/man1/ldd.1.html>

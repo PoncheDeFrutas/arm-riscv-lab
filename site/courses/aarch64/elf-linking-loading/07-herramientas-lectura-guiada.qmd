@@ -13,6 +13,12 @@ Cada comando debe responder una pregunta. Si no sabes la pregunta, la salida te
 va a parecer ruido.
 :::
 
+## Qué vas a aprender
+
+Vas a convertir herramientas sueltas en una rutina de lectura. El objetivo no es
+ejecutar todos los comandos siempre, sino elegir el comando que responde la
+pregunta técnica actual.
+
 La disciplina de lectura importa más que el comando exacto. Un binario pequeño
 puede inspeccionarse en minutos si sigues orden: identidad, carga, organización,
 código, nombres y dependencias. El mismo orden escala a programas más grandes,
@@ -147,6 +153,19 @@ $ aarch64-linux-gnu-readelf -d hello_dyn
 $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn
 ```
 
+## Qué conclusiones evitar
+
+| Salida | No concluyas automáticamente |
+|---|---|
+| `nm` no muestra símbolos | que el binario no tenga código |
+| `Type: DYN` | que siempre sea solo librería compartida |
+| `ldd` falla | que el binario esté corrupto |
+| direcciones distintas entre `objdump` y GDB | que una herramienta mienta |
+| no ves `.symtab` | que no pueda ejecutarse |
+
+Primero pregunta si el binario fue `strip`, si es PIE, si estás en host cruzado
+o si estás mezclando vista de archivo con vista de proceso.
+
 ## Preguntas de cierre
 
 Antes de decir “ya inspeccioné el binario”, responde:
@@ -175,3 +194,12 @@ Antes de decir “ya inspeccioné el binario”, responde:
 Un binario ELF no es el final opaco del proceso. Es un contrato entre
 herramientas: assembler, linker, loader, kernel, depurador y tus propias
 decisiones de código.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils documentation: <https://sourceware.org/binutils/docs/>
+- Linux man-pages, `ld.so(8)`: <https://www.man7.org/linux/man-pages/man8/ld.so.8.html>
+- Linux man-pages, `ldd(1)`: <https://www.man7.org/linux/man-pages/man1/ldd.1.html>
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>

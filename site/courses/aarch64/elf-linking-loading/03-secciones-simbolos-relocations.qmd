@@ -13,6 +13,12 @@ direcciones o piezas de código/datos. Las relocations marcan lugares que el
 linker debe ajustar cuando conozca el layout final.
 :::
 
+## Qué vas a aprender
+
+Vas a leer tres vistas que suelen aparecer juntas: secciones para organizar
+contenido, símbolos para nombrarlo y relocations para registrar ajustes
+pendientes. La clave es no confundirlas con lo que ejecuta directamente el CPU.
+
 ## Secciones: organización para construir
 
 ```bash
@@ -165,11 +171,35 @@ $ aarch64-linux-gnu-objdump -dr main.o
 En `.o`, pueden aparecer relocations. En el ejecutable final, muchas ya estarán
 resueltas. En binarios dinámicos, algunas quedan para el dynamic loader.
 
+## Método de lectura
+
+Usa este orden cuando tengas un objeto `.o`:
+
+| Paso | Comando | Pregunta |
+|---|---|---|
+| 1 | `readelf -S main.o` | ¿qué secciones produjo el assembler? |
+| 2 | `nm main.o` | ¿qué nombres define o necesita? |
+| 3 | `readelf -r main.o` | ¿qué direcciones quedan pendientes? |
+| 4 | `objdump -dr main.o` | ¿qué instrucción tiene relocation asociada? |
+
+Después de enlazar, repite parte de la lectura en el ejecutable. Muchas
+relocations del `.o` deben desaparecer porque el linker ya conoce el layout
+final.
+
 ## Error común
 
 Confundir símbolo con variable. Una variable puede tener un símbolo, pero símbolo
 es más general: puede nombrar función, etiqueta, objeto, sección o referencia
 externa.
+
+## Errores de diagnóstico
+
+| Error | Mejor lectura |
+|---|---|
+| creer que `.bss` ocupa todos sus ceros en disco | comparar tamaño de sección y tamaño de archivo |
+| leer `U printf` como bug inmediato | puede ser normal antes de enlazar con `libc` |
+| creer que relocation es instrucción | verla como trabajo pendiente del linker |
+| buscar una variable solo por dirección | revisar primero símbolo y sección |
 
 ## Checklist
 
@@ -183,3 +213,11 @@ externa.
 ## Siguiente paso
 
 Abre [Segmentos, loader y permisos](04-segmentos-loader-permisos.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *ELF for the Arm 64-bit Architecture (AAELF64)*: <https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst>
+- System V ABI, *Generic ABI*: <https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html>
+- GNU Binutils, *nm*: <https://sourceware.org/binutils/docs/binutils/nm.html>
+- GNU Binutils, *objdump*: <https://sourceware.org/binutils/docs/binutils/objdump.html>
+- GNU Binutils, *readelf*: <https://sourceware.org/binutils/docs/binutils/readelf.html>
