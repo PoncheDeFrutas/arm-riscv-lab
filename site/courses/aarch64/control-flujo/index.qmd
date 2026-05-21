@@ -25,6 +25,17 @@ teclado o la barra espaciadora.
 [Ver presentación Slidev](../../../slides/aarch64/08-control-flujo/){.lab-button}
 :::
 
+## Qué vas a aprender
+
+Vas a construir estructuras de alto nivel usando piezas de bajo nivel:
+etiquetas, comparaciones, flags y ramas. El procesador no tiene una palabra
+especial llamada `if`; ejecuta instrucciones y cambia el `PC` cuando una rama lo
+ordena.
+
+La meta de la unidad es leer control de flujo preguntando: qué comparación
+preparó flags, qué condición se consulta, cuál es el destino y qué pasa si la
+rama no se toma.
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -81,6 +92,18 @@ El procesador no entiende `if`, `while` o `for` como palabras especiales. En
 assembly esas estructuras se construyen con comparaciones, flags, etiquetas y
 branches.
 :::
+
+## Diagnóstico básico de control de flujo
+
+Cuando el programa toma un camino inesperado, revisa:
+
+1. qué instrucción actualizó `NZCV`;
+2. si otra instrucción sobrescribió flags antes del branch;
+3. si la condición es signed o unsigned;
+4. a qué etiqueta salta la rama;
+5. qué bloque se ejecuta si la rama no se toma;
+6. si falta un salto para evitar caer en otro bloque;
+7. si el loop actualiza su contador o puntero.
 
 ## AArch64 y ejecución condicional
 
@@ -179,3 +202,9 @@ Introducción a `bl`, `br`, `blr`, `ret` y `LR/X30`.
 ## Siguiente paso
 
 Empieza por [Branching y etiquetas](01-branching-etiquetas.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

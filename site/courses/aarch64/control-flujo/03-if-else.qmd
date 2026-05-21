@@ -13,6 +13,15 @@ El procesador no tiene una instrucción llamada `if`. Un `if` se construye con
 una comparación, una rama condicional y etiquetas que separan los caminos.
 :::
 
+## Qué vas a aprender
+
+Vas a traducir decisiones simples a assembly. La estructura visual cambia, pero
+la idea es la misma: preparar una condición, elegir un camino y reunir el flujo
+en una etiqueta común.
+
+El punto delicado es la caída de flujo: si no saltas al final, puedes ejecutar
+también el bloque que querías evitar.
+
 ## Patrón básico de `if`
 
 Idea de alto nivel:
@@ -166,31 +175,42 @@ b caso_default
 No veremos jump tables reales todavía. Por ahora basta reconocer que un
 `switch` también es selección por saltos.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Olvidar salida común | ambos caminos deben reunirse |
+| Olvidar `b fin_if` en primer bloque | el flujo cae al segundo bloque |
+| Invertir condición sin cambiar lectura | escribe comentario o mapa mental |
+| Usar signed para índices | usa condición unsigned si representa tamaño/índice |
+| No ubicar caso default | siempre define camino para no coincidencias |
+
 ## Mini ejercicios
 
-1. Explica por qué este patrón necesita `b fin_if`:
+1. Cambia `mov x0, #7` a `mov x0, #12`. ¿Qué código de salida esperas?
+2. Explica por qué `b fin_if` evita ejecutar el otro bloque.
+3. Escribe un `if` sin `else` que ejecute bloque solo si `x0 == 0`.
+4. ¿Qué condición usarías para `if (i < len)` si ambos son unsigned?
+5. Dibuja el flujo de un `switch` con dos casos y default.
 
-```asm
-cmp x0, #5
-b.eq caso_igual
+## Checklist
 
-caso_distinto:
-    mov x1, #1
-    b fin_if
-
-caso_igual:
-    mov x1, #0
-
-fin_if:
-```
-
-2. Cambia mentalmente el ejemplo para que `x0 = 12`. ¿Qué código de salida
-obtendrías?
-
-3. Si comparas tamaños, ¿usarías `b.lt` o `b.lo`?
+- [ ] Puedo traducir un `if`.
+- [ ] Puedo traducir un `if/else`.
+- [ ] Puedo usar salida común.
+- [ ] Puedo explicar condición invertida.
+- [ ] Puedo elegir signed o unsigned.
 
 ## Cierre
 
-Un `if` en assembly es una ruta. Comparas, eliges un salto y aseguras que cada
-camino llegue al punto correcto. La claridad del flujo importa más que reducir
-una instrucción.
+Un `if` en assembly es una decisión explícita: comparación, branch, etiquetas y
+flujo de caída. Cuando lees el código, no sigas solo el orden del archivo; sigue
+las ramas.
+
+Siguiente: [Loops y recorrido](04-loops-recorrido.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

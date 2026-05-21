@@ -14,10 +14,23 @@ una dirección guardada en un registro. Esta página es una introducción: prepa
 funciones futuras sin explicar todavía stack frames ni ABI.
 :::
 
-## `bl`: branch with link
+## Qué vas a aprender
 
-`bl` salta a una etiqueta y guarda dirección de retorno en `LR`, que en AArch64
-es `X30`.
+Vas a distinguir saltos normales de llamadas. `b` cambia el flujo sin guardar
+retorno. `bl` salta y guarda dónde volver. `ret` usa esa dirección para regresar.
+
+También verás saltos por registro: `br` y `blr`. Son la base de llamadas
+indirectas, dispatch y patrones futuros, pero aquí solo necesitas reconocer el
+mecanismo.
+
+## `b` y `bl`
+
+| Instrucción | Qué hace |
+|---|---|
+| `b etiqueta` | salta a una etiqueta |
+| `bl etiqueta` | salta y guarda dirección de retorno en `LR/X30` |
+
+`bl` significa branch with link.
 
 ```asm
 bl funcion_simple
@@ -65,6 +78,20 @@ Flujo:
 ```bash
 _start -> bl funcion_simple -> funcion_simple -> ret -> instrucción después de bl
 ```
+
+## Qué contiene `LR/X30`
+
+`LR` es el link register. En AArch64 es el registro `x30`. Después de `bl`, ahí
+queda la dirección de retorno.
+
+```bash
+antes de bl:  x30 no importa para esta llamada
+bl destino:   x30 = dirección después de bl
+ret:          PC = x30
+```
+
+Esta explicación es suficiente para llamadas simples. Funciones reales necesitan
+preservar `LR` si hacen otras llamadas, y eso lleva a stack frames.
 
 ## Límite importante
 
@@ -116,7 +143,9 @@ salta a la dirección en x0
 guarda retorno en lr/x30
 ```
 
-Esto prepara llamadas indirectas. Por ahora solo reconoce la diferencia:
+Esto prepara llamadas indirectas.
+
+## Comparación rápida
 
 | Instrucción | Destino | Guarda retorno |
 |---|---|---|
@@ -143,6 +172,16 @@ ret x5
 No la usaremos todavía en prácticas normales. Es suficiente reconocer que `ret`
 usa una dirección de retorno.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Usar `b` esperando volver | usa `bl` para guardar retorno |
+| Ejecutar `ret` sin `LR` válido | `ret` necesita dirección de retorno |
+| Hacer llamada anidada sin preservar `LR` | eso requiere stack frame futuro |
+| Confundir `br` con `blr` | `blr` guarda retorno, `br` no |
+| Saltar por registro no inicializado | carga una dirección válida antes |
+
 ## Mini ejercicios
 
 1. ¿Qué guarda `bl` que `b` no guarda?
@@ -150,9 +189,25 @@ usa una dirección de retorno.
 3. ¿Qué usa `ret` para volver?
 4. ¿Cuál salta a una dirección guardada en registro: `b` o `br`?
 5. ¿Por qué no estudiaremos stack frames todavía?
+6. ¿Qué diferencia hay entre `br x0` y `blr x0`?
+
+## Checklist
+
+- [ ] Puedo distinguir `b` de `bl`.
+- [ ] Puedo explicar `LR/X30`.
+- [ ] Puedo explicar `ret`.
+- [ ] Puedo distinguir `br` de `blr`.
+- [ ] Puedo explicar por qué llamadas reales necesitan ABI después.
 
 ## Cierre
 
 `bl`, `br`, `blr` y `ret` abren la puerta a funciones, callbacks y llamadas
 indirectas. En esta unidad basta con el mapa inicial: saltar, guardar retorno y
 volver.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

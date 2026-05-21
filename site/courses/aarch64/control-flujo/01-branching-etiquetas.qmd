@@ -14,6 +14,14 @@ etiqueta solo nombra una posición del programa. `b` es la instrucción que camb
 qué se ejecuta después.
 :::
 
+## Qué vas a aprender
+
+Vas a leer saltos incondicionales y etiquetas. Esta lección no usa todavía
+condiciones complejas; busca que puedas seguir el camino real de ejecución y no
+solo el orden visual del archivo.
+
+La pregunta principal: ¿qué instrucción se ejecuta después?
+
 ## Flujo normal
 
 Sin saltos, el procesador ejecuta una instrucción y luego la siguiente.
@@ -105,6 +113,21 @@ loop -> suma -> compara -> si x0 < 3, vuelve a loop
 
 Un loop no es magia. Es una rama hacia atrás controlada por una condición.
 
+## Caída de flujo
+
+Si una rama no se toma, el flujo sigue bajando a la siguiente instrucción. Esa
+“caída” importa mucho en `if/else`.
+
+```asm
+cmp x0, #0
+b.eq es_cero
+
+no_es_cero:
+    mov x1, #1
+```
+
+Si `x0` no es cero, `b.eq` no salta y el flujo cae en `no_es_cero`.
+
 ## Salto incondicional para evitar caer en otro bloque
 
 En `if/else`, muchas veces necesitas saltar al final después de ejecutar el caso
@@ -143,6 +166,16 @@ loop -> cuerpo -> condición -> b loop
 | incondicional | cambiar flujo sin mirar flags |
 | condicional | cambiar flujo según flags o registro |
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Pensar que una etiqueta ejecuta algo | solo nombra dirección |
+| Olvidar `b fin` en `if/else` | el flujo cae al siguiente bloque |
+| Leer archivo solo de arriba abajo | sigue branches y destinos |
+| Crear loop sin condición de salida | el programa repite para siempre |
+| No distinguir salto adelante/atrás | adelante omite, atrás repite |
+
 ## Mini ejercicios
 
 1. En el ejemplo de `b salir`, explica por qué `mov x0, #99` no se ejecuta.
@@ -155,9 +188,26 @@ loop:
 ```
 
 3. Explica qué pasaría si quitas `b fin` en un patrón `if/else`.
+4. Marca las etiquetas y branches en un programa `exit` simple.
+
+## Checklist
+
+- [ ] Puedo reconocer una etiqueta.
+- [ ] Puedo reconocer `b` como branch incondicional.
+- [ ] Puedo seguir un salto hacia adelante.
+- [ ] Puedo seguir un salto hacia atrás.
+- [ ] Puedo explicar caída de flujo.
 
 ## Cierre
 
 Control de flujo empieza con una idea simple: el programa tiene posiciones
 nombradas y ramas que cambian la siguiente posición ejecutada. Todo `if` y todo
 loop se construye desde ahí.
+
+Siguiente: [Condiciones y flags](02-condiciones-flags.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

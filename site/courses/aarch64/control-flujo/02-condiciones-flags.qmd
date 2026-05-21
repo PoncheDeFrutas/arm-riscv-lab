@@ -14,6 +14,14 @@ quedaron preparados por `cmp`, `subs`, `adds`, `tst` u otra instrucción que
 actualiza `NZCV`.
 :::
 
+## Qué vas a aprender
+
+Vas a conectar comparación, flags y branch condicional. La rama no vuelve a
+comparar registros; lee el estado `NZCV` dejado por una instrucción anterior.
+
+La regla crítica: entre la comparación y la rama no debes ejecutar otra
+instrucción que cambie flags, a menos que eso sea exactamente lo que quieres.
+
 ## Recordatorio de `NZCV`
 
 | Flag | Pregunta |
@@ -150,6 +158,18 @@ si resultado no fue cero, vuelve a loop
 
 Esto aparece mucho en loops con contador.
 
+## Flags sobrescritos
+
+```asm
+cmp x0, #10
+adds x2, x2, #1
+b.lt menor
+```
+
+Aquí `b.lt` no mira la comparación original. Mira los flags de `adds`. Si
+querías saltar según `x0 < 10`, la rama debía ir antes de `adds` o usar una
+instrucción que no cambie flags.
+
 ## Tabla rápida de condiciones de esta unidad
 
 | Branch | Significado práctico |
@@ -165,15 +185,42 @@ Esto aparece mucho en loops con contador.
 | `b.lo` | menor unsigned |
 | `b.ls` | menor o igual unsigned |
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Usar signed para tamaños | tamaños e índices suelen ser unsigned |
+| Usar unsigned para enteros negativos | usa condiciones signed |
+| Insertar instrucción que cambia flags antes del branch | rama debe seguir flags correctos |
+| Pensar que `cmp` guarda resultado | solo actualiza `NZCV` |
+| Leer `b.lt` sin saber comparación previa | siempre busca quién preparó flags |
+
 ## Mini ejercicios
 
 1. Después de `cmp x0, x1`, ¿qué guarda `x0`?
 2. ¿Qué condición usarías para comparar dos tamaños unsigned?
 3. ¿Qué condición usarías para comparar dos enteros signed?
 4. Explica por qué `b.gt` no es lo mismo que `b.hi`.
+5. Explica qué pasa si `adds` aparece entre `cmp` y `b.eq`.
+
+## Checklist
+
+- [ ] Puedo explicar `NZCV`.
+- [ ] Puedo explicar `cmp`.
+- [ ] Puedo usar `b.eq` y `b.ne`.
+- [ ] Puedo elegir signed vs unsigned.
+- [ ] Puedo reconocer flags sobrescritos.
 
 ## Cierre
 
 La rama condicional no decide desde cero. Consulta una historia corta guardada
 en `NZCV`. Tu trabajo es preparar flags correctos y escoger condición según la
 interpretación: signed o unsigned.
+
+Siguiente: [`if` e `if/else`](03-if-else.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

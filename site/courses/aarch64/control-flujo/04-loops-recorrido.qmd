@@ -14,6 +14,14 @@ forma exacta cambia entre `while`, `do while` y `for`, pero la idea siempre es:
 condición, cuerpo, actualización y salto.
 :::
 
+## Qué vas a aprender
+
+Vas a reconocer loops por su estructura real: una etiqueta al inicio, una
+condición de salida, un cuerpo, una actualización y una rama hacia atrás.
+
+La diferencia entre `while`, `do while` y `for` no está en instrucciones
+especiales. Está en dónde se coloca la condición y cuándo se actualiza el estado.
+
 ## `while`: probar antes de ejecutar
 
 Idea:
@@ -87,6 +95,7 @@ Assembly:
 ```asm
 mov x0, #0          // i = 0
 mov x1, #5          // límite
+mov x2, #0          // acumulador
 
 for_loop:
     cmp x0, x1
@@ -179,17 +188,45 @@ loop:
 fin:
 ```
 
-La etiqueta `fin` no rompe nada por sí sola. La rompe el branch que salta hacia
-ella.
+La etiqueta `fin` marca el primer punto fuera del ciclo.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Olvidar actualizar contador | loop infinito |
+| Usar condición signed para longitud | longitudes suelen ser unsigned |
+| Off-by-one | revisa si sales con `<`, `<=`, `>=` |
+| Pisar flags entre `cmp` y branch | no insertes instrucción que actualice `NZCV` |
+| Perder puntero base con post-index | guarda copia si necesitas base original |
 
 ## Mini ejercicios
 
-1. En el `while`, ¿qué instrucción hace el salto hacia atrás?
-2. En el `do while`, ¿por qué el cuerpo se ejecuta al menos una vez?
-3. En el loop con puntero, ¿qué cambia después de `ldr x2, [x0], #8`?
-4. ¿Por qué `subs x0, x0, #1` puede reemplazar `sub` + `cmp` en contador?
+1. ¿Qué línea hace que el `while` pueda terminar?
+2. ¿Por qué el `do while` ejecuta al menos una vez?
+3. En el loop con puntero, ¿qué registro avanza?
+4. ¿Qué pasa si quitas `sub x1, x1, #1`?
+5. Cambia mentalmente el límite de `5` a `3` y cuenta iteraciones.
+
+## Checklist
+
+- [ ] Puedo leer un `while`.
+- [ ] Puedo leer un `do while`.
+- [ ] Puedo leer un `for`.
+- [ ] Puedo identificar salto hacia atrás.
+- [ ] Puedo detectar off-by-one simple.
+- [ ] Puedo seguir loop con puntero.
 
 ## Cierre
 
-Todo loop en esta unidad se puede leer con cuatro preguntas: dónde empieza,
-cuándo sale, qué hace el cuerpo y qué instrucción vuelve hacia atrás.
+Un loop es una decisión repetida. Si encuentras la etiqueta inicial, la condición
+de salida, la actualización y el branch hacia atrás, puedes leer cualquier ciclo
+básico.
+
+Siguiente: [Branches especializados y conditional select](05-branches-especializados-csel.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

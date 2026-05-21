@@ -14,6 +14,15 @@ casos frecuentes: saltar si un registro es cero, saltar según un bit o elegir
 entre dos valores sin abrir dos caminos largos.
 :::
 
+## Qué vas a aprender
+
+Vas a reconocer instrucciones que simplifican decisiones comunes. Algunas
+reducen `cmp + branch`; otras evitan una rama cuando solo quieres seleccionar un
+valor.
+
+La regla de claridad: usa estas instrucciones cuando expresen mejor la intención.
+No son obligación ni reemplazan todo `if`.
+
 ## `cbz` y `cbnz`
 
 `cbz` compara un registro contra cero y salta si es cero.
@@ -166,6 +175,16 @@ casos límite.
 solo quieres escoger un valor.
 :::
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Usar `cbz` para relación `<` o `>` | usa `cmp` + rama condicional |
+| Pensar que `tbz` prueba todo el registro | prueba un bit específico |
+| Usar `csel` para bloques grandes | branch es más claro |
+| Olvidar que `csel` depende de flags previos | prepara flags con `cmp` o similar |
+| Confundir condición signed/unsigned en `csel` | condición sigue reglas de `NZCV` |
+
 ## Mini ejercicios
 
 1. ¿Qué reemplaza `cbz x0, destino`?
@@ -180,9 +199,27 @@ cset x2, ne
 - ¿Cuándo vale `1` `x2`?
 
 4. ¿Cuándo sería más claro usar branch en lugar de `csel`?
+5. Escribe equivalencia mental de `cbnz x0, destino`.
+
+## Checklist
+
+- [ ] Puedo usar `cbz`.
+- [ ] Puedo usar `cbnz`.
+- [ ] Puedo leer `tbz` y `tbnz`.
+- [ ] Puedo leer `csel`.
+- [ ] Puedo usar `cset` para 0/1.
+- [ ] Puedo decidir entre branch y conditional select.
 
 ## Cierre
 
 Branches especializados evitan código repetitivo para casos comunes. Conditional
 select evita ramas pequeñas cuando solo necesitas elegir un valor. La claridad
 del flujo sigue siendo la regla principal.
+
+Siguiente: [Link y branch por registro](06-branch-link-register.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
