@@ -13,6 +13,27 @@ Cursos > AArch64 > Primeros programas > stdout, stderr y exit codes
 separa destino de escritura y resultado del proceso.
 :::
 
+## Qué vas a aprender
+
+Vas a distinguir dos conceptos que suelen confundirse al inicio:
+
+- file descriptor: destino u origen de entrada/salida;
+- código de salida: resultado final del proceso.
+
+Ambos pueden usar números pequeños como `0`, `1` o `2`, pero significan cosas
+distintas según la syscall y el momento del programa.
+
+## Antes de empezar
+
+Ya viste que `write` usa `x0` como file descriptor y que `exit` usa `x0` como
+código de salida. El registro es el mismo, pero el contrato cambia porque cambia
+el número de syscall en `x8`.
+
+```bash
+x8 = 64  -> x0 significa file descriptor
+x8 = 93  -> x0 significa código de salida
+```
+
 ## File descriptors básicos
 
 | File descriptor | Nombre | Uso |
@@ -32,6 +53,9 @@ o:
 ```asm
 mov x0, #2      // stderr
 ```
+
+Estos números no son códigos de error. Son identificadores de archivos abiertos
+por convención al iniciar un proceso Unix.
 
 ## Escribir en stderr
 
@@ -72,15 +96,39 @@ Error de ejemplo
 1
 ```
 
+La línea visible viene de `write`. El `1` aparece porque consultaste el código
+de salida con `echo $?`.
+
 ## No confundas destinos con códigos
 
-| Valor | Donde aparece | Qué significa |
+| Valor | Dónde aparece | Qué significa |
 |---:|---|---|
 | `1` en `write` | `x0` antes de `write` | stdout |
 | `2` en `write` | `x0` antes de `write` | stderr |
 | `1` en `exit` | `x0` antes de `exit` | código de salida |
 
 El significado depende de la syscall que pones en `x8`.
+
+## Separar stdout y stderr
+
+En la terminal, stdout y stderr suelen verse juntos. Eso puede ocultar la
+diferencia. Las redirecciones permiten separarlos:
+
+```bash
+qemu-aarch64 ./stderr > salida.txt
+```
+
+Esto redirige stdout. Si el programa escribió en stderr, el mensaje seguirá en
+pantalla.
+
+Para redirigir stderr:
+
+```bash
+qemu-aarch64 ./stderr 2> errores.txt
+```
+
+Esta separación es útil en programas reales: stdout puede transportar datos
+normales y stderr puede transportar diagnósticos.
 
 ## Códigos de salida
 
@@ -92,12 +140,26 @@ El significado depende de la syscall que pones en `x8`.
 El kernel no decide por ti si `7` significa error grave o caso de prueba. Tu
 programa elige ese código.
 
+Los códigos de salida son importantes porque otros programas pueden leerlos. Un
+script, `make` o un sistema de CI decide qué hacer según ese resultado.
+
+## Errores comunes
+
+| Error | Por qué confunde |
+|---|---|
+| Pensar que `stderr` implica exit code distinto de cero | puedes escribir en stderr y salir con `0` |
+| Pensar que stdout siempre significa éxito | puedes escribir salida normal y terminar con error |
+| Consultar tarde `echo $?` | `$?` cambia después de cada comando |
+| Leer `x0` sin mirar `x8` | `x0` cambia de significado según la syscall |
+
 ## Mini ejercicios
 
 1. Cambia el programa para escribir en `stdout` pero salir con código `2`.
 2. Cambia el programa para escribir en `stderr` pero salir con código `0`.
 3. Explica por qué `x0 = 1` puede significar cosas distintas.
 4. Ejecuta `echo $?` inmediatamente después del programa.
+5. Explica qué archivo recibe el texto con `2> errores.txt`.
+6. Explica por qué un script puede usar el código de salida.
 
 ## Checklist
 
@@ -106,5 +168,19 @@ programa elige ese código.
 - [ ] Puedo distinguir file descriptor de código de salida.
 - [ ] Puedo cambiar destino de `write`.
 - [ ] Puedo cambiar código de `exit`.
+- [ ] Puedo explicar por qué `x0` depende de `x8`.
+
+## Cierre
+
+Los números pequeños no tienen significado universal. `1` puede ser stdout o
+código de salida según la syscall activa. Para leer assembly con syscalls,
+primero identifica `x8`; después interpreta los argumentos.
 
 Siguiente: [`_start`, `main` y libc](04-start-main-libc.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).
+- Linux man-pages, [`exit(2)`](https://www.man7.org/linux/man-pages/man2/exit.2.html).
+- Linux man-pages, [`stdin(3)`](https://www.man7.org/linux/man-pages/man3/stdin.3.html).
+- Linux man-pages, [`bash(1)`](https://www.man7.org/linux/man-pages/man1/bash.1.html).

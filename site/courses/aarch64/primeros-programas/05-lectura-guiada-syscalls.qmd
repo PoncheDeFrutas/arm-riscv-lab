@@ -14,6 +14,18 @@ pregunta siempre es la misma: qué syscall pide `x8` y qué argumentos puso el
 programa antes de `svc #0`.
 :::
 
+## Qué vas a aprender
+
+Vas a leer programas pequeños por contrato de syscall. En vez de memorizar
+líneas sueltas, vas a hacer siempre las mismas preguntas:
+
+1. ¿Qué número hay en `x8`?
+2. ¿Qué syscall representa?
+3. ¿Qué registros son argumentos para esa syscall?
+4. ¿Qué cambia después de `svc #0`?
+
+Este método sirve para `exit`, `write`, `read` y muchas syscalls posteriores.
+
 ## Patrón general
 
 ```bash
@@ -30,6 +42,9 @@ continuar según retorno o terminar
 | `x2` | tercer argumento |
 | `x8` | número de syscall |
 
+El kernel interpreta los argumentos según el número de syscall. Por eso leer
+`x0` sin mirar `x8` es una lectura incompleta.
+
 ## Leer `exit`
 
 ```asm
@@ -44,7 +59,7 @@ svc #0
 | `x8` | `93` | syscall `exit` |
 
 `svc #0` entra al kernel. Como `x8 = 93`, Linux interpreta el pedido como
-`exit`.
+`exit`. El proceso termina y el shell puede mostrar `7` con `echo $?`.
 
 ## Leer `write`
 
@@ -62,6 +77,10 @@ svc #0
 | `x1` | `mensaje` | dirección donde empiezan los bytes |
 | `x2` | `len` | cantidad de bytes |
 | `x8` | `64` | syscall `write` |
+
+Después de `write`, `x0` deja de ser file descriptor y pasa a contener el
+retorno: cantidad de bytes escritos o un error negativo. Si el programa va a
+usar ese valor, debe leerlo antes de sobrescribir `x0`.
 
 ## Dirección no es contenido
 
@@ -121,6 +140,39 @@ len = . - mensaje
 | `.rodata` | guarda bytes del mensaje |
 | `len` | cantidad de bytes |
 
+Lectura completa:
+
+1. `x8 = 64`, entonces el primer `svc #0` pide `write`.
+2. Para ese `write`, `x0 = 1` significa stdout.
+3. `x1` apunta a `mensaje`.
+4. `x2` indica cuántos bytes se escriben.
+5. Luego se prepara `x8 = 93`, entonces el segundo `svc #0` pide `exit`.
+6. Para ese `exit`, `x0 = 0` significa código de salida.
+
+## Diagnóstico mínimo
+
+Cuando un programa con syscalls no hace lo esperado, revisa en este orden:
+
+| Pregunta | Ejemplo |
+|---|---|
+| ¿`x8` tiene la syscall correcta? | `64` para `write`, `93` para `exit` |
+| ¿Los argumentos corresponden a esa syscall? | `x0`, `x1`, `x2` para `write` |
+| ¿La dirección apunta a datos válidos? | `ldr x1, =mensaje` |
+| ¿La longitud coincide con los bytes reales? | `len = . - mensaje` |
+| ¿Sobrescribiste un retorno antes de leerlo? | `write` devuelve en `x0` |
+
+Este orden evita buscar errores al azar.
+
+## Errores comunes
+
+| Error | Resultado típico |
+|---|---|
+| Olvidar preparar `x8` | el kernel interpreta otra syscall o falla |
+| Pasar contenido en vez de dirección | `write` lee desde una dirección inválida |
+| Usar longitud incorrecta | salida truncada o bytes extra |
+| Pensar que `x0` siempre significa lo mismo | lectura equivocada de `write` vs `exit` |
+| Ignorar retorno de syscall en programas más grandes | errores silenciosos |
+
 ## Mini ejercicios
 
 1. Identifica registros de `write`.
@@ -128,6 +180,8 @@ len = . - mensaje
 3. Explica qué pasa si `x8 = 93` y `x0 = 1`.
 4. Explica qué pasa si olvidas preparar `x2` antes de `write`.
 5. Explica por qué `svc #0` necesita contexto.
+6. Lee el programa `hello.s` de arriba sin mirar las tablas.
+7. Explica qué valor queda en `x0` después de `write`.
 
 ## Checklist
 
@@ -136,9 +190,22 @@ len = . - mensaje
 - [ ] Puedo explicar `x8`.
 - [ ] Puedo explicar `svc #0`.
 - [ ] Puedo distinguir dirección de contenido.
+- [ ] Puedo revisar un programa siguiendo preguntas ordenadas.
 
 ## Cierre de la unidad
 
 Ya puedes escribir programas AArch64 pequeños que hacen trabajo real en Linux:
 terminan correctamente, escriben bytes y muestran su resultado con herramientas
 del laboratorio.
+
+Más importante: ya tienes un método de lectura. Primero identifica `x8`; después
+interpreta los argumentos. Esa regla se repetirá en `read`, archivos, memoria,
+procesos y diagnóstico con `strace`.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).
+- Linux man-pages, [`exit(2)`](https://www.man7.org/linux/man-pages/man2/exit.2.html).

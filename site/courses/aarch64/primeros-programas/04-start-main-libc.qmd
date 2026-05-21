@@ -13,6 +13,17 @@ En estos programas no usamos `main`, `printf` ni runtime de C. El binario entra
 directamente por `_start` y el programa llama syscalls de Linux por su cuenta.
 :::
 
+## Qué vas a aprender
+
+Vas a separar tres niveles que a menudo aparecen mezclados:
+
+- `_start`: punto de entrada bajo nivel del ejecutable;
+- `main`: función de entrada usual en programas C;
+- `libc`: biblioteca y runtime que preparan parte del entorno de C.
+
+En esta unidad usamos `_start` para ver el contrato directo con Linux. Más
+adelante usaremos ABI, stack y llamadas a C; por ahora conviene quitar capas.
+
 ## Por qué usamos `_start`
 
 `_start` es el símbolo de entrada que usamos cuando enlazamos un programa mínimo
@@ -29,7 +40,21 @@ _start:
 ```
 
 El linker necesita saber dónde inicia el programa. En estas prácticas, esa
-entrada es `_start`.
+entrada es `_start`. Al no usar runtime de C, nadie llamará a `main` por
+nosotros.
+
+## Qué hace el linker
+
+El enlazador toma archivos objeto y produce un ejecutable. Entre otras cosas,
+resuelve símbolos y define una entrada para el binario.
+
+```bash
+exit.o -> ld -> exit
+```
+
+Si el programa usa `_start`, ese símbolo representa la dirección inicial. Si el
+programa usa el entorno normal de C, el punto de entrada real suele estar en
+código de arranque que luego llama a `main`.
 
 ## Dónde aparece `main`
 
@@ -49,7 +74,9 @@ runtime de C prepara entorno
        exit
 ```
 
-Aquí no estamos usando ese runtime. Por eso no escribimos `main`.
+Ese runtime prepara argumentos, entorno y detalles necesarios para que `main`
+pueda ejecutarse como función C normal. Por eso `main` no es equivalente a
+`_start`.
 
 ## Qué hace normalmente `libc`
 
@@ -62,6 +89,10 @@ En esta unidad no usamos `libc` para que la relación con Linux sea visible:
 ```bash
 registros -> svc #0 -> kernel
 ```
+
+Esto reduce comodidad, pero aumenta claridad. En vez de pedir “imprime este
+texto” a `printf`, preparamos directamente `write`: file descriptor, dirección,
+longitud y número de syscall.
 
 ## Por qué no usamos `printf`
 
@@ -78,10 +109,40 @@ Esta unidad usa `write` porque el contrato queda directo:
 | `x2` | cantidad de bytes |
 | `x8` | número de syscall |
 
+Con `printf`, además tendrías que entender formato, llamadas a funciones,
+convención de llamada, stack y enlazado con libc. Esos temas importan, pero no
+son el primer paso.
+
+## Relación con ABI
+
+Cuando una función llama a otra, necesita reglas compartidas: dónde van los
+argumentos, qué registros puede modificar, cómo se alinea el stack y dónde
+vuelve la ejecución. En AArch64 esas reglas se estudian con AAPCS64.
+
+Esta lección todavía no entra en detalle. Solo deja una advertencia: syscalls y
+llamadas a funciones no son lo mismo, aunque ambas usen registros.
+
 ## Límite práctico
 
 Más adelante usaremos funciones, stack, ABI y llamadas a C. Por ahora, `_start`
 mantiene el programa pequeño y visible.
+
+Usa esta regla:
+
+| Si quieres estudiar... | Usa primero... |
+|---|---|
+| contrato directo con Linux | `_start` + syscalls |
+| funciones y biblioteca C | `main` + runtime/libc |
+| mezcla C/assembly | ABI + linker + libc |
+
+## Errores comunes
+
+| Error | Corrección conceptual |
+|---|---|
+| Pensar que `main` siempre es donde empieza el binario | `main` es entrada del programa C, no necesariamente entrada ELF |
+| Pensar que `printf` es syscall | `printf` es función de biblioteca |
+| Mezclar ABI de funciones con ABI de syscalls | syscalls usan `x8`; funciones AAPCS64 tienen otras reglas |
+| Quitar `exit` porque “main retorna” | aquí no hay runtime que maneje retorno de `main` |
 
 ## Mini ejercicios
 
@@ -89,6 +150,8 @@ mantiene el programa pequeño y visible.
 2. Explica qué capa agrega `libc`.
 3. Explica por qué `printf` no aparece en el programa.
 4. Dibuja el camino `registros -> svc #0 -> kernel`.
+5. Explica por qué `main` necesita runtime de C.
+6. Explica por qué syscall y llamada a función no son lo mismo.
 
 ## Checklist
 
@@ -96,5 +159,20 @@ mantiene el programa pequeño y visible.
 - [ ] Puedo explicar qué hace normalmente `libc`.
 - [ ] Puedo explicar por qué aquí no usamos `printf`.
 - [ ] Sé que `write` es syscall y `printf` es biblioteca.
+- [ ] Puedo anticipar que ABI será necesaria para mezclar C y assembly.
+
+## Cierre
+
+`_start` nos permite ver el programa sin capas extra. `main` y `printf` son
+útiles, pero pertenecen al mundo del runtime de C y la ABI de funciones. Esta
+separación evita confundir syscalls con llamadas a biblioteca.
 
 Siguiente: [Lectura guiada de syscalls](05-lectura-guiada-syscalls.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).
+- Arm, [ELF for the Arm 64-bit Architecture](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst).
+- GNU Binutils, [Using ld](https://sourceware.org/binutils/docs/ld/).
+- Linux man-pages, [`execve(2)`](https://www.man7.org/linux/man-pages/man2/execve.2.html).
+- Linux man-pages, [`printf(3)`](https://www.man7.org/linux/man-pages/man3/printf.3.html).

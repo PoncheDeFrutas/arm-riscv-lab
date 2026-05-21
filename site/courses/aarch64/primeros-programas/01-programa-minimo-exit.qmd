@@ -14,6 +14,31 @@ kernel que terminó. Esto confirma que puedes escribir código, ensamblarlo,
 enlazarlo y ejecutarlo.
 :::
 
+## Qué vas a aprender
+
+En esta lección vas a construir un binario AArch64 mínimo. No usaremos `main`,
+`printf` ni biblioteca estándar de C. El programa entra en `_start`, prepara una
+syscall de Linux y termina con `exit`.
+
+La idea central es simple: un programa en Linux no termina “por accidente”.
+Debe entregar un resultado al sistema operativo. En estos ejemplos iniciales,
+ese resultado será un código de salida visible con `echo $?`.
+
+## Antes de empezar
+
+Debes tener claro este flujo:
+
+```bash
+exit.s -> exit.o -> exit -> proceso ejecutado
+```
+
+`exit.s` es el código fuente assembly. `exit.o` es un archivo objeto. `exit` es
+el ejecutable ELF final. Cuando lo ejecutas, Linux crea un proceso y empieza en
+la dirección marcada como punto de entrada.
+
+En una computadora x86_64 usarás herramientas cruzadas y QEMU. En una máquina
+ARM64 nativa puedes usar `as`, `ld` y ejecutar directo.
+
 ## Archivo `exit.s`
 
 ```asm
@@ -30,11 +55,37 @@ Lectura mínima:
 
 | Línea | Qué hace |
 |---|---|
-| `.global _start` | Hace visible el punto de entrada |
-| `_start:` | Dirección donde inicia el programa |
-| `mov x0, #0` | Código de salida |
-| `mov x8, #93` | Número de syscall `exit` |
-| `svc #0` | Entra al kernel |
+| `.global _start` | Hace visible el símbolo `_start` para el enlazador |
+| `.text` | Indica que viene código ejecutable |
+| `_start:` | Marca la dirección donde inicia el programa |
+| `mov x0, #0` | Prepara el primer argumento: código de salida `0` |
+| `mov x8, #93` | Prepara el número de syscall: `exit` en Linux AArch64 |
+| `svc #0` | Entra al kernel para ejecutar la syscall |
+
+`svc #0` no significa “salir” por sí solo. La instrucción cambia al modo kernel;
+el kernel mira `x8` para saber qué servicio se pidió. Como `x8` contiene `93`,
+Linux interpreta la llamada como `exit`.
+
+## Contrato mínimo de `exit`
+
+Para esta syscall solo necesitamos dos datos:
+
+| Registro | Valor | Significado |
+|---|---:|---|
+| `x8` | `93` | número de syscall `exit` en Linux AArch64 |
+| `x0` | código | resultado que verá el proceso padre |
+
+El código de salida no se imprime automáticamente. El shell lo guarda como
+resultado del último comando y permite consultarlo con:
+
+```bash
+echo $?
+```
+
+Por convención, `0` suele significar que el programa terminó correctamente. Un
+valor distinto de cero suele indicar error, caso especial o resultado de prueba.
+Linux no decide por ti qué significa `7`; esa interpretación la define tu
+programa o quien lo ejecuta.
 
 ## Ensamblar y enlazar en x86_64 con QEMU
 
@@ -50,6 +101,10 @@ Salida esperada:
 ```bash
 0
 ```
+
+El ensamblador traduce instrucciones a un objeto. El enlazador produce un ELF
+ejecutable. QEMU user-mode permite ejecutar ese binario AArch64 desde una
+máquina x86_64.
 
 ## Ensamblar y ejecutar en ARM64 nativo
 
@@ -67,6 +122,9 @@ Salida esperada:
 ```bash
 0
 ```
+
+Aquí no hace falta QEMU porque la arquitectura del binario coincide con la
+arquitectura de la máquina.
 
 ## Cambiar código de salida
 
@@ -92,6 +150,10 @@ Resultado esperado:
 7
 ```
 
+Solo cambió `x0`. La syscall sigue siendo `exit` porque `x8` sigue valiendo
+`93`. Este detalle es importante: el mismo registro puede tener roles distintos
+según la syscall, pero `x8` decide cuál syscall se ejecuta.
+
 ::: {.callout-warning title="Revisa inmediatamente"}
 `echo $?` muestra el código de salida del último comando ejecutado. Si ejecutas
 otro comando antes, ya no estarás viendo el resultado de tu programa.
@@ -113,13 +175,26 @@ _start:
 ```
 
 Regla práctica: en estos programas mínimos, termina siempre con syscall `exit`.
+Más adelante estudiarás funciones, `ret`, runtime de C y otros caminos de
+terminación; por ahora la salida explícita mantiene visible el contrato con
+Linux.
+
+## Errores comunes
+
+| Error | Síntoma posible | Cómo pensarlo |
+|---|---|---|
+| Poner `93` en `x0` | el programa sale con código `93`, no necesariamente ejecuta `exit` correctamente | el número de syscall va en `x8` |
+| Olvidar `.global _start` | el linker puede no encontrar entrada clara | `_start` debe ser visible |
+| Revisar tarde `echo $?` | ves el resultado de otro comando | consulta `$?` justo después |
+| Ejecutar directo en x86_64 | error de formato de ejecutable | usa `qemu-aarch64 ./exit` |
 
 ## Mini ejercicios
 
 1. Cambia el código de salida a `3`.
 2. Ejecuta y revisa `echo $?`.
 3. Explica por qué `93` va en `x8`.
-4. Explica por qué `0` o `7` van en `x0`.
+4. Explica por qué `0`, `3` o `7` van en `x0`.
+5. Dibuja el flujo `exit.s -> exit.o -> exit -> proceso`.
 
 ## Checklist
 
@@ -128,5 +203,22 @@ Regla práctica: en estos programas mínimos, termina siempre con syscall `exit`
 - [ ] Puedo enlazar a `exit`.
 - [ ] Puedo ejecutar el programa.
 - [ ] Puedo revisar código de salida.
+- [ ] Puedo explicar el papel de `x0`, `x8` y `svc #0`.
+
+## Cierre
+
+Este primer programa ya tiene todos los elementos mínimos de un binario Linux
+AArch64: punto de entrada, sección de código, registros preparados y transición
+al kernel. Aunque no imprime nada, enseña el contrato básico entre programa y
+sistema operativo.
 
 Siguiente: [Hello World con write](02-hello-world-write.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [Using ld](https://sourceware.org/binutils/docs/ld/).
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
+- Linux man-pages, [`exit(2)`](https://www.man7.org/linux/man-pages/man2/exit.2.html).
