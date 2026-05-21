@@ -13,6 +13,12 @@ memoria, revisar stack y contrastar syscalls. No agrega herramientas nuevas;
 ordena las que ya viste.
 :::
 
+## Qué vas a aprender
+
+Vas a practicar una sesión completa sin convertir la depuración en una lista de
+comandos. Cada paso debe tener una hipótesis: qué esperas ver y qué cambia si no
+aparece.
+
 ## Método de lectura
 
 Usa siempre el mismo orden inicial:
@@ -145,6 +151,21 @@ Luego formula una hipótesis pequeña:
 | syscall retorna `-1` | revisar `errno` o argumentos |
 | `x/s` imprime basura | falta terminador cero o dirección mala |
 
+## Checklist de diagnóstico rápido
+
+| Pregunta | Comando inicial |
+|---|---|
+| ¿dónde estoy? | `x/i $pc` |
+| ¿qué estado tengo? | `info registers ...` |
+| ¿qué cambiará al avanzar? | leer instrucción y operandos |
+| ¿qué bytes hay en el puntero? | `x/16xb $registro` |
+| ¿qué cadena de llamadas existe? | `bt` |
+| ¿qué syscall falló? | `strace -e trace=...` |
+| ¿qué quedó tras el crash? | `gdb binario core` |
+
+Usa esta tabla como punto de partida. Si una respuesta no coincide con tu
+hipótesis, reduce el paso: una instrucción, un registro, una dirección.
+
 ## Método visual
 
 ```{mermaid}
@@ -177,3 +198,10 @@ flowchart TD
 Depurar bien no significa usar muchos comandos. Significa mirar el estado
 correcto en el momento correcto. En AArch64, eso empieza con registros,
 instrucción actual, memoria y syscalls.
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>
+- Linux man-pages, `strace(1)`: <https://man7.org/linux/man-pages/man1/strace.1.html>
+- Linux man-pages, `core(5)`: <https://www.man7.org/linux/man-pages/man5/core.5.html>

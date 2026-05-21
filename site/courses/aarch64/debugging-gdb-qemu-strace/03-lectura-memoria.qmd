@@ -13,6 +13,12 @@ puede guardar una dirección; `x/x` te deja mirar qué bytes viven en esa
 dirección.
 :::
 
+## Qué vas a aprender
+
+Vas a convertir punteros y símbolos en lecturas concretas de memoria. La meta es
+responder si una dirección es válida, qué tamaño estás leyendo y si el contenido
+coincide con el tipo de dato esperado.
+
 ## Qué problema resuelve
 
 Muchos bugs de bajo nivel no están en una instrucción aislada. Están en una
@@ -152,6 +158,29 @@ Primero verifica éxito.
 En `mmap`, una región válida se puede inspeccionar. Después de `munmap`, esa
 dirección deja de estar disponible; leerla puede fallar o producir una señal.
 
+## Elegir formato de `x`
+
+| Dato esperado | Comando inicial |
+|---|---|
+| bytes crudos | `x/16xb dirección` |
+| palabra de 64 bits | `x/gx dirección` |
+| varias palabras de stack | `x/8gx dirección` |
+| string C | `x/s dirección` |
+| instrucción | `x/i dirección` |
+
+Si no sabes qué hay en la dirección, empieza por bytes. `x/s` es cómodo, pero
+solo tiene sentido si esperas un string terminado en cero.
+
+## Diagnóstico de punteros
+
+| Observación | Hipótesis |
+|---|---|
+| registro vale `0x0` | puntero nulo |
+| dirección cambia antes de usarla | registro sobrescrito |
+| `x/s` imprime basura | falta terminador cero o dirección incorrecta |
+| `x/xb` falla | región no mapeada o sin permisos |
+| `mmap` retorna valor negativo | error, no dirección válida |
+
 ## Mapa visual
 
 ```{mermaid}
@@ -188,3 +217,10 @@ flowchart TB
 ## Siguiente paso
 
 Abre [Stack frames en GDB](04-stack-frames-gdb.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- GDB manual, *Examining Memory*: <https://sourceware.org/gdb/current/onlinedocs/gdb.html/Memory.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>

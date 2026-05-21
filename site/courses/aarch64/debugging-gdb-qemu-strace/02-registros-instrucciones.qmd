@@ -13,6 +13,12 @@ lección se concentra en la mitad más inmediata: qué instrucción se ejecuta y
 valores tienen los registros justo en ese punto.
 :::
 
+## Qué vas a aprender
+
+Vas a leer una instrucción junto con el estado que la rodea. El objetivo es que
+`pc`, registros, desensamblado y símbolos formen una sola explicación, no cuatro
+salidas separadas.
+
 ## Qué problema resuelve
 
 Cuando lees código assembly en una página, ves intención. Cuando lees registros
@@ -142,6 +148,31 @@ Unidad 16 mostró símbolos y entry point. GDB usa esa información para permiti
 Si quitas símbolos o usas un binario muy reducido, aún puedes depurar por
 dirección, pero la lectura será menos amable.
 
+## Rutina para una instrucción
+
+Cuando una instrucción parece sospechosa, usa este orden:
+
+```bash
+(gdb) x/i $pc
+(gdb) info registers x0 x1 x2 x8 pc sp x29 x30
+(gdb) stepi
+(gdb) x/i $pc
+(gdb) info registers x0 x1 x2 x8 pc sp x29 x30
+```
+
+La primera lectura muestra entrada. La segunda muestra efecto. Si es una
+syscall, agrega una lectura de `x0` después de `svc #0`, porque ahí queda el
+retorno del kernel.
+
+## Qué no asumir
+
+| Señal | No asumir |
+|---|---|
+| `pc` cambió | que la lógica sea correcta |
+| `x0` cambió después de `svc #0` | que sea argumento original; ahora es retorno |
+| `x30` tiene dirección | que sea valor de retorno |
+| `disassemble` muestra nombres | que el binario no pueda estar optimizado o sin frames |
+
 ## Errores comunes
 
 | Error | Corrección |
@@ -163,3 +194,9 @@ dirección, pero la lectura será menos amable.
 ## Siguiente paso
 
 Abre [Lectura de memoria](03-lectura-memoria.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- GDB manual, *Registers*: <https://sourceware.org/gdb/current/onlinedocs/gdb.html/Registers.html>
+- GDB manual, *Machine Code*: <https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html>

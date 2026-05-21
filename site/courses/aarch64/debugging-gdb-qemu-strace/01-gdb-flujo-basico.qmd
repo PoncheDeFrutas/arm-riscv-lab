@@ -13,6 +13,12 @@ un punto, mirar su estado, avanzar una instrucción y comprobar qué cambió.
 Ese ciclo es la base de toda depuración.
 :::
 
+## Qué vas a aprender
+
+Vas a practicar el ciclo mínimo de GDB: detener, observar, predecir, avanzar y
+verificar. En assembly este ciclo es más útil que correr el programa completo,
+porque un solo registro equivocado puede explicar todo el fallo.
+
 ## Qué problema resuelve
 
 Cuando un programa falla, imprimir valores no siempre basta. En assembly muchas
@@ -157,6 +163,37 @@ instrucción interna de esa función.
 En programas mínimos sin funciones, ambos pueden parecer iguales. La diferencia
 se vuelve importante cuando aparece `bl funcion`.
 
+## Sesión guiada corta
+
+Usa esta secuencia como rutina inicial:
+
+```bash
+(gdb) target remote :1234
+(gdb) break _start
+(gdb) continue
+(gdb) x/i $pc
+(gdb) info registers x0 x1 x2 pc
+(gdb) stepi
+(gdb) info registers x0 x1 x2 pc
+```
+
+Antes de cada `stepi`, di qué debería cambiar. Si estás sobre `mov x0, #10`,
+esperas que cambie `x0`. Si estás sobre `add x2, x0, x1`, esperas que cambie
+`x2`. Esa predicción evita avanzar sin interpretar.
+
+## Antes y después
+
+| Momento | Pregunta |
+|---|---|
+| antes de `stepi` | ¿qué instrucción está en `$pc`? |
+| antes de `stepi` | ¿qué registros son entrada de esa instrucción? |
+| después de `stepi` | ¿qué registro o memoria cambió? |
+| después de `stepi` | ¿`pc` avanzó al siguiente punto esperado? |
+
+Si el cambio no coincide con tu predicción, el error está cerca. No sigas diez
+instrucciones más: revisa la instrucción actual, sus operandos y el estado
+previo.
+
 ## Flujo mental completo
 
 ```{mermaid}
@@ -194,3 +231,9 @@ pasos cortos: predices, ejecutas, verificas.
 ## Siguiente paso
 
 Abre [Registros e instrucciones](02-registros-instrucciones.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- GDB manual, *Continuing and Stepping*: <https://sourceware.org/gdb/current/onlinedocs/gdb.html/Continuing-and-Stepping.html>
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>

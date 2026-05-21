@@ -13,6 +13,12 @@ paso a paso, pero ayuda cuando el fallo ya ocurrió y necesitas leer registros,
 stack y backtrace después del accidente.
 :::
 
+## Qué vas a aprender
+
+Vas a usar un core dump como evidencia post-mortem. No podrás avanzar
+instrucciones, pero sí podrás leer dónde quedó el programa, qué registros tenía
+y qué cadena de llamadas se puede reconstruir.
+
 ## Qué problema resuelve
 
 Algunos errores no son cómodos de reproducir instrucción por instrucción. Un
@@ -79,6 +85,21 @@ Lectura:
 | `info registers` | ¿qué valores quedaron al fallar? |
 | `x/i $pc` | ¿qué instrucción estaba activa? |
 
+## Rutina post-mortem
+
+Al abrir el core, no empieces cambiando cosas. Lee:
+
+```bash
+(gdb) bt
+(gdb) frame 0
+(gdb) info registers
+(gdb) x/i $pc
+(gdb) x/8gx $sp
+```
+
+Con eso separas tres preguntas: dónde falló, con qué estado falló y qué había
+en la pila alrededor del fallo.
+
 ## Qué esperar
 
 Un fallo por puntero nulo suele apuntar a una instrucción de store o load sobre
@@ -112,6 +133,15 @@ flowchart LR
 Lo ideal es combinar: core dump para ubicar el punto de fallo, GDB en vivo para
 reproducir y observar cómo se llegó a ese estado.
 
+## Limitaciones reales
+
+| Limitación | Implicación |
+|---|---|
+| puede no generarse archivo local | revisar `ulimit`, `core_pattern` o `systemd-coredump` |
+| requiere binario correcto | símbolos y direcciones deben coincidir |
+| no ejecuta instrucciones | sirve para observar estado final |
+| puede faltar información legible | compilar con `-g` ayuda |
+
 ## Errores comunes
 
 | Error | Corrección |
@@ -133,3 +163,10 @@ reproducir y observar cómo se llegó a ese estado.
 ## Siguiente paso
 
 Abre [Práctica guiada](08-practica-guiada.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- Linux man-pages, `core(5)`: <https://www.man7.org/linux/man-pages/man5/core.5.html>
+- Linux man-pages, `getrlimit(2)`: <https://www.man7.org/linux/man-pages/man2/getrlimit.2.html>
+- Linux man-pages, `proc(5)`: <https://www.man7.org/linux/man-pages/man5/proc.5.html>

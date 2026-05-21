@@ -13,6 +13,11 @@ esperar una conexión de GDB. Esa separación explica por qué usamos dos
 terminales.
 :::
 
+## Qué vas a aprender
+
+Vas a separar tres roles: QEMU ejecuta, GDB controla y el puerto conecta ambos.
+Esta distinción evita confundir una sesión local con una sesión remota.
+
 ## Qué problema resuelve
 
 Un binario AArch64 no puede ejecutarse directamente en un host `x86_64` sin
@@ -101,6 +106,19 @@ $ qemu-aarch64 -L /usr/aarch64-linux-gnu -g 1234 ./hello_dyn
 Si faltan librerías, el problema no es GDB: el loader dinámico no puede resolver
 dependencias del binario AArch64.
 
+## Diagnóstico de conexión
+
+| Síntoma | Revisión |
+|---|---|
+| QEMU parece detenido | con `-g`, está esperando a GDB |
+| GDB dice conexión rechazada | revisar puerto y que QEMU siga corriendo |
+| breakpoint por nombre falla | revisar símbolos o usar dirección |
+| programa dinámico no arranca | revisar `-L` y sysroot AArch64 |
+| `run` no hace lo esperado | en remoto usar `target remote` y `continue` |
+
+Si cambias de puerto, cámbialo en ambos lados. `qemu-aarch64 -g 2345` requiere
+`target remote :2345`.
+
 ## Diagrama
 
 ```{mermaid}
@@ -133,3 +151,9 @@ flowchart LR
 ## Siguiente paso
 
 Abre [strace y syscalls](06-strace-syscalls.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- GDB manual, *Remote Debugging*: <https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Debugging.html>

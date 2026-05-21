@@ -69,6 +69,22 @@ QEMU responde “cómo ejecuto AArch64 cuando mi host no es ARM64”. `strace`
 responde “qué le pidió el programa al kernel”. Un core dump responde “qué estado
 quedó guardado después de fallar”.
 
+## Herramienta según la pregunta
+
+| Pregunta | Herramienta principal | Evidencia |
+|---|---|---|
+| ¿qué instrucción estoy por ejecutar? | GDB | `x/i $pc`, `disassemble` |
+| ¿qué valores tienen los registros? | GDB | `info registers` |
+| ¿qué bytes hay en esta dirección? | GDB | `x/.. dirección` |
+| ¿cómo ejecuto AArch64 en host no ARM64? | QEMU user-mode | `qemu-aarch64` |
+| ¿cómo conecto GDB a QEMU? | QEMU `-g` + GDB remoto | `target remote :puerto` |
+| ¿qué syscalls llegaron al kernel? | `strace` | líneas `syscall(args) = retorno` |
+| ¿qué quedó después del fallo? | core dump + GDB | `bt`, registros, `$pc` |
+
+El método recomendado es elegir una pregunta antes del comando. Si empiezas por
+comandos sueltos, GDB y `strace` se vuelven ruido; si empiezas por una hipótesis,
+cada salida confirma o corrige algo concreto.
+
 ## Herramientas de la unidad
 
 | Herramienta | Uso principal en esta unidad |
@@ -217,3 +233,11 @@ Un recorrido completo de registros, memoria, stack y syscalls.
 - [ ] Puedo leer `sp`, `x29` y `x30`.
 - [ ] Puedo verificar syscalls con `strace`.
 - [ ] Puedo explicar qué es un core dump introductorio.
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- QEMU user-mode documentation: <https://www.qemu.org/docs/master/user/>
+- Linux man-pages, `strace(1)`: <https://man7.org/linux/man-pages/man1/strace.1.html>
+- Linux man-pages, `core(5)`: <https://www.man7.org/linux/man-pages/man5/core.5.html>
+- Linux man-pages, `proc(5)`: <https://www.man7.org/linux/man-pages/man5/proc.5.html>

@@ -13,6 +13,12 @@ programa abre, lee, escribe, mapea o falla por permisos, `strace` ayuda a ver el
 contrato real con Linux.
 :::
 
+## Qué vas a aprender
+
+Vas a leer syscalls como evidencia externa del programa. GDB muestra registros y
+memoria; `strace` confirma qué llamada llegó al kernel, con qué argumentos y qué
+retorno produjo.
+
 ## Qué problema resuelve
 
 En assembly puedes preparar registros para una syscall, ejecutar `svc #0` y aun
@@ -61,6 +67,19 @@ debes revisar el retorno y no tratarlo como file descriptor válido.
 
 `strace` no arregla el programa. Te dice si tu explicación coincide con lo que
 Linux recibió.
+
+## Retorno parcial no siempre es error
+
+En syscalls de E/S, el valor después de `=` es el resultado real, no una copia
+del tamaño solicitado:
+
+```bash
+read(3, "abc", 16) = 3
+write(1, "Hola\n", 5) = 5
+```
+
+Un `read` puede devolver menos bytes de los pedidos y seguir siendo válido. En
+assembly debes usar el retorno, no asumir que el kernel completó todo el tamaño.
 
 ## Filtros útiles
 
@@ -124,6 +143,14 @@ ARM64 nativo, `strace ./programa` es más directo. En laboratorio cruzado, usa
 | `munmap` | dirección, tamaño, éxito o error |
 | `mprotect` | región, permisos nuevos, error por alineación o permisos |
 
+## Método de lectura
+
+1. Filtra por el grupo de syscalls que estás estudiando.
+2. Lee argumentos de izquierda a derecha.
+3. Mira el valor después de `=`.
+4. Si aparece `-1 ERRNO`, conecta el error con la ruta de cleanup.
+5. Si usas QEMU, decide si estás observando el programa invitado o el emulador.
+
 ## Errores comunes
 
 | Error | Corrección |
@@ -145,3 +172,11 @@ ARM64 nativo, `strace ./programa` es más directo. En laboratorio cruzado, usa
 ## Siguiente paso
 
 Abre [Core dumps](07-core-dumps.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `strace(1)`: <https://man7.org/linux/man-pages/man1/strace.1.html>
+- Linux man-pages, `write(2)`: <https://www.man7.org/linux/man-pages/man2/write.2.html>
+- Linux man-pages, `read(2)`: <https://www.man7.org/linux/man-pages/man2/read.2.html>
+- Linux man-pages, `openat(2)`: <https://www.man7.org/linux/man-pages/man2/openat.2.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>

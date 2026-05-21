@@ -12,6 +12,12 @@ El stack no es una idea abstracta. En GDB puedes leer `sp`, mirar palabras en la
 memoria del stack y comprobar si `x29` y `x30` forman un frame coherente.
 :::
 
+## Qué vas a aprender
+
+Vas a leer una cadena de llamadas usando registros y memoria. La meta no es
+confiar ciegamente en `bt`, sino entender qué evidencia usa GDB: `sp`, `x29`,
+`x30`, símbolos y contenido del stack.
+
 ## Qué problema resuelve
 
 Cuando un programa con funciones falla, necesitas reconstruir cómo llegó ahí.
@@ -92,6 +98,22 @@ pueden contener el frame pointer anterior y la dirección de retorno guardada.
 No todos los programas mantienen frame pointer. Optimizaciones, código manual o
 prólogos distintos pueden hacer que `bt` sea menos claro.
 
+## Sesión guiada
+
+Detente dentro de una función no hoja y lee en este orden:
+
+```bash
+(gdb) info registers sp x29 x30 pc
+(gdb) x/i $pc
+(gdb) x/8gx $sp
+(gdb) x/4gx $x29
+(gdb) bt
+```
+
+Primero confirmas dónde estás. Luego miras la pila desde `sp` y desde `x29`.
+Por último usas `bt` para comparar tu lectura manual con la reconstrucción de
+GDB.
+
 ## Backtrace
 
 ```bash
@@ -121,6 +143,16 @@ vive en `x0`.
 | ¿qué valor devuelve la función? | `x0` |
 | ¿dónde está el frame actual? | `x29` |
 | ¿dónde está la cima del stack? | `sp` |
+
+## Diagnóstico de frame roto
+
+| Observación | Posible causa |
+|---|---|
+| `bt` corta la cadena | faltan símbolos, frame pointer o stack coherente |
+| `x30` apunta fuera de `.text` | retorno sobrescrito |
+| `sp` no está alineado | prólogo/epílogo o reserva local incorrecta |
+| `[x29, #8]` no parece retorno | frame dañado o layout distinto |
+| `x29` vale cero en función esperada | frame pointer omitido o no establecido |
 
 ## Diagrama de frame
 
@@ -158,3 +190,9 @@ flowchart TB
 ## Siguiente paso
 
 Abre [QEMU y gdbserver](05-qemu-gdbserver.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GDB documentation: <https://sourceware.org/gdb/documentation/>
+- GDB manual, *Backtrace*: <https://sourceware.org/gdb/current/onlinedocs/gdb.html/Backtrace.html>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
