@@ -14,6 +14,15 @@ código, datos de solo lectura, datos modificables y espacio reservado. En esta
 unidad no estudiaremos ELF en detalle; usaremos las secciones como mapa mental.
 :::
 
+## Qué vas a aprender
+
+Vas a ubicar símbolos dentro de regiones de memoria. Esta lectura ayuda a
+responder preguntas prácticas: ¿puedo ejecutar esto?, ¿puedo modificarlo?,
+¿necesito solo reservar espacio?, ¿esta etiqueta apunta a código o a datos?
+
+El mapa no pretende describir cada detalle del loader. Es una herramienta para
+leer programas AArch64 pequeños.
+
 ## Mapa simple
 
 ```bash
@@ -114,9 +123,16 @@ con `malloc`, pero aquí no vamos a usar `malloc` ni `libc`. También existe
 
 En esta etapa basta con saber que:
 
-- `.data` y `.bss` son datos del programa.
-- `stack` existe desde el inicio y usa `sp`.
+- `.data` y `.bss` son datos del programa;
+- `stack` existe desde el inicio y usa `sp`;
 - `heap` será memoria dinámica más adelante.
+
+## Relación inicial con ELF
+
+Al ensamblar y enlazar, las secciones ayudan a construir el ejecutable ELF. El
+loader usa esa información para crear el proceso. Todavía no veremos headers ni
+program headers; basta saber que las secciones del fuente no son decoración:
+terminan influyendo en cómo se organiza el binario.
 
 ## Mirar secciones con herramientas
 
@@ -131,6 +147,16 @@ $ objdump -s -j .data secciones
 
 `readelf` muestra la lista de secciones. `objdump -s` permite mirar bytes de
 una sección concreta.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Poner datos constantes en `.text` | usa `.rodata` para mensajes y tablas constantes |
+| Usar `.data` para buffers vacíos grandes | usa `.bss` |
+| Pensar que stack es una sección escrita en el `.s` | stack es región del proceso |
+| Pensar que heap aparece por usar `.data` | heap es memoria dinámica, tema posterior |
+| Olvidar sección actual | etiquetas siguientes quedan donde no esperabas |
 
 ## Mini ejercicio
 
@@ -153,9 +179,29 @@ temp:
 - ¿Cuál símbolo apunta a texto constante?
 - ¿Cuál apunta a dato inicializado?
 - ¿Cuál apunta a espacio reservado?
+- ¿Cuál sección usarías para instrucciones?
+
+## Checklist
+
+- [ ] Puedo explicar `.text`.
+- [ ] Puedo explicar `.rodata`.
+- [ ] Puedo explicar `.data`.
+- [ ] Puedo explicar `.bss`.
+- [ ] Puedo ubicar stack y heap como regiones conceptuales.
+- [ ] Puedo usar `readelf` y `objdump` para inspección básica.
 
 ## Cierre
 
 Las secciones no son decoración del archivo `.s`. Son el primer mapa para saber
 qué direcciones apuntan a código, qué direcciones apuntan a datos y qué zonas se
 pueden modificar durante la ejecución.
+
+Siguiente: [Load/store básico](03-load-store-basico.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [readelf](https://sourceware.org/binutils/docs/binutils/readelf.html).
+- GNU Binutils, [objdump](https://sourceware.org/binutils/docs/binutils/objdump.html).
+- Arm, [ELF for the Arm 64-bit Architecture](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst).
+- System V ABI, [ELF gABI](https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html).

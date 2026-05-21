@@ -14,6 +14,15 @@ cargas a un registro. Después operas con registros. Si necesitas conservar el
 resultado, lo escribes de vuelta a memoria.
 :::
 
+## Qué vas a aprender
+
+Vas a practicar el patrón básico de una arquitectura load/store: cargar desde
+memoria, operar en registros y guardar de vuelta. Este patrón aparece en
+contadores, arrays, strings, structs y stack frames.
+
+La pregunta clave será siempre: ¿qué registro tiene la dirección y qué registro
+tiene el valor?
+
 ## Arquitectura load/store
 
 La @fig-load-store-flow muestra por qué AArch64 no opera directamente sobre un
@@ -57,6 +66,11 @@ _start:
 
 `x0` contiene la dirección. `x1` contiene el valor de 64 bits leído desde esa
 dirección.
+
+```bash
+x0 -> dirección de valor
+x1 -> contenido leído: 42
+```
 
 ## Escribir en memoria
 
@@ -129,6 +143,19 @@ ldr w2, [x0]    // lee 32 bits y limpia la mitad alta de x2
 Esto conecta con la Unidad 03: escribir en un registro `Wn` limpia los 32 bits
 altos de `Xn`.
 
+## Store no cambia el registro fuente
+
+`str x1, [x0]` copia bytes desde `x1` hacia memoria. No borra `x1`, no cambia
+automáticamente `x0` y no “mueve” el dato como si desapareciera del registro.
+
+```bash
+antes:  x1 = 10
+str x1, [x0]
+después: x1 sigue valiendo 10
+```
+
+Solo la memoria apuntada por `x0` cambia.
+
 ## Verificar construcción
 
 ```bash
@@ -142,7 +169,17 @@ $ echo $?
 El programa no imprime nada. Sirve para estudiar instrucciones y luego mirar
 registros o memoria con GDB.
 
-## Mini ejercicio
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Sumar directo sobre memoria | carga a registro, suma y guarda |
+| Confundir dirección con contenido | separa `ldr x0, =dato` y `ldr x1, [x0]` |
+| Usar `str` con dirección inválida | confirma que el registro base apunta a memoria válida |
+| Pensar que `str` modifica el registro fuente | modifica memoria, no borra fuente |
+| Usar ancho incorrecto | decide si necesitas `x`, `w`, byte o halfword |
+
+## Mini ejercicios
 
 Completa mentalmente:
 
@@ -153,10 +190,31 @@ add x1, x1, #3
 str x1, [x0]
 ```
 
-Si `dato` empieza con `.quad 7`, ¿qué valor queda guardado al final?
+Si `dato` empieza con `.quad 7`:
+
+- ¿qué valor queda guardado al final?
+- ¿qué registro contiene dirección?
+- ¿qué registro contiene valor modificado?
+- ¿qué pasaría si quitaras `str x1, [x0]`?
+
+## Checklist
+
+- [ ] Puedo explicar arquitectura load/store.
+- [ ] Puedo usar `ldr` para leer memoria.
+- [ ] Puedo usar `str` para escribir memoria.
+- [ ] Puedo hacer read-modify-write.
+- [ ] Puedo distinguir registro base y registro de valor.
 
 ## Cierre
 
 `ldr` y `str` son la puerta de entrada a memoria. Si tienes claro qué registro
 tiene la dirección y qué registro tiene el valor, la mitad de los errores de
 memoria desaparece.
+
+Siguiente: [Tamaños de acceso](04-tamanos-acceso.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

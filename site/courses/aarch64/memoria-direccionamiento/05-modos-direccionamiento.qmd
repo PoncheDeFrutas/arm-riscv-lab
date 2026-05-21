@@ -14,6 +14,15 @@ offset, usar un índice o avanzar el puntero después de leer. Los modos de
 direccionamiento dicen cómo se calcula la dirección final.
 :::
 
+## Qué vas a aprender
+
+Vas a leer distintas formas de calcular la dirección efectiva de una carga o un
+store. La instrucción no solo dice cuántos bytes leer; también dice cómo llegar
+a la dirección.
+
+La pregunta clave: ¿la dirección final es la base, base más bytes, base más
+índice escalado, o una base que además se actualiza?
+
 ## Dirección efectiva
 
 ```bash
@@ -167,6 +176,16 @@ _start:
 Más adelante `stp` y `ldp` aparecerán mucho con stack frames. Por ahora basta
 con leerlos como acceso a dos registros consecutivos.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Confundir índice con bytes | escala según tamaño del elemento |
+| Usar `lsl #3` para `.word` | `.word` usa 4 bytes, escala `lsl #2` |
+| No notar post-index | el registro base cambia después del acceso |
+| No notar pre-index | el registro base cambia antes del acceso |
+| Reusar base modificada sin querer | guarda copia si necesitas base original |
+
 ## Mini ejercicio
 
 Si `array` contiene `.quad 10, 20, 30, 40`:
@@ -180,8 +199,26 @@ ldr x2, [x0, x1, lsl #3]
 - ¿Qué elemento lee?
 - ¿Cuántos bytes suma a la base?
 - ¿Qué escala usarías si el array fuera de `.word`?
+- ¿Qué diferencia habría con `ldr x2, [x0], #8`?
+
+## Checklist
+
+- [ ] Puedo explicar base + offset.
+- [ ] Puedo usar offset inmediato.
+- [ ] Puedo usar offset en registro.
+- [ ] Puedo usar offset escalado.
+- [ ] Puedo distinguir pre-index y post-index.
+- [ ] Puedo leer `ldp` y `stp` como acceso por pares.
 
 ## Cierre
 
 Los modos de direccionamiento evitan calcular todo a mano con `add`. Aun así,
 la idea sigue igual: base, offset, tamaño de elemento y dirección final.
+
+Siguiente: [Arrays y recorrido de memoria](06-arrays-recorrido-memoria.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

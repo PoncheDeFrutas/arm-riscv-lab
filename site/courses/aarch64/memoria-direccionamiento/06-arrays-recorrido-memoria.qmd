@@ -14,6 +14,14 @@ del array, el índice y el tamaño de cada elemento. Esta lección arma esa fór
 con instrucciones AArch64.
 :::
 
+## Qué vas a aprender
+
+Vas a calcular direcciones de elementos. Un array no guarda información mágica
+de índice o tamaño para la CPU: el programa debe saber dónde empieza, cuánto
+ocupa cada elemento y qué índice quiere leer.
+
+Esta lección prepara loops, strings, buffers y estructuras.
+
 ## Fórmula mental
 
 ```bash
@@ -168,22 +176,43 @@ ldr x5, [x4]        // x5 = array[2]
 El puntero sigue siendo un número. Lo importante es saber a qué zona apunta y
 qué tamaño de dato esperas leer.
 
-## Mini ejercicio
+## Errores comunes
 
-Para este array:
+| Error | Corrección |
+|---|---|
+| Usar índice como bytes sin escalar | multiplica por tamaño del elemento |
+| Usar escala de `.quad` en `.word` | `.word` usa `lsl #2` |
+| Avanzar puntero y perder base original | guarda copia si necesitas volver al inicio |
+| Leer fuera del array | controla índice y cantidad de elementos |
+| Usar `ldr x` en array `.word` | usa `ldr w` para 32 bits |
 
-```asm
-nums:
-    .word 5, 6, 7, 8
-```
+## Mini ejercicios
 
-Responde:
+1. Calcula dirección relativa de `array[3]` en `.quad`.
+2. Calcula dirección relativa de `array32[3]` en `.word`.
+3. Explica por qué `lsl #3` equivale a multiplicar por 8.
+4. Explica qué valor queda en `x0` después de tres cargas post-index de 8 bytes.
+5. Escribe la fórmula para acceder a `array[i]`.
 
-- ¿Qué escala usa el índice?
-- ¿Qué instrucción leería `nums[3]` en `w2`?
-- ¿Cuántos bytes hay entre `nums[0]` y `nums[3]`?
+## Checklist
+
+- [ ] Puedo explicar `base + i * tamaño`.
+- [ ] Puedo leer array de `.quad`.
+- [ ] Puedo leer array de `.word`.
+- [ ] Puedo usar offset escalado.
+- [ ] Puedo usar post-index para recorrer.
+- [ ] Puedo distinguir puntero a base y puntero a elemento.
 
 ## Cierre
 
-Arrays no son tema aparte de memoria. Son memoria consecutiva con una regla de
-offset. Si sabes calcular `base + índice * tamaño`, puedes leerlos.
+Un array es una convención de memoria consecutiva. La CPU no conoce `array[i]`
+como concepto de alto nivel; tu código calcula dirección, elige tamaño y carga o
+guarda bytes.
+
+Siguiente: [Lectura guiada de memoria](07-lectura-guiada-memoria.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

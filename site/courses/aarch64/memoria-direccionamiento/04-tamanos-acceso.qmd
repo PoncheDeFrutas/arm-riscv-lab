@@ -14,6 +14,14 @@ Esta lección conecta tamaños de la Unidad 02 con instrucciones reales de carga
 almacenamiento.
 :::
 
+## Qué vas a aprender
+
+Vas a leer la misma dirección con tamaños distintos. Esto explica por qué un
+byte, una palabra de 32 bits y una palabra de 64 bits pueden empezar en la misma
+dirección pero producir valores distintos.
+
+También verás que algunas cargas extienden con ceros y otras con signo.
+
 ## Tamaños frecuentes
 
 | Tamaño | Bytes | Carga | Store | Registro destino típico |
@@ -22,6 +30,8 @@ almacenamiento.
 | Halfword | 2 | `ldrh` | `strh` | `wN` |
 | Word | 4 | `ldr wN` | `str wN` | `wN` |
 | Doubleword | 8 | `ldr xN` | `str xN` | `xN` |
+
+El sufijo importa. `strb` escribe un byte; `str xN` escribe ocho bytes.
 
 ## Leer la misma memoria con tamaños distintos
 
@@ -83,10 +93,10 @@ Después de `strb`, la zona queda así:
 
 `strb` no escribe una palabra completa. Escribe un byte.
 
-## `ldrsw`: cargar 32 bits con signo hacia 64 bits
+## Cargas con cero y cargas con signo
 
-`ldr wN, [xM]` carga 32 bits y limpia la mitad alta. `ldrsw xN, [xM]` carga 32
-bits, interpreta bit de signo y extiende hacia 64 bits.
+`ldrb` y `ldrh` cargan valores pequeños y los extienden con ceros en el registro
+destino. Para 32 bits firmados hacia 64 bits, existe `ldrsw`.
 
 ```asm
 .data
@@ -133,6 +143,16 @@ valor64:
 
 No entraremos todavía en penalizaciones, excepciones, ABI ni layout avanzado.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Usar `ldr x` cuando solo querías un byte | usa `ldrb` |
+| Usar `str x` sobre una zona de 4 bytes | escribe ocho bytes, puede pisar datos vecinos |
+| Ignorar little endian | recuerda orden de bytes en memoria |
+| Confundir `ldr w` con `ldrsw` | uno limpia mitad alta, otro extiende signo |
+| Mezclar `.byte` y `.quad` sin alinear | usa `.balign` cuando convenga |
+
 ## Mini ejercicio
 
 Con estos bytes:
@@ -147,9 +167,26 @@ Responde:
 - ¿Qué lee `ldrb w1, [x0]`?
 - ¿Qué lee `ldr w2, [x0]` en little-endian?
 - ¿Por qué no significan lo mismo aunque empiezan en la misma dirección?
+- ¿Qué diferencia habría entre `ldr w2, [x0]` y `ldrsw x2, [x0]` si el bit de signo está activo?
+
+## Checklist
+
+- [ ] Puedo elegir carga/store de 1, 2, 4 u 8 bytes.
+- [ ] Puedo explicar little endian en una carga.
+- [ ] Puedo distinguir `ldr w` de `ldr x`.
+- [ ] Puedo distinguir `ldr w` de `ldrsw`.
+- [ ] Puedo explicar por qué la alineación ayuda.
 
 ## Cierre
 
 No existe "leer una variable" como idea única. Existen instrucciones que leen
 1, 2, 4 u 8 bytes desde una dirección. Elegir tamaño correcto es parte del
 programa.
+
+Siguiente: [Modos de direccionamiento](05-modos-direccionamiento.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).

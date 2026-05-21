@@ -14,6 +14,13 @@ como lo leerás en prácticas futuras: primero secciones y símbolos, luego
 direcciones, luego cargas, stores y recorrido de memoria.
 :::
 
+## Qué vas a aprender
+
+Vas a leer un programa completo usando preguntas ordenadas. No basta con decir
+“este código usa memoria”: debes identificar qué símbolos existen, en qué
+sección están, qué registros contienen direcciones, qué instrucciones acceden a
+memoria y qué tamaño se lee o escribe.
+
 ## Programa completo
 
 Guarda este archivo como `memoria.s`.
@@ -135,7 +142,7 @@ mov x8, #64
 svc #0
 ```
 
-Esta parte viene de Unidad 05:
+Esta parte viene de syscalls:
 
 | Registro | Significado |
 |---|---|
@@ -154,6 +161,29 @@ $ objdump -s -j .rodata memoria
 `objdump` muestra bytes por sección. Usa esto para comprobar que `.data` tiene
 datos iniciales y `.rodata` contiene el mensaje.
 
+## Diagnóstico de lectura
+
+Cuando leas un programa similar, usa esta lista:
+
+1. clasifica secciones;
+2. lista símbolos y qué dirección nombran;
+3. marca registros que contienen direcciones;
+4. marca instrucciones con corchetes;
+5. identifica tamaños de acceso;
+6. revisa si el puntero cambia;
+7. separa cálculo en registros de escritura a memoria;
+8. revisa syscalls al final.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Perder de vista que `x2` cambia con post-index | anota puntero antes/después |
+| Pensar que `buffer` ya contiene la suma | solo después de `str x3, [x5]` |
+| Confundir `len` con dirección | `len` es valor calculado, no buffer |
+| Creer que el programa imprime la suma | imprime mensaje, no el resultado |
+| No distinguir `.data` de `.bss` | `.data` tiene valores iniciales; `.bss` reserva |
+
 ## Preguntas de cierre
 
 - ¿Qué registros contienen direcciones?
@@ -162,9 +192,27 @@ datos iniciales y `.rodata` contiene el mensaje.
 - ¿Qué instrucción avanza el puntero del array?
 - ¿Por qué `buffer` no necesita listar 16 bytes en el archivo?
 - ¿Qué parte imprime y qué parte solo modifica memoria?
+- ¿Qué valor se guarda en `buffer`?
+
+## Checklist
+
+- [ ] Puedo clasificar secciones.
+- [ ] Puedo distinguir dirección y contenido.
+- [ ] Puedo leer `str x1, [x0]`.
+- [ ] Puedo leer post-index.
+- [ ] Puedo seguir una suma de array.
+- [ ] Puedo separar trabajo de memoria de syscall `write`.
 
 ## Cierre
 
 Esta unidad prepara el terreno para arrays con loops, strings, stack frames y
 debugging. La base no cambia: identifica dirección, tamaño, contenido y modo de
 direccionamiento antes de interpretar un acceso a memoria.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [objdump](https://sourceware.org/binutils/docs/binutils/objdump.html).
+- Linux man-pages, [`write(2)`](https://www.man7.org/linux/man-pages/man2/write.2.html).

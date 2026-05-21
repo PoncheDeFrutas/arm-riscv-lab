@@ -25,6 +25,17 @@ teclado o la barra espaciadora.
 [Ver presentación Slidev](../../../slides/aarch64/06-memoria-direccionamiento/){.lab-button}
 :::
 
+## Qué vas a aprender
+
+Vas a leer y escribir memoria de forma explícita. La unidad conecta cuatro ideas:
+dirección, tamaño, contenido y modo de direccionamiento. Si una de esas cuatro
+falla, el acceso a memoria puede leer el dato equivocado, escribir donde no
+debe o producir un fallo.
+
+Al terminar, debes poder mirar una instrucción como `ldr x1, [x0, #8]` y decir:
+qué registro tiene la base, cuántos bytes se leen, qué dirección efectiva se usa
+y qué registro recibe el resultado.
+
 ## Mapa rápido
 
 ::: {.lab-flow}
@@ -61,6 +72,7 @@ Offsets, índices, pre-index y post-index.
 | Unidad 02: bytes, endianness y punteros | Leer memoria como bytes y no como "variables mágicas" |
 | Unidad 04: secciones y símbolos | Ubicar datos en `.rodata`, `.data` y `.bss` |
 | Unidad 05: `_start` y syscalls | Cerrar programas con `exit` mientras pruebas memoria |
+| Unidad 09: `read`, `write` y buffers | Entender por qué syscalls reciben direcciones |
 
 ## Idea de trabajo
 
@@ -76,7 +88,7 @@ El valor depende de la instrucción usada y del tamaño de lectura.
 | ¿Dónde está? | `ldr x0, =valor` carga una dirección |
 | ¿Qué hay ahí? | `ldr x1, [x0]` carga contenido desde esa dirección |
 | ¿Cuánto leo? | `ldrb`, `ldrh`, `ldr w`, `ldr x` leen tamaños distintos |
-| ¿Avanzo? | `[x0], #8` lee y luego actualiza el puntero |
+| ¿Cómo llego? | `[x0, #8]`, `[x0, x1, lsl #3]`, `[x0], #8` calculan direcciones |
 
 ::: {.callout-note title="Idea clave"}
 AArch64 es una arquitectura load/store. La ALU trabaja con registros. Si un
@@ -147,6 +159,17 @@ cargas, stores y recorrido.
 :::
 :::
 
+## Diagnóstico básico de memoria
+
+Cuando un acceso a memoria no hace lo esperado, revisa:
+
+1. qué registro contiene la dirección base;
+2. si estás cargando dirección o contenido;
+3. qué tamaño lee o escribe la instrucción;
+4. si el offset está en bytes o en índice escalado;
+5. si el puntero cambia con pre-index o post-index;
+6. si la sección permite el uso esperado del dato.
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |
@@ -173,3 +196,10 @@ cargas, stores y recorrido.
 ## Siguiente paso
 
 Empieza por [Dirección y contenido](01-memoria-direccion-contenido.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
+- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
+- GNU Binutils, [Using as](https://sourceware.org/binutils/docs/as/).
+- GNU Binutils, [objdump](https://sourceware.org/binutils/docs/binutils/objdump.html).
