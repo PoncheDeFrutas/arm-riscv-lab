@@ -141,3 +141,9 @@ performance.
 - [ ] Sé que `perf` queda para después.
 
 Siguiente: [Debugging mínimo](05-debugging-minimo.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Binutils Manual*: `readelf`, `objdump`, `nm`, `ldd`. <https://sourceware.org/binutils/docs/binutils/>
+- Linux man-pages: `file(1)`, `hexdump(1)`, `xxd(1)`, `strace(1)`, `perf(1)`. <https://www.man7.org/linux/man-pages/>
+- QEMU, *User-mode documentation*: ejecución cruzada de binarios AArch64. <https://www.qemu.org/docs/master/user/>

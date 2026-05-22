@@ -208,17 +208,15 @@ Predice el resultado antes de verificar.
 
 ## Cierre
 
-Debes poder mirar cualquier byte y decir su valor unsigned y signed de 8 bits
-sin calculadora. Esa habilidad es clave para leer registros en GDB y diagnosticar
-errores de interpretación.
+Los bits no cambian; cambia la regla con la que los interpretas. `0xFF` como 8
+bits signed es `-1`, como 32 bits signed es `255`. Esa diferencia de tamaño es
+la fuente de errores más común en debugging.
 
 ## Checklist
 
-- [ ] Puedo escribir el rango unsigned de n bits.
-- [ ] Puedo escribir el rango signed de n bits.
-- [ ] Puedo explicar por qué `0xFF` puede ser `255` o `-1`.
-- [ ] Puedo construir un negativo pequeño con complemento a dos.
-- [ ] Puedo explicar por qué el tamaño cambia la interpretación.
+- [ ] Calculo el rango unsigned y signed de n bits sin mirar tabla.
+- [ ] Construyo un negativo pequeño con complemento a dos paso a paso.
+- [ ] Uso el truco de resta para convertir nibble con bit de signo a signed.
 
 Siguiente: [Overflow y extensiones](03-overflow-extensiones.qmd).
 

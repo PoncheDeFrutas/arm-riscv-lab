@@ -139,3 +139,9 @@ Marca la ruta que aplica:
 - [ ] Inspección: `file`, `readelf`, `objdump`, `nm` y `strace` responden.
 
 Siguiente: [Primer programa](03-primer-programa.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linaro, *AArch64 Toolchain*: `gcc-aarch64-linux-gnu`, `binutils-aarch64-linux-gnu`. <https://www.linaro.org/>
+- QEMU, *User-mode documentation*: instalación de `qemu-user` o `qemu-user-static`. <https://www.qemu.org/docs/master/user/>
+- Sourceware, *GDB Documentation*: `gdb-multiarch` para depuración cross-arch. <https://sourceware.org/gdb/documentation/>

@@ -132,3 +132,9 @@ aarch64-linux-gnu-objdump -dr main.o
 - [ ] Puedo explicar relocation conceptualmente.
 
 Siguiente: [Include y macros](06-include-macros.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Assembler Manual*: pseudo-instrucción `ldr =symbol`, `adr`, `adrp`, literal pools. <https://sourceware.org/binutils/docs/as/>
+- Arm, *A64 Instruction Set Architecture Guide*: instrucciones `adr`, `adrp`, `ldr` (literal). <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): encoding de `adrp`, `:lo12:`, relocations AArch64. <https://developer.arm.com/documentation/ddi0487/latest>

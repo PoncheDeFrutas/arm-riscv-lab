@@ -186,3 +186,10 @@ qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.
 Empieza por [Entorno Linux ARM64](01-entorno-linux-arm64.qmd). Si ya sabes tu
 ruta y tienes paquetes instalados, salta directo a
 [Primer programa](03-primer-programa.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Binutils Manual*: `as`, `ld`, `objdump`, `readelf`, `nm`. <https://sourceware.org/binutils/docs/binutils/>
+- QEMU, *User-mode documentation*: `qemu-aarch64`, modo GDB server. <https://www.qemu.org/docs/master/user/>
+- Sourceware, *GDB Documentation*: `gdb-multiarch`, breakpoints, `stepi`. <https://sourceware.org/gdb/documentation/>
+- Linux man-pages: `make(1)`, `file(1)`, `ldd(1)`, `strace(1)`. <https://www.man7.org/linux/man-pages/>

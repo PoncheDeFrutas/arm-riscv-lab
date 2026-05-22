@@ -155,3 +155,10 @@ Clasifica registros usados por `exit` y `write`.
 ## Siguiente paso
 
 Empieza por [Programa mínimo con `exit`](01-programa-minimo-exit.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `syscall(2)`, `exit(2)`, `write(2)`: contrato de syscalls AArch64. <https://www.man7.org/linux/man-pages/man2/>
+- Arm, *A64 Instruction Set Architecture Guide*: instrucción `svc #0`, registros de argumentos. <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): exception handling y `svc`. <https://developer.arm.com/documentation/ddi0487/latest>
+- GNU Binutils, *GNU Assembler Manual*: `as`, `ld` para ensamblar y enlazar. <https://sourceware.org/binutils/docs/as/>

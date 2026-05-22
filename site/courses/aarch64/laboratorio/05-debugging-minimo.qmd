@@ -229,3 +229,9 @@ Si quieres interfaz gráfica, usa:
 - [ ] Puedo ver `pc`, `x0`, `x1`, `x2` y `x8`.
 - [ ] Puedo ejecutar `stepi`.
 - [ ] Puedo salir de GDB y cerrar QEMU si aplica.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Sourceware, *GDB Documentation*: comandos `break`, `stepi`, `nexti`, `info registers`, `x/i`. <https://sourceware.org/gdb/documentation/>
+- QEMU, *User-mode documentation*: opción `-g` para GDB server, `-singlestep`. <https://www.qemu.org/docs/master/user/>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): registros AArch64 (`X0`-`X30`, `PC`, `SP`). <https://developer.arm.com/documentation/ddi0487/latest>

@@ -196,6 +196,12 @@ Predice el resultado antes de verificar con QEMU.
 Pensar en Linux como API del kernel empieza por esta idea: el kernel abre un
 recurso, entrega un número y espera que el proceso use ese número correctamente.
 
+## Checklist
+
+- [ ] Guardo un fd en registro callee-saved antes de otra syscall.
+- [ ] Distingo fd de puntero y de dirección de memoria.
+- [ ] Cierro un fd explícitamente antes de `exit`.
+
 ## Fuentes {.unlisted .unnumbered}
 
 - Linux man-pages: `openat(2)`, `close(2)`: contrato de syscalls, retorno, errores. <https://www.man7.org/linux/man-pages/man2/>

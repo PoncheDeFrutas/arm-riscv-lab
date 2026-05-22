@@ -130,3 +130,9 @@ leerlo automáticamente como “cargar los bytes del mensaje”.
 Si puedes leer un `.s` y decir qué procesa el assembler, qué nombra una
 dirección, qué declara bytes y qué ejecuta el CPU, ya estás listo para escribir
 programas AArch64 más grandes sin confundir sintaxis con arquitectura.
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Assembler Manual*: lectura de archivo completo, clasificación de directivas e instrucciones. <https://sourceware.org/binutils/docs/as/>
+- GNU Binutils, *GNU Objdump Manual*: opciones `-d`, `-s`, `-j` para inspección de código y datos. <https://sourceware.org/binutils/docs/binutils/>
+- Arm, *A64 Instruction Set Architecture Guide*: formato de instrucciones A64. <https://developer.arm.com/documentation/102374/latest>

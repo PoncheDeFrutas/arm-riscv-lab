@@ -201,18 +201,23 @@ Predice el resultado antes de verificar con `printf` o GDB.
 
 1. Escribe `15` en binario de 8 bits.
 2. Escribe `0b11111111` en hexadecimal.
-3. Explica cuántos bytes ocupa una doubleword.
-4. Explica qué relación hay entre `w3` y `x3`.
-5. Si `x7 = 0xDEADBEEFCAFEBABE` y ejecutas `mov w7, #0`, ¿cuál es el valor de `x7`?
-6. Convierte `0x3F` a binario sin usar calculadora.
+3. Si `x7 = 0xDEADBEEFCAFEBABE` y ejecutas `mov w7, #0`, ¿cuál es el valor de `x7`?
+4. Convierte `0x3F` a binario sin usar calculadora.
+5. ¿Cuántos dígitos hexadecimales necesitas para escribir un `word`? ¿Y una `doubleword`?
+6. Ejecuta `printf "%016x\n" 42` en tu terminal. ¿Cuántos ceros a la izquierda ves?
+
+## Cierre
+
+Un byte siempre son 8 bits, sin importar la base en que lo escribas. Hexadecimal
+es la forma más práctica de trabajar con bajo nivel porque cada dígito corresponde
+a exactamente 4 bits. En AArch64, escribir en `Wn` siempre limpia los 32 bits
+altos de `Xn`: esa es la regla más importante de esta lección.
 
 ## Checklist
 
-- [ ] Puedo explicar qué es un bit.
-- [ ] Puedo explicar qué es un byte.
-- [ ] Sé por qué un byte se escribe con dos dígitos hexadecimales.
-- [ ] Puedo leer `0x2A` como `00101010`.
-- [ ] Puedo distinguir `word` de `doubleword` en AArch64.
+- [ ] Convierto un valor pequeño entre decimal, binario y hexadecimal sin calculadora.
+- [ ] Leo un byte hexadecimal como 8 bits mentalmente.
+- [ ] Predigo el valor de `Xn` después de escribir en `Wn`.
 
 Siguiente: [Enteros, signo y rangos](02-enteros-signo-rangos.qmd).
 

@@ -207,24 +207,22 @@ Predice el resultado antes de verificar con GDB.
 
 ## Cierre
 
-Debes poder mirar un registro y preguntarte: ¿es dirección o es dato? Si es
-dirección, ¿cuántos bytes leo desde ahí? Si es dato, ¿qué tamaño y
-interpretación aplico? Esa triple pregunta es la base para todo debugging en
-AArch64.
+Dirección, contenido y valor son tres conceptos distintos. Un puntero es un
+registro que guarda una dirección; el contenido son los bytes en esa dirección;
+el valor depende de cómo los interpretes. La triple pregunta — ¿es dirección o
+dato?, ¿cuántos bytes leo?, ¿qué interpretación aplico? — es la base para todo
+debugging en AArch64.
 
 ## Checklist
 
-- [ ] Puedo distinguir dirección, contenido y valor.
-- [ ] Puedo explicar un puntero como dirección guardada en un registro.
-- [ ] Puedo leer los mismos bytes como texto o entero.
-- [ ] Puedo explicar por qué el tamaño de lectura importa.
-- [ ] Puedo conectar registros `Xn` con direcciones de 64 bits.
+- [ ] Distingo dirección de contenido al mirar un registro o memoria.
+- [ ] Leo los mismos bytes como texto, entero o dirección según contexto.
+- [ ] Uso `Xn` para direcciones, nunca `Wn`.
 
-## Cierre de la unidad
+## Siguiente unidad
 
-Si puedes mirar bytes y preguntarte "qué tamaño leo" y "qué interpretación
-aplico", ya tienes la base mental para estudiar memoria, registros, punteros,
-stack y debugging en AArch64.
+Si puedes aplicar la triple pregunta a cualquier registro o dirección, ya tienes
+la base mental para estudiar memoria, registros, punteros, stack y debugging.
 
 ## Fuentes {.unlisted .unnumbered}
 

@@ -235,17 +235,16 @@ Predice el resultado y si hay carry/overflow antes de verificar.
 
 ## Cierre
 
-Debes poder mirar una suma o resta de 8 bits y decir si hay carry (unsigned) y
-si hay overflow (signed) sin calculadora. Esa habilidad es esencial para
-entender flags `NZCV` y branches condicionales.
+Carry y overflow son señales distintas: carry para unsigned, overflow para
+signed. Escribir en `Wn` siempre limpia los bits altos de `Xn` — esa es zero
+extension automática. La tabla comparativa de carry vs overflow es la referencia
+más útil de esta lección.
 
 ## Checklist
 
-- [ ] Puedo explicar carry en suma unsigned.
-- [ ] Puedo explicar borrow en resta unsigned.
-- [ ] Puedo explicar overflow en signed.
-- [ ] Puedo distinguir zero extension de sign extension.
-- [ ] Sé que escribir en `Wn` limpia los bits altos de `Xn`.
+- [ ] Distingo carry de overflow mirando una suma de 8 bits.
+- [ ] Aplico zero extension y sign extension correctamente.
+- [ ] Predigo el efecto de escribir en `Wn` sobre `Xn`.
 
 Siguiente: [Bytes y texto](04-bytes-texto.qmd).
 

@@ -184,3 +184,8 @@ assembler las usa antes de crear el objeto.
 - [ ] Puedo usar `.equ` o `.set` para nombres simbólicos.
 
 Siguiente: [Definición de datos](04-definicion-datos.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Assembler Manual*: directivas `.global`, `.type`, `.size`, `.balign`, `.equ`, `.set`. <https://sourceware.org/binutils/docs/as/>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): formato de símbolos y secciones en objetos ELF AArch64. <https://developer.arm.com/documentation/ddi0487/latest>

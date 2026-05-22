@@ -169,6 +169,16 @@ loader.
 | interpretar `FileSiz < MemSiz` como corrupción | suele indicar memoria cero como `.bss` |
 | asumir que `RX` y `RW` son decorativos | son permisos reales del proceso |
 
+## Mini ejercicios
+
+Practica con un binario real.
+
+1. Ejecuta `readelf -l` en un binario AArch64. ¿Cuántos segmentos `LOAD` ves?
+2. Identifica el segmento con permisos `R E`. ¿Qué secciones incluye?
+3. Identifica el segmento con permisos `RW`. ¿Qué secciones incluye?
+4. Compara `FileSiz` y `MemSiz` del segundo `LOAD`. ¿Son iguales? Si no, ¿por qué?
+5. Ejecuta `readelf -S` y confirma que las secciones del primer `LOAD` coinciden con lo que ves en `readelf -l`.
+
 ## Checklist
 
 - [ ] Puedo usar `readelf -l`.

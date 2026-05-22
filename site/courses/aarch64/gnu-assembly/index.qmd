@@ -201,3 +201,10 @@ digraph G {
 
 Empieza por [Estructura de archivo `.s`](01-estructura-archivo-s.qmd). Si ya
 entiendes etiquetas y comentarios, avanza a [Secciones](02-secciones.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Assembler Manual*: sintaxis, directivas, secciones, pseudo-instrucciones. <https://sourceware.org/binutils/docs/as/>
+- Arm, *A64 Instruction Set Architecture Guide*: instrucciones reales A64 vs pseudo-instrucciones del assembler. <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): formato de instrucciones y encoding AArch64. <https://developer.arm.com/documentation/ddi0487/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: estructura de programas GNU Assembly y directivas.

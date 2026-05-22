@@ -142,3 +142,8 @@ Eso puede duplicar código.
 - [ ] Sé que macros avanzadas quedan para después.
 
 Siguiente: [Lectura de archivo completo](07-lectura-archivo-completo.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- GNU Binutils, *GNU Assembler Manual*: directivas `.include`, `.macro`, `.endm`, parámetros de macro. <https://sourceware.org/binutils/docs/as/>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: macros y reutilización de código en GNU assembler.

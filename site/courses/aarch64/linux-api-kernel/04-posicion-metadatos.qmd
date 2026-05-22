@@ -174,8 +174,15 @@ Predice el resultado antes de verificar.
 ## Cierre
 
 Un fd no solo sirve para leer y escribir. También puede tener posición y
-metadatos asociados. La regla sigue siendo la misma: preparar registros, pasar
-punteros válidos cuando hagan falta, ejecutar `svc #0` y revisar retorno.
+metadatos asociados. `lseek` mueve la posición, `fstat` y `statx` consultan
+información del archivo. La regla sigue siendo la misma: preparar registros,
+pasar punteros válidos, ejecutar `svc #0` y revisar retorno.
+
+## Checklist
+
+- [ ] Muevo la posición de un archivo con `lseek` y los orígenes correctos.
+- [ ] Reservo buffer del tamaño correcto para `fstat` o `statx`.
+- [ ] Sé que `lseek` falla en pipes y terminales.
 
 ## Fuentes {.unlisted .unnumbered}
 

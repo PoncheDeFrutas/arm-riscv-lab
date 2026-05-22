@@ -135,3 +135,9 @@ programa. Úsalo si no puedes instalar paquetes en tu sistema.
 | ¿No puedes instalar paquetes? | Sí | Docker opcional |
 
 Siguiente: [Instalación toolchain](02-instalacion-toolchain.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- QEMU, *User-mode documentation*: `qemu-aarch64`, `-g` para GDB server. <https://www.qemu.org/docs/master/user/>
+- QEMU, *System emulator documentation*: modo system mode vs user mode. <https://www.qemu.org/docs/master/system/>
+- Docker, *Get started*: contenedores para entornos reproducibles. <https://docs.docker.com/get-started/>

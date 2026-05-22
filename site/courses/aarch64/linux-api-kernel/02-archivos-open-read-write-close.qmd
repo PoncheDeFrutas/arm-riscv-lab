@@ -207,7 +207,14 @@ loops de I/O quedan para una unidad posterior.
 ## Cierre
 
 Un archivo en Linux se trabaja como recurso: abrir produce `fd`, leer o escribir
-usa ese `fd`, y cerrar termina el ciclo.
+usa ese `fd`, y cerrar termina el ciclo. La clave es guardar cada valor que
+produce una syscall antes de llamar la siguiente.
+
+## Checklist
+
+- [ ] Paso el fd correcto a cada syscall sin perderlo en `x0`.
+- [ ] Uso la cantidad real leída por `read` en `write`, no el tamaño del buffer.
+- [ ] Cierro el fd tanto en ruta de éxito como en ruta de error.
 
 ## Fuentes {.unlisted .unnumbered}
 

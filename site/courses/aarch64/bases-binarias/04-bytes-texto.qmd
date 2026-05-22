@@ -215,17 +215,15 @@ en el archivo fuente.
 
 ## Cierre
 
-Debes poder mirar una secuencia de bytes hexadecimales y reconocer si es texto
-ASCII, si tiene null terminator, y si algún byte podría ser parte de un carácter
-UTF-8 multibyte.
+ASCII es una tabla de bytes, no un tipo especial. El null terminator `0x00` marca
+el fin de strings en C pero no en todas las convenciones. UTF-8 puede usar hasta
+4 bytes por carácter: contar bytes como caracteres es un error frecuente.
 
 ## Checklist
 
-- [ ] Puedo explicar ASCII como tabla de bytes.
-- [ ] Puedo distinguir número `0` de carácter `'0'`.
-- [ ] Puedo leer `0x41 0x42 0x43` como `ABC`.
-- [ ] Sé que UTF-8 puede usar varios bytes por carácter.
-- [ ] Puedo conectar `.ascii` y `.byte` con memoria.
+- [ ] Distingo número `0` de carácter `'0'` en memoria.
+- [ ] Reconozco `.ascii` vs `.asciz` y sé cuándo usar cada uno.
+- [ ] Identifico si un byte es ASCII legible o parte de UTF-8 multibyte.
 
 Siguiente: [Endianness y alineación](05-endianness-alineacion.qmd).
 

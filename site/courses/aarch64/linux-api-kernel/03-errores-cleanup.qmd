@@ -219,7 +219,13 @@ Predice la ruta de ejecución antes de verificar.
 
 Manejar errores en bajo nivel no es añadir un bloque al final. Es saber qué
 recursos existen en cada punto del programa y salir por una ruta que los deje en
-estado razonable.
+estado razonable. El diagrama de flujo de error es la referencia más útil.
+
+## Checklist
+
+- [ ] Diseño rutas separadas de error y cleanup según recursos abiertos.
+- [ ] Detecto error de syscall con `cmp x0, #0` + `b.lt`.
+- [ ] No cierro un fd que nunca se abrió.
 
 ## Fuentes {.unlisted .unnumbered}
 

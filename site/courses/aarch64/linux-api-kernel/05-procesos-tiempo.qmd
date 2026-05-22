@@ -172,8 +172,14 @@ Predice el resultado antes de verificar.
 ## Cierre
 
 Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de
-syscall, `svc #0`, retorno. Esta unidad no busca cubrir todo Linux; busca que
-reconozcas el patrón cuando el servicio cambia.
+syscall, `svc #0`, retorno. `struct timespec` son siempre 16 bytes (dos `quad`).
+Esta unidad no busca cubrir todo Linux; busca que reconozcas el patrón.
+
+## Checklist
+
+- [ ] Obtengo el PID con `getpid` sin argumentos.
+- [ ] Preparo `struct timespec` de 16 bytes para `nanosleep` o `clock_gettime`.
+- [ ] Reconozco que `execve` y `wait4` requieren preparación avanzada.
 
 ## Fuentes {.unlisted .unnumbered}
 

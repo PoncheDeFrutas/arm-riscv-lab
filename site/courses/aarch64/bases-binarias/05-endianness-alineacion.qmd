@@ -195,17 +195,16 @@ byte al revés bit por bit.
 
 ## Cierre
 
-Debes poder mirar 4 bytes en memoria little endian y reconstruir el valor de 32
-bits mentalmente. Esa habilidad es esencial para debugging con GDB y lectura de
-dumps de memoria.
+Little endian invierte el orden de bytes, no de bits. `0x12345678` en memoria se
+ve como `78 56 34 12`. La CPU reconstruye el valor correctamente con `ldr`, pero
+al leer byte a byte con `ldrb` ves el orden real. Alinear datos en direcciones
+múltiples de su tamaño evita penalizaciones.
 
 ## Checklist
 
-- [ ] Puedo explicar big endian.
-- [ ] Puedo explicar little endian.
-- [ ] Puedo leer un `word` little endian desde bytes en memoria.
-- [ ] Sé que AArch64 Linux normalmente se estudia aquí como little endian.
-- [ ] Puedo explicar alineación sin entrar todavía en ABI o rendimiento.
+- [ ] Reconstruyo un `word` little endian desde 4 bytes en memoria.
+- [ ] Digo si una dirección está alineada para un tamaño dado.
+- [ ] Explico por qué `ldrb` byte a byte muestra orden distinto a `ldr w0`.
 
 Siguiente: [Direcciones, punteros y memoria](06-direcciones-punteros-memoria.qmd).
 

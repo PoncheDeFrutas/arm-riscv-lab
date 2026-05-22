@@ -182,6 +182,16 @@ Quedan fuera lazy binding detallado, relocations dinámicas campo por campo,
 symbol versioning, RELRO, exploits y resolución manual. Se mencionan solo para
 no confundirlos con la meta actual: entender el modelo mental.
 
+## Mini ejercicios
+
+Practica con un binario enlazado dinámicamente (usa `gcc` con libc).
+
+1. Ejecuta `objdump -d` y busca `@plt`. ¿Cuántas entradas PLT encuentras?
+2. Ejecuta `readelf -d` y busca `NEEDED`. ¿Qué bibliotecas necesita?
+3. Ejecuta `readelf -h` y revisa `Type`. ¿Es `EXEC` o `DYN`?
+4. Ejecuta `readelf -l` y busca `INTERP`. ¿Qué loader usa?
+5. Compara un binario compilado con `gcc` vs enlazado con `ld` directo: ¿cuál tiene GOT/PLT?
+
 ## Checklist
 
 - [ ] Puedo explicar GOT como tabla conceptual de direcciones.

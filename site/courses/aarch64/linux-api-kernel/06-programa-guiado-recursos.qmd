@@ -222,8 +222,14 @@ Modifica y predice antes de ejecutar.
 ## Cierre
 
 Este programa ya tiene forma de programa Linux real: pide un recurso, lo usa,
-comprueba retornos y limpia antes de terminar. Todavía es pequeño, pero el
-modelo mental ya no es “syscalls sueltas”; es manejo de recursos.
+comprueba retornos y limpia antes de terminar. `strace` confirma que las syscalls
+se ejecutan en el orden esperado.
+
+## Checklist
+
+- [ ] Escribo un programa completo con `openat` → `read` → `write` → `close`.
+- [ ] Implemento dos rutas de error: antes y después de tener fd.
+- [ ] Verifico el flujo con `strace` y comparo retornos.
 
 ## Fuentes {.unlisted .unnumbered}
 
