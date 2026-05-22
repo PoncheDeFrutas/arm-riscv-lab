@@ -14,6 +14,31 @@ o "soy texto". El programa decide cómo interpretarlo. Esta lección separa el
 patrón guardado de la lectura signed o unsigned.
 :::
 
+## Qué vas a aprender
+
+- Diferencia entre enteros unsigned y signed.
+- Cómo calcular rangos de n bits.
+- Cómo funciona complemento a dos.
+- Por qué el mismo byte puede ser `255` o `-1`.
+
+## Antes de empezar
+
+Saber qué es un byte y leer hexadecimal. Si no dominas conversión entre bases,
+revisa [Bits, bytes y bases](01-bits-bytes-bases.qmd).
+
+## Idea central
+
+Los bits no tienen signo. El signo es una convención que aplica la instrucción
+que lee los datos. `0xFF` en un byte es siempre el patrón `11111111`. Si la
+instrucción lo trata como unsigned, vale `255`. Si lo trata como signed de 8
+bits, vale `-1` porque el bit más alto (bit 7) se interpreta como signo en
+complemento a dos.
+
+AArch64 no tiene registros "signed" ni "unsigned". Tiene instrucciones que
+deciden cómo interpretar los bits: `adds` vs `add`, `cmp` que afecta flags,
+`mul` que funciona igual para ambos, y branches condicionales como `b.lo`
+(unsigned) vs `b.lt` (signed).
+
 ## Unsigned
 
 Un entero unsigned usa todos sus bits para representar magnitud no negativa.
@@ -105,6 +130,38 @@ Valores frecuentes:
 -5 = 11111011
 ```
 
+### Tabla completa de 4 bits
+
+4 bits es el tamaño mínimo útil para ver el patrón. Cada nibble puede
+interpretarse así:
+
+| Binario | Hex | Unsigned | Signed (4 bits) |
+|---|---|---:|---:|
+| `0000` | `0` | `0` | `0` |
+| `0001` | `1` | `1` | `1` |
+| `0010` | `2` | `2` | `2` |
+| `0011` | `3` | `3` | `3` |
+| `0100` | `4` | `4` | `4` |
+| `0101` | `5` | `5` | `5` |
+| `0110` | `6` | `6` | `6` |
+| `0111` | `7` | `7` | `7` |
+| `1000` | `8` | `8` | `-8` |
+| `1001` | `9` | `9` | `-7` |
+| `1010` | `A` | `10` | `-6` |
+| `1011` | `B` | `11` | `-5` |
+| `1100` | `C` | `12` | `-4` |
+| `1101` | `D` | `13` | `-3` |
+| `1110` | `E` | `14` | `-2` |
+| `1111` | `F` | `15` | `-1` |
+
+Nota: el rango signed de 4 bits es `-8` a `7`. El bit más alto (bit 3) es el
+bit de signo. Cuando está en `1`, el valor es negativo.
+
+::: {.callout-note title="Truco rápido"}
+Para convertir un nibble con bit de signo en `1` a su valor signed: resta 16
+al valor unsigned. Ejemplo: `0xC` = `12` unsigned → `12 - 16 = -4` signed.
+:::
+
 ## Relación con AArch64
 
 AArch64 no necesita registros separados para signed y unsigned. El mismo `w0`
@@ -128,12 +185,32 @@ No digas "`0xFF` es negativo" sin decir tamaño. `0xFF` como signed de 8 bits es
 `-1`; `0x000000FF` como signed de 32 bits es `255`.
 :::
 
+## Errores comunes
+
+- **Pensar que el bit de signo es "mágico"**: no es un bit separado. Es el bit
+  más alto del tamaño que estás usando. En 8 bits es bit 7, en 32 bits es bit 31.
+- **Olvidar que `-0` no existe en complemento a dos**: solo hay un cero,
+  `00000000`. El patrón `10000000` en 8 bits es `-128`, no `-0`.
+- **Confundir el truco de resta**: el truco "resta 2^n al valor unsigned" solo
+  funciona cuando el bit de signo está encendido. Si el bit de signo es `0`, el
+  valor signed y unsigned son iguales.
+
 ## Mini ejercicios
+
+Predice el resultado antes de verificar.
 
 1. Interpreta `0x80` como unsigned de 8 bits.
 2. Interpreta `0x80` como signed de 8 bits.
 3. Calcula el rango signed de 4 bits.
 4. Obtén `-3` en complemento a dos de 8 bits.
+5. Convierte `0xD` a signed de 4 bits usando el truco de resta.
+6. ¿Cuál es el valor signed de 8 bits de `0xC0`?
+
+## Cierre
+
+Debes poder mirar cualquier byte y decir su valor unsigned y signed de 8 bits
+sin calculadora. Esa habilidad es clave para leer registros en GDB y diagnosticar
+errores de interpretación.
 
 ## Checklist
 
@@ -144,3 +221,9 @@ No digas "`0xFF` es negativo" sin decir tamaño. `0xFF` como signed de 8 bits es
 - [ ] Puedo explicar por qué el tamaño cambia la interpretación.
 
 Siguiente: [Overflow y extensiones](03-overflow-extensiones.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): instrucciones aritméticas AArch64, interpretación signed/unsigned de operandos. <https://developer.arm.com/documentation/ddi0487/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: complemento a dos, rangos de enteros y representación signed/unsigned.
+- GNU Binutils, *GNU Assembler Manual*: directivas `.byte`, `.word`, `.quad` y tamaños de datos. <https://sourceware.org/binutils/docs/as/>

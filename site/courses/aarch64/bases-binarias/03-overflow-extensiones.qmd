@@ -14,6 +14,29 @@ recortan. Para entender lo que ocurrió hay que saber si la operación se pensab
 como unsigned o signed.
 :::
 
+## Qué vas a aprender
+
+- Qué es carry y cuándo ocurre en suma unsigned.
+- Qué es borrow y cuándo ocurre en resta unsigned.
+- Qué es overflow y cuándo ocurre en aritmética signed.
+- Diferencia entre zero extension y sign extension.
+- Cómo escribir en `Wn` afecta `Xn` automáticamente.
+
+## Antes de empezar
+
+Entender rangos signed y unsigned de n bits. Si no los tienes claros, revisa
+[Enteros, signo y rangos](02-enteros-signo-rangos.qmd).
+
+## Idea central
+
+Cuando un resultado aritmético no cabe en el tamaño disponible, los bits
+visibles se recortan y se activa una señal: **carry** para unsigned, **overflow**
+para signed. Estas señales se guardan en flags del procesador (`C` y `V` en
+`NZCV`) que instrucciones posteriores pueden consultar.
+
+La diferencia clave: carry dice "la suma unsigned excedió el tamaño"; overflow
+dice "el resultado signed cambió de signo incorrectamente".
+
 ## Resultado limitado por tamaño
 
 Con 8 bits solo puedes guardar 8 bits. Si una suma produce más, el resultado
@@ -85,6 +108,25 @@ Carry y overflow no significan lo mismo. Carry ayuda a razonar operaciones
 unsigned; overflow ayuda a razonar operaciones signed.
 :::
 
+### Carry vs overflow: tabla comparativa
+
+| Operación (8 bits) | Carry | Overflow | Por qué |
+|---|---:|---:|---|
+| `0xFF + 0x01 = 0x00` | Sí | No | Unsigned: `255+1=256` no cabe. Signed: no aplica (uno es negativo) |
+| `0x7F + 0x01 = 0x80` | No | Sí | Unsigned: `127+1=128` cabe. Signed: `127+1=-128` cambió signo |
+| `0x80 + 0x80 = 0x00` | Sí | Sí | Unsigned: `128+128=256` no cabe. Signed: `-128+(-128)=-256` no cabe |
+| `0x01 + 0x02 = 0x03` | No | No | Ambos resultados caben sin problema |
+
+### Regla rápida para detectar overflow signed
+
+Overflow signed ocurre cuando:
+
+- **suma**: dos positivos dan negativo, o dos negativos dan positivo.
+- **resta**: positivo menos negativo da negativo, o negativo menos positivo da
+  positivo.
+
+Si los operandos tienen signos distintos en una suma, **nunca** hay overflow.
+
 ## Zero extension
 
 Zero extension agranda un valor rellenando con ceros a la izquierda.
@@ -131,6 +173,35 @@ mov w0, #42     // x0 = 0x000000000000002A
 Esto prepara una idea clave: muchas instrucciones AArch64 controlan si un valor
 pequeño se extiende con ceros o con signo antes de operar en un tamaño mayor.
 
+### Lectura paso a paso
+
+```asm
+mov x5, #0xFFFFFFFFFFFFFFFF   // todos los bits en 1
+mov w5, #0x80                 // byte 0x80 en vista 32 bits
+```
+
+| Paso | Registro `x5` | Qué cambió |
+|---|---|---|
+| Después de `mov x5, #...` | `0xFFFFFFFFFFFFFFFF` | Todos los bits encendidos |
+| Después de `mov w5, #0x80` | `0x0000000000000080` | Bits 32-63 se pusieron a cero |
+
+El valor `0x80` en `w5` es `128` unsigned. En `x5` completo sigue siendo `128`
+porque los bits altos son cero. Si hubiéramos usado sign extension manual,
+`0x80` de 8 bits sign-extended a 64 bits sería `0xFFFFFFFFFFFFFF80` = `-128`.
+
+### Instrucciones de extensión explícita
+
+AArch64 ofrece instrucciones que extienden valores antes de operar:
+
+```asm
+uxtw    // zero extend de word a 64 bits
+sxtb    // sign extend de byte a 64 bits
+sxth    // sign extend de halfword a 64 bits
+sxtw    // sign extend de word a 64 bits
+```
+
+Estas aparecen como modificadores en instrucciones como `add`, `ldr`, y otras.
+
 ## Límite de esta unidad
 
 ::: {.callout-note title="Todavía no estudiaremos NZCV"}
@@ -139,13 +210,34 @@ modelo mental: `C` se relaciona con carry/borrow unsigned y `V` con overflow
 signed.
 :::
 
+## Errores comunes
+
+- **Confundir carry con overflow**: carry es para unsigned, overflow para
+  signed. `0xFF + 0x01` tiene carry pero no overflow signed.
+- **Pensar que overflow significa "resultado muy grande"**: overflow signed
+  significa "resultado fuera del rango signed". `-128 + (-128)` da overflow
+  aunque el resultado matemático sea "más negativo", no "más grande".
+- **Olvidar que `Wn` limpia bits altos**: si usas `Xn` después de escribir en
+  `Wn`, los bits 32-63 son cero, no lo que tenían antes.
+
 ## Mini ejercicios
 
-1. Explica qué ocurre con `0xFF + 0x01` en 8 bits.
+Predice el resultado y si hay carry/overflow antes de verificar.
+
+1. Explica qué ocurre con `0xFF + 0x01` en 8 bits. ¿Hay carry? ¿Hay overflow?
 2. Explica por qué `127 + 1` causa overflow signed de 8 bits.
 3. Zero extend `0x80` de 8 a 32 bits.
 4. Sign extend `0x80` de 8 a 32 bits.
-5. Explica qué pasa con `x5` si escribes en `w5`.
+5. Explica qué pasa con `x5` si escribes en `w5` después de que `x5` tenía
+   `0xFFFFFFFFFFFFFFFF`.
+6. `0x7F + 0x02` en 8 bits signed: ¿hay overflow? ¿Por qué?
+7. `-128 + (-1)` en 8 bits signed: ¿hay overflow? ¿Cuál es el resultado visible?
+
+## Cierre
+
+Debes poder mirar una suma o resta de 8 bits y decir si hay carry (unsigned) y
+si hay overflow (signed) sin calculadora. Esa habilidad es esencial para
+entender flags `NZCV` y branches condicionales.
 
 ## Checklist
 
@@ -156,3 +248,9 @@ signed.
 - [ ] Sé que escribir en `Wn` limpia los bits altos de `Xn`.
 
 Siguiente: [Bytes y texto](04-bytes-texto.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture — A64 Instruction Set Architecture Guide*: flags NZCV, carry y overflow, modificadores de extensión (`uxtw`, `sxtb`, `sxth`, `sxtw`). <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): comportamiento aritmético de instrucciones AArch64 y flags de estado. <https://developer.arm.com/documentation/ddi0487/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: carry, borrow, overflow y extensión de signos.

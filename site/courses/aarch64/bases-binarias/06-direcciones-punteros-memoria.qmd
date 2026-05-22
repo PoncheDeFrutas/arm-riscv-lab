@@ -14,6 +14,30 @@ dirección, contenido y valor no son lo mismo. Si entiendes esa separación,
 podrás mirar registros y memoria sin confundir lo que estás viendo.
 :::
 
+## Qué vas a aprender
+
+- Diferencia entre dirección, contenido y valor interpretado.
+- Cómo funcionan los punteros como direcciones en registros.
+- Cómo leer memoria con distintos tamaños.
+- Por qué el contexto decide si un número es puntero o dato.
+
+## Antes de empezar
+
+Entender endianness y tamaños de acceso (byte, word, doubleword). Revisa
+[Endianness y alineación](05-endianness-alineacion.qmd) si necesitas repaso.
+
+## Idea central
+
+Tres conceptos que siempre deben separarse:
+
+1. **Dirección**: un número que identifica dónde está algo en memoria.
+2. **Contenido**: los bytes guardados en esa dirección.
+3. **Valor**: lo que esos bytes significan según cómo los interpretes.
+
+Un puntero es simplemente un registro que guarda una dirección. En AArch64, las
+direcciones de userland son de 64 bits y se guardan en registros `Xn`. Usar `Wn`
+para una dirección es un error porque trunca los 32 bits altos.
+
 ## Dirección, contenido y valor
 
 ```bash
@@ -63,6 +87,31 @@ Lectura mínima:
 |---|---|
 | `adr x0, valor` | Guardar una dirección en un registro |
 | `ldr w1, [x0]` | Leer contenido desde la dirección guardada en `x0` |
+
+### Lectura paso a paso con predicción
+
+```asm
+.section .data
+valor:
+    .word 42          // 0x0000002A en little endian: 2A 00 00 00
+
+.section .text
+    adr x0, valor     // paso 1
+    ldr w1, [x0]      // paso 2
+    ldrb w2, [x0]     // paso 3
+    ldr x3, [x0]      // paso 4
+```
+
+| Paso | Instrucción | Registro | Valor esperado | Qué pasó |
+|---|---|---|---|---|
+| 1 | `adr x0, valor` | `x0` | `0x400080` | Dirección de `valor` |
+| 2 | `ldr w1, [x0]` | `w1` | `42` | Lee 4 bytes y reconstruye el word |
+| 3 | `ldrb w2, [x0]` | `w2` | `0x2A` = `42` | Lee solo el primer byte |
+| 4 | `ldr x3, [x0]` | `x3` | `42` | Lee 8 bytes (doubleword), pero solo los primeros 4 son `valor` |
+
+El paso 4 es peligroso: `ldr x3, [x0]` lee 8 bytes desde la dirección. Si solo
+definimos un `.word` (4 bytes), los siguientes 4 bytes pertenecen a otra cosa
+o a padding. Esto puede leer datos inesperados.
 
 ## Mismos bytes, varias interpretaciones
 
@@ -129,13 +178,39 @@ un entero o bytes sin interpretar. El contexto decide si debes tratarlo como
 puntero.
 :::
 
+## Errores comunes
+
+- **Usar `Wn` para guardar una dirección**: `w0` tiene 32 bits. Una dirección
+  AArch64 necesita 64 bits. Si guardas una dirección en `w0`, truncas los 32
+  bits altos y el puntero apunta a memoria incorrecta.
+- **Leer más bytes de los definidos**: `ldr x0, [sp]` lee 8 bytes. Si solo
+  reservaste 4 bytes en el stack, lees basura o datos de otra variable.
+- **Confundir dirección con contenido**: `x0 = 0x400080` no significa que `x0`
+  vale `0x400080` como dato. Significa que `x0` apunta a esa dirección. El
+  contenido está en `[x0]`.
+- **No verificar alineación antes de `ldr`**: acceder a un `word` desde una
+  dirección no múltiplo de 4 puede funcionar pero con penalización, o causar
+  fault en configuraciones estrictas.
+
 ## Mini ejercicios
+
+Predice el resultado antes de verificar con GDB.
 
 1. En el ejemplo `2A 00 00 00`, explica el valor como `uint32` little endian.
 2. Explica la diferencia entre `adr x0, valor` y `ldr w1, [x0]`.
 3. Interpreta `41 42 43 00` como ASCII.
 4. Interpreta `41 42 43 00` como `uint32` little endian.
 5. Explica por qué una dirección también es un valor guardado en un registro.
+6. Si `x0 = 0x400100` y en esa dirección hay los bytes `FF FF FF FF`, ¿cuál es
+   el valor de `w0` después de `ldr w0, [x0]`? ¿Y el valor signed de 32 bits?
+7. ¿Por qué es incorrecto usar `mov w0, #0x400100` para guardar una dirección?
+
+## Cierre
+
+Debes poder mirar un registro y preguntarte: ¿es dirección o es dato? Si es
+dirección, ¿cuántos bytes leo desde ahí? Si es dato, ¿qué tamaño y
+interpretación aplico? Esa triple pregunta es la base para todo debugging en
+AArch64.
 
 ## Checklist
 
@@ -150,3 +225,10 @@ puntero.
 Si puedes mirar bytes y preguntarte "qué tamaño leo" y "qué interpretación
 aplico", ya tienes la base mental para estudiar memoria, registros, punteros,
 stack y debugging en AArch64.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture — A64 Instruction Set Architecture Guide*: instrucciones `adr`, `ldr`, `ldrb`, direccionamiento y tamaños de acceso. <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): modelo de memoria AArch64, accesos alineados y no alineados. <https://developer.arm.com/documentation/ddi0487/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: punteros, direccionamiento indirecto y lectura de memoria.
+- Sourceware, *GDB Documentation*: inspección de registros y memoria con `print`, `x`, `examine`. <https://sourceware.org/gdb/documentation/>

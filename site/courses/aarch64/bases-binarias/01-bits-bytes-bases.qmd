@@ -14,6 +14,29 @@ lección solo construiremos el vocabulario mínimo: tamaños y bases numéricas.
 vocabulario permite leer registros, memoria e instrucciones sin adivinar.
 :::
 
+## Qué vas a aprender
+
+- Qué son bit, byte, nibble, word y doubleword.
+- Cómo se relacionan decimal, binario y hexadecimal.
+- Cómo leer un dígito hexadecimal como 4 bits.
+- Qué diferencia hay entre `Wn` (32 bits) y `Xn` (64 bits) en AArch64.
+
+## Antes de empezar
+
+No necesitas experiencia previa con assembly. Solo saber que las computadoras
+guardan todo como ceros y unos.
+
+## Idea central
+
+La misma cantidad puede escribirse en tres bases distintas. El ensamblador y el
+depurador usan hexadecimal porque cada dígito corresponde a exactamente 4 bits,
+lo que hace fácil ver qué bits están encendidos.
+
+En AArch64, cada registro general tiene dos vistas: `Xn` de 64 bits y `Wn` de
+32 bits. Escribir en `Wn` limpia los 32 bits altos de `Xn` con ceros. Esta
+regla es una forma de **zero extension** automática que el hardware aplica sin
+instrucción extra.
+
 ## Bit, byte y nibble
 
 Un bit puede valer `0` o `1`. Un byte agrupa 8 bits. Un nibble agrupa 4 bits y
@@ -134,12 +157,54 @@ en hexadecimal. El tamaño depende de dónde se guarda o cómo se lee: byte, wor
 doubleword, registro `Wn` o registro `Xn`.
 :::
 
+## Lectura paso a paso
+
+```asm
+mov w0, #0xFF
+mov x1, #0xFF
+```
+
+| Instrucción | Qué hace | Resultado visible |
+|---|---|---|
+| `mov w0, #0xFF` | Carga `0xFF` en vista 32 bits | `w0 = 0x000000FF` |
+| `mov x1, #0xFF` | Carga `0xFF` en vista 64 bits | `x1 = 0x00000000000000FF` |
+
+Ambos guardan el mismo valor numérico `255`. La diferencia es cuántos bits
+ocupa la representación completa.
+
+```asm
+mov x2, #0xFFFFFFFFFFFFFFFF
+mov w2, #0x42
+```
+
+| Instrucción | Qué pasa con `x2` |
+|---|---|
+| `mov x2, #0xFFFFFFFFFFFFFFFF` | `x2 = 0xFFFFFFFFFFFFFFFF` (todos los bits encendidos) |
+| `mov w2, #0x42` | `x2 = 0x0000000000000042` (escribir en `Wn` limpia los 32 bits altos) |
+
+Esta segunda secuencia demuestra la regla de zero extension implícita: cualquier
+escritura en `Wn` pone a cero los bits 32-63 del registro `Xn` correspondiente.
+
+## Errores comunes
+
+- **Confundir dígito con byte**: `0xFF` son 2 dígitos hexadecimales = 1 byte =
+  8 bits. `0xFFFFFFFF` son 8 dígitos = 4 bytes = 32 bits = un `word`.
+- **Pensar que `Wn` y `Xn` son registros distintos**: comparten el mismo
+  hardware. `Wn` es la mitad baja de `Xn`.
+- **Olvidar que escribir en `Wn` limpia los bits altos**: si `X5` tenía
+  `0xFFFFFFFFFFFFFFFF` y ejecutas `mov w5, #1`, el resultado es
+  `x5 = 0x0000000000000001`, no `0xFFFFFFFF00000001`.
+
 ## Mini ejercicios
+
+Predice el resultado antes de verificar con `printf` o GDB.
 
 1. Escribe `15` en binario de 8 bits.
 2. Escribe `0b11111111` en hexadecimal.
 3. Explica cuántos bytes ocupa una doubleword.
 4. Explica qué relación hay entre `w3` y `x3`.
+5. Si `x7 = 0xDEADBEEFCAFEBABE` y ejecutas `mov w7, #0`, ¿cuál es el valor de `x7`?
+6. Convierte `0x3F` a binario sin usar calculadora.
 
 ## Checklist
 
@@ -150,3 +215,9 @@ doubleword, registro `Wn` o registro `Xn`.
 - [ ] Puedo distinguir `word` de `doubleword` en AArch64.
 
 Siguiente: [Enteros, signo y rangos](02-enteros-signo-rangos.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture — A64 Instruction Set Architecture Guide*: registros `Xn`/`Wn`, tamaños de operandos y zero extension implícita al escribir en `Wn`. <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): descripción de registros generales AArch64. <https://developer.arm.com/documentation/ddi0487/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: representación de datos y conversión entre bases.

@@ -14,6 +14,29 @@ abstractas. Guarda bytes. Esta lección muestra cómo interpretar bytes como tex
 sin perder de vista que siguen siendo datos binarios.
 :::
 
+## Qué vas a aprender
+
+- Cómo ASCII mapea caracteres a bytes.
+- Qué es el null terminator y por qué importa en C.
+- Cómo UTF-8 representa caracteres de más de un byte.
+- Cómo inspeccionar bytes de texto con herramientas.
+
+## Antes de empezar
+
+Saber leer hexadecimal y entender qué es un byte. Revisa
+[Bits, bytes y bases](01-bits-bytes-bases.qmd) si necesitas repaso.
+
+## Idea central
+
+El texto no es un tipo de dato especial para la CPU. Son bytes que un programa
+decide interpretar como caracteres. ASCII usa 1 byte por carácter (7 bits
+significativos). UTF-8 usa 1 a 4 bytes por carácter y es compatible con ASCII:
+los bytes `0x00` a `0x7F` significan lo mismo en ambos.
+
+En assembly, defines texto como bytes en `.data` o `.rodata`. El kernel o libc
+leen esos bytes y los envían a un dispositivo. El null byte `0x00` marca el fin
+de strings en C, pero no en todas las convenciones de assembly.
+
 ## ASCII básico
 
 ASCII asigna valores numéricos a caracteres comunes. En ASCII básico, cada
@@ -27,6 +50,10 @@ carácter ocupa un byte.
 | `a` | `0x61` | `97` |
 | `0` | `0x30` | `48` |
 | nueva línea | `0x0A` | `10` |
+| retorno de carro | `0x0D` | `13` |
+| tab | `0x09` | `9` |
+| espacio | `0x20` | `32` |
+| null | `0x00` | `0` |
 
 ```asm
 .section .data
@@ -42,6 +69,18 @@ ABC
 
 porque `0x41`, `0x42`, `0x43` y `0x0A` corresponden a `A`, `B`, `C` y nueva
 línea.
+
+### Patrón útil en ASCII
+
+Las letras mayúsculas y minúsculas tienen una relación simple:
+
+```bash
+'A' = 0x41 = 01000001
+'a' = 0x61 = 01100001
+```
+
+La diferencia es el bit 5 (valor `0x20` = `32`). Para convertir mayúscula a
+minúscula en ASCII puro: suma `0x20` o activa el bit 5 con `OR`.
 
 ## Número 0, carácter 0 y byte 0x30
 
@@ -66,6 +105,40 @@ caracter_cero:
 El número `0` no es el mismo byte que el carácter `'0'`. El carácter `'0'` se
 guarda como `0x30` en ASCII.
 :::
+
+## Null terminator
+
+En C y muchas convenciones de assembly, un string termina con un byte `0x00`
+(null terminator). Este byte no se imprime; solo marca el fin.
+
+```asm
+.section .data
+msg:
+    .ascii "Hola"
+    .byte 0x00        // null terminator
+```
+
+Sin el null terminator, una función que espera un string C seguirá leyendo bytes
+más allá del texto hasta encontrar un `0x00` en memoria. Esto puede causar
+lectura de datos basura o un segmentation fault.
+
+```bash
+Con null terminator:    48 6F 6C 61 00        // "Hola\0" → 5 bytes
+Sin null terminator:    48 6F 6C 61           // "Hola" → 4 bytes, pero ¿dónde termina?
+```
+
+::: {.callout-warning title="Importante"}
+La directiva `.asciz` de GNU `as` agrega el null terminator automáticamente.
+`.ascii` no lo hace.
+:::
+
+```asm
+.section .data
+msg1:
+    .ascii "Hola"       // 4 bytes, sin null terminator
+msg2:
+    .asciz "Hola"       // 5 bytes, con null terminator automático
+```
 
 ## Ver bytes con herramientas
 
@@ -120,12 +193,31 @@ bytes:
 Ambas formas pueden producir los mismos bytes. La diferencia es cómo lo escribes
 en el archivo fuente.
 
+## Errores comunes
+
+- **Olvidar el null terminator**: usar `.ascii` cuando la función espera un
+  string C. Usa `.asciz` o agrega `.byte 0x00` manualmente.
+- **Contar mal la longitud**: `"ABC\n"` son 4 bytes (`A`, `B`, `C`, `\n`). Si
+  usas `.asciz`, son 5 con el null terminator.
+- **Asumir que UTF-8 es 1 byte por carácter**: caracteres como `á`, `ñ`, `€`
+  ocupan 2 o 3 bytes en UTF-8. Si cuentas bytes como caracteres, el conteo será
+  incorrecto.
+
 ## Mini ejercicios
 
 1. Explica qué byte representa el carácter `A`.
 2. Explica qué diferencia hay entre `0x00` y `0x30`.
 3. Escribe `ABC` usando `.byte`.
 4. Explica por qué `á` no debe asumirse como un solo byte en UTF-8.
+5. ¿Cuántos bytes tiene `.asciz "Hi"`? ¿Y `.ascii "Hi"`?
+6. Usa el patrón del bit 5: ¿qué byte resulta de `0x41 | 0x20`? ¿Qué carácter es?
+7. Ejecuta `printf 'á' | xxd` en tu terminal. ¿Cuántos bytes ves?
+
+## Cierre
+
+Debes poder mirar una secuencia de bytes hexadecimales y reconocer si es texto
+ASCII, si tiene null terminator, y si algún byte podría ser parte de un carácter
+UTF-8 multibyte.
 
 ## Checklist
 
@@ -136,3 +228,10 @@ en el archivo fuente.
 - [ ] Puedo conectar `.ascii` y `.byte` con memoria.
 
 Siguiente: [Endianness y alineación](05-endianness-alineacion.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Unicode Consortium, *The Unicode Standard — UTF-8*: especificación de codificación UTF-8. <https://www.unicode.org/versions/latest/>
+- `man ascii`: tabla ASCII del sistema local.
+- GNU Binutils, *GNU Assembler Manual*: directivas `.ascii`, `.asciz`, `.string`. <https://sourceware.org/binutils/docs/as/>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: representación de texto y strings en assembly AArch64.

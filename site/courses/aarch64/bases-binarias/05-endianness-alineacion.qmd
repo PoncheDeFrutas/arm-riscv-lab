@@ -14,6 +14,27 @@ Endianness explica en qué orden aparecen esos bytes cuando el valor está en
 memoria.
 :::
 
+## Qué vas a aprender
+
+- Qué es endianness y por qué importa al leer memoria.
+- Cómo se ve un valor de 32 bits en little endian byte por byte.
+- Qué es alineación y por qué conviene ubicar datos en direcciones múltiples de su tamaño.
+
+## Antes de empezar
+
+Saber qué es un byte, un word de 32 bits y leer hexadecimal. Revisa
+[Bits, bytes y bases](01-bits-bytes-bases.qmd) si necesitas repaso.
+
+## Idea central
+
+Un byte tiene una dirección. Un valor de varios bytes ocupa varias direcciones
+consecutivas. **Endianness** define en qué orden se guardan esos bytes. En
+little endian, el byte menos significativo va primero (dirección más baja). En
+big endian, el byte más significativo va primero.
+
+AArch64 puede operar en ambos modos, pero Linux en ARM64 usa little endian por
+defecto. Todo el curso asume little endian salvo que se indique lo contrario.
+
 ## Un valor de varios bytes
 
 Un valor de 32 bits ocupa 4 bytes.
@@ -95,6 +116,35 @@ Si lees un `word` desde `0x400080` en little endian, el valor interpretado es:
 0x12345678
 ```
 
+### Lectura paso a paso con `ldr`
+
+```asm
+.section .data
+numero:
+    .word 0x12345678
+
+.section .text
+    adr x0, numero      // x0 = dirección de numero
+    ldr w1, [x0]        // w1 = valor de 32 bits desde esa dirección
+    ldrb w2, [x0]       // w2 = byte en [x0] = 0x78 (little endian)
+    ldrb w3, [x0, #1]   // w3 = byte en [x0+1] = 0x56
+    ldrb w4, [x0, #2]   // w4 = byte en [x0+2] = 0x34
+    ldrb w5, [x0, #3]   // w5 = byte en [x0+3] = 0x12
+```
+
+| Instrucción | Registro | Valor | Nota |
+|---|---|---|---|
+| `adr x0, numero` | `x0` | `0x400080` | Dirección base |
+| `ldr w1, [x0]` | `w1` | `0x12345678` | Word completo, CPU reordena |
+| `ldrb w2, [x0]` | `w2` | `0x00000078` | Byte en dirección más baja |
+| `ldrb w3, [x0, #1]` | `w3` | `0x00000056` | Siguiente byte |
+| `ldrb w4, [x0, #2]` | `w4` | `0x00000034` | Siguiente byte |
+| `ldrb w5, [x0, #3]` | `w5` | `0x00000012` | Byte más significativo |
+
+La instrucción `ldr w1, [x0]` reconstruye el valor correctamente porque la CPU
+sabe que está en little endian. Los bytes individuales leídos con `ldrb` muestran
+el orden real en memoria.
+
 ## Alineación conceptual
 
 Alineación significa ubicar datos en direcciones convenientes para su tamaño.
@@ -120,12 +170,34 @@ Little endian cambia el orden de los bytes en memoria. No significa leer cada
 byte al revés bit por bit.
 :::
 
+## Errores comunes
+
+- **Leer bytes como si fueran big endian**: si ves `78 56 34 12` en memoria y
+  lo interpretas como big endian, obtienes `0x78563412` en vez de `0x12345678`.
+- **Confundir orden de bytes con orden de bits**: little endian reordena bytes,
+  no bits dentro de cada byte. `0x78` sigue siendo `01111000`.
+- **Asumir que GDB muestra bytes en orden lógico**: `x/4xb` muestra bytes en
+  orden de memoria (little endian). `x/xw` muestra el word ya reconstruido.
+- **Ignorar la alineación**: leer un `word` desde una dirección no alineada
+  puede funcionar en AArch64 pero con penalización de rendimiento, y en algunas
+  arquitecturas causa fault.
+
 ## Mini ejercicios
 
 1. Escribe los bytes little endian de `0xAABBCCDD`.
 2. Escribe los bytes big endian de `0xAABBCCDD`.
 3. Explica por qué `0x12345678` puede verse como `78 56 34 12`.
 4. Di si `0x400084` está alineada para un dato de 4 bytes.
+5. Si `ldrb w0, [x1]` devuelve `0xEF` y `ldrb w0, [x1, #1]` devuelve `0xBE`,
+   ¿cuál es el valor del halfword little endian en esa dirección?
+6. ¿Por qué `ldr w0, [x1]` es mejor que leer 4 bytes con `ldrb` y reconstruir
+   manualmente?
+
+## Cierre
+
+Debes poder mirar 4 bytes en memoria little endian y reconstruir el valor de 32
+bits mentalmente. Esa habilidad es esencial para debugging con GDB y lectura de
+dumps de memoria.
 
 ## Checklist
 
@@ -136,3 +208,9 @@ byte al revés bit por bit.
 - [ ] Puedo explicar alineación sin entrar todavía en ABI o rendimiento.
 
 Siguiente: [Direcciones, punteros y memoria](06-direcciones-punteros-memoria.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): endianness en AArch64, instrucciones `ldr`/`ldrb`, alineación de accesos a memoria. <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture — A64 Instruction Set Architecture Guide*: carga y almacenamiento, modificadores de tamaño. <https://developer.arm.com/documentation/102374/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*: endianness y acceso a memoria en AArch64.

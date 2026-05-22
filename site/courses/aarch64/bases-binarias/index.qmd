@@ -195,3 +195,12 @@ programador debe saber qué tamaño leer y qué interpretación aplicar.
 
 Empieza por [Bits, bytes y bases](01-bits-bytes-bases.qmd). Si ya dominas bases
 numéricas, avanza a [Enteros, signo y rangos](02-enteros-signo-rangos.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Learn the Architecture — A64 Instruction Set Architecture Guide*: registros AArch64, relación `Xn`/`Wn`, tamaños de operandos. <https://developer.arm.com/documentation/102374/latest>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): codificación de instrucciones, comportamiento de extensiones y flags. <https://developer.arm.com/documentation/ddi0487/latest>
+- Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*, Morgan Kaufmann: capítulos sobre representación de datos, bases numéricas y complemento a dos.
+- William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques*: sistemas de numeración y representación de caracteres.
+- Unicode Consortium, *The Unicode Standard — UTF-8*: <https://www.unicode.org/versions/latest/>
+- `man ascii`, `man xxd`, `man hexdump`: referencia local de ASCII y volcado hexadecimal.
