@@ -197,6 +197,20 @@ Copiar toda la capacidad puede mover bytes sin significado. A veces se hace por
 simplicidad o rendimiento, pero conceptualmente los datos válidos son los bytes
 usados.
 
+## Checklist antes de escribir
+
+| Pregunta | Motivo |
+|---|---|
+| ¿tengo puntero base? | sin dirección no hay bloque |
+| ¿conozco capacidad? | necesito límite superior |
+| ¿conozco bytes usados? | necesito índice de escritura |
+| ¿hay espacio para dato nuevo? | evita overflow |
+| ¿hay espacio para terminador cero si aplica? | evita string mal terminado |
+| ¿actualicé `usados` después de escribir? | mantiene estado coherente |
+
+Buffers y strings fallan por errores de uno. Si `capacidad = 8`, índice `8` ya
+está fuera del bloque.
+
 ::: {.callout-warning title="Error común"}
 No escribas en `buffer[capacidad]`. Índices válidos van de `0` a
 `capacidad - 1`.
@@ -209,8 +223,16 @@ No escribas en `buffer[capacidad]`. Índices válidos van de `0` a
 3. ¿Por qué se revisa espacio antes de `strb`?
 4. ¿Por qué un string terminado en cero necesita un byte extra?
 5. ¿Qué pasos requiere crecer un buffer?
+6. Al crecer, ¿por qué normalmente copias bytes usados y no toda la capacidad?
 
 ## Cierre
 
 Buffers dinámicos no se manejan con puntero solo. Necesitan tamaño reservado,
 tamaño usado y reglas claras para crecer sin pisar memoria.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `malloc(3)`: <https://www.man7.org/linux/man-pages/man3/malloc.3.html>
+- Linux man-pages, `realloc(3)`: <https://www.man7.org/linux/man-pages/man3/realloc.3.html>
+- Linux man-pages, `write(2)`: <https://www.man7.org/linux/man-pages/man2/write.2.html>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>

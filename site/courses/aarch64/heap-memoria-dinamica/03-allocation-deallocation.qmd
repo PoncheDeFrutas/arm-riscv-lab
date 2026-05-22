@@ -159,6 +159,19 @@ El punto no es copiar estas etiquetas siempre. El punto es saber si el bloque
 existe en cada ruta. Si la reserva falló, liberar sería incorrecto. Si la reserva
 funcionó y luego falla otra operación, no liberar produce leak.
 
+## Tabla de rutas
+
+| Ruta | ¿Hay bloque vivo? | Acción |
+|---|---|---|
+| `error_sin_bloque` | no | salir sin liberar |
+| `cleanup_con_bloque` | sí | liberar una vez y salir con error |
+| `salida_ok` | sí, hasta el cierre | liberar una vez y salir con éxito |
+| después de liberar | no | invalidar copia local si ayuda |
+
+Invalidar una copia con `mov x19, #0` es útil como defensa local, pero no
+reemplaza la llamada real de liberación. Primero se libera con el mecanismo
+correcto; después puedes borrar la copia.
+
 ## Diferencia con `close(fd)`
 
 | Recurso | Valor que guardas | Liberación |
@@ -175,8 +188,16 @@ Ambos requieren ownership y cleanup. No se liberan igual.
 3. ¿`mov x19, #0` libera memoria?
 4. ¿Por qué `malloc` no es instrucción de CPU?
 5. ¿Qué relación mental hay entre `close(fd)` y liberar memoria?
+6. ¿Por qué `error_sin_bloque` no debe liberar?
 
 ## Cierre
 
 Allocation sin deallocation es programa incompleto. En bajo nivel, reservar
 implica planear uso, ownership y salida por error.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `malloc(3)`: <https://www.man7.org/linux/man-pages/man3/malloc.3.html>
+- Linux man-pages, `free(3)`: <https://www.man7.org/linux/man-pages/man3/free.3.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>

@@ -166,6 +166,30 @@ si allocate funciona y luego falla otra operación:
 Esa lógica se parece a la de `fd`, pero liberar memoria y cerrar fd son
 mecanismos distintos.
 
+## Checklist de diagnóstico
+
+| Pregunta | Error que detecta |
+|---|---|
+| ¿se perdió el último puntero? | leak |
+| ¿el bloque ya fue liberado? | use-after-free |
+| ¿dos rutas liberan el mismo bloque? | double free |
+| ¿el puntero era prestado? | liberación por quien no era dueño |
+| ¿se invalidó una copia local después de liberar? | reduce uso accidental |
+| ¿cleanup sabe qué recursos existen? | evita liberar lo que nunca se adquirió |
+
+La herramienta más importante aquí es el estado mental del bloque. GDB puede
+mostrar direcciones y bytes, pero no puede decidir por ti quién era dueño.
+
+## Señales al revisar código
+
+| Señal | Riesgo |
+|---|---|
+| muchos saltos a `error` sin cleanup | leak |
+| dos etiquetas llaman a la misma liberación sin marcar estado | double free |
+| puntero copiado a varios registros sin dueño claro | ownership confuso |
+| acceso después de una etiqueta `free`/`munmap` | use-after-free |
+| `mov ptr, #0` sin liberación real antes | leak disfrazado |
+
 ## Mini ejercicios
 
 1. ¿Qué error aparece si pierdes el último puntero?
@@ -173,9 +197,17 @@ mecanismos distintos.
 3. ¿Qué error aparece si liberas dos veces?
 4. ¿Por qué poner un registro en cero no libera memoria?
 5. ¿Por qué cleanup debe saber si la reserva funcionó?
+6. ¿Qué error puede aparecer si dos funciones creen ser dueñas del mismo bloque?
 
 ## Cierre
 
 Errores de heap son errores de vida útil y ownership. Antes de aprender
 allocators, debes poder reconocer cuándo un bloque está vivo, quién lo posee y
 cuándo deja de ser válido.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `malloc(3)`: <https://www.man7.org/linux/man-pages/man3/malloc.3.html>
+- Linux man-pages, `free(3)`: <https://www.man7.org/linux/man-pages/man3/free.3.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>
+- GDB documentation: <https://sourceware.org/gdb/documentation/>

@@ -65,6 +65,21 @@ No son instrucciones A64. No son sinónimos simples de una syscall. Una
 biblioteca puede usar `brk`, `mmap` u otras estrategias internas para conseguir
 memoria del kernel y administrar bloques pequeños.
 
+## Contratos de error distintos
+
+No todos los mecanismos reportan fallo igual:
+
+| Mecanismo | Nivel | Éxito | Fallo típico |
+|---|---|---|---|
+| `brk` | syscall | nuevo límite o estado según wrapper | depende del contrato usado |
+| `mmap` directo | syscall | dirección mapeada | retorno negativo en syscall directa |
+| `malloc` | libc | puntero | `NULL` y `errno` según caso |
+| `free` | libc | sin retorno útil | comportamiento inválido si puntero no corresponde |
+
+Por eso no conviene mezclar reglas. Si estás usando syscalls directas, lee
+registros. Si estás usando `malloc`, estás en ABI/libc y debes respetar el
+contrato de función de biblioteca.
+
 ## Instrucción, syscall o función
 
 | Forma | Ejemplo | Quién la entiende |
@@ -123,6 +138,18 @@ explícitos. También conecta con:
 En la siguiente unidad se puede estudiar memoria dinámica real desde Linux sin
 convertir la explicación en implementación de `malloc`.
 
+## Qué mirar con herramientas
+
+| Pregunta | Herramienta |
+|---|---|
+| ¿mi programa llamó `brk` o `mmap`? | `strace` |
+| ¿qué función de libc estoy llamando? | símbolos, `objdump`, GDB |
+| ¿qué retornó una syscall directa? | registro `x0` después de `svc #0` |
+| ¿qué retornó `malloc`? | `x0` según AAPCS64 |
+
+La misma ubicación de retorno (`x0`) no significa el mismo contrato. El contexto
+decide si interpretas `x0` como retorno crudo de syscall o retorno de función C.
+
 ## Qué debe quedar claro
 
 | Término | Qué significa aquí |
@@ -145,9 +172,18 @@ construir una abstracción como `malloc` encima de esos servicios.
 3. ¿Qué problema tendría implementar allocator completo ahora?
 4. ¿Qué syscall futura permitirá pedir regiones de memoria al kernel?
 5. ¿Qué syscall futura libera una región mapeada?
+6. ¿Por qué no debes aplicar reglas de `malloc` a un retorno crudo de `mmap`?
 
 ## Cierre
 
 La unidad termina con una frontera clara: ya conoces heap, bloques, ownership y
 errores. Lo siguiente será pedir memoria real al kernel con `mmap` y liberarla
 con `munmap`.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `brk(2)`: <https://www.man7.org/linux/man-pages/man2/brk.2.html>
+- Linux man-pages, `malloc(3)`: <https://www.man7.org/linux/man-pages/man3/malloc.3.html>
+- Linux man-pages, `free(3)`: <https://www.man7.org/linux/man-pages/man3/free.3.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>

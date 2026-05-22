@@ -172,6 +172,20 @@ después:
 
 En bajo nivel esto es una regla del programa. El CPU no la controla por ti.
 
+## Checklist de ownership
+
+| Situación | Pregunta |
+|---|---|
+| guardar puntero | ¿también guardé capacidad? |
+| pasar puntero | ¿es préstamo o transferencia? |
+| escribir bytes | ¿`usados < capacidad`? |
+| liberar bloque | ¿soy el dueño actual? |
+| salir por error | ¿hay bloque vivo que limpiar? |
+
+Si no puedes responder si un puntero es prestado o propio, el diseño está
+incompleto. El mismo número de dirección puede circular por varias funciones,
+pero solo una parte debe ser responsable de liberar.
+
 ## Perder puntero
 
 ```asm
@@ -189,8 +203,15 @@ puntero al bloque puede impedir liberarlo.
 3. ¿Por qué capacidad no significa datos válidos?
 4. ¿Puntero y ownership significan lo mismo?
 5. ¿Qué pasa si pierdes el último puntero a un bloque dinámico?
+6. ¿Qué diferencia hay entre pasar un puntero prestado y transferir ownership?
 
 ## Cierre
 
 Memoria dinámica no se entiende solo como “dirección”. Se entiende como bloque
 con tamaño reservado, uso actual y dueño responsable.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `malloc(3)`: <https://www.man7.org/linux/man-pages/man3/malloc.3.html>
+- Linux man-pages, `free(3)`: <https://www.man7.org/linux/man-pages/man3/free.3.html>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

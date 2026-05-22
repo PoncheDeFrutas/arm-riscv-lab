@@ -157,6 +157,21 @@ No memorices direcciones exactas. Memoriza propósito y vida útil.
 | buffer cuyo tamaño se decide al correr | heap |
 | string que debe sobrevivir a una función | heap |
 
+## Pregunta de vida útil
+
+Antes de elegir región, pregunta:
+
+| Pregunta | Si la respuesta es sí |
+|---|---|
+| ¿el dato existe todo el proceso? | estática: `.rodata`, `.data` o `.bss` |
+| ¿solo vive dentro de una llamada? | stack |
+| ¿debe sobrevivir al retorno? | heap u objeto gestionado por otro dueño |
+| ¿su tamaño se decide al correr? | heap o mapeo dinámico |
+| ¿necesita cleanup explícito? | heap/recurso dinámico |
+
+La decisión no es “stack rápido, heap lento”. La decisión correcta empieza por
+vida útil y ownership.
+
 ## Mini ejercicios
 
 1. ¿Qué región usarías para un mensaje constante?
@@ -164,8 +179,15 @@ No memorices direcciones exactas. Memoriza propósito y vida útil.
 3. ¿Por qué heap sirve para datos que crecen?
 4. ¿Por qué una dirección de stack puede dejar de ser válida?
 5. ¿Qué región vive normalmente hasta terminar el proceso?
+6. ¿Qué pregunta harías antes de devolver un puntero desde una función?
 
 ## Cierre
 
 Heap no reemplaza stack ni `.bss`. Cada región resuelve una vida distinta. Elegir
 bien empieza por preguntar cuánto debe vivir el dato.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `malloc(3)`: <https://www.man7.org/linux/man-pages/man3/malloc.3.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
