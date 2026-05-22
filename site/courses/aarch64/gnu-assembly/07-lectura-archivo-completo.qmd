@@ -15,6 +15,27 @@ objetivo es saber qué parte prepara el assembler y qué parte termina como cód
 que ejecuta el procesador.
 :::
 
+## Qué vas a aprender
+
+- Leer un archivo `.s` completo y clasificar cada línea por su tipo.
+- Entender qué procesa el assembler y qué ejecuta el CPU.
+- Usar `.` (location counter) para calcular longitudes automáticamente.
+- Verificar la clasificación con `objdump`.
+
+## Antes de empezar
+
+Haber visto las lecciones anteriores de GNU Assembly: directivas, secciones,
+definición de datos y pseudo-instrucciones. Si alguna te suena nueva, revísala
+antes de continuar.
+
+## Idea central
+
+Un archivo `.s` mezcla varios tipos de línea. El assembler las procesa todas pero
+cada tipo tiene un papel distinto: las directivas le dicen al assembler qué hacer,
+las etiquetas nombran direcciones, las instrucciones generan código máquina, y
+los datos generan bytes en el binario. El CPU solo ejecuta las instrucciones; el
+resto es trabajo de herramientas.
+
 ## Archivo completo
 
 ```asm
@@ -46,6 +67,34 @@ mensaje:
 mensaje_len = . - mensaje
 ```
 
+Este programa escribe "Hola GNU Assembly" en stdout y termina con código 0.
+Es pequeño pero contiene todos los elementos que verás en programas más grandes.
+
+## Cómo leer un .s de arriba a abajo
+
+Sigue este flujo mental:
+
+```
+1. Directivas de constantes (.equ)
+       ↓
+2. Visibilidad y metadatos (.global, .type)
+       ↓
+3. Sección de código (.text)
+       ↓
+4. Etiqueta de entrada (_start:)
+       ↓
+5. Instrucciones (mov, ldr, svc)
+       ↓
+6. Tamaño del bloque (.size)
+       ↓
+7. Sección de datos (.rodata)
+       ↓
+8. Datos y símbolos calculados (.ascii, =)
+```
+
+No necesitas memorizar el orden. Lo importante es reconocer qué tipo de línea
+estás mirando en cada momento.
+
 ## Clasificación línea por línea
 
 La tabla separa cada fragmento por su papel. Si una línea empieza con punto,
@@ -69,6 +118,33 @@ que el assembler convertirá en instrucciones.
 | `.ascii "Hola GNU Assembly\n"` | Directiva de datos | Coloca bytes |
 | `mensaje_len = . - mensaje` | Símbolo calculado | Longitud del mensaje |
 
+## El location counter `.`
+
+El punto `.` es un símbolo especial que el assembler mantiene mientras procesa
+el archivo. Representa la posición actual en la sección que se está ensamblando.
+
+```asm
+.section .rodata
+mensaje:
+    .ascii "Hola GNU Assembly\n"
+mensaje_len = . - mensaje
+```
+
+Cuando el assembler llega a `mensaje_len = . - mensaje`:
+
+- `.` apunta a la posición justo después del último byte de `.ascii`.
+- `mensaje` apunta a la posición donde empezó el string.
+- `. - mensaje` = distancia entre ambas posiciones = longitud del string.
+
+Esto significa que si cambias el texto, `mensaje_len` se recalcula automáticamente:
+
+```bash
+"Hola GNU Assembly\n"  →  18 bytes
+"Hola\n"               →  5 bytes
+```
+
+No necesitas contar caracteres a mano. El assembler lo hace por ti.
+
 ## Qué ejecuta el CPU
 
 El CPU ejecuta instrucciones como:
@@ -88,51 +164,102 @@ mensaje:
 mensaje_len = . - mensaje
 ```
 
-Esas líneas sirven para construir el binario.
+Esas líneas sirven para construir el binario. El assembler las procesa y las
+convierte en metadatos, posiciones de memoria o bytes en secciones del archivo
+ELF.
 
-## Ensamblar e inspeccionar
+## Qué genera el assembler
+
+Al ensamblar e inspeccionar:
 
 ```bash
 aarch64-linux-gnu-as main.s -o main.o
 aarch64-linux-gnu-ld main.o -o main
 aarch64-linux-gnu-objdump -d main
+```
+
+Salida esperada de `objdump -d`:
+
+```bash
+0000000000400080 <_start>:
+  400080:   d2800020    mov x0, #1
+  400084:   580000a1    ldr x1, 400098 <_start+0x18>
+  400088:   d2800242    mov x2, #18
+  40008c:   d2800808    mov x8, #64
+  400090:   d4000001    svc #0x0
+  400094:   d2800000    mov x0, #0
+  400098:   d2800ba8    mov x8, #93
+  40009c:   d4000001    svc #0x0
+```
+
+Nota que `ldr x1, =mensaje` se convirtió en una instrucción `ldr` real que
+carga desde una dirección cercana (`400098`). El assembler colocó la dirección
+de `mensaje` en un literal pool.
+
+Para ver los bytes del mensaje:
+
+```bash
 aarch64-linux-gnu-objdump -s -j .rodata main
 ```
 
-Busca dos cosas: instrucciones en `.text` y bytes del mensaje en `.rodata`.
+Salida esperada:
 
-## Error común
+```bash
+Contents of section .rodata:
+ 4000a0 486f6c61 20474e55 20417373 656d626c  Hola GNU Assembl
+ 4000b0 790a                                   y.
+```
 
-::: {.callout-warning title="No confundas dirección con contenido"}
-`ldr x1, =mensaje` prepara una dirección o valor asociado al símbolo. No debes
-leerlo automáticamente como “cargar los bytes del mensaje”.
-:::
+Los bytes `48 6f 6c 61 ...` son ASCII. El último byte `0a` es `\n` (nueva línea).
+
+## Errores comunes
+
+- **Confundir dirección con contenido**: `ldr x1, =mensaje` prepara una dirección
+  o valor asociado al símbolo. No debes leerlo automáticamente como "cargar los
+  bytes del mensaje". Para cargar bytes usarías `ldr x1, [direccion]`.
+- **Pensar que `.equ` genera código**: `.equ` solo crea un nombre simbólico. No
+  genera ninguna instrucción ni byte en el binario.
+- **Olvidar que `.size` es metadato**: `.size` no afecta la ejecución. Solo ayuda
+  a herramientas como GDB y `readelf` a mostrar información del símbolo.
+- **Confundir `mensaje:` con `mensaje`**: `mensaje:` (con dos puntos) es una
+  etiqueta que marca una dirección. `mensaje` (sin dos puntos) es un símbolo que
+  se refiere a esa dirección.
+- **Asumir que `.ascii` agrega null terminator**: `.ascii` coloca los bytes
+  exactos. Si necesitas null terminator, usa `.asciz` o agrega `.byte 0`.
 
 ## Mini ejercicios
 
-1. Marca todas las directivas del archivo.
-2. Marca todas las etiquetas.
-3. Marca todas las instrucciones A64 reales.
-4. Explica por qué `mensaje_len` no ocupa memoria como string.
-5. Explica qué bytes coloca `.ascii "Hola GNU Assembly\n"`.
+Practica con el archivo completo.
 
-## Checklist final
-
-- [ ] Puedo clasificar cada línea de un `.s`.
-- [ ] Puedo distinguir directivas de instrucciones reales.
-- [ ] Puedo reconocer datos declarados.
-- [ ] Puedo reconocer pseudo-instrucciones.
-- [ ] Puedo explicar símbolos calculados con `.`.
-- [ ] Puedo usar `objdump` para revisar código y datos.
+1. ¿Cuántas directivas tiene el archivo? ¿Cuántas instrucciones A64 reales?
+2. ¿Qué valor numérico tiene `mensaje_len`? ¿Cómo lo calcula el assembler?
+3. Si cambias `.ascii "Hola GNU Assembly\n"` por `.ascii "Hi\n"`, ¿qué cambia
+   en `mensaje_len`? ¿Qué cambia en las instrucciones?
+4. ¿Por qué `ldr x1, =mensaje` es pseudo-instrucción y no instrucción real?
+5. Escribe la clasificación (directiva, etiqueta, instrucción, dato) de cada
+   línea del archivo sin mirar la tabla.
+6. Ensambla el archivo y verifica con `objdump -d` que las instrucciones
+   coinciden con lo que esperabas.
 
 ## Cierre de la unidad
 
 Si puedes leer un `.s` y decir qué procesa el assembler, qué nombra una
 dirección, qué declara bytes y qué ejecuta el CPU, ya estás listo para escribir
-programas AArch64 más grandes sin confundir sintaxis con arquitectura.
+programas AArch64 más grandes sin confundir sintaxis con arquitectura. La
+práctica más útil es ensamblar y verificar con `objdump`: así confirmas que lo
+que escribiste es lo que el assembler entendió.
+
+## Checklist final
+
+- [ ] Clasifico cada línea de un `.s` como directiva, etiqueta, instrucción o dato.
+- [ ] Explico qué hace `.` (location counter) y cómo se usa para calcular longitudes.
+- [ ] Verifico con `objdump -d` que las instrucciones generadas son las esperadas.
+- [ ] Distingo `ldr x0, =symbol` (dirección) de `ldr x0, [symbol]` (contenido).
+
+Siguiente: [Memoria, dirección y contenido](../memoria-direccionamiento/01-memoria-direccion-contenido.qmd).
 
 ## Fuentes {.unlisted .unnumbered}
 
-- GNU Binutils, *GNU Assembler Manual*: lectura de archivo completo, clasificación de directivas e instrucciones. <https://sourceware.org/binutils/docs/as/>
+- GNU Binutils, *GNU Assembler Manual*: lectura de archivo completo, clasificación de directivas e instrucciones, location counter `.`. <https://sourceware.org/binutils/docs/as/>
 - GNU Binutils, *GNU Objdump Manual*: opciones `-d`, `-s`, `-j` para inspección de código y datos. <https://sourceware.org/binutils/docs/binutils/>
 - Arm, *A64 Instruction Set Architecture Guide*: formato de instrucciones A64. <https://developer.arm.com/documentation/102374/latest>
