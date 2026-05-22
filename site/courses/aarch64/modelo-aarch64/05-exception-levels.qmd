@@ -16,40 +16,62 @@ procesador está disponible para tu programa.
 
 ## Qué vas a aprender
 
-Vas a ubicar `EL0`, `EL1`, `EL2` y `EL3` como niveles de privilegio. Para esta
-ruta, lo más importante es distinguir programa de usuario (`EL0`) y kernel
-(`EL1`).
+- Qué son los exception levels y para qué sirven.
+- En qué nivel corre tu programa y en cuál corre el kernel.
+- Por qué una syscall requiere cambiar de nivel.
+- Qué puede y qué no puede hacer un programa en `EL0`.
 
-Esto explica por qué un programa usa syscalls para pedir servicios al sistema
-operativo.
+## Antes de empezar
+
+Entender qué es una syscall y por qué un programa pide servicios al kernel.
+Revisa [Contrato de syscall](../syscalls-esenciales/01-contrato-syscall.qmd) si
+necesitas repaso.
+
+## Idea central
+
+AArch64 define cuatro niveles de privilegio llamados Exception Levels (`EL0` a
+`EL3`). Cada nivel tiene acceso a un conjunto diferente de instrucciones y
+registros. Un programa de usuario corre en `EL0` con privilegios mínimos. El
+kernel corre en `EL1` con acceso completo al hardware. Para que un programa en
+`EL0` pida un servicio al kernel en `EL1`, usa una syscall (`svc #0`) que
+dispara una transición controlada entre niveles.
 
 ## Mapa de niveles
 
-| Nivel | Nombre común | Uso típico |
-|---|---|---|
-| `EL0` | User mode | Programas de usuario |
-| `EL1` | Kernel mode | Kernel del sistema operativo |
-| `EL2` | Hypervisor | Virtualización |
-| `EL3` | Secure monitor | Transición secure / non-secure |
+| Nivel | Nombre común | Uso típico | Privilegio |
+|---|---|---|---|
+| `EL0` | User mode | Programas de usuario | Mínimo |
+| `EL1` | Kernel mode | Kernel del sistema operativo | Alto |
+| `EL2` | Hypervisor | Virtualización | Muy alto |
+| `EL3` | Secure monitor | Transición secure / non-secure | Máximo |
 
 ```bash
-EL3  secure monitor
-EL2  hypervisor
-EL1  kernel
-EL0  programa de usuario
+EL3  secure monitor    ← máximo privilegio (TrustZone)
+EL2  hypervisor        ← virtualización
+EL1  kernel            ← sistema operativo
+EL0  programa usuario  ← tu programa
 ```
 
 En este curso, los primeros programas corren en `EL0` sobre Linux.
+
+### Qué niveles verás en la práctica
+
+| Nivel | ¿Lo usarás? | Cuándo |
+|---|---|---|
+| `EL0` | Sí | Siempre: tus programas corren aquí |
+| `EL1` | Indirectamente | Cada vez que haces una syscall |
+| `EL2` | No en este curso | Solo si estudias virtualización |
+| `EL3` | No en este curso | Solo si estudias TrustZone/bare metal |
 
 ## User mode vs kernel mode
 
 Un programa normal no puede ejecutar instrucciones privilegiadas ni tocar
 libremente registros de sistema. Eso protege al sistema y separa responsabilidades.
 
-| Modo | Qué puede hacer |
-|---|---|
-| User mode / `EL0` | Ejecutar programa, usar registros generales, pedir servicios al kernel |
-| Kernel mode / `EL1` | Administrar memoria, procesos, dispositivos y privilegios |
+| Modo | Qué puede hacer | Qué NO puede hacer |
+|---|---|---|
+| User mode / `EL0` | Ejecutar programa, usar registros generales, pedir servicios al kernel | Acceder a MMU, configurar interrupciones, leer registros privilegiados |
+| Kernel mode / `EL1` | Administrar memoria, procesos, dispositivos y privilegios | Todo lo de EL0 + más |
 
 ::: {.callout-note title="Idea clave"}
 Tu programa puede usar registros generales, pero no controla todo el procesador.
@@ -59,24 +81,68 @@ Linux corre el programa en `EL0` y el kernel trabaja en `EL1`.
 ## Syscall como cambio de contexto conceptual
 
 Cuando un programa necesita un servicio del kernel, usa una syscall. En AArch64
-Linux, eso se hará con `svc #0` en unidades posteriores.
+Linux, eso se hace con `svc #0`.
 
 ```asm
-svc #0
+mov x0, #1          // stdout
+ldr x1, =msg        // buffer
+mov x2, #5          // longitud
+mov x8, #64         // write
+svc #0              // ← transición EL0 → EL1
+```
+
+### Qué ocurre durante `svc #0`
+
+```bash
+1. CPU está ejecutando en EL0 (tu programa)
+2. Instrucción svc #0 dispara una exception
+3. CPU cambia a EL1 (kernel mode)
+4. Kernel lee x8 para saber qué syscall se pidió
+5. Kernel ejecuta el servicio (write, exit, etc.)
+6. Kernel retorna a EL0 con resultado en x0
+7. Tu programa continúa
 ```
 
 Para esta unidad, no estudiaremos números de syscall ni argumentos. Solo importa
 la idea: programa en `EL0` pide servicio a kernel en `EL1`.
 
-## Qué no puede tocar libremente un programa
+### Diagrama de transición
 
-| Estado | Acceso desde programa normal |
-|---|---|
-| Registros generales `Xn/Wn` | Sí |
-| `SP`, `PC`, `NZCV` | Visible o usable según reglas de instrucciones |
-| Registros de sistema privilegiados | No libremente |
-| Configuración de MMU | No |
-| Control de interrupciones | No |
+```{mermaid}
+%%| label: fig-el-transition
+%%| fig-cap: "Transición EL0 → EL1 durante una syscall."
+flowchart LR
+  el0["EL0: tu programa"] -->|svc #0| exception["Exception"]
+  exception -->|cambio de nivel| el1["EL1: kernel"]
+  el1 -->|ejecuta syscall| result["resultado en x0"]
+  result -->|retorno| el0
+```
+
+## Qué puede tocar libremente un programa
+
+| Estado | Acceso desde programa normal | Ejemplo |
+|---|---|---|
+| Registros generales `Xn/Wn` | Sí | `mov x0, #42` |
+| `SP`, `PC`, `NZCV` | Visible o usable según reglas | `cmp x0, #0` |
+| Registros de sistema privilegiados | No libremente | `SCTLR`, `TTBR0` |
+| Configuración de MMU | No | Solo el kernel mapea páginas |
+| Control de interrupciones | No | Solo el kernel habilita/deshabilita |
+| Exception levels | No | Solo EL2/EL3 pueden cambiar EL |
+
+## Qué pasa si intentas algo privilegiado
+
+Si un programa en `EL0` intenta ejecutar una instrucción privilegiada, el CPU
+genera una exception y el kernel decide qué hacer. Normalmente termina el
+proceso con una señal como `SIGILL` (illegal instruction).
+
+```asm
+// Esto fallaría en EL0:
+mrs x0, SCTLR_EL1    // lee registro de sistema privilegiado
+```
+
+El kernel intercepta el intento y envía una señal al proceso. Tu programa no
+puede leer ni modificar la configuración de la MMU, las tablas de páginas ni los
+registros de control del sistema.
 
 ## Por qué esto importa para debugging
 
@@ -85,7 +151,9 @@ su contexto de usuario. No estás viendo todo el estado interno del kernel ni de
 hardware privilegiado.
 
 También explica por qué un fallo de acceso a memoria no permite al programa
-“arreglar” directamente las tablas de páginas: eso pertenece al sistema.
+"arreglar" directamente las tablas de páginas: eso pertenece al sistema. Cuando
+un programa accede a memoria no mapeada, el hardware genera una exception, el
+kernel la recibe en `EL1` y decide si enviar `SIGSEGV` al proceso.
 
 ## Límite de esta unidad
 
@@ -103,6 +171,7 @@ páginas, virtualización ni TrustZone. Solo necesitamos el mapa.
 | Esperar ver todo estado del kernel en GDB de usuario | GDB muestra contexto del proceso |
 | Profundizar en EL2/EL3 demasiado pronto | primero domina EL0/EL1 |
 | Tratar registros de sistema como registros generales | muchos son privilegiados |
+| Creer que `svc #0` es una función | es una instrucción que cambia de nivel |
 
 ## Mini ejercicios
 
@@ -111,26 +180,20 @@ páginas, virtualización ni TrustZone. Solo necesitamos el mapa.
 3. Explica por qué un programa de usuario no puede tocar todo el estado.
 4. Explica qué idea representa `svc #0` sin entrar en syscalls.
 5. Explica por qué GDB de usuario no muestra todo el estado del kernel.
-
-## Checklist
-
-- [ ] Puedo ubicar `EL0`.
-- [ ] Puedo ubicar `EL1`.
-- [ ] Sé que `EL2` se relaciona con virtualización.
-- [ ] Sé que `EL3` se relaciona con secure monitor.
-- [ ] Puedo explicar user mode vs kernel mode.
-- [ ] Puedo explicar por qué existen syscalls.
+6. ¿Qué pasaría si tu programa intentara ejecutar `mrs x0, SCTLR_EL1`?
+7. ¿Cuántos exception levels existen en AArch64? ¿Cuáles usa Linux normalmente?
 
 ## Cierre
 
 Los exception levels explican el límite entre programa y sistema operativo. Para
 esta ruta, el punto central es simple: tus programas empiezan en `EL0` y piden
-servicios al kernel en `EL1`.
+servicios al kernel en `EL1` mediante syscalls. Ese límite de privilegio protege
+al sistema y es la razón por la que `svc #0` existe.
 
 Siguiente: [Lectura de registros con GDB](06-lectura-registros-gdb.qmd).
 
 ## Fuentes {.unlisted .unnumbered}
 
-- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
-- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
-- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html).
+- Arm, *Learn the Architecture - A-profile*: Exception levels y privilegios. <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: especificación de EL0-EL3. <https://developer.arm.com/documentation/ddi0487/latest>
+- Linux man-pages, [`syscall(2)`](https://www.man7.org/linux/man-pages/man2/syscall.2.html): mecanismo de syscalls Linux.

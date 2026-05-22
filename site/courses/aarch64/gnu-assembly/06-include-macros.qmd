@@ -15,6 +15,25 @@ La idea es ahorrar repetición sin perder de vista qué instrucciones terminará
 en el programa.
 :::
 
+## Qué vas a aprender
+
+- Cómo compartir constantes entre archivos con `.include`.
+- Cómo definir y usar macros simples con `.macro` y `.endm`.
+- La diferencia entre macro y función.
+- Cuándo conviene usar macros y cuándo no.
+
+## Antes de empezar
+
+Entender directivas básicas como `.equ` y `.global`. Revisa
+[Directivas básicas](03-directivas-basicas.qmd) si necesitas repaso.
+
+## Idea central
+
+`.include` copia el contenido de otro archivo durante ensamblado. `.macro` define
+una plantilla que el assembler expande en el lugar donde aparece. Ambas son
+herramientas de texto: no generan llamadas, retornos ni stack frames. El binario
+final contiene las instrucciones expandidas como si las hubieras escrito a mano.
+
 ## `.include`
 
 `.include` inserta otro archivo durante ensamblado. Puedes leerlo como si el
@@ -25,30 +44,77 @@ procesando el resto.
 .include "constantes.inc"
 
 .text
+.global _start
 _start:
     mov x0, #EXIT_OK
     mov x8, #SYS_exit
     svc #0
 ```
 
-Archivo incluido:
+Archivo `constantes.inc`:
 
 ```asm
 .equ SYS_exit, 93
 .equ EXIT_OK, 0
+.equ SYS_write, 64
+.equ STDOUT, 1
 ```
 
-Después del include, `SYS_exit` y `EXIT_OK` ya existen para el resto del archivo.
-Esto es útil cuando varias prácticas comparten los mismos números de syscall o
-constantes pequeñas.
+Después del include, `SYS_exit`, `EXIT_OK`, `SYS_write` y `STDOUT` ya existen
+para el resto del archivo. Esto es útil cuando varias prácticas comparten los
+mismos números de syscall o constantes pequeñas.
+
+### Qué pasa durante ensamblado
+
+El assembler procesa `.include` antes de generar código. Es como si el contenido
+de `constantes.inc` estuviera escrito directamente en tu archivo `.s`:
+
+```asm
+// .include "constantes.inc" se expande a:
+.equ SYS_exit, 93
+.equ EXIT_OK, 0
+.equ SYS_write, 64
+.equ STDOUT, 1
+
+// luego sigue tu código:
+.text
+.global _start
+_start:
+    mov x0, #EXIT_OK     // se convierte en: mov x0, #0
+    mov x8, #SYS_exit    // se convierte en: mov x8, #93
+    svc #0
+```
+
+### Organización de archivos incluidos
+
+Puedes tener varios archivos `.inc` para distintos propósitos:
+
+```
+src/
+├── main.s
+├── constantes.inc        # números de syscall
+├── macros.inc            # macros reutilizables
+└── datos.inc             # constantes de datos
+```
+
+```asm
+.include "constantes.inc"
+.include "macros.inc"
+
+.text
+.global _start
+_start:
+    salir 0               // macro definida en macros.inc
+```
 
 ## Cuándo usar include
 
 | Conviene para | Evita usarlo para |
 |---|---|
-| Constantes compartidas | Ocultar el programa principal |
+| Constantes compartidas entre prácticas | Ocultar el programa principal |
 | Macros pequeñas repetidas | Crear una capa propia difícil de leer |
-| Definiciones comunes | Evitar entender instrucciones reales |
+| Definiciones comunes (syscalls, flags) | Evitar entender instrucciones reales |
+| Separar datos de código en archivos grandes | Reemplazar funciones reales |
 
 ## Macro simple
 
@@ -63,6 +129,7 @@ assembler coloca ahí las líneas de la plantilla con sus parámetros reemplazad
 .endm
 
 .text
+.global _start
 _start:
     salir 0
 ```
@@ -78,6 +145,24 @@ svc #0
 La macro evita repetir la secuencia, pero el binario final contiene
 instrucciones normales.
 
+### Verificar la expansión
+
+Puedes confirmar que la macro se expandió correctamente:
+
+```bash
+aarch64-linux-gnu-as main.s -o main.o
+aarch64-linux-gnu-objdump -d main.o
+```
+
+```bash
+0000000000400080 <_start>:
+  400080:   d2800000    mov x0, #0
+  400084:   d2800ba8    mov x8, #93
+  400088:   d4000001    svc #0x0
+```
+
+No hay ninguna "llamada a macro" en el binario. Solo ves las tres instrucciones.
+
 ::: {.callout-note title="Idea clave"}
 Una macro se expande antes de ejecutar el programa. No hay llamada, retorno ni
 stack frame por usar `.macro`.
@@ -92,17 +177,54 @@ Los parámetros se declaran en la línea `.macro` y se usan dentro con `\`.
     mov \reg, #\valor
 .endm
 
+.global _start
+.text
 _start:
     cargar_valor x0, 42
+    cargar_valor x1, 100
 ```
 
-En este ejemplo, `\reg` se reemplaza por `x0` y `\valor` por `42`.
+En este ejemplo, `\reg` se reemplaza por `x0` y `\valor` por `42` en la primera
+llamada, y por `x1` y `100` en la segunda.
 
 ```asm
+// Expansión de cargar_valor x0, 42:
 mov x0, #42
+
+// Expansión de cargar_valor x1, 100:
+mov x1, #100
 ```
 
 Ese reemplazo ocurre durante ensamblado, no durante ejecución.
+
+### Macro con múltiples instrucciones
+
+```asm
+.macro escribir_stdout msg, len
+    mov x0, #1
+    ldr x1, =\msg
+    mov x2, #\len
+    mov x8, #64
+    svc #0
+.endm
+
+.section .rodata
+hola:
+    .ascii "Hola\n"
+hola_len = . - hola
+
+.text
+.global _start
+_start:
+    escribir_stdout hola, hola_len
+
+    mov x0, #0
+    mov x8, #93
+    svc #0
+```
+
+Esta macro encapsula la secuencia completa de `write` a stdout. Cada uso genera
+5 instrucciones reales.
 
 ## Uso responsable
 
@@ -118,12 +240,61 @@ Buenos primeros usos:
 | Salir con código | macro `salir codigo` |
 | Cargar constante repetida | macro `cargar_valor reg, valor` |
 | Compartir syscalls | archivo `constantes.inc` |
+| Escribir a stdout | macro `escribir_stdout msg, len` |
+
+Malos usos para principiantes:
+
+| Caso | Por qué evitarlo |
+|---|---|
+| Macro que llama otra macro | difícil de seguir |
+| Macro con 20+ instrucciones | oculta demasiado |
+| Macro que reemplaza una función real | confunde concepto |
+
+## Macro vs función
+
+| Característica | Macro | Función |
+|---|---|---|
+| Cuándo se procesa | Ensamblado | Ejecución |
+| Genera llamada | No | Sí (`bl`) |
+| Usa stack | No | Sí (guarda `LR`) |
+| Duplica código | Sí (cada uso genera instrucciones) | No (una copia, múltiples llamadas) |
+| Puede tener retorno | No | Sí (`ret`) |
+
+### Ejemplo comparativo
+
+```asm
+// Macro: se expande en cada uso
+.macro salir codigo
+    mov x0, #\codigo
+    mov x8, #93
+    svc #0
+.endm
+
+_start:
+    salir 0     // genera 3 instrucciones aquí
+    salir 1     // genera 3 instrucciones aquí también
+
+// Función: una sola copia, múltiples llamadas
+salir_func:
+    mov x8, #93
+    svc #0
+
+_start:
+    mov x0, #0
+    bl salir_func   // 1 instrucción + llamada
+    mov x0, #1
+    bl salir_func   // 1 instrucción + llamada
+```
+
+La macro duplica código pero evita la sobrecarga de `bl`/`ret`. La función usa
+menos espacio pero requiere llamada y retorno.
 
 ## Error común
 
 ::: {.callout-warning title="Macro no es función"}
 Una macro no se ejecuta como subrutina. Se expande en el lugar donde aparece.
-Eso puede duplicar código.
+Eso puede duplicar código. Si usas una macro 10 veces, las instrucciones aparecen
+10 veces en el binario.
 :::
 
 ## Mini ejercicios
@@ -132,14 +303,15 @@ Eso puede duplicar código.
 2. Define `SYS_write` en un archivo incluido.
 3. Explica por qué macro no es función.
 4. Escribe una macro que cargue `x0` con un código de salida.
+5. Escribe una macro `escribir_stderr msg, len` que escriba en stderr (fd 2).
+6. Ensambla un archivo con una macro y verifica con `objdump -d` que se expandió.
 
-## Checklist
+## Cierre
 
-- [ ] Puedo explicar `.include`.
-- [ ] Puedo explicar `.macro`.
-- [ ] Puedo explicar `.endm`.
-- [ ] Puedo usar un parámetro con `\`.
-- [ ] Sé que macros avanzadas quedan para después.
+`.include` y `.macro` son herramientas de texto que el assembler procesa antes de
+generar código. No son instrucciones del CPU. Sirven para evitar repetición pero
+no deben ocultar lo que estás aprendiendo. Siempre verifica con `objdump -d` que
+la expansión es la que esperas.
 
 Siguiente: [Lectura de archivo completo](07-lectura-archivo-completo.qmd).
 

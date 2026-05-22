@@ -14,6 +14,26 @@ atajos pueden parecer instrucciones reales, pero a veces el assembler debe
 expandirlos, colocar literales o pedir ayuda al linker.
 :::
 
+## Qué vas a aprender
+
+- Tres formas de obtener una dirección o constante grande: `ldr =symbol`, `adr`, `adrp + add`.
+- Qué es una pseudo-instrucción y por qué el assembler la expande.
+- Qué es un literal pool y cómo funciona.
+- Qué es una relocation y quién la resuelve.
+
+## Antes de empezar
+
+Entender la diferencia entre directiva e instrucción. Revisa
+[Directivas básicas](03-directivas-basicas.qmd) si necesitas repaso.
+
+## Idea central
+
+Las instrucciones A64 tienen límites en el tamaño de los inmediatos que pueden
+codificar. No puedes poner una dirección de 64 bits directamente en una
+instrucción `mov`. Por eso GNU assembler ofrece atajos: el assembler decide cómo
+materializar ese valor, ya sea con instrucciones reales, con literales en memoria
+o con relocations que el linker resuelve.
+
 ## `ldr x0, =symbol`
 
 Esta forma es una pseudo-instrucción frecuente.
@@ -26,13 +46,41 @@ Lectura inicial: queremos que `x0` reciba la dirección asociada al símbolo
 `mensaje`. El assembler decide cómo materializar ese valor.
 
 ::: {.callout-warning title="No siempre es una instrucción real única"}
-`ldr x0, =mensaje` no debe leerse como “cargar contenido de memoria en mensaje”.
+`ldr x0, =mensaje` no debe leerse como "cargar contenido de memoria en mensaje".
 Es un atajo para obtener un valor, muchas veces una dirección o constante.
 :::
 
+### Qué genera realmente
+
+Si ensamblas y desensamblas:
+
+```asm
+.global _start
+.text
+_start:
+    ldr x0, =0x123456789ABCDEF0
+```
+
+```bash
+aarch64-linux-gnu-as main.s -o main.o
+aarch64-linux-gnu-objdump -d main.o
+```
+
+Puedes ver que el assembler genera algo como:
+
+```bash
+0:   58000080        ldr     x0, 10 <_start+0x10>
+...
+10:  9ABCDEF0        .word   0x9abcdef0
+14:  12345678        .word   0x12345678
+```
+
+El assembler colocó el valor constante en una zona cercana (literal pool) y
+generó una instrucción `ldr` real que carga desde esa zona.
+
 ## `adr`
 
-`adr` calcula una dirección cercana al `pc`.
+`adr` calcula una dirección cercana al `pc` (program counter).
 
 ```asm
 adr x0, mensaje
@@ -42,6 +90,23 @@ Lectura: coloca en `x0` la dirección de `mensaje`, si está en rango para esta
 forma.
 
 No carga bytes desde `mensaje`. Solo calcula dirección.
+
+### Cómo funciona
+
+`adr` usa el valor actual del `pc` y le suma o resta un offset codificado en la
+instrucción. El offset tiene un límite (±1 MB aproximadamente). Si `mensaje`
+está dentro de ese rango, `adr` funciona con una sola instrucción real.
+
+```bash
+aarch64-linux-gnu-as main.s -o main.o
+aarch64-linux-gnu-objdump -d main.o
+```
+
+```bash
+0:   10000080        adr     x0, 10 <mensaje>
+```
+
+Aquí ves que `adr` sí es una instrucción A64 real, no una pseudo-instrucción.
 
 ## `adrp + add`
 
@@ -58,19 +123,38 @@ Lectura conceptual:
 | Línea | Idea |
 |---|---|
 | `adrp x0, mensaje` | Calcula base de página relacionada con `mensaje` |
-| `add x0, x0, :lo12:mensaje` | Suma parte baja de la dirección |
+| `add x0, x0, :lo12:mensaje` | Suma parte baja de la dirección (bits 0-11) |
 
 Por ahora basta con leer el patrón completo como una forma de construir una
 dirección. Más adelante, cuando aparezca el linker con más detalle, esta misma
 forma servirá para explicar relocations.
 
+### Por qué dos instrucciones
+
+Una dirección de 64 bits no cabe en una sola instrucción A64. `adrp` calcula la
+base de la página de 4 KB (los bits altos), y `add` suma el offset dentro de esa
+página (los 12 bits bajos). Juntas reconstruyen la dirección completa.
+
+```bash
+dirección completa = (base de página) + (offset de 12 bits)
+```
+
 ## Comparación rápida
 
-| Forma | Idea inicial |
+| Forma | Instrucciones reales | Rango | ¿Pseudo? |
+|---|---:|---:|---|
+| `adr x0, mensaje` | 1 | ±1 MB | No, es instrucción real |
+| `adrp + add` | 2 | Toda la memoria | No, son instrucciones reales |
+| `ldr x0, =mensaje` | 1-2 + literal | Depende del assembler | Sí, pseudo-instrucción |
+
+### Cuándo usar cada forma
+
+| Situación | Forma recomendada |
 |---|---|
-| `adr x0, mensaje` | Dirección cercana al código actual |
-| `adrp + add` | Dirección construida por página y offset |
-| `ldr x0, =mensaje` | Pseudo-instrucción; assembler elige estrategia |
+| Dirección de dato cercano al código | `adr` |
+| Dirección de dato en cualquier parte | `adrp + add` |
+| Constante grande o dirección sin importar cómo | `ldr x0, =valor` |
+| Quieres control explícito | `adrp + add` |
 
 ## Literales y literal pools
 
@@ -88,11 +172,15 @@ Modelo conceptual:
 código usa pseudo-instrucción
         |
         v
-assembler coloca literal cerca
+assembler coloca literal cerca (literal pool)
         |
         v
 instrucción real carga ese valor desde literal pool
 ```
+
+El literal pool es una zona de datos que el assembler inserta automáticamente
+cerca del código. La instrucción `ldr` real usa un offset desde el `pc` para
+llegar a esa zona.
 
 ## Relocations conceptuales
 
@@ -104,10 +192,14 @@ adrp x0, mensaje
 add x0, x0, :lo12:mensaje
 ```
 
-El CPU no “ejecuta una relocation”. El CPU ejecuta instrucciones ya generadas.
+El CPU no "ejecuta una relocation". El CPU ejecuta instrucciones ya generadas.
 La relocation es trabajo previo de herramientas.
 
-## Ver qué generó el assembler
+Cuando ensamblas un archivo objeto, el assembler no sabe dónde estará `mensaje`
+en memoria final. Marca las instrucciones con relocations para que el linker las
+resuelva durante el enlace.
+
+### Ver relocations
 
 ```bash
 aarch64-linux-gnu-as main.s -o main.o
@@ -116,20 +208,45 @@ aarch64-linux-gnu-objdump -dr main.o
 
 `-d` muestra desensamblado. `-r` muestra relocations si existen.
 
+Salida esperada:
+
+```bash
+0:   90000000        adrp    x0, 0 <_start>
+                        0: R_AARCH64_ADR_PREL_PG_HI21   .text
+4:   91000000        add     x0, x0, #0x0
+                        4: R_AARCH64_ADD_ABS_LO12_NC     .text
+```
+
+Las líneas `R_AARCH64_*` son relocations. El linker las usa para ajustar las
+instrucciones cuando conoce la dirección final de `.text`.
+
+## Errores comunes
+
+- **Confundir `ldr x0, =symbol` con `ldr x0, [symbol]`**: el primero obtiene una
+  dirección o constante; el segundo carga contenido desde esa dirección.
+- **Asumir que `adr` siempre funciona**: si el símbolo está fuera de rango (±1 MB),
+  el assembler puede rechazarlo o generar código incorrecto.
+- **Pensar que `adrp + add` son pseudo-instrucciones**: son instrucciones A64
+  reales. El assembler no las expande; las codifica directamente.
+- **Ignorar relocations en archivos objeto**: si ves `R_AARCH64_*` en `objdump -dr`,
+  es normal. El linker las resuelve.
+
 ## Mini ejercicios
 
 1. Explica si `adr x0, mensaje` carga contenido o dirección.
 2. Explica por qué `ldr x0, =mensaje` puede ser pseudo-instrucción.
 3. Explica qué idea representa un literal pool.
 4. Explica por qué relocation no es instrucción del CPU.
+5. ¿Cuándo usarías `adrp + add` en vez de `adr`?
+6. Ensambla un archivo con `ldr x0, =0xDEADBEEFCAFEBABE` y verifica con
+   `objdump -d` qué instrucciones generó el assembler.
 
-## Checklist
+## Cierre
 
-- [ ] Puedo explicar `ldr x0, =symbol`.
-- [ ] Puedo explicar `adr`.
-- [ ] Puedo explicar `adrp + add` como mapa inicial.
-- [ ] Puedo explicar literal pool conceptualmente.
-- [ ] Puedo explicar relocation conceptualmente.
+Las tres formas de cargar direcciones tienen un trade-off: `adr` es simple pero
+limitado en rango; `adrp + add` funciona para toda la memoria pero requiere dos
+instrucciones; `ldr =symbol` es el atajo más cómodo pero el assembler decide cómo
+implementarlo. Entender la diferencia evita confusiones al leer `objdump`.
 
 Siguiente: [Include y macros](06-include-macros.qmd).
 

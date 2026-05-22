@@ -14,16 +14,48 @@ unidad la fuente en assembly es la misma. Lo que cambia es la forma de compilar,
 ejecutar y depurar.
 :::
 
+## Qué vas a aprender
+
+- Qué ruta usar según tu hardware (ARM64 nativo vs x86_64 con QEMU).
+- Qué es QEMU user mode y cómo se diferencia de system mode.
+- Por qué Linux es el entorno principal de este curso.
+
+## Antes de empezar
+
+Solo necesitas una terminal Linux. Puede ser en una Raspberry Pi, en una máquina
+virtual, en WSL2 o en cualquier distribución Linux.
+
 ## Idea central
 
 Linux será el entorno principal del curso porque permite estudiar AArch64 desde
 userland: procesos, binarios, syscalls, archivos, depuración y herramientas de
 inspección sin entrar todavía a bare metal.
 
+El sistema operativo actúa como una API: tu programa pide servicios al kernel
+mediante syscalls, el kernel responde, y tu programa continúa. Este modelo es el
+mismo sin importar si corres en ARM64 real o en QEMU.
+
 ::: {.callout-note title="Límite de esta unidad"}
 No vamos a arrancar kernels, construir imágenes completas ni configurar placas
 desde cero. Eso pertenece a unidades posteriores.
 :::
+
+## ¿Por qué Linux y no otro sistema?
+
+Linux es ideal para estudiar assembly porque:
+
+- **Syscalls documentadas**: cada servicio del kernel tiene un número y un
+  contrato claro en las man-pages.
+- **Herramientas disponibles**: `gcc`, `as`, `ld`, `gdb`, `objdump`, `readelf`,
+  `strace` funcionan igual en cualquier distribución.
+- **QEMU user mode**: puedes ejecutar binarios ARM64 en cualquier arquitectura
+  sin emular un sistema completo.
+- **Código abierto**: puedes estudiar cómo funciona el kernel si quieres ir más
+  allá.
+
+Otros sistemas operativos (Windows, macOS) tienen modelos de syscall distintos y
+menos documentados para assembly. Linux permite enfoque en la arquitectura, no
+en el sistema.
 
 ## Raspberry Pi ARM64 real
 
@@ -39,8 +71,13 @@ Señal correcta:
 aarch64
 ```
 
+Si ves `armv7l` o `armhf`, tu sistema es de 32 bits. Necesitas Raspberry Pi OS
+de 64 bits (aarch64) para este curso.
+
 En esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas
 `qemu-aarch64` para ejecutar el ejemplo básico.
+
+### Flujo de trabajo nativo
 
 ::: {.lab-flow}
 ::: {.lab-step}
@@ -58,6 +95,13 @@ En esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas
 `gdb`
 :::
 :::
+
+Ventajas de la ruta nativa:
+
+- El binario corre a velocidad real del procesador.
+- `gdb` funciona directamente sin configuración extra.
+- `strace` muestra las syscalls ARM64 reales.
+- No necesitas toolchain cruzado.
 
 ## Host x86_64 con QEMU user mode
 
@@ -77,6 +121,8 @@ En esta ruta compilas un binario AArch64 con toolchain cruzado y lo ejecutas con
 `qemu-aarch64`. QEMU user mode ejecuta un programa ARM64 individual, no una
 máquina completa.
 
+### Flujo de trabajo con QEMU
+
 ::: {.lab-flow}
 ::: {.lab-step}
 **Compila**
@@ -94,6 +140,25 @@ máquina completa.
 :::
 :::
 
+### ¿Qué hace QEMU user mode?
+
+QEMU user mode traduce las instrucciones ARM64 a instrucciones x86_64 en tiempo
+de ejecución. Tu programa ARM64 cree que corre en un procesador ARM64, pero QEMU
+traduce cada instrucción al vuelo.
+
+```bash
+Tu programa ARM64
+        |
+        v
+QEMU user mode (traduce instrucciones)
+        |
+        v
+Kernel Linux x86_64 (recibe syscalls traducidas)
+```
+
+El kernel Linux x86_64 recibe las syscalls del programa ARM64 traducidas por
+QEMU. Para el kernel, es un proceso x86_64 normal.
+
 ::: {.callout-warning title="No ejecutes directo en x86_64"}
 Si tu host es `x86_64`, `./build/main` no es el comando correcto para el
 binario AArch64. Entra a `src/` y usa `make run`.
@@ -106,16 +171,28 @@ del sistema. Sirve para kernel, bare metal o sistemas completos.
 
 En esta unidad solo aparece como mapa mental:
 
-| Modo | Qué emula | Uso en esta unidad |
-|---|---|---|
-| QEMU user mode | Un proceso AArch64 | Ruta principal en x86_64 |
-| QEMU system mode | Una máquina ARM completa | Solo mención |
+| Modo | Qué emula | Uso en esta unidad | Velocidad |
+|---|---|---|---|
+| QEMU user mode | Un proceso AArch64 | Ruta principal en x86_64 | Rápida |
+| QEMU system mode | Una máquina ARM completa | Solo mención | Más lenta |
 
 ::: {.callout-tip title="Regla práctica"}
 Si solo quieres correr `build/main`, usa QEMU user mode. Si necesitas
 arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más
 adelante.
 :::
+
+### Diferencia visual
+
+```bash
+# QEMU user mode: ejecuta un binario
+qemu-aarch64 ./build/main
+
+# QEMU system mode: arranca una máquina completa
+qemu-system-aarch64 -M virt -kernel kernel.img -drive file=sdcard.img
+```
+
+User mode es para programas individuales. System mode es para sistemas completos.
 
 ## Docker opcional
 
@@ -124,7 +201,12 @@ el aprendizaje del flujo: dentro del contenedor seguirás usando `make`,
 toolchain AArch64, QEMU y GDB.
 
 Docker no será requisito principal porque agrega otra capa antes de entender el
-programa. Úsalo si no puedes instalar paquetes en tu sistema.
+programa. Úsalo si:
+
+- No puedes instalar paquetes en tu sistema.
+- Quieres un entorno idéntico al de tus compañeros.
+- Tu sistema operativo no es Debian/Ubuntu.
+- Estás en un laboratorio compartido.
 
 ## Decisión final
 
@@ -134,6 +216,27 @@ programa. Úsalo si no puedes instalar paquetes en tu sistema.
 | ¿`uname -m` dice `x86_64`? | Sí | Ruta QEMU user mode |
 | ¿No puedes instalar paquetes? | Sí | Docker opcional |
 
+## Verificación rápida
+
+Independientemente de tu ruta, deberías poder hacer esto:
+
+```bash
+# 1. Saber tu arquitectura
+uname -m
+
+# 2. Verificar que puedes compilar (nativo)
+gcc --version
+
+# o verificar cross-compilation (x86_64)
+aarch64-linux-gnu-gcc --version
+
+# 3. Verificar que puedes ejecutar (x86_64)
+qemu-aarch64 --version
+```
+
+Si alguno de estos comandos falla, ve a
+[Instalación toolchain](02-instalacion-toolchain.qmd) para resolverlo.
+
 Siguiente: [Instalación toolchain](02-instalacion-toolchain.qmd).
 
 ## Fuentes {.unlisted .unnumbered}
@@ -141,3 +244,4 @@ Siguiente: [Instalación toolchain](02-instalacion-toolchain.qmd).
 - QEMU, *User-mode documentation*: `qemu-aarch64`, `-g` para GDB server. <https://www.qemu.org/docs/master/user/>
 - QEMU, *System emulator documentation*: modo system mode vs user mode. <https://www.qemu.org/docs/master/system/>
 - Docker, *Get started*: contenedores para entornos reproducibles. <https://docs.docker.com/get-started/>
+- Linux man-pages, `syscall(2)`: contrato de syscalls Linux. <https://www.man7.org/linux/man-pages/man2/syscall.2.html>

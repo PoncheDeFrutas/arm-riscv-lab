@@ -16,9 +16,15 @@ se vuelve visible.
 
 ## Qué vas a aprender
 
-La meta es leer recursión como una serie de llamadas normales. Cada llamada
-tiene su propio frame, su propio `LR` guardado y su propio punto de retorno. La
-diferencia es que el callee tiene el mismo nombre que el caller.
+- Cómo se ve la recursión en términos de stack frames.
+- Por qué cada llamada necesita su propio `LR` guardado.
+- Qué pasa si no hay caso base.
+- Cómo observar recursión con GDB.
+
+## Antes de empezar
+
+Entender stack frames, `bl`, `ret`, `LR` y el prólogo/epílogo de funciones.
+Revisa [Stack frames](03-stack-frames.qmd) si necesitas repaso.
 
 ## Idea base
 
@@ -54,7 +60,10 @@ contador(2) retorna
 contador(3) retorna
 ```
 
-## Ejemplo pequeño: cuenta regresiva conceptual
+Cada frame ocupa espacio en el stack. Si la recursión es profunda, el stack
+puede agotarse.
+
+## Ejemplo pequeño: cuenta regresiva
 
 ```asm
 .global _start
@@ -86,7 +95,7 @@ fin_cuenta:
 Este ejemplo no imprime nada. Su propósito es mostrar frames. Cada `bl cuenta`
 necesita conservar retorno propio.
 
-## Lectura del flujo
+### Lectura del flujo
 
 ```bash
 _start: x0 = 3
@@ -98,17 +107,46 @@ cuenta(0): caso base, retorna
 
 Cada llamada ejecuta su propio prólogo. Cada retorno ejecuta su propio epílogo.
 
+### Stack visual durante la recursión
+
+```bash
+Dirección alta
+┌─────────────────────────┐
+│ frame _start            │
+├─────────────────────────┤
+│ frame cuenta(3)         │ ← x29 apunta aquí
+│   x29 guardado          │
+│   x30 (retorno a _start)│
+├─────────────────────────┤
+│ frame cuenta(2)         │
+│   x29 guardado          │
+│   x30 (retorno a cuenta(3))│
+├─────────────────────────┤
+│ frame cuenta(1)         │
+│   x29 guardado          │
+│   x30 (retorno a cuenta(2))│
+├─────────────────────────┤
+│ frame cuenta(0)         │ ← x29 apunta aquí (caso base)
+│   x29 guardado          │
+│   x30 (retorno a cuenta(1))│
+└─────────────────────────┘
+Dirección baja (SP crece hacia aquí)
+```
+
+Cada frame guarda su propio `x30` (link register). Cuando `cuenta(0)` retorna,
+restaura el `x30` que apunta al cuerpo de `cuenta(1)`, no a `_start`.
+
 ## Qué guarda cada llamada
 
 Aunque todas las llamadas entren por la misma etiqueta `cuenta`, no comparten el
 mismo contexto activo.
 
-| Llamada | Necesita conservar |
-|---|---|
-| `cuenta(3)` | retorno hacia `_start` |
-| `cuenta(2)` | retorno hacia el cuerpo de `cuenta(3)` |
-| `cuenta(1)` | retorno hacia el cuerpo de `cuenta(2)` |
-| `cuenta(0)` | retorno hacia el cuerpo de `cuenta(1)` |
+| Llamada | Necesita conservar | Retorno a |
+|---|---|---|
+| `cuenta(3)` | retorno hacia `_start` | `_start` |
+| `cuenta(2)` | retorno hacia el cuerpo de `cuenta(3)` | `cuenta(3)` |
+| `cuenta(1)` | retorno hacia el cuerpo de `cuenta(2)` | `cuenta(2)` |
+| `cuenta(0)` | retorno hacia el cuerpo de `cuenta(1)` | `cuenta(1)` |
 
 Por eso el prólogo se ejecuta varias veces y cada ejecución reserva una nueva
 porción del stack.
@@ -140,10 +178,38 @@ cuenta(3)
         cuenta(-1)
           cuenta(-2)
             ...
+            segmentation fault
 ```
 
 En un sistema real eso termina fallando. Aquí solo necesitamos la idea: stack es
 finito.
+
+## Observar recursión con GDB
+
+Puedes ver los frames en acción:
+
+```bash
+$ gdb ./recursion
+(gdb) break cuenta
+(gdb) run
+(gdb) bt
+#0  cuenta () at recursion.s:15
+#1  0x0000000000400090 in cuenta () at recursion.s:22
+#2  0x0000000000400090 in cuenta () at recursion.s:22
+#3  0x0000000000400090 in cuenta () at recursion.s:22
+#4  0x0000000000400078 in _start () at recursion.s:7
+```
+
+`bt` (backtrace) muestra la cadena de llamadas. Cada `#N` es un frame distinto.
+El frame `#0` es el activo; `#4` es el más antiguo (`_start`).
+
+```bash
+(gdb) info registers x0
+x0             0x0        0
+```
+
+En el caso base, `x0` vale `0`. Si avanzas con `continue`, verás cómo `x0`
+cambia en cada frame.
 
 ## Errores comunes
 
@@ -167,14 +233,18 @@ su propio contexto hasta que retorna.
 4. ¿En qué orden se cierran los frames?
 5. ¿Qué pasa si el caso base nunca se cumple?
 6. ¿Por qué todas las llamadas pueden entrar por la misma etiqueta sin compartir frame?
+7. Si agregas `printf` dentro de `cuenta` para imprimir `x0`, ¿en qué orden se
+   imprimen los valores?
 
 ## Cierre
 
 Recursión convierte stack frames en algo fácil de ver: una llamada encima de
 otra, cada una con su retorno, hasta que el caso base permite deshacer la pila.
+GDB muestra esta cadena con `bt`, y cada frame tiene su propio `LR` guardado.
 
 ## Fuentes {.unlisted .unnumbered}
 
-- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
-- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
-- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *Learn the Architecture: A-profile*: stack y llamadas a funciones. <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: link register y stack pointer. <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: convención de llamadas y preservación de registros. <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Sourceware, *GDB Documentation*: comando `bt` para backtrace. <https://sourceware.org/gdb/documentation/>

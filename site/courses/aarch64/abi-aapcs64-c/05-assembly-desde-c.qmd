@@ -15,8 +15,23 @@ una llamada y recibe el resultado desde una función escrita en GNU Assembly.
 
 ## Qué vas a aprender
 
-Vas a construir una frontera limpia entre C y assembly. C declara una función,
-assembly exporta un símbolo, y AAPCS64 define cómo cruzan los valores.
+- Cómo exportar una función assembly para que C la vea.
+- Cómo declarar `extern` en C con el prototipo correcto.
+- Cómo AAPCS64 define el paso de argumentos y retorno.
+- Cómo depurar cruzando la frontera C → assembly con GDB.
+
+## Antes de empezar
+
+Entender la convención de llamada AAPCS64: argumentos en `x0`-`x7`, retorno en
+`x0`. Revisa [ABI y registros](01-abi-aapcs64-registros.qmd) si necesitas repaso.
+
+## Idea central
+
+C y assembly pueden convivir en el mismo programa porque ambos siguen la misma
+convención de llamada (AAPCS64). C no sabe cómo está escrita la función; solo
+sabe qué argumentos pasar y dónde esperar el retorno. Assembly no sabe quién lo
+llama; solo lee los registros de entrada y escribe el resultado. La ABI es el
+contrato que los une.
 
 ## Contrato mínimo
 
@@ -69,15 +84,58 @@ main llama sumar(2, 3)
   bl sumar
 
 sumar
-  add x0, x0, x1
+  add x0, x0, x1    // x0 = 2 + 3 = 5
   ret
 
 main
-  lee retorno desde x0
+  lee retorno desde x0    // r = 5
 ```
 
 La función assembly no sabe que fue llamada por C. Solo ve registros. C no sabe
 cómo está escrita la función. Solo confía en la ABI.
+
+## Más argumentos: x2 a x7
+
+AAPCS64 permite hasta 8 argumentos en registros (`x0`-`x7`).
+
+```asm
+// suma4.s: suma cuatro valores
+.global suma4
+.type suma4, %function
+
+suma4:
+    add x0, x0, x1    // x0 = a + b
+    add x0, x0, x2    // x0 = a + b + c
+    add x0, x0, x3    // x0 = a + b + c + d
+    ret
+
+.size suma4, . - suma4
+```
+
+```c
+// main.c
+extern long suma4(long a, long b, long c, long d);
+
+int main(void) {
+    long r = suma4(1, 2, 3, 4);  // x0=1, x1=2, x2=3, x3=4
+    printf("resultado = %ld\n", r);  // 10
+    return 0;
+}
+```
+
+| Argumento | Registro |
+|---|---|
+| `a` (1er) | `x0` |
+| `b` (2do) | `x1` |
+| `c` (3er) | `x2` |
+| `d` (4to) | `x3` |
+| retorno | `x0` |
+
+### ¿Qué pasa con más de 8 argumentos?
+
+Si una función tiene más de 8 argumentos, los adicionales se pasan en el stack.
+Esto es menos común pero AAPCS64 lo define. Para esta unidad, nos limitamos a
+8 argumentos en registros.
 
 ## Coincidencia de prototipo y símbolo
 
@@ -95,6 +153,17 @@ sumar:
 Si C declara `sumar` pero assembly exporta `sumar_enteros`, el linker no
 encuentra el símbolo esperado. Si el nombre coincide pero el prototipo no
 coincide, el programa puede enlazar y fallar por datos mal interpretados.
+
+### Ejemplo de error de prototipo
+
+```c
+// INCORRECTO: C cree que recibe int (32 bits)
+extern int sumar(long a, long b);
+```
+
+Si C pasa `long` (64 bits) pero el prototipo dice `int`, el compilador puede
+generar código incorrecto. Siempre haz que el prototipo C coincida con lo que
+la función assembly espera.
 
 ## Compilar con GCC
 
@@ -144,18 +213,50 @@ Si C cree que la función recibe dos `long`, pondrá argumentos como dos enteros
 de 64 bits. Si assembly interpreta otra cosa, el error no lo detecta el
 procesador.
 
+### Tipos y registros
+
+| Tipo C | Registro AAPCS64 |
+|---|---|
+| `char` | `w0` (8 bits, zero/sign extended) |
+| `short` | `w0` (16 bits, zero/sign extended) |
+| `int` | `w0` (32 bits) |
+| `long` | `x0` (64 bits) |
+| `long long` | `x0` (64 bits) |
+| `void *` | `x0` (64 bits, puntero) |
+
 ## Lectura con herramientas
 
 Cuando algo no enlaza o no llama bien, estas herramientas ayudan:
 
 | Comando | Qué confirma |
 |---|---|
-| `nm sumar.o` | si el símbolo `sumar` existe y es global |
+| `nm sumar.o` | si el símbolo `sumar` existe y es global (`T`) |
 | `objdump -d sumar.o` | si el cuerpo tiene las instrucciones esperadas |
 | `readelf -s sumar.o` | tipo y visibilidad del símbolo |
 
 No hace falta usarlas en cada práctica, pero sí entender qué pregunta responde
 cada una.
+
+### Depurar cruzando C → assembly con GDB
+
+```bash
+$ aarch64-linux-gnu-gcc -g main.c sumar.s -o app
+$ gdb ./app
+(gdb) break sumar
+(gdb) run
+(gdb) info registers x0 x1
+x0             0x2        2
+x1             0x3        3
+(gdb) stepi
+(gdb) info registers x0
+x0             0x5        5
+(gdb) bt
+#0  sumar () at sumar.s:5
+#1  0x00000000004006b0 in main () at main.c:6
+```
+
+GDB muestra la frontera entre C y assembly. `bt` muestra que `main` llamó a
+`sumar`. `info registers` muestra los argumentos en `x0` y `x1`.
 
 ## Objetos separados
 
@@ -179,14 +280,23 @@ Usa `gcc` para el enlace final porque el programa usa `printf` y runtime de C.
 | destruir `x19` | bug aparece después de volver al caller |
 | enlazar con `ld` directo usando `printf` | faltan runtime o símbolos de `libc` |
 | creer que `.type` y `.size` son instrucciones | confundir metadatos de assembler con CPU |
+| usar `int` en C pero `x0` en assembly | `int` es 32 bits, `x0` es 64 bits |
 
-## Checklist
+## Mini ejercicios
 
-- [ ] Puedo escribir una función assembly exportada.
-- [ ] Puedo declarar `extern` en C.
-- [ ] Puedo explicar cómo C pasa argumentos.
-- [ ] Puedo compilar `.c` y `.s` juntos con GCC.
-- [ ] Puedo explicar por qué el retorno está en `x0`.
+1. Escribe una función assembly `multiplicar(long a, long b)` que use `mul x0, x0, x1`.
+2. Escribe una función assembly `maximo(long a, long b)` que retorne el mayor.
+3. Explica por qué `extern` es necesario en C.
+4. Compila `main.c` y `sumar.s` por separado con `-c` y enlaza con `gcc`.
+5. Usa GDB para poner un breakpoint en `sumar` y verificar que `x0` y `x1`
+   contienen los argumentos correctos.
+
+## Cierre
+
+La interoperabilidad C ↔ assembly funciona porque ambos siguen AAPCS64. C prepara
+argumentos en registros, ejecuta `bl`, y lee el retorno en `x0`. Assembly lee
+los registros, opera, y escribe el resultado en `x0`. El contrato es simple pero
+requiere que el prototipo C coincida exactamente con lo que assembly espera.
 
 Siguiente: [C desde assembly y printf](06-c-desde-assembly-printf.qmd).
 
@@ -196,3 +306,4 @@ Siguiente: [C desde assembly y printf](06-c-desde-assembly-printf.qmd).
 - GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
 - GNU Binutils, *GNU linker manual*: <https://sourceware.org/binutils/docs/ld/>
 - GCC documentation: <https://gcc.gnu.org/onlinedocs/>
+- Sourceware, *GDB Documentation*: debugging con símbolos mixtos C/assembly. <https://sourceware.org/gdb/documentation/>

@@ -16,11 +16,23 @@ SIMD y floating point vendrán después.
 
 ## Qué vas a aprender
 
-Vas a reconocer el banco de registros SIMD/Floating Point. No estudiarás todavía
-NEON ni IEEE 754 a fondo; solo aprenderás a no confundir `v0`, `d0` o `q0` con
-`x0`.
+- Qué son los registros `V0`-`V31` y para qué sirven.
+- Cómo un mismo registro puede verse como `Bn`, `Hn`, `Sn`, `Dn` o `Qn`.
+- Por qué no debes confundir `d0` con `x0`.
+- Dónde aparecen estos registros en la práctica (GDB, AAPCS64, documentación).
 
-Esto ayuda cuando GDB, objdump o documentación muestren registros vectoriales.
+## Antes de empezar
+
+Conocer los registros generales `X0`-`X30` y `W0`-`W30`. Revisa
+[Registros generales](01-registros-generales.qmd) si necesitas repaso.
+
+## Idea central
+
+AArch64 tiene dos bancos de registros separados: los generales (`Xn`/`Wn`) para
+enteros y direcciones, y los SIMD/Floating Point (`Vn`) para números con punto
+flotante y operaciones vectoriales. Ambos bancos tienen 32 registros, pero son
+completamente independientes. Un `d0` no tiene relación con un `x0` aunque
+compartan el mismo número.
 
 ## Registros `V0` a `V31`
 
@@ -32,6 +44,11 @@ AArch64 define 32 registros SIMD/Floating Point de 128 bits: `v0` a `v31`.
 
 Estos registros no son `x0`-`x30`. Son otro banco de registros.
 
+```bash
+Registros generales:     X0-X30 (64 bits cada uno)
+Registros SIMD/FP:       V0-V31 (128 bits cada uno)
+```
+
 ## Vistas por tamaño
 
 El mismo registro vectorial puede verse con distintos tamaños.
@@ -40,19 +57,39 @@ El mismo registro vectorial puede verse con distintos tamaños.
 |---|---:|---|
 | `bn` | 8 bits | byte |
 | `hn` | 16 bits | halfword |
-| `sn` | 32 bits | single precision / word |
-| `dn` | 64 bits | double precision / doubleword |
-| `qn` | 128 bits | quadword |
+| `sn` | 32 bits | single precision (float) |
+| `dn` | 64 bits | double precision (double) |
+| `qn` | 128 bits | quadword (NEON) |
 
 Ejemplo con registro 0:
 
-| Nombre | Qué mira |
-|---|---|
-| `b0` | 8 bits bajos de `v0` |
-| `h0` | 16 bits bajos de `v0` |
-| `s0` | 32 bits bajos de `v0` |
-| `d0` | 64 bits bajos de `v0` |
-| `q0` | 128 bits completos |
+| Nombre | Qué mira | Relación con `v0` |
+|---|---|---|
+| `b0` | 8 bits bajos de `v0` | byte 0 |
+| `h0` | 16 bits bajos de `v0` | halfword 0 |
+| `s0` | 32 bits bajos de `v0` | single precision |
+| `d0` | 64 bits bajos de `v0` | double precision |
+| `q0` | 128 bits completos | igual a `v0` |
+
+Visualmente:
+
+```bash
+v0 (128 bits):
+┌─────────────────────────────────────────┐
+│              q0 (128 bits)              │
+├──────────────────────┬──────────────────┤
+│      d0 (64 bits)    │   alto de d0     │
+├──────────┬───────────┴──────────────────┤
+│ s0 (32b) │         alto de s0           │
+├─────┬────┴──────────────────────────────┤
+│h0(16)│            alto de h0            │
+├──┬──┴───────────────────────────────────┤
+│b0│           alto de b0                │
+└──┴─────────────────────────────────────┘
+```
+
+Cada vista accede a los bits bajos del registro completo. No son registros
+separados; son formas de mirar el mismo hardware.
 
 ## Ejemplo floating point mínimo
 
@@ -66,25 +103,68 @@ Lectura mínima:
 
 | Registro | Idea |
 |---|---|
-| `d0` | Valor floating point de 64 bits |
+| `d0` | Valor floating point de 64 bits (double) |
 | `d1` | Otro valor floating point |
-| `d2` | Resultado |
+| `d2` | Resultado de la suma |
 
 No estudiaremos formato IEEE 754 ni operaciones FP completas todavía.
 
+### Ver registros FP en GDB
+
+```bash
+(gdb) info all-registers
+...
+d0             1.0
+d1             2.0
+d2             3.0
+...
+```
+
+GDB muestra los registros floating point con su valor decimal. Si el programa no
+usa floating point, estos registros pueden contener basura o ceros.
+
 ## Enteros vs SIMD/FP
 
-| Registro | Banco | Uso |
-|---|---|---|
-| `x0` | General | Enteros, direcciones |
-| `w0` | General | 32 bits bajos de `x0` |
-| `v0` | SIMD/FP | Vector o FP de hasta 128 bits |
-| `d0` | SIMD/FP | Vista de 64 bits de `v0` |
+| Registro | Banco | Uso | Tamaño |
+|---|---|---|---:|
+| `x0` | General | Enteros, direcciones | 64 bits |
+| `w0` | General | 32 bits bajos de `x0` | 32 bits |
+| `v0` | SIMD/FP | Vector o FP de hasta 128 bits | 128 bits |
+| `d0` | SIMD/FP | Vista de 64 bits de `v0` | 64 bits |
+| `s0` | SIMD/FP | Vista de 32 bits de `v0` | 32 bits |
 
 ::: {.callout-warning title="No mezcles bancos"}
 `x0` y `d0` no son el mismo registro. Tienen el mismo número, pero pertenecen a
-bancos distintos.
+bancos distintos. Es como tener dos edificios con el mismo número de puerta:
+`x0` está en el edificio de enteros, `d0` en el de floating point.
 :::
+
+## Relación con AAPCS64
+
+La convención de llamada AAPCS64 define reglas para argumentos floating point:
+
+| Posición de argumento | Registro |
+|---|---|
+| 1er argumento FP | `d0` |
+| 2do argumento FP | `d1` |
+| 3er argumento FP | `d2` |
+| ... | `d3`-`d7` |
+
+Si una función C recibe `double`, el compilador lo pasa en `d0`, no en `x0`.
+
+```c
+double sumar_doubles(double a, double b);
+```
+
+En assembly:
+
+```asm
+// a está en d0, b está en d1
+fadd d0, d0, d1    // resultado en d0
+ret
+```
+
+Esto es diferente de los enteros, donde los argumentos van en `x0`-`x7`.
 
 ## Por qué aparece ahora
 
@@ -111,6 +191,7 @@ floating point. Esta página solo ubica el banco de registros.
 | Confundir SIMD con enteros generales | usa registros `Vn` para SIMD/FP |
 | Interpretar GDB sin contexto | pregunta si el programa usa FP/SIMD |
 | Adelantar NEON avanzado | aquí solo mapa de registros |
+| Pasar un double en `x0` en vez de `d0` | AAPCS64 usa `d0` para doubles |
 
 ## Mini ejercicios
 
@@ -119,25 +200,20 @@ floating point. Esta página solo ubica el banco de registros.
 3. Di si `x0` y `d0` son el mismo registro.
 4. Ordena `b0`, `h0`, `s0`, `d0`, `q0` por tamaño.
 5. Explica por qué `q0` y `v0` están relacionados.
-
-## Checklist
-
-- [ ] Sé que existen `V0`-`V31`.
-- [ ] Sé que son registros de hasta 128 bits.
-- [ ] Puedo distinguir `Vn` de `Xn`.
-- [ ] Puedo reconocer vistas `Bn`, `Hn`, `Sn`, `Dn`, `Qn`.
-- [ ] Sé que NEON y floating point quedan para después.
+6. Si una función C recibe `float a, float b`, ¿en qué registros están?
+7. Si una función C recibe `double a, int b`, ¿en qué registros están `a` y `b`?
 
 ## Cierre
 
 Los registros SIMD/Floating Point son parte del estado visible de AArch64, aunque
 no se usen en los primeros programas enteros. Reconocerlos evita confusiones al
-depurar o leer documentación.
+depurar o leer documentación. La regla más importante: `Xn` y `Vn` son bancos
+separados.
 
 Siguiente: [Exception levels](05-exception-levels.qmd).
 
 ## Fuentes {.unlisted .unnumbered}
 
-- Arm, [Learn the Architecture - A-profile](https://www.arm.com/architecture/learn-the-architecture/a-profile).
-- Arm, [Arm Architecture Reference Manual for A-profile architecture](https://developer.arm.com/documentation/ddi0487/latest).
-- Arm, [Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)](https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst).
+- Arm, *Learn the Architecture - A-profile*: registros SIMD y floating point. <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: encoding de registros `Vn`. <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: argumentos y retornos floating point. <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

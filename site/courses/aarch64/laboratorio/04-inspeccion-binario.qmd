@@ -13,6 +13,26 @@ Un binario no es una caja negra. En esta página solo haremos una primera mirada
 arquitectura, símbolos, instrucciones, bytes y syscalls observables.
 :::
 
+## Qué vas a aprender
+
+- Qué herramienta usar para cada pregunta sobre un binario.
+- Qué salida esperar de `file`, `readelf`, `objdump`, `nm`, `hexdump`, `xxd`, `ldd` y `strace`.
+- Que todas estas herramientas dan vistas distintas del mismo archivo.
+
+## Antes de empezar
+
+Tener el ejemplo `00-hello-minimo` compilado. Si no lo has hecho, ve a
+[Primer programa](03-primer-programa.qmd) y ejecuta `make`.
+
+## Idea central
+
+Un archivo ELF es un solo archivo que varias herramientas pueden leer de formas
+distintas. `file` dice qué tipo de archivo es. `readelf` lee headers. `objdump`
+desensambla instrucciones. `nm` lista símbolos. `hexdump` y `xxd` muestran bytes
+crudos. `ldd` muestra dependencias dinámicas. `strace` observa las syscalls que
+ejecuta. Ninguna herramienta es "la correcta"; cada una responde una pregunta
+distinta.
+
 ## Prepara el ejemplo
 
 ```bash
@@ -21,13 +41,33 @@ cd src
 make
 ```
 
+Debes tener `build/main` como resultado. Si `make` falla, revisa que las
+herramientas estén instaladas en
+[Instalación toolchain](02-instalacion-toolchain.qmd).
+
 ## Identificar el archivo
 
 ```bash
 file build/main
 ```
 
-Debes ver que es un ejecutable ELF de AArch64 o ARM aarch64.
+Salida esperada:
+
+```bash
+build/main: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked, not stripped
+```
+
+Cada parte importa:
+
+| Fragmento | Qué significa |
+|---|---|
+| `ELF` | formato Executable and Linkable Format |
+| `64-bit` | binario de 64 bits (AArch64) |
+| `LSB` | Least Significant Byte primero (little endian) |
+| `executable` | es un ejecutable, no un objeto ni shared library |
+| `ARM aarch64` | arquitectura destino |
+| `statically linked` | no depende de bibliotecas dinámicas |
+| `not stripped` | todavía tiene símbolos de depuración |
 
 ::: {.callout-note title="No estudiar ELF todavía"}
 Por ahora solo usa `file` para confirmar arquitectura y tipo de archivo. Headers,
@@ -40,13 +80,27 @@ segmentos, secciones y loader vendrán después.
 readelf -h build/main
 ```
 
+Salida esperada (fragmento):
+
+```bash
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Machine:                           AArch64
+  Entry point address:               0x400080
+```
+
 Busca tres datos:
 
 | Campo | Qué observar |
 |---|---|
-| `Class` | `ELF64` |
-| `Machine` | AArch64 |
-| `Entry point address` | Dirección donde inicia el programa |
+| `Class` | `ELF64` — binario de 64 bits |
+| `Machine` | AArch64 — arquitectura correcta |
+| `Entry point address` | Dirección donde el loader salta al iniciar |
+
+El entry point normalmente apunta a `_start`. Si ves `0x400080` o similar, es
+la dirección donde comienza tu código en la sección `.text`.
 
 ## Ver instrucciones
 
@@ -60,7 +114,30 @@ En Raspberry Pi también puede funcionar:
 objdump -d build/main
 ```
 
-Busca `_start` y las instrucciones `mov`, `adr` y `svc`.
+Salida esperada (fragmento):
+
+```bash
+0000000000400080 <_start>:
+  400080:       d2800020        mov     x0, #1
+  400084:       d2800021        mov     x1, #1
+  400088:       d4000001        svc     #0x0
+  40008c:       d2800000        mov     x0, #0
+  400090:       d2800ba8        mov     x8, #93
+  400094:       d4000001        svc     #0x0
+```
+
+Busca `_start` y las instrucciones `mov`, `adr` y `svc`. Cada línea muestra:
+
+| Columna | Qué es |
+|---|---|
+| `400080` | dirección de memoria virtual |
+| `d2800020` | encoding binario de la instrucción en hexadecimal |
+| `mov x0, #1` | instrucción desensamblada legible |
+
+::: {.callout-note title="El encoding es lo que el CPU ejecuta"}
+La columna hexadecimal (`d2800020`) es lo que realmente está en el binario. El
+texto `mov x0, #1` es la representación legible que `objdump` genera para ti.
+:::
 
 ## Ver símbolos
 
@@ -74,13 +151,31 @@ En Raspberry Pi:
 nm build/main
 ```
 
+Salida esperada (fragmento):
+
+```bash
+00000000004000b0 d msg
+00000000004000b8 d msg_len
+0000000000400080 T _start
+```
+
 Busca:
 
-| Símbolo | Significado mínimo |
+| Símbolo | Letra | Significado |
+|---|---|---|
+| `_start` | `T` | código (Text), entrada del programa |
+| `msg` | `d` | datos inicializados (data) |
+| `msg_len` | `d` | datos inicializados, calculado por assembler |
+
+La letra indica la sección donde vive el símbolo:
+
+| Letra | Sección |
 |---|---|
-| `_start` | Entrada del programa |
-| `msg` | Dirección del mensaje |
-| `msg_len` | Longitud calculada por assembler |
+| `T` | `.text` (código) |
+| `D` | `.data` (datos inicializados, global) |
+| `d` | `.data` (datos inicializados, local) |
+| `B` | `.bss` (datos no inicializados) |
+| `U` | undefined (símbolo que debe resolver el linker) |
 
 ## Ver bytes
 
@@ -88,6 +183,16 @@ Busca:
 hexdump -C build/main | head
 xxd build/main | head
 ```
+
+Salida esperada (`xxd`):
+
+```bash
+00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
+00000010: 0200 b700 0100 0000 8000 4000 0000 0000  .........@......
+```
+
+Los primeros 4 bytes `7f 45 4c 46` son el magic number de ELF. `45 4c 46` en
+ASCII es `ELF`. El byte `7f` es un carácter de control que identifica el formato.
 
 No necesitas interpretar todo. La meta es notar que el archivo final son bytes y
 que las herramientas dan distintas vistas del mismo binario.
@@ -104,7 +209,14 @@ Como este ejemplo se enlaza sin libc y estático, puede aparecer algo como:
 not a dynamic executable
 ```
 
-Eso está bien para este laboratorio.
+Eso está bien para este laboratorio. Significa que el binario no depende de
+ninguna shared library. Cuando uses `gcc` con `printf`, verás algo como:
+
+```bash
+libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6
+```
+
+Ahí el binario necesita `libc` para funcionar.
 
 ## Observar syscalls
 
@@ -120,6 +232,23 @@ Ruta x86_64 con QEMU:
 strace qemu-aarch64 ./build/main
 ```
 
+Salida esperada (fragmento):
+
+```bash
+write(1, "Hola ARM64\n", 11)            = 11
+exit(0)                                 = ?
+```
+
+`strace` muestra cada syscall que el programa ejecuta:
+
+| Columna | Qué es |
+|---|---|
+| `write` | nombre de la syscall |
+| `1` | file descriptor (stdout) |
+| `"Hola ARM64\n"` | buffer que se escribió |
+| `11` | cantidad de bytes |
+| `= 11` | retorno de la syscall |
+
 En x86_64, `strace` observa el proceso QEMU desde el host. No lo uses todavía
 como explicación completa de syscalls ARM64. Aquí solo sirve para ver que hay
 interacción con Linux.
@@ -129,6 +258,26 @@ interacción con Linux.
 `perf` sirve para medición y rendimiento: ciclos, eventos, hotspots y profiling.
 En esta unidad solo se menciona. No será práctica central hasta unidades de
 performance.
+
+```bash
+perf stat ./build/main
+```
+
+Esto muestra cuántos ciclos, instrucciones y branches ejecutó el programa. No lo
+necesitas ahora, pero es bueno saber que existe.
+
+## Qué herramienta usar para qué pregunta
+
+| Pregunta | Herramienta |
+|---|---|
+| ¿Es ELF? ¿Qué arquitectura? | `file` |
+| ¿Cuál es el entry point? | `readelf -h` |
+| ¿Qué instrucciones tiene? | `objdump -d` |
+| ¿Qué símbolos exporta? | `nm` |
+| ¿Cómo se ven los bytes crudos? | `hexdump` o `xxd` |
+| ¿Depende de bibliotecas? | `ldd` |
+| ¿Qué syscalls ejecuta? | `strace` |
+| ¿Cuántos ciclos usa? | `perf stat` |
 
 ## Checklist
 
