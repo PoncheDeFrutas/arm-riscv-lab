@@ -14,6 +14,25 @@ guardamos el `fd`, leemos bytes hacia un buffer, escribimos esos bytes en
 `stdout` y cerramos el recurso.
 :::
 
+## Qué vas a aprender
+
+- Flujo completo: `openat` → `read` → `write` → `close`.
+- Cómo pasar el fd entre syscalls sin perderlo.
+- Por qué `read` no promete llenar el buffer.
+- Cómo usar la cantidad real leída en `write`.
+
+## Antes de empezar
+
+Entender file descriptors y el contrato de syscall. Revisa
+[File descriptors y recursos](01-file-descriptors-recursos.qmd).
+
+## Idea central
+
+Cada syscall produce un valor en `x0` que la siguiente syscall necesita. El arte
+es guardar esos valores en registros callee-saved (`x19`, `x20`) para que
+sobrevivan entre llamadas. `read` retorna bytes reales, no el máximo pedido.
+`write` debe recibir esa cantidad real, no el tamaño del buffer.
+
 ## Patrón principal
 
 ```bash
@@ -118,6 +137,27 @@ $ echo $?
 0
 ```
 
+## Lectura paso a paso con predicción
+
+| Syscall | `x0` antes | `x8` | `x0` después | Qué guardar |
+|---|---|---:|---|---|
+| `openat` | `AT_FDCWD` | `56` | fd o error | `x19 = fd` |
+| `read` | `x19` (fd) | `63` | bytes leídos | `x20 = bytes` |
+| `write` | `1` (stdout) | `64` | bytes escritos | verificar `>= 0` |
+| `close` | `x19` (fd) | `57` | `0` o error | verificar `>= 0` |
+| `exit` | `0` | `93` | no retorna | - |
+
+## Errores comunes
+
+- **Usar tamaño del buffer en `write`**: si `read` leyó 5 bytes de un buffer de
+  128, `write` con `x2 = 128` envía basura después de los 5 bytes válidos.
+- **No verificar retorno de `read`**: `read` puede retornar `0` (EOF) o negativo
+  (error). Ambos requieren manejo distinto.
+- **Asumir que `read` llena el buffer**: con archivos pequeños, pipes o
+  terminales, `read` puede devolver menos bytes de los pedidos.
+- **Olvidar `close` en ruta de éxito**: el ejemplo tiene `close` antes de
+  `exit`. Si lo omites, el kernel limpia al terminar, pero el hábito es cerrar.
+
 ## Qué ocurre con el buffer
 
 ```bash
@@ -168,3 +208,9 @@ loops de I/O quedan para una unidad posterior.
 
 Un archivo en Linux se trabaja como recurso: abrir produce `fd`, leer o escribir
 usa ese `fd`, y cerrar termina el ciclo.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `openat(2)`, `read(2)`, `write(2)`, `close(2)`: contrato, retorno, errores. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `intro(2)`: introducción a syscalls y convenciones de retorno. <https://www.man7.org/linux/man-pages/man2/intro.2.html>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): instrucción `svc #0`. <https://developer.arm.com/documentation/ddi0487/latest>

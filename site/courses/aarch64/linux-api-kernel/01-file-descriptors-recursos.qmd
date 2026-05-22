@@ -14,6 +14,28 @@ cuenta propia. Pide recursos al kernel. Cuando el kernel abre uno, devuelve un
 file descriptor: un entero pequeño que el proceso usa como handle.
 :::
 
+## Qué vas a aprender
+
+- Qué es un file descriptor y qué NO es.
+- Los tres fd iniciales: stdin, stdout, stderr.
+- Ciclo de vida: abrir, usar, cerrar.
+- Por qué debes guardar el fd antes de otra syscall.
+
+## Antes de empezar
+
+Entender el contrato de syscall (registros `x0`-`x5`, `x8`, `svc #0`, retorno
+en `x0`). Revisa la unidad de syscalls esenciales si necesitas repaso.
+
+## Idea central
+
+Un fd es un número, no un puntero. El kernel lo asigna cuando abres un recurso
+y tu programa lo usa como handle para operaciones posteriores. Los fd 0, 1 y 2
+ya existen al iniciar; cada `openat` exitoso devuelve el siguiente disponible.
+
+El problema principal en assembly: `x0` recibe el retorno de cada syscall y
+también es el primer argumento. Si no guardas el fd en otro registro (`x19` por
+ejemplo), lo pierdes en la siguiente llamada.
+
 ## Qué es un file descriptor
 
 Un file descriptor, o `fd`, es un número entero dentro del proceso. Ese número
@@ -131,15 +153,51 @@ svc #0
 
 `close` no recibe una dirección de archivo. Recibe el número `fd`.
 
+## Errores comunes
+
+- **Tratar fd como puntero**: `ldr x1, [x0]` con un fd en `x0` es un error. El
+  fd es un handle entero, no una dirección de memoria.
+- **Asumir que `openat` siempre devuelve fd 3**: si ya cerraste fd 3, el kernel
+  reusa el número más bajo disponible. Siempre usa el valor real de `x0`.
+- **No guardar el fd antes de otra syscall**: `x0` se sobrescribe. Si llamas
+  `close` sin guardar el fd, cierras basura o el recurso equivocado.
+- **Confundir fd 1 con exit code 1**: fd 1 es stdout. Exit code 1 es un código
+  de error. Son contextos completamente distintos.
+
+## Lectura paso a paso
+
+| Línea | Qué hace | Estado después |
+|---|---|---|
+| `mov x0, #AT_FDCWD` | Argumento 1: directorio de trabajo actual | `x0 = -100` |
+| `ldr x1, =nombre` | Argumento 2: puntero al nombre | `x1 = dirección` |
+| `mov x2, #O_RDONLY` | Argumento 3: flags solo lectura | `x2 = 0` |
+| `mov x8, #56` | Número de syscall: `openat` | `x8 = 56` |
+| `svc #0` | Entra al kernel | Kernel abre archivo |
+| `cmp x0, #0` | Revisa retorno | `x0 >= 0` = éxito |
+| `mov x19, x0` | Guarda fd | `x19 = fd`, `x0` libre |
+| `mov x0, x19` | Prepara argumento para `close` | `x0 = fd` |
+| `mov x8, #57` | Número de syscall: `close` | `x8 = 57` |
+| `svc #0` | Cierra el recurso | `x0 = 0` o error |
+
 ## Mini ejercicios
+
+Predice el resultado antes de verificar con QEMU.
 
 1. ¿Qué contiene `x0` después de `openat` si funciona?
 2. ¿Qué contiene `x0` después de `openat` si falla?
 3. ¿Por qué el ejemplo copia `x0` hacia `x19`?
 4. ¿Qué pasaría si `write` se ejecutara antes de guardar el `fd`?
 5. Explica por qué `fd 1` y código de salida `1` no significan lo mismo.
+6. Si abres dos archivos seguidos sin cerrar ninguno, ¿qué fd obtiene el segundo?
+7. ¿Qué pasa si cierras fd 1 y luego intentas `write` a stdout?
 
 ## Cierre
 
 Pensar en Linux como API del kernel empieza por esta idea: el kernel abre un
 recurso, entrega un número y espera que el proceso use ese número correctamente.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `openat(2)`, `close(2)`: contrato de syscalls, retorno, errores. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `stdin(3)`, `stdout(3)`, `stderr(3)`: file descriptors estándar. <https://www.man7.org/linux/man-pages/man3/>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): instrucción `svc #0` y exception handling. <https://developer.arm.com/documentation/ddi0487/latest>

@@ -36,6 +36,33 @@ teclado o la barra espaciadora.
 - Por qué aprender assembly sigue siendo útil.
 - Qué podrás hacer al avanzar en la ruta.
 
+## Qué vas a aprender
+
+- Qué es assembly y por qué es herramienta de estudio.
+- Qué es una ISA y qué define.
+- Diferencia entre ISA e implementación.
+- Qué son ARM, ARMv8-A, AArch64 y A64.
+- Diferencia entre AArch32 y AArch64, A32/T32 y A64.
+- RISC vs CISC como contexto, no como dogma.
+- Dónde se usa ARM64 y por qué aprender assembly hoy.
+
+## Antes de empezar
+
+No necesitas experiencia previa con assembly ni con ARM. Esta unidad es
+conceptual: no escribirás código todavía. Solo necesitas curiosidad por entender
+cómo funciona una computadora por dentro.
+
+## Idea central
+
+Assembly es el puente más directo entre lo que escribes y lo que ejecuta el
+procesador. La ISA es el contrato: define qué puede hacer el hardware visible
+para tu programa. AArch64 es el estado de ejecución de 64 bits de ARM; A64 es
+el conjunto de instrucciones que usas en ese estado.
+
+La diferencia entre ISA e implementación es clave: dos chips diferentes pueden
+hablar la misma ISA pero tener diseños internos distintos (pipeline, cachés,
+predicción de saltos). Tu programa solo ve la ISA.
+
 ## Qué es assembly
 
 Assembly es una forma textual de escribir instrucciones cercanas a las que
@@ -233,6 +260,30 @@ bits, A64 es su conjunto de instrucciones, y assembly será la herramienta para
 estudiar cómo se conectan software, sistema operativo y hardware.
 
 ## Checklist
+
+- [ ] Puedo explicar qué es assembly.
+- [ ] Puedo explicar qué es una ISA.
+- [ ] Puedo distinguir ISA de implementación.
+- [ ] Puedo diferenciar ARMv8-A, AArch64 y A64.
+- [ ] Puedo explicar por qué este curso empieza con fundamentos antes de escribir código.
+- [ ] Puedo describir para qué sirve aprender assembly aunque programe en lenguajes de alto nivel.
+
+## Mini ejercicios
+
+1. Explica con tus palabras qué es una ISA.
+2. Da un ejemplo de algo que pertenece a la ISA y otro que pertenece a la
+   implementación.
+3. ¿Cuál es la diferencia entre AArch64 y A64?
+4. ¿Por qué AArch64 se describe como arquitectura load/store?
+5. Menciona tres razones por las que aprender assembly sigue siendo útil hoy.
+6. Si dos procesadores son compatibles con ARMv8-A, ¿pueden tener rendimiento
+   distinto? ¿Por qué?
+
+## Cierre
+
+Debes poder explicar qué es una ISA, diferenciar AArch64 de A64, y entender por
+qué assembly es una herramienta de observación, no solo un lenguaje de
+programación. Ese modelo mental es la base para todo lo que sigue.
 
 - [ ] Puedo explicar qué es assembly.
 - [ ] Puedo explicar qué es una ISA.

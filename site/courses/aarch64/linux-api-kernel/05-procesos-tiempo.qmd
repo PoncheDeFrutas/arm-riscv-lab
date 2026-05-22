@@ -14,6 +14,28 @@ proceso, ejecución de programas y servicios de tiempo. Aquí solo construiremos
 un mapa inicial para reconocer estas syscalls cuando aparezcan después.
 :::
 
+## Qué vas a aprender
+
+- Cómo obtener el PID del proceso con `getpid`.
+- Cómo pausar la ejecución con `nanosleep`.
+- Cómo obtener tiempo con `clock_gettime`.
+- Qué hacen `execve` y `wait4` a nivel conceptual.
+
+## Antes de empezar
+
+Entender el contrato de syscall y cómo pasar punteros a estructuras. Revisa
+[Posición y metadatos](04-posicion-metadatos.qmd) para el patrón de buffer.
+
+## Idea central
+
+El mismo mecanismo de syscall sirve para servicios muy distintos: identidad del
+proceso (`getpid`), tiempo (`nanosleep`, `clock_gettime`) y gestión de procesos
+(`execve`, `wait4`). La diferencia está en qué registros preparar y si el kernel
+lee o escribe en memoria.
+
+`nanosleep` y `clock_gettime` usan `struct timespec`: dos `quad` consecutivos
+(16 bytes total) con `tv_sec` y `tv_nsec`.
+
 ## Misma forma, otro servicio
 
 El contrato no cambia:
@@ -115,16 +137,46 @@ por otras syscalls como `fork` o `clone`, que no estudiaremos todavía.
 | `clock_gettime` | `113` | obtener tiempo |
 | `nanosleep` | `101` | dormir proceso |
 
+## Errores comunes
+
+- **`timespec` mal alineado**: `tv_sec` y `tv_nsec` deben ser `quad` (8 bytes
+  cada uno). Usar `.word` (4 bytes) produce un buffer de tamaño incorrecto.
+- **No poner `tv_nsec` en rango válido**: `tv_nsec` debe estar entre `0` y
+  `999999999`. Valores fuera de rango causan `EINVAL`.
+- **Confundir `nanosleep` con `sleep` de libc**: `nanosleep` es la syscall
+  directa. No tiene buffered I/O ni wrappers. Recibe puntero a `timespec`.
+- **Asumir que `execve` funciona sin `argv` y `envp` terminados en NULL**: el
+  kernel espera arreglos de punteros donde el último elemento es `0`.
+
+## Lectura paso a paso: `clock_gettime`
+
+| Registro | Antes de `svc` | Después de `svc` |
+|---|---|---|
+| `x0` | reloj (`1` = MONOTONIC) | sin cambio |
+| `x1` | puntero a buffer 16 bytes | kernel escribe `tv_sec` + `tv_nsec` |
+| `x8` | `113` | sin cambio |
+| retorno `x0` | - | `0` = éxito, negativo = error |
+
 ## Mini ejercicios
+
+Predice el resultado antes de verificar.
 
 1. ¿Qué syscall no necesita argumentos para devolver el PID?
 2. ¿Por qué `nanosleep` necesita una dirección?
 3. ¿Qué escribe `clock_gettime` en memoria?
 4. ¿Por qué `execve` no se desarrolla completo todavía?
 5. ¿Qué tienen en común archivos, tiempo y procesos a nivel de syscall?
+6. ¿Cuántos bytes ocupa `struct timespec`? ¿Qué directiva usar para reservarlo?
+7. ¿Qué retorna `getpid` si el proceso tiene PID 42?
 
 ## Cierre
 
 Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de
 syscall, `svc #0`, retorno. Esta unidad no busca cubrir todo Linux; busca que
 reconozcas el patrón cuando el servicio cambia.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `getpid(2)`, `nanosleep(2)`, `clock_gettime(2)`. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `execve(2)`, `wait4(2)`: gestión de procesos. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `timespec(2type)`: estructura de tiempo. <https://www.man7.org/linux/man-pages/man2/timespec.2type.html>

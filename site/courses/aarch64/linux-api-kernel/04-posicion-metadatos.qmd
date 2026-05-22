@@ -14,6 +14,25 @@ posición actual, y el kernel también puede entregar metadatos del recurso:
 tamaño, tipo, permisos y tiempos.
 :::
 
+## Qué vas a aprender
+
+- Qué es la posición actual de un fd y cómo cambiarla con `lseek`.
+- Cómo consultar metadatos con `fstat` y `statx`.
+- Qué es `getdents64` y por qué queda como tema avanzado.
+- Por qué algunas operaciones no aplican a todos los fd.
+
+## Antes de empezar
+
+Entender file descriptors y el flujo `openat` → `read`/`write` → `close`. Revisa
+la lección de [Archivos con syscalls](02-archivos-open-read-write-close.qmd).
+
+## Idea central
+
+Un fd no solo permite leer y escribir. El kernel mantiene estado interno: la
+posición actual dentro del archivo, y metadatos como tamaño, tipo y permisos.
+`lseek` mueve la posición; `fstat` y `statx` consultan metadatos. Pero no todos
+los fd soportan estas operaciones: un pipe o una terminal rechazan `lseek`.
+
 ## Posición dentro de un archivo
 
 Cuando lees desde un archivo regular, el kernel mantiene una posición asociada
@@ -117,16 +136,49 @@ tema central ahora.
 | `statx` | `291` | metadatos desde ruta o fd |
 | `getdents64` | `61` | mención para directorios |
 
+## Errores comunes
+
+- **Usar `lseek` en un pipe o terminal**: `lseek` funciona en archivos regulares
+  y directorios. En pipes, sockets y terminales retorna `ESPIPE` (error 29).
+- **Asumir que `fstat` llena un buffer de cualquier tamaño**: `struct stat` tiene
+  un tamaño fijo definido por el kernel. Usar un buffer muy pequeño causa
+  corrupción de memoria.
+- **Confundir `fstat` con `statx`**: `fstat` usa un fd abierto; `statx` puede
+  usar una ruta sin abrir el archivo. `statx` es más nuevo y más flexible.
+- **Olvidar que `lseek` retorna la nueva posición**: no retorna `0` en éxito.
+  Retorna el offset resultante. Si comparas con `#0` para verificar error, usa
+  `b.lt`, no `b.eq`.
+
+## Lectura paso a paso: `lseek`
+
+| Registro | Antes de `svc` | Después de `svc` |
+|---|---|---|
+| `x0` | fd del archivo | nueva posición o error negativo |
+| `x1` | offset (ej. `0`) | sin cambio |
+| `x2` | origen (`0`=SET, `1`=CUR, `2`=END) | sin cambio |
+| `x8` | `62` | sin cambio |
+
 ## Mini ejercicios
+
+Predice el resultado antes de verificar.
 
 1. ¿Qué syscall usarías para volver al inicio de un archivo?
 2. ¿Por qué `lseek` puede fallar en algunos fd?
 3. ¿Qué diferencia hay entre pasar un fd a `fstat` y una ruta a `statx`?
 4. ¿Por qué `statbuf` debe estar en memoria escribible?
 5. ¿Por qué `getdents64` queda como tema opcional?
+6. Si lees 32 bytes de un archivo y luego haces `lseek fd 0 SEEK_SET`, ¿cuántos
+   bytes lees en el siguiente `read`?
+7. ¿Qué retorna `lseek` si funciona con offset `0` y `SEEK_SET`?
 
 ## Cierre
 
 Un fd no solo sirve para leer y escribir. También puede tener posición y
 metadatos asociados. La regla sigue siendo la misma: preparar registros, pasar
 punteros válidos cuando hagan falta, ejecutar `svc #0` y revisar retorno.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `lseek(2)`: mover posición de archivo, orígenes SEEK_SET/CUR/END, errores. <https://www.man7.org/linux/man-pages/man2/lseek.2.html>
+- Linux man-pages: `fstat(2)`, `statx(2)`: metadatos de archivos, struct stat. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `getdents64(2)`: lectura de directorios. <https://www.man7.org/linux/man-pages/man2/getdents64.2.html>

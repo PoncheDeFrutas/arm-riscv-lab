@@ -14,6 +14,26 @@ si nada hubiera pasado. Debe revisar el retorno, decidir si hay que cerrar algo
 y salir por una ruta clara.
 :::
 
+## Qué vas a aprender
+
+- Detectar errores con retorno negativo en `x0`.
+- Por qué necesitas rutas separadas de error y cleanup.
+- Cómo decidir qué recursos cerrar según el punto del programa.
+- Diferencia entre `errno` de libc y retorno directo del kernel.
+
+## Antes de empezar
+
+Entender el ciclo de vida de un fd y el contrato de syscall. Revisa
+[File descriptors y recursos](01-file-descriptors-recursos.qmd) y
+[Archivos con syscalls](02-archivos-open-read-write-close.qmd).
+
+## Idea central
+
+Cada syscall puede fallar. Cuando falla, el programa debe saber qué recursos
+están abiertos en ese punto exacto y cerrarlos antes de salir. No basta con un
+solo bloque `error` al final: necesitas rutas distintas según qué se abrió y
+qué no.
+
 ## Retorno negativo
 
 Muchas syscalls devuelven:
@@ -149,16 +169,60 @@ svc #0
 
 `stderr` es fd `2`. No lo confundas con `exit 2`; son usos distintos del número.
 
+## Diagrama de flujo de error
+
+```
+_start
+  |
+  +-- openat --> x0 < 0? --sí--> error_sin_fd --> exit 1
+  |                |
+  no               no
+  |                |
+  v                v
+x19 = fd        read --> x0 < 0? --sí--> cleanup --> exit 1
+                   |
+                   no
+                   |
+                   v
+                 close --> x0 < 0? --sí--> error_sin_fd --> exit 1
+                   |
+                   no
+                   |
+                   v
+                 exit 0
+```
+
+## Errores comunes
+
+- **Un solo bloque `error` para todo**: si `openat` falla y saltas a un bloque
+  que intenta cerrar `x19`, cierras un fd que nunca se abrió.
+- **No inicializar `x19` antes de `cleanup`**: si `cleanup` usa `x19` pero
+  `openat` nunca se ejecutó, `x19` tiene basura.
+- **Confundir `errno` con retorno de syscall**: sin libc no hay `errno`. El
+  valor negativo en `x0` ES el código de error del kernel.
+- **Cerrar dos veces el mismo fd**: si la ruta de error cierra y luego otra
+  rama también cierra, el segundo `close` opera sobre un fd ya liberado.
+
 ## Mini ejercicios
+
+Predice la ruta de ejecución antes de verificar.
 
 1. ¿Por qué `read` fallido debe saltar a `cleanup` y no directo a `exit`?
 2. ¿Qué valor debe existir en `x19` antes de ejecutar `cleanup`?
 3. ¿Qué representa un retorno negativo en `x0`?
 4. ¿Por qué no hablamos todavía de `errno` real?
 5. ¿Qué problema aparece si intentas cerrar un fd que nunca se abrió?
+6. Si `openat` funciona pero `close` falla, ¿por qué ruta sale el programa?
+7. ¿Cómo agregarías un mensaje a stderr antes de `exit 1` en `cleanup`?
 
 ## Cierre
 
 Manejar errores en bajo nivel no es añadir un bloque al final. Es saber qué
 recursos existen en cada punto del programa y salir por una ruta que los deje en
 estado razonable.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `openat(2)`, `read(2)`, `close(2)`: códigos de error negativos. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `errno(3)`: diferencia entre errno de libc y retorno directo del kernel. <https://www.man7.org/linux/man-pages/man3/errno.3.html>
+- Linux man-pages: `intro(2)`: convención de errores en syscalls Linux. <https://www.man7.org/linux/man-pages/man2/intro.2.html>

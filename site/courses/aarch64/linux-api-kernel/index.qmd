@@ -186,3 +186,11 @@ Programa que abre un archivo, lee un bloque, escribe en stdout y limpia.
 ## Siguiente paso
 
 Empieza por [File descriptors y recursos](01-file-descriptors-recursos.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `openat(2)`, `read(2)`, `write(2)`, `close(2)`. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `lseek(2)`, `fstat(2)`, `statx(2)`. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `getpid(2)`, `nanosleep(2)`, `clock_gettime(2)`, `execve(2)`, `wait4(2)`. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `intro(2)`, `errno(3)`: introducción a syscalls y errno. <https://www.man7.org/linux/man-pages/>
+- Arm, *Architecture Reference Manual for A-profile* (DDI 0487): instrucción `svc`, exception handling. <https://developer.arm.com/documentation/ddi0487/latest>

@@ -14,6 +14,24 @@ Esta lección junta la unidad completa en un programa pequeño. El programa abre
 sale con código `0`. Si algo falla después de abrir, pasa por `cleanup`.
 :::
 
+## Qué vas a aprender
+
+- Unir `openat`, `read`, `write`, `close` y manejo de error en un solo programa.
+- Dos rutas de error: antes y después de tener un fd abierto.
+- Cómo verificar el programa con `strace`.
+- Qué pasa cuando el archivo no existe.
+
+## Antes de empezar
+
+Haber visto las lecciones anteriores de esta unidad. Necesitas entender fd,
+buffer, retorno negativo y las etiquetas `cleanup` y `error_sin_fd`.
+
+## Idea central
+
+Este programa es el primer ejemplo que parece un programa Linux real: pide un
+recurso, lo usa, verifica cada retorno y limpia antes de salir. El modelo mental
+ya no es "syscalls sueltas" sino "manejo de recursos con rutas de error".
+
 ## Programa completo
 
 Guarda este archivo como `mostrar-archivo.s`.
@@ -155,7 +173,42 @@ openat funciona, read/write falla
 | Argumentos de línea de comandos | requiere stack inicial y ABI |
 | Mensajes de error específicos | requiere convertir códigos negativos |
 
+## Diagnóstico con strace
+
+```bash
+$ strace -e trace=openat,read,write,close,exit_group qemu-aarch64 ./mostrar-archivo
+openat(AT_FDCWD, "entrada.txt", O_RDONLY) = 3
+read(3, "Contenido de prueba\n", 128)   = 20
+write(1, "Contenido de prueba\n", 20)   = 20
+close(3)                                = 0
+exit_group(0)                           = ?
+```
+
+Si el archivo no existe:
+
+```bash
+$ strace -e trace=openat,write,exit_group qemu-aarch64 ./mostrar-archivo
+openat(AT_FDCWD, "entrada.txt", O_RDONLY) = -1 ENOENT
+write(2, "Error en syscall\n", 17)      = 17
+exit_group(1)                           = ?
+```
+
+`strace` confirma que las syscalls se ejecutan en el orden esperado y que los
+valores de retorno coinciden con lo que predice el código.
+
+## Errores comunes
+
+- **Archivo vacío**: si `entrada.txt` existe pero está vacío, `read` retorna `0`.
+  El programa salta a `cleanup` porque `cmp x0, #0` con `b.lt` no captura el
+  caso `0`. Para un programa robusto, `0` significa EOF, no error.
+- **Buffer insuficiente**: si el archivo tiene más de 128 bytes, solo se lee el
+  primer bloque. Leer el archivo completo requiere un loop.
+- **No crear `entrada.txt` antes de ejecutar**: `openat` falla con `ENOENT` y el
+  programa sale por `error_sin_fd`.
+
 ## Mini ejercicios
+
+Modifica y predice antes de ejecutar.
 
 1. Cambia el tamaño del buffer a 64 bytes.
 2. Cambia el mensaje de error.
@@ -163,9 +216,17 @@ openat funciona, read/write falla
 4. Explica por qué `x20` guarda la cantidad leída.
 5. Predice qué ocurre si `entrada.txt` existe pero está vacío.
 6. Explica por qué el programa no usa `.asciz` para `msg_error`.
+7. Agrega `strace` y verifica que `read` retorna la cantidad correcta de bytes.
+8. ¿Qué cambiarías para que `read` con retorno `0` (EOF) no sea tratado como error?
 
 ## Cierre
 
 Este programa ya tiene forma de programa Linux real: pide un recurso, lo usa,
 comprueba retornos y limpia antes de terminar. Todavía es pequeño, pero el
 modelo mental ya no es “syscalls sueltas”; es manejo de recursos.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages: `openat(2)`, `read(2)`, `write(2)`, `close(2)`: contrato completo. <https://www.man7.org/linux/man-pages/man2/>
+- Linux man-pages: `strace(1)`: traza de syscalls para diagnóstico. <https://www.man7.org/linux/man-pages/man1/strace.1.html>
+- QEMU, *User-mode documentation*: ejecución cruzada de binarios AArch64. <https://www.qemu.org/docs/master/user/>
