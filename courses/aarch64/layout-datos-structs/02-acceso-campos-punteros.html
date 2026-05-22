@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#escritura-parcial" id="toc-escritura-parcial" class="nav-link" data-scroll-target="#escritura-parcial">Escritura parcial</a></li>
   <li><a href="#campo-dentro-de-array-de-structs" id="toc-campo-dentro-de-array-de-structs" class="nav-link" data-scroll-target="#campo-dentro-de-array-de-structs">Campo dentro de array de structs</a></li>
   <li><a href="#función-que-recibe-puntero" id="toc-función-que-recibe-puntero" class="nav-link" data-scroll-target="#función-que-recibe-puntero">Función que recibe puntero</a></li>
+  <li><a href="#checklist-antes-de-acceder-un-campo" id="toc-checklist-antes-de-acceder-un-campo" class="nav-link" data-scroll-target="#checklist-antes-de-acceder-un-campo">Checklist antes de acceder un campo</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1563,6 +1564,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>point_clear</code> no necesita saber dónde vive el objeto: <code>.data</code>, stack, heap o <code>mmap</code>. Solo necesita un puntero válido a un bloque con layout <code>Point</code>.</p>
 </section>
+<section id="checklist-antes-de-acceder-un-campo" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-antes-de-acceder-un-campo">Checklist antes de acceder un campo</h2>
+<p>Antes de cada <code>ldr</code> o <code>str</code> sobre un objeto, confirma:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿qué registro tiene la base?</td>
+<td><code>x0 = Point*</code></td>
+</tr>
+<tr class="even">
+<td>¿qué offset voy a usar?</td>
+<td><code>POINT_Y</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué tamaño tiene el campo?</td>
+<td>8 bytes para <code>.quad</code></td>
+</tr>
+<tr class="even">
+<td>¿qué instrucción coincide?</td>
+<td><code>ldr xN</code> o <code>str xN</code></td>
+</tr>
+<tr class="odd">
+<td>¿el offset queda dentro de <code>SIZE</code>?</td>
+<td><code>POINT_Y + 8 &lt;= POINT_SIZE</code></td>
+</tr>
+</tbody>
+</table>
+<p>Si una de estas preguntas falla, el acceso puede leer otro campo, pisar padding o escribir fuera del objeto.</p>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1604,11 +1640,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué <code>str x1</code> escribe 8 bytes?</li>
 <li>¿Qué instrucción usarías para un campo byte?</li>
 <li>¿Por qué <code>point_clear</code> sirve para objetos en heap también?</li>
+<li>¿Qué condición debe cumplir <code>offset + tamaño</code> respecto a <code>POINT_SIZE</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Acceder a campos no es magia. Es dirección base, offset y tamaño correcto de carga o almacenamiento.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

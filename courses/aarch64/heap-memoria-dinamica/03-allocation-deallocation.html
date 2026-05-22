@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#mallocfree-conceptual" id="toc-mallocfree-conceptual" class="nav-link" data-scroll-target="#mallocfree-conceptual"><code>malloc/free</code> conceptual</a></li>
   <li><a href="#cleanup-de-memoria" id="toc-cleanup-de-memoria" class="nav-link" data-scroll-target="#cleanup-de-memoria">Cleanup de memoria</a></li>
   <li><a href="#rutas-de-cleanup" id="toc-rutas-de-cleanup" class="nav-link" data-scroll-target="#rutas-de-cleanup">Rutas de cleanup</a></li>
+  <li><a href="#tabla-de-rutas" id="toc-tabla-de-rutas" class="nav-link" data-scroll-target="#tabla-de-rutas">Tabla de rutas</a></li>
   <li><a href="#diferencia-con-closefd" id="toc-diferencia-con-closefd" class="nav-link" data-scroll-target="#diferencia-con-closefd">Diferencia con <code>close(fd)</code></a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1486,6 +1487,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">salir</span> con 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El punto no es copiar estas etiquetas siempre. El punto es saber si el bloque existe en cada ruta. Si la reserva falló, liberar sería incorrecto. Si la reserva funcionó y luego falla otra operación, no liberar produce leak.</p>
 </section>
+<section id="tabla-de-rutas" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-de-rutas">Tabla de rutas</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ruta</th>
+<th>¿Hay bloque vivo?</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>error_sin_bloque</code></td>
+<td>no</td>
+<td>salir sin liberar</td>
+</tr>
+<tr class="even">
+<td><code>cleanup_con_bloque</code></td>
+<td>sí</td>
+<td>liberar una vez y salir con error</td>
+</tr>
+<tr class="odd">
+<td><code>salida_ok</code></td>
+<td>sí, hasta el cierre</td>
+<td>liberar una vez y salir con éxito</td>
+</tr>
+<tr class="even">
+<td>después de liberar</td>
+<td>no</td>
+<td>invalidar copia local si ayuda</td>
+</tr>
+</tbody>
+</table>
+<p>Invalidar una copia con <code>mov x19, #0</code> es útil como defensa local, pero no reemplaza la llamada real de liberación. Primero se libera con el mecanismo correcto; después puedes borrar la copia.</p>
+</section>
 <section id="diferencia-con-closefd" class="level2">
 <h2 class="anchored" data-anchor-id="diferencia-con-closefd">Diferencia con <code>close(fd)</code></h2>
 <table class="caption-top table">
@@ -1519,11 +1560,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿<code>mov x19, #0</code> libera memoria?</li>
 <li>¿Por qué <code>malloc</code> no es instrucción de CPU?</li>
 <li>¿Qué relación mental hay entre <code>close(fd)</code> y liberar memoria?</li>
+<li>¿Por qué <code>error_sin_bloque</code> no debe liberar?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Allocation sin deallocation es programa incompleto. En bajo nivel, reservar implica planear uso, ownership y salida por error.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>free(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/free.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/free.3.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+</ul>
 
 
 </section>

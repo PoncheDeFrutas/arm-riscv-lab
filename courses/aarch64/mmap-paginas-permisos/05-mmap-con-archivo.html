@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#map_private-vs-map_shared" id="toc-map_private-vs-map_shared" class="nav-link" data-scroll-target="#map_private-vs-map_shared"><code>MAP_PRIVATE</code> vs <code>MAP_SHARED</code></a></li>
   <li><a href="#estructura-básica-en-assembly" id="toc-estructura-básica-en-assembly" class="nav-link" data-scroll-target="#estructura-básica-en-assembly">Estructura básica en assembly</a></li>
   <li><a href="#por-qué-cerrar-fd-si-hay-mapeo" id="toc-por-qué-cerrar-fd-si-hay-mapeo" class="nav-link" data-scroll-target="#por-qué-cerrar-fd-si-hay-mapeo">Por qué cerrar fd si hay mapeo</a></li>
+  <li><a href="#dos-recursos-dos-cierres" id="toc-dos-recursos-dos-cierres" class="nav-link" data-scroll-target="#dos-recursos-dos-cierres">Dos recursos, dos cierres</a></li>
   <li><a href="#tamaño-de-archivo-y-tamaño-de-mapeo" id="toc-tamaño-de-archivo-y-tamaño-de-mapeo" class="nav-link" data-scroll-target="#tamaño-de-archivo-y-tamaño-de-mapeo">Tamaño de archivo y tamaño de mapeo</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
@@ -1572,6 +1573,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">munmap</span> región</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La idea importante: fd y mapeo son recursos relacionados, pero no idénticos.</p>
 </section>
+<section id="dos-recursos-dos-cierres" class="level2">
+<h2 class="anchored" data-anchor-id="dos-recursos-dos-cierres">Dos recursos, dos cierres</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Recurso</th>
+<th>Se obtiene con</th>
+<th>Se cierra con</th>
+<th>Qué pasa si lo olvidas</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>descriptor de archivo</td>
+<td><code>openat</code></td>
+<td><code>close</code></td>
+<td>fuga de fd</td>
+</tr>
+<tr class="even">
+<td>región virtual</td>
+<td><code>mmap</code></td>
+<td><code>munmap</code></td>
+<td>fuga de mapeo</td>
+</tr>
+</tbody>
+</table>
+<p>Cerrar el fd no equivale a liberar el mapeo. Liberar el mapeo no debe usarse como sustituto de cerrar el fd si tu programa ya no lo necesita. En programas pequeños esto puede pasar inadvertido; en programas largos se vuelve una fuga de recursos.</p>
+</section>
 <section id="tamaño-de-archivo-y-tamaño-de-mapeo" class="level2">
 <h2 class="anchored" data-anchor-id="tamaño-de-archivo-y-tamaño-de-mapeo">Tamaño de archivo y tamaño de mapeo</h2>
 <p><code>length</code> sigue siendo tamaño en bytes de la región. Si mapeas archivo, ese tamaño debe tener sentido con el archivo y con el uso esperado.</p>
@@ -1652,11 +1681,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué significa <code>offset = 0</code>?</li>
 <li>¿Cerrar fd libera la región mapeada?</li>
 <li>¿Qué syscall libera la región?</li>
+<li>¿Qué recurso libera <code>close</code> y cuál libera <code>munmap</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>mmap</code> con archivo une dos ideas: fd como recurso de Linux y memoria virtual como forma de acceso. El fd abre la puerta; la región mapeada se administra con <code>munmap</code>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>openat(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/openat.2.html</a></li>
+<li>Linux man-pages, <code>close(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/close.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/close.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+</ul>
 
 
 </section>

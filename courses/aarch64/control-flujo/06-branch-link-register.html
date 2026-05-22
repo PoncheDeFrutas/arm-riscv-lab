@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#bl-branch-with-link" id="toc-bl-branch-with-link" class="nav-link active" data-scroll-target="#bl-branch-with-link"><code>bl</code>: branch with link</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#b-y-bl" id="toc-b-y-bl" class="nav-link" data-scroll-target="#b-y-bl"><code>b</code> y <code>bl</code></a></li>
   <li><a href="#ret-volver-usando-lr" id="toc-ret-volver-usando-lr" class="nav-link" data-scroll-target="#ret-volver-usando-lr"><code>ret</code>: volver usando <code>LR</code></a></li>
+  <li><a href="#qué-contiene-lrx30" id="toc-qué-contiene-lrx30" class="nav-link" data-scroll-target="#qué-contiene-lrx30">Qué contiene <code>LR/X30</code></a></li>
   <li><a href="#límite-importante" id="toc-límite-importante" class="nav-link" data-scroll-target="#límite-importante">Límite importante</a></li>
   <li><a href="#br-branch-a-registro" id="toc-br-branch-a-registro" class="nav-link" data-scroll-target="#br-branch-a-registro"><code>br</code>: branch a registro</a></li>
   <li><a href="#blr-branch-a-registro-con-link" id="toc-blr-branch-a-registro-con-link" class="nav-link" data-scroll-target="#blr-branch-a-registro-con-link"><code>blr</code>: branch a registro con link</a></li>
+  <li><a href="#comparación-rápida" id="toc-comparación-rápida" class="nav-link" data-scroll-target="#comparación-rápida">Comparación rápida</a></li>
   <li><a href="#ret-con-registro-explícito" id="toc-ret-con-registro-explícito" class="nav-link" data-scroll-target="#ret-con-registro-explícito"><code>ret</code> con registro explícito</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1364,9 +1369,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Además de saltar a etiquetas, AArch64 puede saltar guardando retorno o saltar a una dirección guardada en un registro. Esta página es una introducción: prepara funciones futuras sin explicar todavía stack frames ni ABI.</p>
 </div>
-<section id="bl-branch-with-link" class="level2">
-<h2 class="anchored" data-anchor-id="bl-branch-with-link"><code>bl</code>: branch with link</h2>
-<p><code>bl</code> salta a una etiqueta y guarda dirección de retorno en <code>LR</code>, que en AArch64 es <code>X30</code>.</p>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a distinguir saltos normales de llamadas. <code>b</code> cambia el flujo sin guardar retorno. <code>bl</code> salta y guarda dónde volver. <code>ret</code> usa esa dirección para regresar.</p>
+<p>También verás saltos por registro: <code>br</code> y <code>blr</code>. Son la base de llamadas indirectas, dispatch y patrones futuros, pero aquí solo necesitas reconocer el mecanismo.</p>
+</section>
+<section id="b-y-bl" class="level2">
+<h2 class="anchored" data-anchor-id="b-y-bl"><code>b</code> y <code>bl</code></h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Instrucción</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>b etiqueta</code></td>
+<td>salta a una etiqueta</td>
+</tr>
+<tr class="even">
+<td><code>bl etiqueta</code></td>
+<td>salta y guarda dirección de retorno en <code>LR/X30</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>bl</code> significa branch with link.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>bl funcion_simple</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">salta</span> a funcion_simple</span>
@@ -1396,6 +1424,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Flujo:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span> <span class="at">-</span><span class="op">&gt;</span> bl funcion_simple <span class="at">-</span><span class="op">&gt;</span> funcion_simple <span class="at">-</span><span class="op">&gt;</span> ret <span class="at">-</span><span class="op">&gt;</span> instrucción después de bl</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
+<section id="qué-contiene-lrx30" class="level2">
+<h2 class="anchored" data-anchor-id="qué-contiene-lrx30">Qué contiene <code>LR/X30</code></h2>
+<p><code>LR</code> es el link register. En AArch64 es el registro <code>x30</code>. Después de <code>bl</code>, ahí queda la dirección de retorno.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">antes</span> de bl:  x30 no importa para esta llamada</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">bl</span> destino:   x30 = dirección después de bl</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ret:</span>          PC = x30</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esta explicación es suficiente para llamadas simples. Funciones reales necesitan preservar <code>LR</code> si hacen otras llamadas, y eso lleva a stack frames.</p>
+</section>
 <section id="límite-importante" class="level2">
 <h2 class="anchored" data-anchor-id="límite-importante">Límite importante</h2>
 <p>Este ejemplo funciona porque no hay llamadas anidadas ni necesidad de preservar registros. Más adelante, con funciones reales, aparecerán stack frames, convención de llamadas y preservación de <code>LR</code>.</p>
@@ -1416,25 +1452,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="br-branch-a-registro" class="level2">
 <h2 class="anchored" data-anchor-id="br-branch-a-registro"><code>br</code>: branch a registro</h2>
 <p><code>br</code> salta a la dirección guardada en un registro.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> destino</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>br x0</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">destino:</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> destino</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>br x0</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">destino:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> contiene dirección de destino</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">br</span> x0 salta a esa dirección</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> contiene dirección de destino</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">br</span> x0 salta a esa dirección</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto prepara ideas futuras como dispatch, tablas de saltos y código indirecto, pero no las desarrollaremos aquí.</p>
 </section>
 <section id="blr-branch-a-registro-con-link" class="level2">
 <h2 class="anchored" data-anchor-id="blr-branch-a-registro-con-link"><code>blr</code>: branch a registro con link</h2>
 <p><code>blr</code> salta a la dirección de un registro y guarda retorno en <code>LR</code>, igual que <code>bl</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> funcion_simple</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>blr x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> funcion_simple</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>blr x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">salta</span> a la dirección en x0</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">guarda</span> retorno en lr/x30</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Esto prepara llamadas indirectas. Por ahora solo reconoce la diferencia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">salta</span> a la dirección en x0</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">guarda</span> retorno en lr/x30</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esto prepara llamadas indirectas.</p>
+</section>
+<section id="comparación-rápida" class="level2">
+<h2 class="anchored" data-anchor-id="comparación-rápida">Comparación rápida</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1475,10 +1514,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="ret-con-registro-explícito" class="level2">
 <h2 class="anchored" data-anchor-id="ret-con-registro-explícito"><code>ret</code> con registro explícito</h2>
 <p>La forma común es:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Equivale a volver usando <code>x30</code>. También existe forma explícita:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span> x5</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span> x5</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No la usaremos todavía en prácticas normales. Es suficiente reconocer que <code>ret</code> usa una dirección de retorno.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Usar <code>b</code> esperando volver</td>
+<td>usa <code>bl</code> para guardar retorno</td>
+</tr>
+<tr class="even">
+<td>Ejecutar <code>ret</code> sin <code>LR</code> válido</td>
+<td><code>ret</code> necesita dirección de retorno</td>
+</tr>
+<tr class="odd">
+<td>Hacer llamada anidada sin preservar <code>LR</code></td>
+<td>eso requiere stack frame futuro</td>
+</tr>
+<tr class="even">
+<td>Confundir <code>br</code> con <code>blr</code></td>
+<td><code>blr</code> guarda retorno, <code>br</code> no</td>
+</tr>
+<tr class="odd">
+<td>Saltar por registro no inicializado</td>
+<td>carga una dirección válida antes</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1488,11 +1564,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué usa <code>ret</code> para volver?</li>
 <li>¿Cuál salta a una dirección guardada en registro: <code>b</code> o <code>br</code>?</li>
 <li>¿Por qué no estudiaremos stack frames todavía?</li>
+<li>¿Qué diferencia hay entre <code>br x0</code> y <code>blr x0</code>?</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo distinguir <code>b</code> de <code>bl</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>LR/X30</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>ret</code>.</label></li>
+<li><label><input type="checkbox">Puedo distinguir <code>br</code> de <code>blr</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué llamadas reales necesitan ABI después.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>bl</code>, <code>br</code>, <code>blr</code> y <code>ret</code> abren la puerta a funciones, callbacks y llamadas indirectas. En esta unidad basta con el mapa inicial: saltar, guardar retorno y volver.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

@@ -1318,12 +1318,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#idea-base" id="toc-idea-base" class="nav-link active" data-scroll-target="#idea-base">Idea base</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#idea-base" id="toc-idea-base" class="nav-link" data-scroll-target="#idea-base">Idea base</a></li>
   <li><a href="#frames-repetidos" id="toc-frames-repetidos" class="nav-link" data-scroll-target="#frames-repetidos">Frames repetidos</a></li>
   <li><a href="#ejemplo-pequeño-cuenta-regresiva-conceptual" id="toc-ejemplo-pequeño-cuenta-regresiva-conceptual" class="nav-link" data-scroll-target="#ejemplo-pequeño-cuenta-regresiva-conceptual">Ejemplo pequeño: cuenta regresiva conceptual</a></li>
   <li><a href="#lectura-del-flujo" id="toc-lectura-del-flujo" class="nav-link" data-scroll-target="#lectura-del-flujo">Lectura del flujo</a></li>
+  <li><a href="#qué-guarda-cada-llamada" id="toc-qué-guarda-cada-llamada" class="nav-link" data-scroll-target="#qué-guarda-cada-llamada">Qué guarda cada llamada</a></li>
   <li><a href="#por-qué-no-basta-una-sola-copia-de-lr" id="toc-por-qué-no-basta-una-sola-copia-de-lr" class="nav-link" data-scroll-target="#por-qué-no-basta-una-sola-copia-de-lr">Por qué no basta una sola copia de <code>LR</code></a></li>
   <li><a href="#stack-overflow-conceptual" id="toc-stack-overflow-conceptual" class="nav-link" data-scroll-target="#stack-overflow-conceptual">Stack overflow conceptual</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1364,6 +1367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>La recursión no es magia. Es una función llamándose a sí misma. Cada llamada necesita su propio retorno y su propio estado temporal, por eso el stack frame se vuelve visible.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>La meta es leer recursión como una serie de llamadas normales. Cada llamada tiene su propio frame, su propio <code>LR</code> guardado y su propio punto de retorno. La diferencia es que el callee tiene el mismo nombre que el caller.</p>
+</section>
 <section id="idea-base" class="level2">
 <h2 class="anchored" data-anchor-id="idea-base">Idea base</h2>
 <p>Una función recursiva necesita:</p>
@@ -1444,6 +1451,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span><span class="bu">:</span> caso base, retorna</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Cada llamada ejecuta su propio prólogo. Cada retorno ejecuta su propio epílogo.</p>
 </section>
+<section id="qué-guarda-cada-llamada" class="level2">
+<h2 class="anchored" data-anchor-id="qué-guarda-cada-llamada">Qué guarda cada llamada</h2>
+<p>Aunque todas las llamadas entren por la misma etiqueta <code>cuenta</code>, no comparten el mismo contexto activo.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Llamada</th>
+<th>Necesita conservar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cuenta(3)</code></td>
+<td>retorno hacia <code>_start</code></td>
+</tr>
+<tr class="even">
+<td><code>cuenta(2)</code></td>
+<td>retorno hacia el cuerpo de <code>cuenta(3)</code></td>
+</tr>
+<tr class="odd">
+<td><code>cuenta(1)</code></td>
+<td>retorno hacia el cuerpo de <code>cuenta(2)</code></td>
+</tr>
+<tr class="even">
+<td><code>cuenta(0)</code></td>
+<td>retorno hacia el cuerpo de <code>cuenta(1)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Por eso el prólogo se ejecuta varias veces y cada ejecución reserva una nueva porción del stack.</p>
+</section>
 <section id="por-qué-no-basta-una-sola-copia-de-lr" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-no-basta-una-sola-copia-de-lr">Por qué no basta una sola copia de <code>LR</code></h2>
 <p>Cada llamada tiene una dirección de retorno distinta. Si todos usaran el mismo <code>x30</code> sin guardar, cada llamada recursiva destruiría el retorno anterior.</p>
@@ -1464,6 +1502,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>          <span class="ex">cuenta</span><span class="er">(</span><span class="ex">-2</span><span class="kw">)</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="ex">...</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En un sistema real eso termina fallando. Aquí solo necesitamos la idea: stack es finito.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Consecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>olvidar el caso base</td>
+<td>el stack crece hasta fallar</td>
+</tr>
+<tr class="even">
+<td>cambiar <code>x0</code> antes de comprobar la condición</td>
+<td>el caso base puede no alcanzarse</td>
+</tr>
+<tr class="odd">
+<td>no guardar <code>LR</code></td>
+<td>cada llamada destruye el retorno anterior</td>
+</tr>
+<tr class="even">
+<td>liberar mal el frame</td>
+<td>los retornos se deshacen desde direcciones incorrectas</td>
+</tr>
+</tbody>
+</table>
 <div class="callout callout-style-simple callout-warning callout-titled" title="Error común">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1486,11 +1557,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Cuántas llamadas activas hay antes de llegar a <code>cuenta(0)</code>?</li>
 <li>¿En qué orden se cierran los frames?</li>
 <li>¿Qué pasa si el caso base nunca se cumple?</li>
+<li>¿Por qué todas las llamadas pueden entrar por la misma etiqueta sin compartir frame?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Recursión convierte stack frames en algo fácil de ver: una llamada encima de otra, cada una con su retorno, hasta que el caso base permite deshacer la pila.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

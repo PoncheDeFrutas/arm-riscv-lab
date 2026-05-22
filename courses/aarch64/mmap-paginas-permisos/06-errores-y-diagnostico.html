@@ -1327,6 +1327,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#longitud-incorrecta" id="toc-longitud-incorrecta" class="nav-link" data-scroll-target="#longitud-incorrecta">Longitud incorrecta</a></li>
   <li><a href="#uso-después-de-munmap" id="toc-uso-después-de-munmap" class="nav-link" data-scroll-target="#uso-después-de-munmap">Uso después de <code>munmap</code></a></li>
   <li><a href="#checklist-mental-de-diagnóstico" id="toc-checklist-mental-de-diagnóstico" class="nav-link" data-scroll-target="#checklist-mental-de-diagnóstico">Checklist mental de diagnóstico</a></li>
+  <li><a href="#apoyo-con-herramientas" id="toc-apoyo-con-herramientas" class="nav-link" data-scroll-target="#apoyo-con-herramientas">Apoyo con herramientas</a></li>
+  <li><a href="#tabla-de-cleanup" id="toc-tabla-de-cleanup" class="nav-link" data-scroll-target="#tabla-de-cleanup">Tabla de cleanup</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1599,6 +1601,101 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿<code>fd</code> y <code>offset</code> tienen sentido para el tipo de mapeo?</li>
 </ol>
 </section>
+<section id="apoyo-con-herramientas" class="level2">
+<h2 class="anchored" data-anchor-id="apoyo-con-herramientas">Apoyo con herramientas</h2>
+<p>GDB y <code>strace</code> responden preguntas distintas:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Herramienta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿qué valor retornó la syscall?</td>
+<td>GDB</td>
+<td><code>info registers x0 x8</code> después de <code>svc #0</code></td>
+</tr>
+<tr class="even">
+<td>¿qué argumentos llegaron al kernel?</td>
+<td><code>strace</code></td>
+<td><code>strace -e trace=mmap,munmap,mprotect</code></td>
+</tr>
+<tr class="odd">
+<td>¿la dirección base se perdió?</td>
+<td>GDB</td>
+<td>revisar <code>x19</code>, <code>x20</code> o registros de diseño</td>
+</tr>
+<tr class="even">
+<td>¿la región sigue viva?</td>
+<td>GDB/strace</td>
+<td>revisar si ya ocurrió <code>munmap</code></td>
+</tr>
+<tr class="odd">
+<td>¿falló por permisos?</td>
+<td>GDB</td>
+<td>revisar instrucción que intenta <code>ldr</code>, <code>str</code> o ejecución</td>
+</tr>
+</tbody>
+</table>
+<p>Si usas QEMU en host cruzado, recuerda que <code>strace qemu-aarch64 ...</code> puede mostrar la capa del emulador. Úsalo como pista, no como única verdad.</p>
+</section>
+<section id="tabla-de-cleanup" class="level2">
+<h2 class="anchored" data-anchor-id="tabla-de-cleanup">Tabla de cleanup</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Punto de fallo</th>
+<th>¿Hay región viva?</th>
+<th>Ruta correcta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>falla <code>mmap</code></td>
+<td>no</td>
+<td><code>error_sin_region</code></td>
+</tr>
+<tr class="even">
+<td>falla escritura posterior</td>
+<td>sí, si <code>mmap</code> funcionó</td>
+<td><code>cleanup</code></td>
+</tr>
+<tr class="odd">
+<td>falla <code>mprotect</code></td>
+<td>sí</td>
+<td><code>cleanup</code></td>
+</tr>
+<tr class="even">
+<td>falla <code>munmap</code></td>
+<td>incierto</td>
+<td>salir con error y revisar rango</td>
+</tr>
+<tr class="odd">
+<td>falla <code>openat</code> antes de <code>mmap</code></td>
+<td>no</td>
+<td>cerrar nada, salir</td>
+</tr>
+<tr class="even">
+<td>falla <code>mmap</code> con fd abierto</td>
+<td>no hay región, sí hay fd</td>
+<td>cerrar fd antes de salir</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1607,11 +1704,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué conviene separar base y cursor?</li>
 <li>¿Qué significa usar memoria después de <code>munmap</code>?</li>
 <li>¿Qué revisarías si <code>mprotect</code> retorna negativo?</li>
+<li>¿Qué herramienta usarías para ver argumentos de <code>mprotect</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Diagnosticar memoria virtual no empieza con MMU interna. Empieza con contrato: argumentos correctos, permisos correctos, retorno revisado y ciclo de vida respetado.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>mprotect(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mprotect.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mprotect.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+<li>Linux man-pages, <code>strace(1)</code>: <a href="https://man7.org/linux/man-pages/man1/strace.1.html" class="uri">https://man7.org/linux/man-pages/man1/strace.1.html</a></li>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

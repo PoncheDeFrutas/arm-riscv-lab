@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#insertar-con-bfi" id="toc-insertar-con-bfi" class="nav-link" data-scroll-target="#insertar-con-bfi">Insertar con <code>bfi</code></a></li>
   <li><a href="#insertar-con-bfxil" id="toc-insertar-con-bfxil" class="nav-link" data-scroll-target="#insertar-con-bfxil">Insertar con <code>bfxil</code></a></li>
   <li><a href="#campos-de-bits-no-son-offsets-de-memoria" id="toc-campos-de-bits-no-son-offsets-de-memoria" class="nav-link" data-scroll-target="#campos-de-bits-no-son-offsets-de-memoria">Campos de bits no son offsets de memoria</a></li>
+  <li><a href="#checklist-de-bitfield" id="toc-checklist-de-bitfield" class="nav-link" data-scroll-target="#checklist-de-bitfield">Checklist de bitfield</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1518,6 +1519,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="checklist-de-bitfield" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-bitfield">Checklist de bitfield</h2>
+<p>Antes de usar <code>ubfx</code>, <code>sbfx</code>, <code>bfi</code> o <code>bfxil</code>, define:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿registro fuente?</td>
+<td><code>x0</code></td>
+</tr>
+<tr class="even">
+<td>¿bit inicial?</td>
+<td><code>#8</code></td>
+</tr>
+<tr class="odd">
+<td>¿ancho del campo?</td>
+<td><code>#4</code></td>
+</tr>
+<tr class="even">
+<td>¿interpretación signed o unsigned?</td>
+<td><code>sbfx</code> vs <code>ubfx</code></td>
+</tr>
+<tr class="odd">
+<td>¿quiero extraer o insertar?</td>
+<td><code>ubfx/sbfx</code> vs <code>bfi/bfxil</code></td>
+</tr>
+</tbody>
+</table>
+<p>Si no sabes posición y ancho, todavía no tienes un campo de bits; solo tienes un registro con muchos bits.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1533,11 +1569,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="2" type="1">
 <li><p>Explica cuándo usarías <code>sbfx</code> en lugar de <code>ubfx</code>.</p></li>
 <li><p>Explica por qué <code>rev</code> no cambia cómo el sistema guarda memoria.</p></li>
+<li><p>¿Por qué <code>#8</code> en <code>ubfx</code> no significa ocho bytes?</p></li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Bit manipulation prepara lectura de formatos compactos, permisos, headers binarios y registros de hardware. La idea central: no estás leyendo memoria, estás reorganizando bits dentro de registros.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

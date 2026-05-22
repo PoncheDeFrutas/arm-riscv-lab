@@ -1318,7 +1318,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#dirección-efectiva" id="toc-dirección-efectiva" class="nav-link active" data-scroll-target="#dirección-efectiva">Dirección efectiva</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#dirección-efectiva" id="toc-dirección-efectiva" class="nav-link" data-scroll-target="#dirección-efectiva">Dirección efectiva</a></li>
   <li><a href="#formas-principales" id="toc-formas-principales" class="nav-link" data-scroll-target="#formas-principales">Formas principales</a></li>
   <li><a href="#base-sin-offset" id="toc-base-sin-offset" class="nav-link" data-scroll-target="#base-sin-offset">Base sin offset</a></li>
   <li><a href="#offset-inmediato" id="toc-offset-inmediato" class="nav-link" data-scroll-target="#offset-inmediato">Offset inmediato</a></li>
@@ -1327,7 +1328,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#pre-index" id="toc-pre-index" class="nav-link" data-scroll-target="#pre-index">Pre-index</a></li>
   <li><a href="#post-index" id="toc-post-index" class="nav-link" data-scroll-target="#post-index">Post-index</a></li>
   <li><a href="#ldp-y-stp" id="toc-ldp-y-stp" class="nav-link" data-scroll-target="#ldp-y-stp"><code>ldp</code> y <code>stp</code></a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicio" id="toc-mini-ejercicio" class="nav-link" data-scroll-target="#mini-ejercicio">Mini ejercicio</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1367,6 +1370,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un acceso a memoria no siempre usa solo <code>[x0]</code>. Muchas veces necesitas sumar un offset, usar un índice o avanzar el puntero después de leer. Los modos de direccionamiento dicen cómo se calcula la dirección final.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer distintas formas de calcular la dirección efectiva de una carga o un store. La instrucción no solo dice cuántos bytes leer; también dice cómo llegar a la dirección.</p>
+<p>La pregunta clave: ¿la dirección final es la base, base más bytes, base más índice escalado, o una base que además se actualiza?</p>
+</section>
 <section id="dirección-efectiva" class="level2">
 <h2 class="anchored" data-anchor-id="dirección-efectiva">Dirección efectiva</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dirección</span> efectiva = base + offset</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1529,6 +1537,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Más adelante <code>stp</code> y <code>ldp</code> aparecerán mucho con stack frames. Por ahora basta con leerlos como acceso a dos registros consecutivos.</p>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Confundir índice con bytes</td>
+<td>escala según tamaño del elemento</td>
+</tr>
+<tr class="even">
+<td>Usar <code>lsl #3</code> para <code>.word</code></td>
+<td><code>.word</code> usa 4 bytes, escala <code>lsl #2</code></td>
+</tr>
+<tr class="odd">
+<td>No notar post-index</td>
+<td>el registro base cambia después del acceso</td>
+</tr>
+<tr class="even">
+<td>No notar pre-index</td>
+<td>el registro base cambia antes del acceso</td>
+</tr>
+<tr class="odd">
+<td>Reusar base modificada sin querer</td>
+<td>guarda copia si necesitas base original</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicio" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicio">Mini ejercicio</h2>
 <p>Si <code>array</code> contiene <code>.quad 10, 20, 30, 40</code>:</p>
@@ -1539,11 +1584,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué elemento lee?</li>
 <li>¿Cuántos bytes suma a la base?</li>
 <li>¿Qué escala usarías si el array fuera de <code>.word</code>?</li>
+<li>¿Qué diferencia habría con <code>ldr x2, [x0], #8</code>?</li>
+</ul>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo explicar base + offset.</label></li>
+<li><label><input type="checkbox">Puedo usar offset inmediato.</label></li>
+<li><label><input type="checkbox">Puedo usar offset en registro.</label></li>
+<li><label><input type="checkbox">Puedo usar offset escalado.</label></li>
+<li><label><input type="checkbox">Puedo distinguir pre-index y post-index.</label></li>
+<li><label><input type="checkbox">Puedo leer <code>ldp</code> y <code>stp</code> como acceso por pares.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Los modos de direccionamiento evitan calcular todo a mano con <code>add</code>. Aun así, la idea sigue igual: base, offset, tamaño de elemento y dirección final.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/memoria-direccionamiento/06-arrays-recorrido-memoria.html">Arrays y recorrido de memoria</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

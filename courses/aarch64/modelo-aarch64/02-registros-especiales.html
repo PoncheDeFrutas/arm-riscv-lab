@@ -1318,16 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
   <li><a href="#xzr-y-wzr" id="toc-xzr-y-wzr" class="nav-link" data-scroll-target="#xzr-y-wzr"><code>XZR</code> y <code>WZR</code></a></li>
   <li><a href="#sp" id="toc-sp" class="nav-link" data-scroll-target="#sp"><code>SP</code></a></li>
   <li><a href="#pc" id="toc-pc" class="nav-link" data-scroll-target="#pc"><code>PC</code></a></li>
   <li><a href="#x29-fp" id="toc-x29-fp" class="nav-link" data-scroll-target="#x29-fp"><code>X29</code> / <code>FP</code></a></li>
   <li><a href="#x30-lr" id="toc-x30-lr" class="nav-link" data-scroll-target="#x30-lr"><code>X30</code> / <code>LR</code></a></li>
   <li><a href="#qué-registros-tienen-significado-especial" id="toc-qué-registros-tienen-significado-especial" class="nav-link" data-scroll-target="#qué-registros-tienen-significado-especial">Qué registros tienen significado especial</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1366,6 +1368,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Algunos registros o nombres de AArch64 tienen reglas especiales. Esta lección los ubica sin entrar todavía en stack frames, ABI ni llamadas a función en profundidad.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a reconocer nombres que aparecen mucho en código y en GDB: <code>xzr</code>, <code>sp</code>, <code>pc</code>, <code>x29/fp</code> y <code>x30/lr</code>. Algunos son registros con comportamiento especial; otros son roles convencionales que serán importantes al estudiar funciones.</p>
+</section>
 <section id="mapa-rápido" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
 <table class="caption-top table">
@@ -1465,8 +1471,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="x30-lr" class="level2">
 <h2 class="anchored" data-anchor-id="x30-lr"><code>X30</code> / <code>LR</code></h2>
 <p><code>x30</code> también puede nombrarse como <code>lr</code>, link register. En llamadas a función, guarda una dirección de retorno.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> x30</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Más adelante, instrucciones como <code>bl</code> y <code>ret</code> harán que <code>lr</code> sea central para llamadas a función. Aquí solo necesitas reconocerlo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bl funcion</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>// x30<span class="op">/</span>lr queda con dirección de retorno</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Más adelante, <code>ret</code> usará <code>lr</code> para volver. Aquí solo necesitas reconocerlo.</p>
 </section>
 <section id="qué-registros-tienen-significado-especial" class="level2">
 <h2 class="anchored" data-anchor-id="qué-registros-tienen-significado-especial">Qué registros tienen significado especial</h2>
@@ -1512,8 +1519,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tratar <code>pc</code> como <code>x0</code></td>
+<td>en A64 no es registro general normal</td>
+</tr>
+<tr class="even">
+<td>Usar <code>sp</code> como temporal cualquiera</td>
+<td><code>sp</code> debe conservar sentido de stack</td>
+</tr>
+<tr class="odd">
+<td>Pensar que <code>xzr</code> guarda valores</td>
+<td>escribir ahí descarta</td>
+</tr>
+<tr class="even">
+<td>Usar <code>x30</code> sin entender <code>bl</code>/<code>ret</code></td>
+<td><code>x30/lr</code> tiene rol de retorno</td>
+</tr>
+<tr class="odd">
+<td>Creer que <code>fp/lr</code> implican ABI completa aquí</td>
+<td>solo mapa inicial</td>
+</tr>
+</tbody>
+</table>
 <div class="callout callout-style-simple callout-warning callout-titled" title="PC no es un Xn más">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1536,6 +1577,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Di por qué <code>sp</code> no es un temporal normal.</li>
 <li>Explica para qué servirá <code>x30/lr</code> más adelante.</li>
 <li>Explica por qué <code>adr x0, .</code> es útil para hablar de <code>pc</code>.</li>
+<li>Explica qué diferencia conceptual hay entre <code>x29/fp</code> y <code>x30/lr</code>.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1546,8 +1588,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar por qué <code>pc</code> no es general.</label></li>
 <li><label><input type="checkbox">Puedo reconocer <code>x29/fp</code>.</label></li>
 <li><label><input type="checkbox">Puedo reconocer <code>x30/lr</code>.</label></li>
+<li><label><input type="checkbox">Puedo decir qué queda para la unidad de ABI.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Estos nombres son parte del mapa mínimo para leer código y depurar. Algunos representan hardware especial, otros roles convencionales; todos necesitan contexto antes de interpretarse.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/modelo-aarch64/03-pstate-flags.html">PSTATE y flags</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</a>.</li>
+</ul>
 
 
 </section>

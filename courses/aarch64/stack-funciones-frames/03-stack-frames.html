@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-hace-ldp-x29-x30-sp-16" id="toc-qué-hace-ldp-x29-x30-sp-16" class="nav-link" data-scroll-target="#qué-hace-ldp-x29-x30-sp-16">Qué hace <code>ldp x29, x30, [sp], #16</code></a></li>
   <li><a href="#sec-frame-variable-local" id="toc-sec-frame-variable-local" class="nav-link" data-scroll-target="#sec-frame-variable-local">Ejemplo de frame con variable local</a></li>
   <li><a href="#lectura-del-frame" id="toc-lectura-del-frame" class="nav-link" data-scroll-target="#lectura-del-frame">Lectura del frame</a></li>
+  <li><a href="#checklist-para-leer-un-frame" id="toc-checklist-para-leer-un-frame" class="nav-link" data-scroll-target="#checklist-para-leer-un-frame">Checklist para leer un frame</a></li>
   <li><a href="#orden-correcto-al-salir" id="toc-orden-correcto-al-salir" class="nav-link" data-scroll-target="#orden-correcto-al-salir">Orden correcto al salir</a></li>
   <li><a href="#sec-stack-frame-ejercicios" id="toc-sec-stack-frame-ejercicios" class="nav-link" data-scroll-target="#sec-stack-frame-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1505,6 +1506,45 @@ Figura&nbsp;1: Stack frame didáctico en AArch64 con frame pointer, link registe
 <p>En ejemplos simples usamos <code>[sp]</code> para la variable local. También se pueden usar offsets desde <code>x29</code>, pero no conviene mezclar demasiado al inicio. Primero hay que entender qué se guarda y cuándo se libera.</p>
 <p>La variable local existe solo mientras <code>funcion</code> está activa. Cuando <code>add sp, sp, #16</code> libera el espacio local, ese valor deja de pertenecer a la función. No se “borra” necesariamente de memoria; simplemente ya no forma parte de un frame válido.</p>
 </section>
+<section id="checklist-para-leer-un-frame" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-para-leer-un-frame">Checklist para leer un frame</h2>
+<p>Cuando revises un frame didáctico, no empieces por los offsets. Empieza por el orden:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Qué confirma</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿el prólogo guarda <code>x29</code> y <code>x30</code>?</td>
+<td>el retorno y el frame anterior quedan protegidos</td>
+</tr>
+<tr class="even">
+<td>¿<code>x29</code> copia el valor de <code>sp</code>?</td>
+<td>hay una base estable para leer el frame</td>
+</tr>
+<tr class="odd">
+<td>¿se reservan locales después del prólogo?</td>
+<td><code>sp</code> baja sin mover <code>x29</code></td>
+</tr>
+<tr class="even">
+<td>¿los locales se liberan antes del epílogo?</td>
+<td><code>ldp</code> leerá desde el lugar correcto</td>
+</tr>
+<tr class="odd">
+<td>¿el epílogo restaura antes de <code>ret</code>?</td>
+<td><code>ret</code> usará el <code>LR</code> recuperado</td>
+</tr>
+</tbody>
+</table>
+<p>Si una de esas respuestas falla, el problema no suele estar en <code>ret</code>; suele estar en una reserva, escritura o restauración anterior.</p>
+</section>
 <section id="orden-correcto-al-salir" class="level2">
 <h2 class="anchored" data-anchor-id="orden-correcto-al-salir">Orden correcto al salir</h2>
 <p>El orden importa:</p>
@@ -1539,6 +1579,15 @@ Figura&nbsp;1: Stack frame didáctico en AArch64 con frame pointer, link registe
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Un frame es orden. Guarda el frame anterior, guarda retorno, reserva locales y deshace todo en orden inverso antes de <code>ret</code>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 </section>
 <section id="recursos" class="level2">
 <h2 class="anchored" data-anchor-id="recursos">Recursos</h2>

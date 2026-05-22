@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#bit-byte-y-nibble" id="toc-bit-byte-y-nibble" class="nav-link active" data-scroll-target="#bit-byte-y-nibble">Bit, byte y nibble</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#bit-byte-y-nibble" id="toc-bit-byte-y-nibble" class="nav-link" data-scroll-target="#bit-byte-y-nibble">Bit, byte y nibble</a></li>
   <li><a href="#word-y-doubleword-en-aarch64" id="toc-word-y-doubleword-en-aarch64" class="nav-link" data-scroll-target="#word-y-doubleword-en-aarch64">Word y doubleword en AArch64</a></li>
   <li><a href="#decimal-binario-y-hexadecimal" id="toc-decimal-binario-y-hexadecimal" class="nav-link" data-scroll-target="#decimal-binario-y-hexadecimal">Decimal, binario y hexadecimal</a></li>
   <li><a href="#leer-hexadecimal-como-bits" id="toc-leer-hexadecimal-como-bits" class="nav-link" data-scroll-target="#leer-hexadecimal-como-bits">Leer hexadecimal como bits</a></li>
   <li><a href="#conversión-rápida-con-terminal" id="toc-conversión-rápida-con-terminal" class="nav-link" data-scroll-target="#conversión-rápida-con-terminal">Conversión rápida con terminal</a></li>
   <li><a href="#relación-con-registros" id="toc-relación-con-registros" class="nav-link" data-scroll-target="#relación-con-registros">Relación con registros</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#lectura-paso-a-paso" id="toc-lectura-paso-a-paso" class="nav-link" data-scroll-target="#lectura-paso-a-paso">Lectura paso a paso</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
@@ -1365,6 +1370,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Todo dato visible para un programa termina representado como bits. En esta lección solo construiremos el vocabulario mínimo: tamaños y bases numéricas. Ese vocabulario permite leer registros, memoria e instrucciones sin adivinar.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué son bit, byte, nibble, word y doubleword.</li>
+<li>Cómo se relacionan decimal, binario y hexadecimal.</li>
+<li>Cómo leer un dígito hexadecimal como 4 bits.</li>
+<li>Qué diferencia hay entre <code>Wn</code> (32 bits) y <code>Xn</code> (64 bits) en AArch64.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>No necesitas experiencia previa con assembly. Solo saber que las computadoras guardan todo como ceros y unos.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>La misma cantidad puede escribirse en tres bases distintas. El ensamblador y el depurador usan hexadecimal porque cada dígito corresponde a exactamente 4 bits, lo que hace fácil ver qué bits están encendidos.</p>
+<p>En AArch64, cada registro general tiene dos vistas: <code>Xn</code> de 64 bits y <code>Wn</code> de 32 bits. Escribir en <code>Wn</code> limpia los 32 bits altos de <code>Xn</code> con ceros. Esta regla es una forma de <strong>zero extension</strong> automática que el hardware aplica sin instrucción extra.</p>
+</section>
 <section id="bit-byte-y-nibble" class="level2">
 <h2 class="anchored" data-anchor-id="bit-byte-y-nibble">Bit, byte y nibble</h2>
 <p>Un bit puede valer <code>0</code> o <code>1</code>. Un byte agrupa 8 bits. Un nibble agrupa 4 bits y por eso coincide con un dígito hexadecimal.</p>
@@ -1584,13 +1607,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="lectura-paso-a-paso" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-paso-a-paso">Lectura paso a paso</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> w0<span class="op">,</span> <span class="op">#</span><span class="bn">0xFF</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="bn">0xFF</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Instrucción</th>
+<th>Qué hace</th>
+<th>Resultado visible</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mov w0, #0xFF</code></td>
+<td>Carga <code>0xFF</code> en vista 32 bits</td>
+<td><code>w0 = 0x000000FF</code></td>
+</tr>
+<tr class="even">
+<td><code>mov x1, #0xFF</code></td>
+<td>Carga <code>0xFF</code> en vista 64 bits</td>
+<td><code>x1 = 0x00000000000000FF</code></td>
+</tr>
+</tbody>
+</table>
+<p>Ambos guardan el mismo valor numérico <code>255</code>. La diferencia es cuántos bits ocupa la representación completa.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span><span class="bn">0xFFFFFFFFFFFFFFFF</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> w2<span class="op">,</span> <span class="op">#</span><span class="bn">0x42</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Instrucción</th>
+<th>Qué pasa con <code>x2</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mov x2, #0xFFFFFFFFFFFFFFFF</code></td>
+<td><code>x2 = 0xFFFFFFFFFFFFFFFF</code> (todos los bits encendidos)</td>
+</tr>
+<tr class="even">
+<td><code>mov w2, #0x42</code></td>
+<td><code>x2 = 0x0000000000000042</code> (escribir en <code>Wn</code> limpia los 32 bits altos)</td>
+</tr>
+</tbody>
+</table>
+<p>Esta segunda secuencia demuestra la regla de zero extension implícita: cualquier escritura en <code>Wn</code> pone a cero los bits 32-63 del registro <code>Xn</code> correspondiente.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Confundir dígito con byte</strong>: <code>0xFF</code> son 2 dígitos hexadecimales = 1 byte = 8 bits. <code>0xFFFFFFFF</code> son 8 dígitos = 4 bytes = 32 bits = un <code>word</code>.</li>
+<li><strong>Pensar que <code>Wn</code> y <code>Xn</code> son registros distintos</strong>: comparten el mismo hardware. <code>Wn</code> es la mitad baja de <code>Xn</code>.</li>
+<li><strong>Olvidar que escribir en <code>Wn</code> limpia los bits altos</strong>: si <code>X5</code> tenía <code>0xFFFFFFFFFFFFFFFF</code> y ejecutas <code>mov w5, #1</code>, el resultado es <code>x5 = 0x0000000000000001</code>, no <code>0xFFFFFFFF00000001</code>.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado antes de verificar con <code>printf</code> o GDB.</p>
 <ol type="1">
 <li>Escribe <code>15</code> en binario de 8 bits.</li>
 <li>Escribe <code>0b11111111</code> en hexadecimal.</li>
 <li>Explica cuántos bytes ocupa una doubleword.</li>
 <li>Explica qué relación hay entre <code>w3</code> y <code>x3</code>.</li>
+<li>Si <code>x7 = 0xDEADBEEFCAFEBABE</code> y ejecutas <code>mov w7, #0</code>, ¿cuál es el valor de <code>x7</code>?</li>
+<li>Convierte <code>0x3F</code> a binario sin usar calculadora.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1603,6 +1694,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo distinguir <code>word</code> de <code>doubleword</code> en AArch64.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html">Enteros, signo y rangos</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture — A64 Instruction Set Architecture Guide</em>: registros <code>Xn</code>/<code>Wn</code>, tamaños de operandos y zero extension implícita al escribir en <code>Wn</code>. <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): descripción de registros generales AArch64. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: representación de datos y conversión entre bases.</li>
+</ul>
 
 
 </section>

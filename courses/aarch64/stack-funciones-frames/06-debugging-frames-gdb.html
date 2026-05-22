@@ -1321,8 +1321,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#programa-para-observar-frames" id="toc-programa-para-observar-frames" class="nav-link active" data-scroll-target="#programa-para-observar-frames">Programa para observar frames</a></li>
   <li><a href="#qué-mirar" id="toc-qué-mirar" class="nav-link" data-scroll-target="#qué-mirar">Qué mirar</a></li>
   <li><a href="#backtrace-básico" id="toc-backtrace-básico" class="nav-link" data-scroll-target="#backtrace-básico">Backtrace básico</a></li>
+  <li><a href="#sesión-mínima-de-lectura" id="toc-sesión-mínima-de-lectura" class="nav-link" data-scroll-target="#sesión-mínima-de-lectura">Sesión mínima de lectura</a></li>
   <li><a href="#por-qué-x29-ayuda" id="toc-por-qué-x29-ayuda" class="nav-link" data-scroll-target="#por-qué-x29-ayuda">Por qué <code>x29</code> ayuda</a></li>
   <li><a href="#stack-corruption-conceptual" id="toc-stack-corruption-conceptual" class="nav-link" data-scroll-target="#stack-corruption-conceptual">Stack corruption conceptual</a></li>
+  <li><a href="#cómo-diagnosticar-un-retorno-roto" id="toc-cómo-diagnosticar-un-retorno-roto" class="nav-link" data-scroll-target="#cómo-diagnosticar-un-retorno-roto">Cómo diagnosticar un retorno roto</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1405,6 +1407,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="cf">continue</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers sp x29 x30</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La opción <code>-g</code> del assembler agrega información de depuración básica. Aun así, en estos ejemplos lo más importante no es depender de nombres bonitos, sino relacionar instrucciones, registros y memoria.</p>
 </section>
 <section id="qué-mirar" class="level2">
 <h2 class="anchored" data-anchor-id="qué-mirar">Qué mirar</h2>
@@ -1429,10 +1432,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>backtrace o cadena de llamadas</td>
 </tr>
 <tr class="odd">
+<td><code>frame 0</code></td>
+<td>selecciona el frame actual</td>
+</tr>
+<tr class="even">
+<td><code>frame 1</code></td>
+<td>sube al caller inmediato</td>
+</tr>
+<tr class="odd">
 <td><code>x/4gx $sp</code></td>
 <td>palabras de 8 bytes desde el stack actual</td>
 </tr>
 <tr class="even">
+<td><code>x/4gx $x29</code></td>
+<td>palabras desde la base del frame actual</td>
+</tr>
+<tr class="odd">
 <td><code>disassemble funcion_b</code></td>
 <td>instrucciones de la función</td>
 </tr>
@@ -1453,11 +1468,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No significa que el programa esté ejecutando las tres funciones a la vez en el sentido de instrucciones simultáneas. Significa que hay llamadas activas en la cadena.</p>
 </section>
+<section id="sesión-mínima-de-lectura" class="level2">
+<h2 class="anchored" data-anchor-id="sesión-mínima-de-lectura">Sesión mínima de lectura</h2>
+<p>Una lectura ordenada puede seguir estos pasos:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="cf">break</span> <span class="ex">funcion_b</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="cf">continue</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers sp x29 x30</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/4gx</span> <span class="va">$x29</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">frame</span> 1</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers sp x29 x30</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Primero miras el frame actual. Luego confirmas la cadena de llamadas con <code>bt</code>. Después cambias al caller con <code>frame 1</code> y vuelves a mirar registros. La meta es ver que cada nivel tiene su propio contexto, no encontrar una dirección exacta que deba repetirse en todas las máquinas.</p>
+</section>
 <section id="por-qué-x29-ayuda" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-x29-ayuda">Por qué <code>x29</code> ayuda</h2>
 <p>Cuando usamos:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>dejamos una cadena de frames más fácil de seguir. <code>x29</code> apunta al frame actual y el frame guarda el <code>x29</code> anterior.</p>
 <p>En código optimizado, un compilador puede omitir frame pointer. Esta unidad no entra en esa optimización. Aquí lo usamos porque enseña y ayuda a depurar.</p>
 </section>
@@ -1491,8 +1518,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Ejemplo peligroso:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">str</span> x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">8</span><span class="op">]</span>    <span class="op">//</span> puede pisar x30 guardado <span class="kw">si</span> estás en el frame mínimo</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">str</span> x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">8</span><span class="op">]</span>    <span class="op">//</span> puede pisar x30 guardado <span class="kw">si</span> estás en el frame mínimo</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No lo uses como patrón. Sirve para entender por qué offsets importan.</p>
+</section>
+<section id="cómo-diagnosticar-un-retorno-roto" class="level2">
+<h2 class="anchored" data-anchor-id="cómo-diagnosticar-un-retorno-roto">Cómo diagnosticar un retorno roto</h2>
+<p>Si el programa falla al ejecutar <code>ret</code>, revisa en este orden:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Revisión</th>
+<th>Qué busca</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>disassemble</code></td>
+<td>confirmar prólogo y epílogo reales</td>
+</tr>
+<tr class="even">
+<td><code>info registers sp x29 x30</code></td>
+<td>ver si <code>sp</code>, <code>fp</code> o <code>lr</code> parecen incoherentes</td>
+</tr>
+<tr class="odd">
+<td><code>x/4gx $sp</code></td>
+<td>mirar qué cargará el epílogo</td>
+</tr>
+<tr class="even">
+<td><code>bt</code></td>
+<td>comprobar si GDB puede reconstruir la cadena</td>
+</tr>
+<tr class="odd">
+<td>comparar reservas/liberaciones</td>
+<td>detectar un <code>sub sp</code> sin su <code>add sp</code></td>
+</tr>
+</tbody>
+</table>
+<p>Cuando <code>bt</code> aparece incompleto o extraño, no siempre significa que GDB falló. A veces significa que el programa dañó la información que GDB intenta seguir.</p>
 <div class="callout callout-style-simple callout-warning callout-titled" title="Error común">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1515,11 +1581,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué comando muestra <code>sp</code>, <code>x29</code> y <code>x30</code>?</li>
 <li>¿Qué responde <code>bt</code>?</li>
 <li>¿Por qué sobrescribir <code>[sp, #8]</code> puede ser peligroso en un frame mínimo?</li>
+<li>¿Qué comando usarías para cambiar del frame actual al caller?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>GDB convierte stack frames en evidencia visible. Si sabes qué hacen <code>SP</code>, <code>FP</code>, <code>LR</code>, prólogo y epílogo, un backtrace deja de ser una lista misteriosa y se vuelve una lectura del camino que siguió el programa.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

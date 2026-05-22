@@ -1318,14 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#registros-x0-a-x30" id="toc-registros-x0-a-x30" class="nav-link active" data-scroll-target="#registros-x0-a-x30">Registros <code>X0</code> a <code>X30</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#registros-x0-a-x30" id="toc-registros-x0-a-x30" class="nav-link" data-scroll-target="#registros-x0-a-x30">Registros <code>X0</code> a <code>X30</code></a></li>
   <li><a href="#registros-w0-a-w30" id="toc-registros-w0-a-w30" class="nav-link" data-scroll-target="#registros-w0-a-w30">Registros <code>W0</code> a <code>W30</code></a></li>
   <li><a href="#escribir-en-wn" id="toc-escribir-en-wn" class="nav-link" data-scroll-target="#escribir-en-wn">Escribir en <code>Wn</code></a></li>
   <li><a href="#usar-32-o-64-bits" id="toc-usar-32-o-64-bits" class="nav-link" data-scroll-target="#usar-32-o-64-bits">Usar 32 o 64 bits</a></li>
+  <li><a href="#roles-iniciales-antes-de-abi" id="toc-roles-iniciales-antes-de-abi" class="nav-link" data-scroll-target="#roles-iniciales-antes-de-abi">Roles iniciales antes de ABI</a></li>
   <li><a href="#qué-registros-puede-tocar-un-programa" id="toc-qué-registros-puede-tocar-un-programa" class="nav-link" data-scroll-target="#qué-registros-puede-tocar-un-programa">Qué registros puede tocar un programa</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1364,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un programa AArch64 trabaja principalmente moviendo valores entre registros y memoria. Esta lección presenta los registros generales: el lugar donde vivirán enteros, direcciones, resultados temporales y argumentos en unidades futuras.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a distinguir registros <code>Xn</code> de sus vistas <code>Wn</code>. También verás por qué escribir en <code>Wn</code> limpia la mitad alta del registro <code>Xn</code> correspondiente.</p>
+<p>Esta regla es importante para memoria, syscalls, aritmética, ABI y debugging.</p>
+</section>
 <section id="registros-x0-a-x30" class="level2">
 <h2 class="anchored" data-anchor-id="registros-x0-a-x30">Registros <code>X0</code> a <code>X30</code></h2>
 <p>AArch64 tiene 31 registros generales visibles de 64 bits. Se escriben como <code>x0</code>, <code>x1</code>, <code>x2</code> hasta <code>x30</code>.</p>
@@ -1494,6 +1502,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>En Linux AArch64, las direcciones de userland se manejan como valores de 64 bits, por eso se guardan en registros <code>Xn</code>.</p>
 </section>
+<section id="roles-iniciales-antes-de-abi" class="level2">
+<h2 class="anchored" data-anchor-id="roles-iniciales-antes-de-abi">Roles iniciales antes de ABI</h2>
+<p>En syscalls Linux, <code>x0</code>-<code>x5</code> suelen llevar argumentos, <code>x8</code> lleva número de syscall y <code>x0</code> recibe retorno. En llamadas a funciones C, AAPCS64 dará otros roles específicos. No mezclaremos esas reglas todavía.</p>
+<p>Por ahora, piensa:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registro</span> = caja de bits</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">instrucción</span> + contexto = significado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 <section id="qué-registros-puede-tocar-un-programa" class="level2">
 <h2 class="anchored" data-anchor-id="qué-registros-puede-tocar-un-programa">Qué registros puede tocar un programa</h2>
 <p>Como mapa inicial, un programa puede usar registros generales para cálculos. Más adelante la ABI dirá cuáles debe preservar al llamar funciones y cuáles se usan para argumentos o retornos.</p>
@@ -1511,21 +1526,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="callout callout-style-simple callout-warning callout-titled" title="No dupliques mentalmente registros">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>No dupliques mentalmente registros
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>No pienses que hay un <code>x0</code> separado y un <code>w0</code> separado. Es el mismo registro visto con tamaños distintos.</p>
-</div>
-</div>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que <code>x0</code> y <code>w0</code> son registros separados</td>
+<td>son dos vistas del mismo registro</td>
+</tr>
+<tr class="even">
+<td>Guardar dirección en <code>w0</code></td>
+<td>usa <code>x0</code> para direcciones</td>
+</tr>
+<tr class="odd">
+<td>Escribir en <code>w0</code> esperando conservar bits altos</td>
+<td>escritura en <code>Wn</code> limpia bits altos</td>
+</tr>
+<tr class="even">
+<td>Leer un registro sin contexto</td>
+<td>pregunta si es valor, dirección, argumento o retorno</td>
+</tr>
+<tr class="odd">
+<td>Creer que todos los <code>xN</code> son libres siempre</td>
+<td>ABI dará reglas futuras</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1534,6 +1570,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica qué pasa con <code>x5</code> después de escribir en <code>w5</code>.</li>
 <li>Indica si una dirección debería guardarse en <code>w0</code> o <code>x0</code>.</li>
 <li>Explica por qué <code>mov w0, #1</code> limpia los bits altos de <code>x0</code>.</li>
+<li>Explica por qué <code>x0</code> puede ser argumento antes de <code>svc #0</code> y retorno después.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1544,8 +1581,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo dibujar <code>Wn</code> como los 32 bits bajos de <code>Xn</code>.</label></li>
 <li><label><input type="checkbox">Puedo explicar zero-extension al escribir en <code>Wn</code>.</label></li>
 <li><label><input type="checkbox">Sé que direcciones se manejan en registros <code>Xn</code>.</label></li>
+<li><label><input type="checkbox">Puedo interpretar un registro según contexto.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Los registros generales son el espacio de trabajo inmediato del programa. El mismo registro puede contener entero, dirección, argumento o retorno; el tamaño <code>Xn/Wn</code> y la instrucción actual determinan cómo leerlo.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/modelo-aarch64/02-registros-especiales.html">Registros especiales</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</a>.</li>
+</ul>
 
 
 </section>

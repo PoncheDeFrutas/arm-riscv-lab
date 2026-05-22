@@ -1318,15 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-de-secciones" id="toc-mapa-de-secciones" class="nav-link active" data-scroll-target="#mapa-de-secciones">Mapa de secciones</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-de-secciones" id="toc-mapa-de-secciones" class="nav-link" data-scroll-target="#mapa-de-secciones">Mapa de secciones</a></li>
   <li><a href="#text" id="toc-text" class="nav-link" data-scroll-target="#text"><code>.text</code></a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><code>.data</code></a></li>
   <li><a href="#rodata" id="toc-rodata" class="nav-link" data-scroll-target="#rodata"><code>.rodata</code></a></li>
   <li><a href="#bss" id="toc-bss" class="nav-link" data-scroll-target="#bss"><code>.bss</code></a></li>
+  <li><a href="#relación-con-elf" id="toc-relación-con-elf" class="nav-link" data-scroll-target="#relación-con-elf">Relación con ELF</a></li>
   <li><a href="#ejemplo-integrado" id="toc-ejemplo-integrado" class="nav-link" data-scroll-target="#ejemplo-integrado">Ejemplo integrado</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1365,34 +1368,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Las secciones no son decoración. Le dicen al assembler dónde colocar código, datos inicializados, datos de solo lectura o espacio reservado.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a usar secciones para separar instrucciones y datos. Esta separación ayuda al assembler, al linker, al loader y también a quien lee el programa.</p>
+<p>En esta lección no estudiaremos ELF a fondo. Solo veremos la idea práctica: un programa no es una bolsa de bytes sin orden. Código, constantes, variables y buffers tienen lugares distintos.</p>
+</section>
 <section id="mapa-de-secciones" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-de-secciones">Mapa de secciones</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Sección</th>
 <th>Uso inicial</th>
+<th>Ejemplo</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>.text</code></td>
-<td>Instrucciones</td>
+<td>instrucciones</td>
+<td><code>mov</code>, <code>ldr</code>, <code>svc</code></td>
 </tr>
 <tr class="even">
 <td><code>.data</code></td>
-<td>Datos inicializados modificables</td>
+<td>datos inicializados modificables</td>
+<td>contador con valor inicial</td>
 </tr>
 <tr class="odd">
 <td><code>.rodata</code></td>
-<td>Datos inicializados de solo lectura</td>
+<td>datos inicializados de solo lectura</td>
+<td>mensajes constantes</td>
 </tr>
 <tr class="even">
 <td><code>.bss</code></td>
-<td>Espacio reservado sin bytes explícitos en el archivo</td>
+<td>espacio reservado sin bytes explícitos</td>
+<td>buffers</td>
 </tr>
 </tbody>
 </table>
+<p>Las secciones expresan intención. Si algo no cambia, <code>.rodata</code> comunica mejor que <code>.data</code>. Si solo necesitas reservar espacio, <code>.bss</code> comunica mejor que escribir muchos ceros a mano.</p>
 </section>
 <section id="text" class="level2">
 <h2 class="anchored" data-anchor-id="text"><code>.text</code></h2>
@@ -1402,7 +1421,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Las líneas <code>mov</code> y <code>svc</code> son instrucciones A64. La línea <code>.text</code> es directiva.</p>
+<p>Las líneas <code>mov</code> y <code>svc</code> son instrucciones A64. La línea <code>.text</code> es directiva. Después de <code>.text</code>, las etiquetas suelen nombrar direcciones de código.</p>
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data"><code>.data</code></h2>
@@ -1410,7 +1429,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contador:</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>contador</code> nombra una dirección. <code>.word 10</code> coloca 4 bytes con ese valor.</p>
+<p><code>contador</code> nombra una dirección. <code>.word 10</code> coloca 4 bytes con ese valor. Si una práctica va a cambiar el valor en memoria, <code>.data</code> es una opción razonable.</p>
 </section>
 <section id="rodata" class="level2">
 <h2 class="anchored" data-anchor-id="rodata"><code>.rodata</code></h2>
@@ -1418,7 +1437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"Hola AArch64\n"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Úsala para mensajes o tablas constantes que no necesitas modificar.</p>
+<p>Úsala para mensajes o tablas constantes que no necesitas modificar. En un sistema moderno, el loader puede mapear estos datos con permisos distintos a una sección modificable.</p>
 </section>
 <section id="bss" class="level2">
 <h2 class="anchored" data-anchor-id="bss"><code>.bss</code></h2>
@@ -1441,28 +1460,103 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="relación-con-elf" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-elf">Relación con ELF</h2>
+<p>Cuando enlazas, las secciones del objeto ayudan a construir el ejecutable ELF. Más adelante estudiarás secciones, segmentos y permisos con más detalle. Por ahora, piensa así:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">.text</span>   <span class="at">-</span><span class="op">&gt;</span> código</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.rodata</span> <span class="at">-</span><span class="op">&gt;</span> constantes</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">.data</span>   <span class="at">-</span><span class="op">&gt;</span> datos inicializados modificables</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">.bss</span>    <span class="at">-</span><span class="op">&gt;</span> espacio reservado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El sistema operativo no necesita tratar igual al código y a un buffer. Separar secciones permite expresar esas diferencias desde el archivo fuente.</p>
+</section>
 <section id="ejemplo-integrado" class="level2">
 <h2 class="anchored" data-anchor-id="ejemplo-integrado">Ejemplo integrado</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">contador:</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"Hola AArch64\n"</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>.bss</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">contador:</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"Hola AArch64\n"</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>.bss</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura del ejemplo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Elemento</th>
+<th>Sección</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>_start</code></td>
+<td><code>.text</code></td>
+<td>marca código ejecutable</td>
+</tr>
+<tr class="even">
+<td><code>contador</code></td>
+<td><code>.data</code></td>
+<td>dato inicializado que podría cambiar</td>
+</tr>
+<tr class="odd">
+<td><code>mensaje</code></td>
+<td><code>.rodata</code></td>
+<td>texto constante</td>
+</tr>
+<tr class="even">
+<td><code>buffer</code></td>
+<td><code>.bss</code></td>
+<td>espacio reservado</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Por qué importa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Poner instrucciones en <code>.data</code></td>
+<td>confunde código con datos</td>
+</tr>
+<tr class="even">
+<td>Usar <code>.data</code> para mensajes constantes</td>
+<td>pierde intención de solo lectura</td>
+</tr>
+<tr class="odd">
+<td>Reservar buffers con muchos <code>.byte 0</code></td>
+<td><code>.bss</code> expresa mejor espacio reservado</td>
+</tr>
+<tr class="even">
+<td>Creer que <code>.bss</code> ocupa lo mismo en archivo</td>
+<td>reserva memoria sin escribir todos los bytes</td>
+</tr>
+<tr class="odd">
+<td>Olvidar cambiar de sección</td>
+<td>etiquetas posteriores quedan en sección equivocada</td>
+</tr>
+</tbody>
+</table>
 <div class="callout callout-style-simple callout-warning callout-titled" title="No uses .data para todo">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1484,6 +1578,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Indica sección correcta para mensaje constante.</li>
 <li>Indica sección correcta para buffer reservado.</li>
 <li>Explica qué diferencia hay entre <code>.data</code> y <code>.rodata</code>.</li>
+<li>Explica por qué <code>.bss</code> es útil para buffers.</li>
+<li>Clasifica <code>_start</code>, <code>mensaje</code>, <code>contador</code> y <code>buffer</code> en el ejemplo integrado.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1494,8 +1590,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar <code>.rodata</code>.</label></li>
 <li><label><input type="checkbox">Puedo explicar <code>.bss</code>.</label></li>
 <li><label><input type="checkbox">Puedo ubicar etiquetas de código y datos en secciones distintas.</label></li>
+<li><label><input type="checkbox">Puedo explicar relación básica entre secciones y ELF.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Las secciones ordenan el programa antes de que exista el ejecutable final. Si eliges bien la sección, el archivo fuente comunica mejor qué es código, qué es dato constante, qué puede cambiar y qué solo reserva espacio.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/gnu-assembly/03-directivas-basicas.html">Directivas básicas</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/Pseudo-Ops.html">Assembler Directives</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">ELF for the Arm 64-bit Architecture</a>.</li>
+<li>System V ABI, <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html">ELF gABI</a>.</li>
+</ul>
 
 
 </section>

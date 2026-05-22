@@ -1321,11 +1321,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#flujo-de-dos-terminales" id="toc-flujo-de-dos-terminales" class="nav-link" data-scroll-target="#flujo-de-dos-terminales">Flujo de dos terminales</a></li>
   <li><a href="#quién-hace-qué" id="toc-quién-hace-qué" class="nav-link" data-scroll-target="#quién-hace-qué">Quién hace qué</a></li>
   <li><a href="#por-qué-no-empezar-con-run" id="toc-por-qué-no-empezar-con-run" class="nav-link" data-scroll-target="#por-qué-no-empezar-con-run">Por qué no empezar con run</a></li>
   <li><a href="#con-libc" id="toc-con-libc" class="nav-link" data-scroll-target="#con-libc">Con libc</a></li>
+  <li><a href="#diagnóstico-de-conexión" id="toc-diagnóstico-de-conexión" class="nav-link" data-scroll-target="#diagnóstico-de-conexión">Diagnóstico de conexión</a></li>
   <li><a href="#diagrama" id="toc-diagrama" class="nav-link" data-scroll-target="#diagrama">Diagrama</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1367,6 +1369,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Si tu host no es ARM64, QEMU ejecuta el binario AArch64. Para depurar, QEMU puede esperar una conexión de GDB. Esa separación explica por qué usamos dos terminales.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a separar tres roles: QEMU ejecuta, GDB controla y el puerto conecta ambos. Esta distinción evita confundir una sesión local con una sesión remota.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>Un binario AArch64 no puede ejecutarse directamente en un host <code>x86_64</code> sin emulación o soporte del sistema. <code>qemu-aarch64</code> ejecuta el programa. Con <code>-g</code>, QEMU abre un puerto y se queda esperando a GDB antes de avanzar.</p>
@@ -1434,6 +1440,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Con debugging remoto:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 <span class="at">-L</span> /usr/aarch64-linux-gnu <span class="at">-g</span> 1234 ./hello_dyn</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si faltan librerías, el problema no es GDB: el loader dinámico no puede resolver dependencias del binario AArch64.</p>
+</section>
+<section id="diagnóstico-de-conexión" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-conexión">Diagnóstico de conexión</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Síntoma</th>
+<th>Revisión</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>QEMU parece detenido</td>
+<td>con <code>-g</code>, está esperando a GDB</td>
+</tr>
+<tr class="even">
+<td>GDB dice conexión rechazada</td>
+<td>revisar puerto y que QEMU siga corriendo</td>
+</tr>
+<tr class="odd">
+<td>breakpoint por nombre falla</td>
+<td>revisar símbolos o usar dirección</td>
+</tr>
+<tr class="even">
+<td>programa dinámico no arranca</td>
+<td>revisar <code>-L</code> y sysroot AArch64</td>
+</tr>
+<tr class="odd">
+<td><code>run</code> no hace lo esperado</td>
+<td>en remoto usar <code>target remote</code> y <code>continue</code></td>
+</tr>
+</tbody>
+</table>
+<p>Si cambias de puerto, cámbialo en ambos lados. <code>qemu-aarch64 -g 2345</code> requiere <code>target remote :2345</code>.</p>
 </section>
 <section id="diagrama" class="level2">
 <h2 class="anchored" data-anchor-id="diagrama">Diagrama</h2>
@@ -1508,6 +1552,14 @@ Figura&nbsp;1: GDB se conecta a QEMU; QEMU ejecuta el binario AArch64.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/06-strace-syscalls.html">strace y syscalls</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>GDB manual, <em>Remote Debugging</em>: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Debugging.html" class="uri">https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Debugging.html</a></li>
+</ul>
 
 
 </section>

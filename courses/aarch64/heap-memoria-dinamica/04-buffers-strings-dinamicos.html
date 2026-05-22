@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ejemplo-agregar-carácter-y-terminador" id="toc-ejemplo-agregar-carácter-y-terminador" class="nav-link" data-scroll-target="#ejemplo-agregar-carácter-y-terminador">Ejemplo: agregar carácter y terminador</a></li>
   <li><a href="#crecimiento-conceptual" id="toc-crecimiento-conceptual" class="nav-link" data-scroll-target="#crecimiento-conceptual">Crecimiento conceptual</a></li>
   <li><a href="#copiar-al-crecer" id="toc-copiar-al-crecer" class="nav-link" data-scroll-target="#copiar-al-crecer">Copiar al crecer</a></li>
+  <li><a href="#checklist-antes-de-escribir" id="toc-checklist-antes-de-escribir" class="nav-link" data-scroll-target="#checklist-antes-de-escribir">Checklist antes de escribir</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1534,6 +1535,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">capacidad</span> = 16</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">copiar</span>    = 3 bytes usados</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Copiar toda la capacidad puede mover bytes sin significado. A veces se hace por simplicidad o rendimiento, pero conceptualmente los datos válidos son los bytes usados.</p>
+</section>
+<section id="checklist-antes-de-escribir" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-antes-de-escribir">Checklist antes de escribir</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿tengo puntero base?</td>
+<td>sin dirección no hay bloque</td>
+</tr>
+<tr class="even">
+<td>¿conozco capacidad?</td>
+<td>necesito límite superior</td>
+</tr>
+<tr class="odd">
+<td>¿conozco bytes usados?</td>
+<td>necesito índice de escritura</td>
+</tr>
+<tr class="even">
+<td>¿hay espacio para dato nuevo?</td>
+<td>evita overflow</td>
+</tr>
+<tr class="odd">
+<td>¿hay espacio para terminador cero si aplica?</td>
+<td>evita string mal terminado</td>
+</tr>
+<tr class="even">
+<td>¿actualicé <code>usados</code> después de escribir?</td>
+<td>mantiene estado coherente</td>
+</tr>
+</tbody>
+</table>
+<p>Buffers y strings fallan por errores de uno. Si <code>capacidad = 8</code>, índice <code>8</code> ya está fuera del bloque.</p>
 <div class="callout callout-style-simple callout-warning callout-titled" title="Error común">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1556,11 +1599,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué se revisa espacio antes de <code>strb</code>?</li>
 <li>¿Por qué un string terminado en cero necesita un byte extra?</li>
 <li>¿Qué pasos requiere crecer un buffer?</li>
+<li>Al crecer, ¿por qué normalmente copias bytes usados y no toda la capacidad?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Buffers dinámicos no se manejan con puntero solo. Necesitan tamaño reservado, tamaño usado y reglas claras para crecer sin pisar memoria.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>realloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/realloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/realloc.3.html</a></li>
+<li>Linux man-pages, <code>write(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/write.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/write.2.html</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+</ul>
 
 
 </section>

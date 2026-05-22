@@ -1321,12 +1321,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#lectura-básica" id="toc-lectura-básica" class="nav-link" data-scroll-target="#lectura-básica">Lectura básica</a></li>
   <li><a href="#ver-errores" id="toc-ver-errores" class="nav-link" data-scroll-target="#ver-errores">Ver errores</a></li>
+  <li><a href="#retorno-parcial-no-siempre-es-error" id="toc-retorno-parcial-no-siempre-es-error" class="nav-link" data-scroll-target="#retorno-parcial-no-siempre-es-error">Retorno parcial no siempre es error</a></li>
   <li><a href="#filtros-útiles" id="toc-filtros-útiles" class="nav-link" data-scroll-target="#filtros-útiles">Filtros útiles</a></li>
   <li><a href="#strace-con-qemu" id="toc-strace-con-qemu" class="nav-link" data-scroll-target="#strace-con-qemu">strace con QEMU</a></li>
   <li><a href="#syscalls-a-verificar" id="toc-syscalls-a-verificar" class="nav-link" data-scroll-target="#syscalls-a-verificar">Syscalls a verificar</a></li>
+  <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1367,6 +1370,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>GDB muestra estado interno. <code>strace</code> muestra conversación con el kernel. Si tu programa abre, lee, escribe, mapea o falla por permisos, <code>strace</code> ayuda a ver el contrato real con Linux.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer syscalls como evidencia externa del programa. GDB muestra registros y memoria; <code>strace</code> confirma qué llamada llegó al kernel, con qué argumentos y qué retorno produjo.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>En assembly puedes preparar registros para una syscall, ejecutar <code>svc #0</code> y aun así equivocarte en número, puntero, tamaño, flags o manejo de error. <code>strace</code> permite verificar qué syscall llegó al kernel y qué respondió.</p>
@@ -1419,20 +1426,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>La syscall llegó al kernel, pero falló. <code>-1 ENOENT</code> indica error. En assembly debes revisar el retorno y no tratarlo como file descriptor válido.</p>
 <p><code>strace</code> no arregla el programa. Te dice si tu explicación coincide con lo que Linux recibió.</p>
 </section>
+<section id="retorno-parcial-no-siempre-es-error" class="level2">
+<h2 class="anchored" data-anchor-id="retorno-parcial-no-siempre-es-error">Retorno parcial no siempre es error</h2>
+<p>En syscalls de E/S, el valor después de <code>=</code> es el resultado real, no una copia del tamaño solicitado:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span><span class="er">(</span><span class="ex">3,</span> <span class="st">"abc"</span>, 16<span class="kw">)</span> <span class="ex">=</span> 3</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span><span class="er">(</span><span class="ex">1,</span> <span class="st">"Hola\n"</span>, 5<span class="kw">)</span> <span class="ex">=</span> 5</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un <code>read</code> puede devolver menos bytes de los pedidos y seguir siendo válido. En assembly debes usar el retorno, no asumir que el kernel completó todo el tamaño.</p>
+</section>
 <section id="filtros-útiles" class="level2">
 <h2 class="anchored" data-anchor-id="filtros-útiles">Filtros útiles</h2>
 <p>Para programas de archivos:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=openat,read,write,close ./programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=openat,read,write,close ./programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para memoria virtual:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=mmap,munmap,mprotect ./programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=mmap,munmap,mprotect ./programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para un programa mínimo con <code>write</code> y <code>exit</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=write,exit ./debug</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=write,exit ./debug</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Usa filtros cuando la salida completa sea demasiado ruidosa. El objetivo es leer con intención, no llenar pantalla.</p>
 </section>
 <section id="strace-con-qemu" class="level2">
 <h2 class="anchored" data-anchor-id="strace-con-qemu">strace con QEMU</h2>
 <p>Si ejecutas:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace qemu-aarch64 ./programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace qemu-aarch64 ./programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>puedes estar trazando syscalls del proceso QEMU en el host, no una vista limpia del programa AArch64 como si fuera nativo. Según configuración del sistema y del entorno, la lectura puede mezclar capas.</p>
 <p>Modelo correcto:</p>
 <div class="cell" data-layout-align="default">
@@ -1502,6 +1516,16 @@ Figura&nbsp;1: Con QEMU, strace puede observar la capa del emulador y no solo el
 </tbody>
 </table>
 </section>
+<section id="método-de-lectura" class="level2">
+<h2 class="anchored" data-anchor-id="método-de-lectura">Método de lectura</h2>
+<ol type="1">
+<li>Filtra por el grupo de syscalls que estás estudiando.</li>
+<li>Lee argumentos de izquierda a derecha.</li>
+<li>Mira el valor después de <code>=</code>.</li>
+<li>Si aparece <code>-1 ERRNO</code>, conecta el error con la ruta de cleanup.</li>
+<li>Si usas QEMU, decide si estás observando el programa invitado o el emulador.</li>
+</ol>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1552,6 +1576,16 @@ Figura&nbsp;1: Con QEMU, strace puede observar la capa del emulador y no solo el
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/07-core-dumps.html">Core dumps</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>strace(1)</code>: <a href="https://man7.org/linux/man-pages/man1/strace.1.html" class="uri">https://man7.org/linux/man-pages/man1/strace.1.html</a></li>
+<li>Linux man-pages, <code>write(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/write.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/write.2.html</a></li>
+<li>Linux man-pages, <code>read(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/read.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/read.2.html</a></li>
+<li>Linux man-pages, <code>openat(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/openat.2.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+</ul>
 
 
 </section>

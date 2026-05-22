@@ -1323,6 +1323,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#registros-clave" id="toc-registros-clave" class="nav-link" data-scroll-target="#registros-clave">Registros clave</a></li>
   <li><a href="#vocabulario-mínimo" id="toc-vocabulario-mínimo" class="nav-link" data-scroll-target="#vocabulario-mínimo">Vocabulario mínimo</a></li>
   <li><a href="#forma-general-de-un-frame" id="toc-forma-general-de-un-frame" class="nav-link" data-scroll-target="#forma-general-de-un-frame">Forma general de un frame</a></li>
+  <li><a href="#convención-visual-de-la-unidad" id="toc-convención-visual-de-la-unidad" class="nav-link" data-scroll-target="#convención-visual-de-la-unidad">Convención visual de la unidad</a></li>
+  <li><a href="#cómo-leer-una-función-en-esta-unidad" id="toc-cómo-leer-una-función-en-esta-unidad" class="nav-link" data-scroll-target="#cómo-leer-una-función-en-esta-unidad">Cómo leer una función en esta unidad</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
@@ -1528,6 +1530,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">direcciones</span> bajas</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El stack crece hacia direcciones menores. Reservar espacio normalmente resta a <code>sp</code>; liberar espacio suma a <code>sp</code>.</p>
 </section>
+<section id="convención-visual-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="convención-visual-de-la-unidad">Convención visual de la unidad</h2>
+<p>Usaremos una convención fija para no mezclar ideas:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">direcciones</span> altas</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">datos</span> del caller</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x29</span> anterior        <span class="op">&lt;</span>- <span class="pp">[</span><span class="ss">x29</span><span class="pp">]</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x30</span> anterior / LR   <span class="op">&lt;</span>- [x29, <span class="co">#8]</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">locales</span>             <span class="op">&lt;</span>- espacio reservado por la función</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">direcciones</span> bajas</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>x29</code> da una referencia estable dentro del frame. <code>sp</code> marca el tope actual y puede moverse cuando reservas locales. <code>x30</code> no vive en el stack por sí solo: <code>bl</code> lo escribe en el registro y el prólogo decide guardarlo si la función lo necesita después.</p>
+</section>
+<section id="cómo-leer-una-función-en-esta-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="cómo-leer-una-función-en-esta-unidad">Cómo leer una función en esta unidad</h2>
+<p>Cuando encuentres una función, revisa en este orden:</p>
+<ol type="1">
+<li>¿Es hoja o no hoja?</li>
+<li>¿Ejecuta <code>bl</code> dentro del cuerpo?</li>
+<li>¿Guarda <code>x30</code> antes de perderlo?</li>
+<li>¿Mueve <code>sp</code> en múltiplos de 16 bytes?</li>
+<li>¿Deshace el stack en orden inverso antes de <code>ret</code>?</li>
+</ol>
+<p>Ese orden evita el error más común: mirar solo el <code>ret</code> final y olvidar que el valor de retorno pudo haberse sobrescrito mucho antes.</p>
+</section>
 <section id="lecciones-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="lecciones-de-esta-unidad">Lecciones de esta unidad</h2>
 <div class="resource-grid">
@@ -1644,6 +1669,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../courses/aarch64/stack-funciones-frames/03-stack-frames.html#sec-stack-frame-ejercicios" class="resource-action">Resolver preguntas</a></p>
 </section>
 </div>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

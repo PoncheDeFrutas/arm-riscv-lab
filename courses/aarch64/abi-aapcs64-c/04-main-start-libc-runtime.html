@@ -1318,12 +1318,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#start-en-programas-mínimos" id="toc-start-en-programas-mínimos" class="nav-link active" data-scroll-target="#start-en-programas-mínimos"><code>_start</code> en programas mínimos</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#start-en-programas-mínimos" id="toc-start-en-programas-mínimos" class="nav-link" data-scroll-target="#start-en-programas-mínimos"><code>_start</code> en programas mínimos</a></li>
   <li><a href="#main-con-runtime-de-c" id="toc-main-con-runtime-de-c" class="nav-link" data-scroll-target="#main-con-runtime-de-c"><code>main</code> con runtime de C</a></li>
+  <li><a href="#qué-hace-el-runtime-por-ti" id="toc-qué-hace-el-runtime-por-ti" class="nav-link" data-scroll-target="#qué-hace-el-runtime-por-ti">Qué hace el runtime por ti</a></li>
   <li><a href="#printf-no-es-syscall" id="toc-printf-no-es-syscall" class="nav-link" data-scroll-target="#printf-no-es-syscall"><code>printf</code> no es syscall</a></li>
   <li><a href="#scanf-solo-conceptual" id="toc-scanf-solo-conceptual" class="nav-link" data-scroll-target="#scanf-solo-conceptual"><code>scanf</code> solo conceptual</a></li>
   <li><a href="#errno-con-libc" id="toc-errno-con-libc" class="nav-link" data-scroll-target="#errno-con-libc"><code>errno</code> con libc</a></li>
   <li><a href="#cuándo-usar-ld-y-cuándo-usar-gcc" id="toc-cuándo-usar-ld-y-cuándo-usar-gcc" class="nav-link" data-scroll-target="#cuándo-usar-ld-y-cuándo-usar-gcc">Cuándo usar <code>ld</code> y cuándo usar <code>gcc</code></a></li>
+  <li><a href="#lectura-rápida-de-errores" id="toc-lectura-rápida-de-errores" class="nav-link" data-scroll-target="#lectura-rápida-de-errores">Lectura rápida de errores</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
@@ -1364,6 +1367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Hasta ahora muchos programas entraban por <code>_start</code> y usaban syscalls directas. Cuando usas C y <code>libc</code>, el programa tiene más capas: runtime, <code>main</code>, funciones de biblioteca y salida ordenada.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a separar dos mundos que se parecen en la terminal pero no en el arranque: programas mínimos con <code>_start</code> y programas enlazados con runtime de C. Esta diferencia explica por qué algunos ejemplos usan <code>ld</code> y otros deben usar <code>gcc</code>.</p>
+</section>
 <section id="start-en-programas-mínimos" class="level2">
 <h2 class="anchored" data-anchor-id="start-en-programas-mínimos"><code>_start</code> en programas mínimos</h2>
 <p>Cuando enlazas con <code>ld</code> directo, puedes escribir tu propia entrada:</p>
@@ -1388,6 +1395,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc main.c sumar.s <span class="at">-o</span> app</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>GCC no es solo “compilador C” en este flujo. También actúa como driver para compilar, enlazar con runtime y resolver <code>libc</code>.</p>
 </section>
+<section id="qué-hace-el-runtime-por-ti" class="level2">
+<h2 class="anchored" data-anchor-id="qué-hace-el-runtime-por-ti">Qué hace el runtime por ti</h2>
+<p>Para el curso basta con esta lista:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Trabajo</th>
+<th>Por qué importa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>preparar <code>argc</code>, <code>argv</code> y entorno</td>
+<td><code>main</code> recibe una interfaz C estable</td>
+</tr>
+<tr class="even">
+<td>inicializar partes de <code>libc</code></td>
+<td>funciones como <code>printf</code> tienen contexto</td>
+</tr>
+<tr class="odd">
+<td>llamar <code>main</code></td>
+<td>tu código empieza en una convención conocida</td>
+</tr>
+<tr class="even">
+<td>convertir retorno de <code>main</code> en salida del proceso</td>
+<td><code>return 0</code> termina ordenadamente</td>
+</tr>
+</tbody>
+</table>
+<p>Esto no significa que <code>main</code> sea el primer byte ejecutado. Significa que es la entrada que el runtime ofrece al programa C.</p>
+</section>
 <section id="printf-no-es-syscall" class="level2">
 <h2 class="anchored" data-anchor-id="printf-no-es-syscall"><code>printf</code> no es syscall</h2>
 <p><code>printf</code> es función de biblioteca. Recibe formato y argumentos, interpreta texto, puede usar buffering y eventualmente termina usando servicios del sistema.</p>
@@ -1403,6 +1445,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">add</span>  x0<span class="op">,</span> x0<span class="op">,</span> <span class="op">:</span>lo12<span class="op">:</span>fmt</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  x1<span class="op">,</span> <span class="op">#</span><span class="dv">42</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>bl printf</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>printf</code> sigue AAPCS64: <code>x0</code> lleva el puntero al formato y los argumentos siguientes van en los registros definidos por la ABI. La salida real puede terminar usando <code>write</code>, pero eso ocurre dentro de <code>libc</code>, no en tu llamada directa.</p>
 </section>
 <section id="scanf-solo-conceptual" class="level2">
 <h2 class="anchored" data-anchor-id="scanf-solo-conceptual"><code>scanf</code> solo conceptual</h2>
@@ -1450,17 +1493,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Regla práctica:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">si</span> aparece C o libc</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">usa</span> gcc para enlazar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>ld</code> directo es útil para ver el binario mínimo. <code>gcc</code> es la opción docente correcta cuando quieres que el runtime, las rutas de librería y <code>libc</code> se resuelvan de forma consistente.</p>
+</section>
+<section id="lectura-rápida-de-errores" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-rápida-de-errores">Lectura rápida de errores</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situación</th>
+<th>Causa probable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>undefined reference to printf</code></td>
+<td>se intentó enlazar sin <code>libc</code> o sin driver adecuado</td>
+</tr>
+<tr class="even">
+<td>el programa entra por <code>_start</code> pero usa <code>printf</code></td>
+<td>falta runtime de C o enlace con GCC</td>
+</tr>
+<tr class="odd">
+<td><code>errno</code> no cambia en syscall directa</td>
+<td>no se está usando wrapper de <code>libc</code></td>
+</tr>
+<tr class="even">
+<td><code>main</code> retorna basura</td>
+<td><code>x0</code> no quedó con código de salida claro</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Creer que <code>main</code> es siempre el símbolo inicial real.</li>
-<li>Usar <code>ld</code> directo para un programa con <code>printf</code>.</li>
-<li>Llamar <code>printf</code> como syscall.</li>
-<li>Esperar que <code>errno</code> exista en syscalls directas sin <code>libc</code>.</li>
-<li>Confundir stdout <code>1</code> con retorno de <code>printf</code>.</li>
-<li>Meter <code>scanf</code> demasiado pronto y confundir punteros de salida.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que <code>main</code> es siempre el símbolo inicial real</td>
+<td>distinguir entrada del runtime y entrada de tu programa</td>
+</tr>
+<tr class="even">
+<td>usar <code>ld</code> directo para un programa con <code>printf</code></td>
+<td>enlazar con <code>gcc</code></td>
+</tr>
+<tr class="odd">
+<td>llamar <code>printf</code> como syscall</td>
+<td>usar <code>bl printf</code> y ABI</td>
+</tr>
+<tr class="even">
+<td>esperar <code>errno</code> en syscalls directas</td>
+<td>entender que <code>errno</code> es mecanismo de <code>libc</code></td>
+</tr>
+<tr class="odd">
+<td>confundir stdout <code>1</code> con retorno de <code>printf</code></td>
+<td>stdout es descriptor; <code>printf</code> retorna cantidad/error</td>
+</tr>
+<tr class="even">
+<td>meter <code>scanf</code> demasiado pronto</td>
+<td>primero dominar punteros y formatos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1473,6 +1580,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo ubicar <code>errno</code> en el mundo <code>libc</code>.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/abi-aapcs64-c/05-assembly-desde-c.html">Assembly llamado desde C</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU linker manual</em>: <a href="https://sourceware.org/binutils/docs/ld/" class="uri">https://sourceware.org/binutils/docs/ld/</a></li>
+<li>GCC documentation: <a href="https://gcc.gnu.org/onlinedocs/" class="uri">https://gcc.gnu.org/onlinedocs/</a></li>
+<li>Linux man-pages, <code>errno(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/errno.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/errno.3.html</a></li>
+<li>Linux man-pages, <code>printf(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/printf.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/printf.3.html</a></li>
+</ul>
 
 
 </section>

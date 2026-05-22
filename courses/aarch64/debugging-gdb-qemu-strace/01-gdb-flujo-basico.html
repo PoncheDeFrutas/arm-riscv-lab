@@ -1321,7 +1321,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#programa-mínimo" id="toc-programa-mínimo" class="nav-link" data-scroll-target="#programa-mínimo">Programa mínimo</a></li>
   <li><a href="#preparar-binario" id="toc-preparar-binario" class="nav-link" data-scroll-target="#preparar-binario">Preparar binario</a></li>
   <li><a href="#flujo-remoto-con-qemu" id="toc-flujo-remoto-con-qemu" class="nav-link" data-scroll-target="#flujo-remoto-con-qemu">Flujo remoto con QEMU</a></li>
@@ -1330,6 +1331,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#leer-antes-de-avanzar" id="toc-leer-antes-de-avanzar" class="nav-link" data-scroll-target="#leer-antes-de-avanzar">Leer antes de avanzar</a></li>
   <li><a href="#stepi" id="toc-stepi" class="nav-link" data-scroll-target="#stepi">stepi</a></li>
   <li><a href="#nexti" id="toc-nexti" class="nav-link" data-scroll-target="#nexti">nexti</a></li>
+  <li><a href="#sesión-guiada-corta" id="toc-sesión-guiada-corta" class="nav-link" data-scroll-target="#sesión-guiada-corta">Sesión guiada corta</a></li>
+  <li><a href="#antes-y-después" id="toc-antes-y-después" class="nav-link" data-scroll-target="#antes-y-después">Antes y después</a></li>
   <li><a href="#flujo-mental-completo" id="toc-flujo-mental-completo" class="nav-link" data-scroll-target="#flujo-mental-completo">Flujo mental completo</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1371,6 +1374,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>GDB sirve para controlar el tiempo de ejecución. Puedes detener el programa en un punto, mirar su estado, avanzar una instrucción y comprobar qué cambió. Ese ciclo es la base de toda depuración.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a practicar el ciclo mínimo de GDB: detener, observar, predecir, avanzar y verificar. En assembly este ciclo es más útil que correr el programa completo, porque un solo registro equivocado puede explicar todo el fallo.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>Cuando un programa falla, imprimir valores no siempre basta. En assembly muchas veces el error ocurre entre dos instrucciones: un registro tiene un valor incorrecto, <code>sp</code> quedó desalineado, <code>x0</code> no contiene el argumento esperado o una syscall recibió una dirección inválida.</p>
@@ -1467,6 +1474,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>En programas mínimos sin funciones, ambos pueden parecer iguales. La diferencia se vuelve importante cuando aparece <code>bl funcion</code>.</p>
 </section>
+<section id="sesión-guiada-corta" class="level2">
+<h2 class="anchored" data-anchor-id="sesión-guiada-corta">Sesión guiada corta</h2>
+<p>Usa esta secuencia como rutina inicial:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">target</span> remote :1234</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="cf">break</span> <span class="ex">_start</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="cf">continue</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/i</span> <span class="va">$pc</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers x0 x1 x2 pc</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">stepi</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers x0 x1 x2 pc</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Antes de cada <code>stepi</code>, di qué debería cambiar. Si estás sobre <code>mov x0, #10</code>, esperas que cambie <code>x0</code>. Si estás sobre <code>add x2, x0, x1</code>, esperas que cambie <code>x2</code>. Esa predicción evita avanzar sin interpretar.</p>
+</section>
+<section id="antes-y-después" class="level2">
+<h2 class="anchored" data-anchor-id="antes-y-después">Antes y después</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Momento</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>antes de <code>stepi</code></td>
+<td>¿qué instrucción está en <code>$pc</code>?</td>
+</tr>
+<tr class="even">
+<td>antes de <code>stepi</code></td>
+<td>¿qué registros son entrada de esa instrucción?</td>
+</tr>
+<tr class="odd">
+<td>después de <code>stepi</code></td>
+<td>¿qué registro o memoria cambió?</td>
+</tr>
+<tr class="even">
+<td>después de <code>stepi</code></td>
+<td>¿<code>pc</code> avanzó al siguiente punto esperado?</td>
+</tr>
+</tbody>
+</table>
+<p>Si el cambio no coincide con tu predicción, el error está cerca. No sigas diez instrucciones más: revisa la instrucción actual, sus operandos y el estado previo.</p>
+</section>
 <section id="flujo-mental-completo" class="level2">
 <h2 class="anchored" data-anchor-id="flujo-mental-completo">Flujo mental completo</h2>
 <div class="cell" data-layout-align="default">
@@ -1543,6 +1592,14 @@ Figura&nbsp;1: Ciclo básico de una sesión de GDB.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/02-registros-instrucciones.html">Registros e instrucciones</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>GDB manual, <em>Continuing and Stepping</em>: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Continuing-and-Stepping.html" class="uri">https://sourceware.org/gdb/current/onlinedocs/gdb.html/Continuing-and-Stepping.html</a></li>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+</ul>
 
 
 </section>

@@ -1318,7 +1318,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link active" data-scroll-target="#programa-completo">Programa completo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link" data-scroll-target="#programa-completo">Programa completo</a></li>
   <li><a href="#construir-y-ejecutar" id="toc-construir-y-ejecutar" class="nav-link" data-scroll-target="#construir-y-ejecutar">Construir y ejecutar</a></li>
   <li><a href="#primera-lectura-secciones" id="toc-primera-lectura-secciones" class="nav-link" data-scroll-target="#primera-lectura-secciones">Primera lectura: secciones</a></li>
   <li><a href="#segunda-lectura-dirección-vs-contenido" id="toc-segunda-lectura-dirección-vs-contenido" class="nav-link" data-scroll-target="#segunda-lectura-dirección-vs-contenido">Segunda lectura: dirección vs contenido</a></li>
@@ -1326,7 +1327,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cuarta-lectura-guardar-resultado" id="toc-cuarta-lectura-guardar-resultado" class="nav-link" data-scroll-target="#cuarta-lectura-guardar-resultado">Cuarta lectura: guardar resultado</a></li>
   <li><a href="#quinta-lectura-syscall-write" id="toc-quinta-lectura-syscall-write" class="nav-link" data-scroll-target="#quinta-lectura-syscall-write">Quinta lectura: syscall <code>write</code></a></li>
   <li><a href="#mirar-bytes-del-binario" id="toc-mirar-bytes-del-binario" class="nav-link" data-scroll-target="#mirar-bytes-del-binario">Mirar bytes del binario</a></li>
+  <li><a href="#diagnóstico-de-lectura" id="toc-diagnóstico-de-lectura" class="nav-link" data-scroll-target="#diagnóstico-de-lectura">Diagnóstico de lectura</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#preguntas-de-cierre" id="toc-preguntas-de-cierre" class="nav-link" data-scroll-target="#preguntas-de-cierre">Preguntas de cierre</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1366,6 +1370,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta página reúne las piezas de la unidad. El objetivo es leer un archivo <code>.s</code> como lo leerás en prácticas futuras: primero secciones y símbolos, luego direcciones, luego cargas, stores y recorrido de memoria.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer un programa completo usando preguntas ordenadas. No basta con decir “este código usa memoria”: debes identificar qué símbolos existen, en qué sección están, qué registros contienen direcciones, qué instrucciones acceden a memoria y qué tamaño se lee o escribe.</p>
+</section>
 <section id="programa-completo" class="level2">
 <h2 class="anchored" data-anchor-id="programa-completo">Programa completo</h2>
 <p>Guarda este archivo como <code>memoria.s</code>.</p>
@@ -1488,7 +1496,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Esta parte viene de Unidad 05:</p>
+<p>Esta parte viene de syscalls:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1522,6 +1530,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> objdump <span class="at">-s</span> <span class="at">-j</span> .rodata memoria</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>objdump</code> muestra bytes por sección. Usa esto para comprobar que <code>.data</code> tiene datos iniciales y <code>.rodata</code> contiene el mensaje.</p>
 </section>
+<section id="diagnóstico-de-lectura" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-lectura">Diagnóstico de lectura</h2>
+<p>Cuando leas un programa similar, usa esta lista:</p>
+<ol type="1">
+<li>clasifica secciones;</li>
+<li>lista símbolos y qué dirección nombran;</li>
+<li>marca registros que contienen direcciones;</li>
+<li>marca instrucciones con corchetes;</li>
+<li>identifica tamaños de acceso;</li>
+<li>revisa si el puntero cambia;</li>
+<li>separa cálculo en registros de escritura a memoria;</li>
+<li>revisa syscalls al final.</li>
+</ol>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Perder de vista que <code>x2</code> cambia con post-index</td>
+<td>anota puntero antes/después</td>
+</tr>
+<tr class="even">
+<td>Pensar que <code>buffer</code> ya contiene la suma</td>
+<td>solo después de <code>str x3, [x5]</code></td>
+</tr>
+<tr class="odd">
+<td>Confundir <code>len</code> con dirección</td>
+<td><code>len</code> es valor calculado, no buffer</td>
+</tr>
+<tr class="even">
+<td>Creer que el programa imprime la suma</td>
+<td>imprime mensaje, no el resultado</td>
+</tr>
+<tr class="odd">
+<td>No distinguir <code>.data</code> de <code>.bss</code></td>
+<td><code>.data</code> tiene valores iniciales; <code>.bss</code> reserva</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="preguntas-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="preguntas-de-cierre">Preguntas de cierre</h2>
 <ul>
@@ -1531,11 +1590,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué instrucción avanza el puntero del array?</li>
 <li>¿Por qué <code>buffer</code> no necesita listar 16 bytes en el archivo?</li>
 <li>¿Qué parte imprime y qué parte solo modifica memoria?</li>
+<li>¿Qué valor se guarda en <code>buffer</code>?</li>
+</ul>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo clasificar secciones.</label></li>
+<li><label><input type="checkbox">Puedo distinguir dirección y contenido.</label></li>
+<li><label><input type="checkbox">Puedo leer <code>str x1, [x0]</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer post-index.</label></li>
+<li><label><input type="checkbox">Puedo seguir una suma de array.</label></li>
+<li><label><input type="checkbox">Puedo separar trabajo de memoria de syscall <code>write</code>.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Esta unidad prepara el terreno para arrays con loops, strings, stack frames y debugging. La base no cambia: identifica dirección, tamaño, contenido y modo de direccionamiento antes de interpretar un acceso a memoria.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/binutils/objdump.html">objdump</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+</ul>
 
 
 </section>

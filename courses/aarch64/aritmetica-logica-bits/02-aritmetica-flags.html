@@ -1325,6 +1325,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cmp-es-subs-sin-guardar-resultado" id="toc-cmp-es-subs-sin-guardar-resultado" class="nav-link" data-scroll-target="#cmp-es-subs-sin-guardar-resultado"><code>cmp</code> es <code>subs</code> sin guardar resultado</a></li>
   <li><a href="#cmn-es-adds-sin-guardar-resultado" id="toc-cmn-es-adds-sin-guardar-resultado" class="nav-link" data-scroll-target="#cmn-es-adds-sin-guardar-resultado"><code>cmn</code> es <code>adds</code> sin guardar resultado</a></li>
   <li><a href="#carry-unsigned-no-es-overflow-signed" id="toc-carry-unsigned-no-es-overflow-signed" class="nav-link" data-scroll-target="#carry-unsigned-no-es-overflow-signed">Carry unsigned no es overflow signed</a></li>
+  <li><a href="#flags-se-reemplazan" id="toc-flags-se-reemplazan" class="nav-link" data-scroll-target="#flags-se-reemplazan">Flags se reemplazan</a></li>
+  <li><a href="#checklist-de-flags" id="toc-checklist-de-flags" class="nav-link" data-scroll-target="#checklist-de-flags">Checklist de flags</a></li>
   <li><a href="#preparación-para-control-de-flujo" id="toc-preparación-para-control-de-flujo" class="nav-link" data-scroll-target="#preparación-para-control-de-flujo">Preparación para control de flujo</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1542,10 +1544,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="flags-se-reemplazan" class="level2">
+<h2 class="anchored" data-anchor-id="flags-se-reemplazan">Flags se reemplazan</h2>
+<p><code>NZCV</code> describe la última instrucción que actualizó flags. No guarda historial.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>subs x2<span class="op">,</span> x0<span class="op">,</span> x1    <span class="op">//</span> NZCV describe x0 <span class="op">-</span> x1</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span>  x3<span class="op">,</span> x4        <span class="op">//</span> NZCV ahora describe x3 <span class="op">-</span> x4</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si un branch debía depender del <code>subs</code>, debe aparecer antes de otro <code>cmp</code>, <code>cmn</code>, <code>adds</code>, <code>subs</code> o <code>tst</code> que reemplace los flags.</p>
+</section>
+<section id="checklist-de-flags" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-flags">Checklist de flags</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Lectura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿necesito resultado?</td>
+<td>usa <code>adds/subs</code> si también quieres flags</td>
+</tr>
+<tr class="even">
+<td>¿solo necesito comparar?</td>
+<td>usa <code>cmp</code> o <code>cmn</code></td>
+</tr>
+<tr class="odd">
+<td>¿la lectura es unsigned?</td>
+<td>mira <code>C</code> y condiciones unsigned</td>
+</tr>
+<tr class="even">
+<td>¿la lectura es signed?</td>
+<td>mira <code>N</code>/<code>V</code> y condiciones signed</td>
+</tr>
+<tr class="odd">
+<td>¿otra instrucción actualizó flags después?</td>
+<td>el branch verá los flags más recientes</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="preparación-para-control-de-flujo" class="level2">
 <h2 class="anchored" data-anchor-id="preparación-para-control-de-flujo">Preparación para control de flujo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> x1</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq iguales</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> x1</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq iguales</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La siguiente unidad estudiará <code>b.eq</code> y demás condiciones. Aquí solo debes entender que <code>cmp</code> prepara <code>NZCV</code> y el branch consulta esos flags.</p>
 </section>
 <section id="mini-ejercicios" class="level2">
@@ -1553,9 +1599,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>Lee:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  x1<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>subs x2<span class="op">,</span> x0<span class="op">,</span> x1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  x1<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>subs x2<span class="op">,</span> x0<span class="op">,</span> x1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Qué valor queda en <code>x2</code>?</li>
 <li>¿Qué pasa con <code>Z</code>?</li>
@@ -1563,7 +1609,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="2" type="1">
 <li>Lee:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> x1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> x1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Dónde se guarda el resultado de <code>x0 - x1</code>?</li>
 <li>¿Qué sí queda actualizado?</li>
@@ -1575,6 +1621,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>La pregunta no es solo “cuánto da”. También es “quiero flags o no”. Esa decisión separa <code>add/sub</code> de <code>adds/subs</code>, y convierte <code>cmp</code> en una herramienta central para la unidad de control de flujo.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

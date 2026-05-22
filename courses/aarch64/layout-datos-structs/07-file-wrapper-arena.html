@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#operación-arena_alloc" id="toc-operación-arena_alloc" class="nav-link" data-scroll-target="#operación-arena_alloc">Operación <code>arena_alloc</code></a></li>
   <li><a href="#alineación-dentro-de-arena" id="toc-alineación-dentro-de-arena" class="nav-link" data-scroll-target="#alineación-dentro-de-arena">Alineación dentro de arena</a></li>
   <li><a href="#por-qué-arena-ayuda" id="toc-por-qué-arena-ayuda" class="nav-link" data-scroll-target="#por-qué-arena-ayuda">Por qué arena ayuda</a></li>
+  <li><a href="#ownership-y-cleanup" id="toc-ownership-y-cleanup" class="nav-link" data-scroll-target="#ownership-y-cleanup">Ownership y cleanup</a></li>
   <li><a href="#reset-de-arena" id="toc-reset-de-arena" class="nav-link" data-scroll-target="#reset-de-arena">Reset de arena</a></li>
   <li><a href="#programa-completo-arena-simple" id="toc-programa-completo-arena-simple" class="nav-link" data-scroll-target="#programa-completo-arena-simple">Programa completo: Arena simple</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
@@ -1638,6 +1639,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ex">resetear</span> o liberar arena completa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No reemplaza <code>malloc</code>. Es patrón simple para entender ownership grupal.</p>
 </section>
+<section id="ownership-y-cleanup" class="level2">
+<h2 class="anchored" data-anchor-id="ownership-y-cleanup">Ownership y cleanup</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Objeto</th>
+<th>Posee</th>
+<th>Cleanup esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>File wrapper</td>
+<td>fd abierto si <code>fd &gt;= 0</code></td>
+<td><code>close</code>, luego <code>fd = -1</code></td>
+</tr>
+<tr class="even">
+<td>Arena</td>
+<td>bloque completo de almacenamiento</td>
+<td>reset o liberación completa</td>
+</tr>
+<tr class="odd">
+<td>Puntero entregado por arena</td>
+<td>no posee la arena</td>
+<td>no se libera individualmente</td>
+</tr>
+</tbody>
+</table>
+<p>El error común es tratar cada puntero de arena como si tuviera destructor propio. En este modelo, la arena administra el grupo completo.</p>
+</section>
 <section id="reset-de-arena" class="level2">
 <h2 class="anchored" data-anchor-id="reset-de-arena">Reset de arena</h2>
 <p>Reset conceptual:</p>
@@ -1787,11 +1823,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué campos necesita una arena?</li>
 <li>¿Qué invariante protege <code>arena_alloc</code>?</li>
 <li>¿Por qué arena no libera objetos individuales?</li>
+<li>¿Qué debe hacer <code>file_close</code> después de cerrar exitosamente?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>File wrapper y arena muestran que layout manual no es solo para datos bonitos. También organiza recursos, ownership y cleanup.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>openat(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/openat.2.html</a></li>
+<li>Linux man-pages, <code>write(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/write.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/write.2.html</a></li>
+<li>Linux man-pages, <code>close(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/close.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/close.2.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

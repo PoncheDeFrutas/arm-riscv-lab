@@ -1323,7 +1323,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#mapa-mental-de-una-llamada" id="toc-mapa-mental-de-una-llamada" class="nav-link" data-scroll-target="#mapa-mental-de-una-llamada">Mapa mental de una llamada</a></li>
   <li><a href="#tabla-mínima-de-registros-generales" id="toc-tabla-mínima-de-registros-generales" class="nav-link" data-scroll-target="#tabla-mínima-de-registros-generales">Tabla mínima de registros generales</a></li>
   <li><a href="#tabla-mínima-de-floatingsimd" id="toc-tabla-mínima-de-floatingsimd" class="nav-link" data-scroll-target="#tabla-mínima-de-floatingsimd">Tabla mínima de floating/SIMD</a></li>
+  <li><a href="#syscall-convention-vs-calling-convention" id="toc-syscall-convention-vs-calling-convention" class="nav-link" data-scroll-target="#syscall-convention-vs-calling-convention">Syscall convention vs calling convention</a></li>
   <li><a href="#caller-saved-y-callee-saved" id="toc-caller-saved-y-callee-saved" class="nav-link" data-scroll-target="#caller-saved-y-callee-saved">Caller-saved y callee-saved</a></li>
+  <li><a href="#lectura-de-responsabilidad" id="toc-lectura-de-responsabilidad" class="nav-link" data-scroll-target="#lectura-de-responsabilidad">Lectura de responsabilidad</a></li>
   <li><a href="#viene-de-unidades-anteriores" id="toc-viene-de-unidades-anteriores" class="nav-link" data-scroll-target="#viene-de-unidades-anteriores">Viene de unidades anteriores</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
@@ -1501,6 +1503,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="syscall-convention-vs-calling-convention" class="level2">
+<h2 class="anchored" data-anchor-id="syscall-convention-vs-calling-convention">Syscall convention vs calling convention</h2>
+<p>En unidades anteriores usaste syscalls directas. Eso no es lo mismo que llamar una función C:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Caso</th>
+<th>Destino</th>
+<th>Argumentos</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>syscall Linux</td>
+<td><code>svc #0</code> con número en <code>x8</code></td>
+<td><code>x0</code>-<code>x5</code></td>
+<td><code>x0</code>, negativo si falla</td>
+</tr>
+<tr class="even">
+<td>función C/AAPCS64</td>
+<td>símbolo llamado con <code>bl</code></td>
+<td><code>x0</code>-<code>x7</code>, <code>v0</code>-<code>v7</code>, stack</td>
+<td><code>x0</code>, <code>v0</code> o mecanismo ABI</td>
+</tr>
+</tbody>
+</table>
+<p>Esta diferencia explica por qué <code>printf</code> no se llama con <code>svc #0</code> y por qué <code>x8</code> no debe leerse siempre como “número de servicio”. En ABI C, <code>x8</code> tiene usos especiales y no reemplaza al símbolo de la función.</p>
+</section>
 <section id="caller-saved-y-callee-saved" class="level2">
 <h2 class="anchored" data-anchor-id="caller-saved-y-callee-saved">Caller-saved y callee-saved</h2>
 <table class="caption-top table">
@@ -1530,6 +1567,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Esta tabla es pequeña, pero cambia cómo escribes funciones. Antes podías usar registros como espacio temporal local. Ahora debes pensar quién confía en ellos.</p>
+</section>
+<section id="lectura-de-responsabilidad" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-de-responsabilidad">Lectura de responsabilidad</h2>
+<p>Antes de escribir una función ABI-correcta, responde estas preguntas:</p>
+<ol type="1">
+<li>¿Qué argumentos llegan por registros y cuáles por stack?</li>
+<li>¿Qué registro debe contener el resultado al retornar?</li>
+<li>¿La función llama a otra función y por eso debe guardar <code>LR</code>?</li>
+<li>¿Usa registros <code>x19</code>-<code>x28</code> y por eso debe restaurarlos?</li>
+<li>¿Mantiene <code>sp</code> alineado a 16 bytes antes de cada <code>bl</code>?</li>
+</ol>
+<p>Si cualquiera de estas respuestas queda implícita, el bug puede aparecer fuera de la función, en el código C o en otra llamada posterior.</p>
 </section>
 <section id="viene-de-unidades-anteriores" class="level2">
 <h2 class="anchored" data-anchor-id="viene-de-unidades-anteriores">Viene de unidades anteriores</h2>
@@ -1689,6 +1738,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/abi-aapcs64-c/01-abi-aapcs64-registros.html">ABI, AAPCS64 y registros</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>ABI for the Arm Architecture</em>: <a href="https://github.com/ARM-software/abi-aa" class="uri">https://github.com/ARM-software/abi-aa</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GNU Binutils, <em>GNU linker manual</em>: <a href="https://sourceware.org/binutils/docs/ld/" class="uri">https://sourceware.org/binutils/docs/ld/</a></li>
+</ul>
 
 
 </section>

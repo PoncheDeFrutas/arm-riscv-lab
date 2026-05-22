@@ -1318,11 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#posición-dentro-de-un-archivo" id="toc-posición-dentro-de-un-archivo" class="nav-link active" data-scroll-target="#posición-dentro-de-un-archivo">Posición dentro de un archivo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#posición-dentro-de-un-archivo" id="toc-posición-dentro-de-un-archivo" class="nav-link" data-scroll-target="#posición-dentro-de-un-archivo">Posición dentro de un archivo</a></li>
   <li><a href="#lseek" id="toc-lseek" class="nav-link" data-scroll-target="#lseek"><code>lseek</code></a></li>
   <li><a href="#metadatos-fstat" id="toc-metadatos-fstat" class="nav-link" data-scroll-target="#metadatos-fstat">Metadatos: <code>fstat</code></a></li>
   <li><a href="#metadatos-statx" id="toc-metadatos-statx" class="nav-link" data-scroll-target="#metadatos-statx">Metadatos: <code>statx</code></a></li>
   <li><a href="#getdents64-como-mención" id="toc-getdents64-como-mención" class="nav-link" data-scroll-target="#getdents64-como-mención"><code>getdents64</code> como mención</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#lectura-paso-a-paso-lseek" id="toc-lectura-paso-a-paso-lseek" class="nav-link" data-scroll-target="#lectura-paso-a-paso-lseek">Lectura paso a paso: <code>lseek</code></a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1363,6 +1368,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Leer y escribir no son las únicas operaciones sobre archivos. Un fd puede tener posición actual, y el kernel también puede entregar metadatos del recurso: tamaño, tipo, permisos y tiempos.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué es la posición actual de un fd y cómo cambiarla con <code>lseek</code>.</li>
+<li>Cómo consultar metadatos con <code>fstat</code> y <code>statx</code>.</li>
+<li>Qué es <code>getdents64</code> y por qué queda como tema avanzado.</li>
+<li>Por qué algunas operaciones no aplican a todos los fd.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender file descriptors y el flujo <code>openat</code> → <code>read</code>/<code>write</code> → <code>close</code>. Revisa la lección de <a href="../../../courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.html">Archivos con syscalls</a>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Un fd no solo permite leer y escribir. El kernel mantiene estado interno: la posición actual dentro del archivo, y metadatos como tamaño, tipo y permisos. <code>lseek</code> mueve la posición; <code>fstat</code> y <code>statx</code> consultan metadatos. Pero no todos los fd soportan estas operaciones: un pipe o una terminal rechazan <code>lseek</code>.</p>
+</section>
 <section id="posición-dentro-de-un-archivo" class="level2">
 <h2 class="anchored" data-anchor-id="posición-dentro-de-un-archivo">Posición dentro de un archivo</h2>
 <p>Cuando lees desde un archivo regular, el kernel mantiene una posición asociada al fd. Después de leer bytes, esa posición avanza.</p>
@@ -1506,19 +1528,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Usar <code>lseek</code> en un pipe o terminal</strong>: <code>lseek</code> funciona en archivos regulares y directorios. En pipes, sockets y terminales retorna <code>ESPIPE</code> (error 29).</li>
+<li><strong>Asumir que <code>fstat</code> llena un buffer de cualquier tamaño</strong>: <code>struct stat</code> tiene un tamaño fijo definido por el kernel. Usar un buffer muy pequeño causa corrupción de memoria.</li>
+<li><strong>Confundir <code>fstat</code> con <code>statx</code></strong>: <code>fstat</code> usa un fd abierto; <code>statx</code> puede usar una ruta sin abrir el archivo. <code>statx</code> es más nuevo y más flexible.</li>
+<li><strong>Olvidar que <code>lseek</code> retorna la nueva posición</strong>: no retorna <code>0</code> en éxito. Retorna el offset resultante. Si comparas con <code>#0</code> para verificar error, usa <code>b.lt</code>, no <code>b.eq</code>.</li>
+</ul>
+</section>
+<section id="lectura-paso-a-paso-lseek" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-paso-a-paso-lseek">Lectura paso a paso: <code>lseek</code></h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Registro</th>
+<th>Antes de <code>svc</code></th>
+<th>Después de <code>svc</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>x0</code></td>
+<td>fd del archivo</td>
+<td>nueva posición o error negativo</td>
+</tr>
+<tr class="even">
+<td><code>x1</code></td>
+<td>offset (ej. <code>0</code>)</td>
+<td>sin cambio</td>
+</tr>
+<tr class="odd">
+<td><code>x2</code></td>
+<td>origen (<code>0</code>=SET, <code>1</code>=CUR, <code>2</code>=END)</td>
+<td>sin cambio</td>
+</tr>
+<tr class="even">
+<td><code>x8</code></td>
+<td><code>62</code></td>
+<td>sin cambio</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado antes de verificar.</p>
 <ol type="1">
 <li>¿Qué syscall usarías para volver al inicio de un archivo?</li>
 <li>¿Por qué <code>lseek</code> puede fallar en algunos fd?</li>
 <li>¿Qué diferencia hay entre pasar un fd a <code>fstat</code> y una ruta a <code>statx</code>?</li>
 <li>¿Por qué <code>statbuf</code> debe estar en memoria escribible?</li>
 <li>¿Por qué <code>getdents64</code> queda como tema opcional?</li>
+<li>Si lees 32 bytes de un archivo y luego haces <code>lseek fd 0 SEEK_SET</code>, ¿cuántos bytes lees en el siguiente <code>read</code>?</li>
+<li>¿Qué retorna <code>lseek</code> si funciona con offset <code>0</code> y <code>SEEK_SET</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Un fd no solo sirve para leer y escribir. También puede tener posición y metadatos asociados. La regla sigue siendo la misma: preparar registros, pasar punteros válidos cuando hagan falta, ejecutar <code>svc #0</code> y revisar retorno.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>lseek(2)</code>: mover posición de archivo, orígenes SEEK_SET/CUR/END, errores. <a href="https://www.man7.org/linux/man-pages/man2/lseek.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/lseek.2.html</a></li>
+<li>Linux man-pages: <code>fstat(2)</code>, <code>statx(2)</code>: metadatos de archivos, struct stat. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>getdents64(2)</code>: lectura de directorios. <a href="https://www.man7.org/linux/man-pages/man2/getdents64.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/getdents64.2.html</a></li>
+</ul>
 
 
 </section>

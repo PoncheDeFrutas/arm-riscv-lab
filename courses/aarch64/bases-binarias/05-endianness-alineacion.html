@@ -1318,14 +1318,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#un-valor-de-varios-bytes" id="toc-un-valor-de-varios-bytes" class="nav-link active" data-scroll-target="#un-valor-de-varios-bytes">Un valor de varios bytes</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#un-valor-de-varios-bytes" id="toc-un-valor-de-varios-bytes" class="nav-link" data-scroll-target="#un-valor-de-varios-bytes">Un valor de varios bytes</a></li>
   <li><a href="#big-endian" id="toc-big-endian" class="nav-link" data-scroll-target="#big-endian">Big endian</a></li>
   <li><a href="#little-endian" id="toc-little-endian" class="nav-link" data-scroll-target="#little-endian">Little endian</a></li>
   <li><a href="#ejemplo-aarch64" id="toc-ejemplo-aarch64" class="nav-link" data-scroll-target="#ejemplo-aarch64">Ejemplo AArch64</a></li>
-  <li><a href="#direcciones-consecutivas" id="toc-direcciones-consecutivas" class="nav-link" data-scroll-target="#direcciones-consecutivas">Direcciones consecutivas</a></li>
+  <li><a href="#direcciones-consecutivas" id="toc-direcciones-consecutivas" class="nav-link" data-scroll-target="#direcciones-consecutivas">Direcciones consecutivas</a>
+  <ul class="collapse">
+  <li><a href="#lectura-paso-a-paso-con-ldr" id="toc-lectura-paso-a-paso-con-ldr" class="nav-link" data-scroll-target="#lectura-paso-a-paso-con-ldr">Lectura paso a paso con <code>ldr</code></a></li>
+  </ul></li>
   <li><a href="#alineación-conceptual" id="toc-alineación-conceptual" class="nav-link" data-scroll-target="#alineación-conceptual">Alineación conceptual</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1365,6 +1373,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un byte ocupa una dirección. Un valor de 32 o 64 bits ocupa varias direcciones. Endianness explica en qué orden aparecen esos bytes cuando el valor está en memoria.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué es endianness y por qué importa al leer memoria.</li>
+<li>Cómo se ve un valor de 32 bits en little endian byte por byte.</li>
+<li>Qué es alineación y por qué conviene ubicar datos en direcciones múltiples de su tamaño.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Saber qué es un byte, un word de 32 bits y leer hexadecimal. Revisa <a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html">Bits, bytes y bases</a> si necesitas repaso.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Un byte tiene una dirección. Un valor de varios bytes ocupa varias direcciones consecutivas. <strong>Endianness</strong> define en qué orden se guardan esos bytes. En little endian, el byte menos significativo va primero (dirección más baja). En big endian, el byte más significativo va primero.</p>
+<p>AArch64 puede operar en ambos modos, pero Linux en ARM64 usa little endian por defecto. Todo el curso asume little endian salvo que se indique lo contrario.</p>
+</section>
 <section id="un-valor-de-varios-bytes" class="level2">
 <h2 class="anchored" data-anchor-id="un-valor-de-varios-bytes">Un valor de varios bytes</h2>
 <p>Un valor de 32 bits ocupa 4 bytes.</p>
@@ -1422,12 +1447,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400083</span>       12</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si lees un <code>word</code> desde <code>0x400080</code> en little endian, el valor interpretado es:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0x12345678</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="lectura-paso-a-paso-con-ldr" class="level3">
+<h3 class="anchored" data-anchor-id="lectura-paso-a-paso-con-ldr">Lectura paso a paso con <code>ldr</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">numero:</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="bn">0x12345678</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>text</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    adr x0<span class="op">,</span> numero      <span class="op">//</span> x0 <span class="op">=</span> dirección de numero</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ldr w1<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span>        <span class="op">//</span> w1 <span class="op">=</span> valor de <span class="dv">32</span> bits desde esa dirección</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    ldrb w2<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span>       <span class="op">//</span> w2 <span class="op">=</span> <span class="dt">byte</span> en <span class="op">[</span>x0<span class="op">]</span> <span class="op">=</span> <span class="bn">0x78</span> <span class="op">(</span>little endian<span class="op">)</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    ldrb w3<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span><span class="op">]</span>   <span class="op">//</span> w3 <span class="op">=</span> <span class="dt">byte</span> en <span class="op">[</span>x0<span class="op">+</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="bn">0x56</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    ldrb w4<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> <span class="op">#</span><span class="dv">2</span><span class="op">]</span>   <span class="op">//</span> w4 <span class="op">=</span> <span class="dt">byte</span> en <span class="op">[</span>x0<span class="op">+</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="bn">0x34</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    ldrb w5<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> <span class="op">#</span><span class="dv">3</span><span class="op">]</span>   <span class="op">//</span> w5 <span class="op">=</span> <span class="dt">byte</span> en <span class="op">[</span>x0<span class="op">+</span><span class="dv">3</span><span class="op">]</span> <span class="op">=</span> <span class="bn">0x12</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Instrucción</th>
+<th>Registro</th>
+<th>Valor</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>adr x0, numero</code></td>
+<td><code>x0</code></td>
+<td><code>0x400080</code></td>
+<td>Dirección base</td>
+</tr>
+<tr class="even">
+<td><code>ldr w1, [x0]</code></td>
+<td><code>w1</code></td>
+<td><code>0x12345678</code></td>
+<td>Word completo, CPU reordena</td>
+</tr>
+<tr class="odd">
+<td><code>ldrb w2, [x0]</code></td>
+<td><code>w2</code></td>
+<td><code>0x00000078</code></td>
+<td>Byte en dirección más baja</td>
+</tr>
+<tr class="even">
+<td><code>ldrb w3, [x0, #1]</code></td>
+<td><code>w3</code></td>
+<td><code>0x00000056</code></td>
+<td>Siguiente byte</td>
+</tr>
+<tr class="odd">
+<td><code>ldrb w4, [x0, #2]</code></td>
+<td><code>w4</code></td>
+<td><code>0x00000034</code></td>
+<td>Siguiente byte</td>
+</tr>
+<tr class="even">
+<td><code>ldrb w5, [x0, #3]</code></td>
+<td><code>w5</code></td>
+<td><code>0x00000012</code></td>
+<td>Byte más significativo</td>
+</tr>
+</tbody>
+</table>
+<p>La instrucción <code>ldr w1, [x0]</code> reconstruye el valor correctamente porque la CPU sabe que está en little endian. Los bytes individuales leídos con <code>ldrb</code> muestran el orden real en memoria.</p>
+</section>
 </section>
 <section id="alineación-conceptual" class="level2">
 <h2 class="anchored" data-anchor-id="alineación-conceptual">Alineación conceptual</h2>
 <p>Alineación significa ubicar datos en direcciones convenientes para su tamaño.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Un</span> dato de 4 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 4.</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Un</span> dato de 8 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 8.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Un</span> dato de 4 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 4.</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Un</span> dato de 8 bytes suele estar mejor ubicado si empieza en dirección múltiplo de 8.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1468,6 +1556,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Leer bytes como si fueran big endian</strong>: si ves <code>78 56 34 12</code> en memoria y lo interpretas como big endian, obtienes <code>0x78563412</code> en vez de <code>0x12345678</code>.</li>
+<li><strong>Confundir orden de bytes con orden de bits</strong>: little endian reordena bytes, no bits dentro de cada byte. <code>0x78</code> sigue siendo <code>01111000</code>.</li>
+<li><strong>Asumir que GDB muestra bytes en orden lógico</strong>: <code>x/4xb</code> muestra bytes en orden de memoria (little endian). <code>x/xw</code> muestra el word ya reconstruido.</li>
+<li><strong>Ignorar la alineación</strong>: leer un <code>word</code> desde una dirección no alineada puede funcionar en AArch64 pero con penalización de rendimiento, y en algunas arquitecturas causa fault.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1475,7 +1572,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Escribe los bytes big endian de <code>0xAABBCCDD</code>.</li>
 <li>Explica por qué <code>0x12345678</code> puede verse como <code>78 56 34 12</code>.</li>
 <li>Di si <code>0x400084</code> está alineada para un dato de 4 bytes.</li>
+<li>Si <code>ldrb w0, [x1]</code> devuelve <code>0xEF</code> y <code>ldrb w0, [x1, #1]</code> devuelve <code>0xBE</code>, ¿cuál es el valor del halfword little endian en esa dirección?</li>
+<li>¿Por qué <code>ldr w0, [x1]</code> es mejor que leer 4 bytes con <code>ldrb</code> y reconstruir manualmente?</li>
 </ol>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Debes poder mirar 4 bytes en memoria little endian y reconstruir el valor de 32 bits mentalmente. Esa habilidad es esencial para debugging con GDB y lectura de dumps de memoria.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1487,6 +1590,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar alineación sin entrar todavía en ABI o rendimiento.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html">Direcciones, punteros y memoria</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): endianness en AArch64, instrucciones <code>ldr</code>/<code>ldrb</code>, alineación de accesos a memoria. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture — A64 Instruction Set Architecture Guide</em>: carga y almacenamiento, modificadores de tamaño. <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: endianness y acceso a memoria en AArch64.</li>
+</ul>
 
 
 </section>

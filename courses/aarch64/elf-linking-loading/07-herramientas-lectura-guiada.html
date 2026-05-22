@@ -1318,11 +1318,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link active" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
   <li><a href="#lectura-de-min" id="toc-lectura-de-min" class="nav-link" data-scroll-target="#lectura-de-min">Lectura de <code>min</code></a></li>
   <li><a href="#leer-objdump--d" id="toc-leer-objdump--d" class="nav-link" data-scroll-target="#leer-objdump--d">Leer <code>objdump -d</code></a></li>
   <li><a href="#strip" id="toc-strip" class="nav-link" data-scroll-target="#strip"><code>strip</code></a></li>
   <li><a href="#lectura-de-binario-dinámico" id="toc-lectura-de-binario-dinámico" class="nav-link" data-scroll-target="#lectura-de-binario-dinámico">Lectura de binario dinámico</a></li>
+  <li><a href="#qué-conclusiones-evitar" id="toc-qué-conclusiones-evitar" class="nav-link" data-scroll-target="#qué-conclusiones-evitar">Qué conclusiones evitar</a></li>
   <li><a href="#preguntas-de-cierre" id="toc-preguntas-de-cierre" class="nav-link" data-scroll-target="#preguntas-de-cierre">Preguntas de cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre-de-unidad" id="toc-cierre-de-unidad" class="nav-link" data-scroll-target="#cierre-de-unidad">Cierre de unidad</a></li>
@@ -1363,7 +1365,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta lección no agrega otra teoría grande. Ordena las herramientas en un método. Cada comando debe responder una pregunta. Si no sabes la pregunta, la salida te va a parecer ruido.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a convertir herramientas sueltas en una rutina de lectura. El objetivo no es ejecutar todos los comandos siempre, sino elegir el comando que responde la pregunta técnica actual.</p>
 <p>La disciplina de lectura importa más que el comando exacto. Un binario pequeño puede inspeccionarse en minutos si sigues orden: identidad, carga, organización, código, nombres y dependencias. El mismo orden escala a programas más grandes, aunque no entiendas cada línea de salida.</p>
+</section>
 <section id="método-de-lectura" class="level2">
 <h2 class="anchored" data-anchor-id="método-de-lectura">Método de lectura</h2>
 <table class="caption-top table">
@@ -1506,6 +1512,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-d</span> hello_dyn</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 <span class="at">-L</span> /usr/aarch64-linux-gnu ./hello_dyn</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
+<section id="qué-conclusiones-evitar" class="level2">
+<h2 class="anchored" data-anchor-id="qué-conclusiones-evitar">Qué conclusiones evitar</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Salida</th>
+<th>No concluyas automáticamente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>nm</code> no muestra símbolos</td>
+<td>que el binario no tenga código</td>
+</tr>
+<tr class="even">
+<td><code>Type: DYN</code></td>
+<td>que siempre sea solo librería compartida</td>
+</tr>
+<tr class="odd">
+<td><code>ldd</code> falla</td>
+<td>que el binario esté corrupto</td>
+</tr>
+<tr class="even">
+<td>direcciones distintas entre <code>objdump</code> y GDB</td>
+<td>que una herramienta mienta</td>
+</tr>
+<tr class="odd">
+<td>no ves <code>.symtab</code></td>
+<td>que no pueda ejecutarse</td>
+</tr>
+</tbody>
+</table>
+<p>Primero pregunta si el binario fue <code>strip</code>, si es PIE, si estás en host cruzado o si estás mezclando vista de archivo con vista de proceso.</p>
+</section>
 <section id="preguntas-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="preguntas-de-cierre">Preguntas de cierre</h2>
 <p>Antes de decir “ya inspeccioné el binario”, responde:</p>
@@ -1535,6 +1579,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre-de-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="cierre-de-unidad">Cierre de unidad</h2>
 <p>Un binario ELF no es el final opaco del proceso. Es un contrato entre herramientas: assembler, linker, loader, kernel, depurador y tus propias decisiones de código.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils documentation: <a href="https://sourceware.org/binutils/docs/" class="uri">https://sourceware.org/binutils/docs/</a></li>
+<li>Linux man-pages, <code>ld.so(8)</code>: <a href="https://www.man7.org/linux/man-pages/man8/ld.so.8.html" class="uri">https://www.man7.org/linux/man-pages/man8/ld.so.8.html</a></li>
+<li>Linux man-pages, <code>ldd(1)</code>: <a href="https://www.man7.org/linux/man-pages/man1/ldd.1.html" class="uri">https://www.man7.org/linux/man-pages/man1/ldd.1.html</a></li>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+</ul>
 
 
 </section>

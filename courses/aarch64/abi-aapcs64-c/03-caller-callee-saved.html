@@ -1318,10 +1318,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#dos-responsabilidades-distintas" id="toc-dos-responsabilidades-distintas" class="nav-link active" data-scroll-target="#dos-responsabilidades-distintas">Dos responsabilidades distintas</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#dos-responsabilidades-distintas" id="toc-dos-responsabilidades-distintas" class="nav-link" data-scroll-target="#dos-responsabilidades-distintas">Dos responsabilidades distintas</a></li>
   <li><a href="#registros-caller-saved-comunes" id="toc-registros-caller-saved-comunes" class="nav-link" data-scroll-target="#registros-caller-saved-comunes">Registros caller-saved comunes</a></li>
   <li><a href="#registros-callee-saved" id="toc-registros-callee-saved" class="nav-link" data-scroll-target="#registros-callee-saved">Registros callee-saved</a></li>
+  <li><a href="#lectura-del-frame-de-preservación" id="toc-lectura-del-frame-de-preservación" class="nav-link" data-scroll-target="#lectura-del-frame-de-preservación">Lectura del frame de preservación</a></li>
   <li><a href="#por-qué-no-basta-con-que-el-resultado-sea-correcto" id="toc-por-qué-no-basta-con-que-el-resultado-sea-correcto" class="nav-link" data-scroll-target="#por-qué-no-basta-con-que-el-resultado-sea-correcto">Por qué no basta con que el resultado sea correcto</a></li>
+  <li><a href="#caso-caller-saved" id="toc-caso-caller-saved" class="nav-link" data-scroll-target="#caso-caller-saved">Caso caller-saved</a></li>
   <li><a href="#función-hoja-vs-no-hoja" id="toc-función-hoja-vs-no-hoja" class="nav-link" data-scroll-target="#función-hoja-vs-no-hoja">Función hoja vs no hoja</a></li>
   <li><a href="#práctica-completa" id="toc-práctica-completa" class="nav-link" data-scroll-target="#práctica-completa">Práctica completa</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
@@ -1364,6 +1367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El bug clásico de ABI no siempre está en la suma o en la resta. Muchas veces está en un registro que una función modificó y no debía dejar modificado.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a distinguir dos clases de registros por responsabilidad. Esta distinción es lo que permite que una función assembly sea confiable cuando C, otra función assembly o una librería la llaman.</p>
+</section>
 <section id="dos-responsabilidades-distintas" class="level2">
 <h2 class="anchored" data-anchor-id="dos-responsabilidades-distintas">Dos responsabilidades distintas</h2>
 <table class="caption-top table">
@@ -1393,6 +1400,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>No leas caller-saved como “lo guarda el callee”. Es lo contrario: el caller sabe que esos registros pueden ser destruidos por la llamada.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">caller-saved</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">el</span> caller protege si le importa</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">callee-saved</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">el</span> callee restaura si lo toca</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="registros-caller-saved-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="registros-caller-saved-comunes">Registros caller-saved comunes</h2>
@@ -1445,70 +1457,123 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Ejemplo de función que usa <code>x19</code> correctamente:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.global usar_x19</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>.type usar_x19<span class="op">,</span> <span class="op">%</span>function</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">usar_x19:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">32</span><span class="op">]!</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> x19<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span><span class="op">]</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x19<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    ldr x19<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span><span class="op">]</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">32</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>.size usar_x19<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> usar_x19</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.global usar_x19</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>.type usar_x19<span class="op">,</span> <span class="op">%</span>function</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">usar_x19:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">32</span><span class="op">]!</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> x19<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span><span class="op">]</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x19<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    ldr x19<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span><span class="op">]</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">32</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>.size usar_x19<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> usar_x19</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El frame reserva 32 bytes para mantener alineación. Los primeros 16 guardan <code>x29</code> y <code>x30</code>. El espacio restante guarda <code>x19</code>.</p>
+</section>
+<section id="lectura-del-frame-de-preservación" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-del-frame-de-preservación">Lectura del frame de preservación</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">direcciones</span> altas</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">frame</span> anterior</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x29</span> guardado</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x30</span> guardado</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x19</span> guardado</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">padding</span> / espacio reservado</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">direcciones</span> bajas</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aunque <code>x19</code> ocupa 8 bytes, el frame reserva 32 bytes para conservar alineación de 16. La corrección ABI no es solo guardar el registro; también es restaurar <code>sp</code> con el mismo tamaño que se reservó.</p>
 </section>
 <section id="por-qué-no-basta-con-que-el-resultado-sea-correcto" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-no-basta-con-que-el-resultado-sea-correcto">Por qué no basta con que el resultado sea correcto</h2>
 <p>Esta función puede devolver <code>42</code>, pero seguir siendo mala:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">usar_x19_mal:</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x19<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">usar_x19_mal:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x19<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El resultado en <code>x0</code> puede estar bien. Pero si el caller tenía un valor vivo en <code>x19</code>, quedó destruido. Ese bug puede aparecer muchas instrucciones después.</p>
+</section>
+<section id="caso-caller-saved" class="level2">
+<h2 class="anchored" data-anchor-id="caso-caller-saved">Caso caller-saved</h2>
+<p>Si el caller necesita conservar <code>x0</code> después de una llamada, debe guardarlo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">sub</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    bl funcion_que_puede_cambiar_x0</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ldr x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La función llamada no tiene obligación de preservar <code>x0</code>, porque <code>x0</code> también se usa para retornos.</p>
 </section>
 <section id="función-hoja-vs-no-hoja" class="level2">
 <h2 class="anchored" data-anchor-id="función-hoja-vs-no-hoja">Función hoja vs no hoja</h2>
 <p>Una función hoja no llama a otra función:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x1</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x1</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Una función no hoja sí llama a otra:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    bl otra_funcion</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    bl otra_funcion</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>bl</code> sobrescribe <code>x30</code>. Por eso una función no hoja que necesita retornar al caller original debe guardar <code>LR</code>.</p>
 </section>
 <section id="práctica-completa" class="level2">
 <h2 class="anchored" data-anchor-id="práctica-completa">Práctica completa</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/01-preservar-x19/src</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">usar_x19</span> = 42</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/01-preservar-x19/src</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">usar_x19</span> = 42</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El programa C llama la función assembly. La función assembly usa <code>x19</code>, lo restaura y retorna <code>42</code>.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Modificar <code>x19</code> sin restaurarlo.</li>
-<li>Guardar <code>x19</code> con <code>str</code> y liberar <code>sp</code> con tamaño distinto.</li>
-<li>Guardar 8 bytes y romper alineación de 16 bytes.</li>
-<li>Olvidar que <code>bl</code> sobrescribe <code>x30</code>.</li>
-<li>Creer que una función correcta solo debe devolver el valor correcto.</li>
-<li>Usar <code>x16</code> o <code>x17</code> como almacenamiento persistente.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Cómo aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>modificar <code>x19</code> sin restaurarlo</td>
+<td>el caller pierde un valor que esperaba conservar</td>
+</tr>
+<tr class="even">
+<td>liberar <code>sp</code> con tamaño distinto</td>
+<td>el epílogo carga desde dirección equivocada</td>
+</tr>
+<tr class="odd">
+<td>guardar solo 8 bytes en función ABI</td>
+<td><code>sp</code> queda desalineado antes de una llamada</td>
+</tr>
+<tr class="even">
+<td>olvidar que <code>bl</code> sobrescribe <code>x30</code></td>
+<td><code>ret</code> vuelve al lugar incorrecto</td>
+</tr>
+<tr class="odd">
+<td>mirar solo el resultado en <code>x0</code></td>
+<td>una función parece correcta pero rompe el entorno</td>
+</tr>
+<tr class="even">
+<td>usar <code>x16</code> o <code>x17</code> como persistentes</td>
+<td>linker/PLT u otra llamada puede usarlos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1521,6 +1586,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo detectar función ABI-incorrecta aunque retorne bien.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/abi-aapcs64-c/04-main-start-libc-runtime.html"><code>main</code>, <code>_start</code> y libc</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>ABI for the Arm Architecture</em>: <a href="https://github.com/ARM-software/abi-aa" class="uri">https://github.com/ARM-software/abi-aa</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

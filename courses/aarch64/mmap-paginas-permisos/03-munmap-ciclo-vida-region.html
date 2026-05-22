@@ -1322,6 +1322,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#contrato-de-munmap" id="toc-contrato-de-munmap" class="nav-link" data-scroll-target="#contrato-de-munmap">Contrato de <code>munmap</code></a></li>
   <li><a href="#dirección-y-longitud-deben-corresponder" id="toc-dirección-y-longitud-deben-corresponder" class="nav-link" data-scroll-target="#dirección-y-longitud-deben-corresponder">Dirección y longitud deben corresponder</a></li>
   <li><a href="#base-y-cursor" id="toc-base-y-cursor" class="nav-link" data-scroll-target="#base-y-cursor">Base y cursor</a></li>
+  <li><a href="#ejercicio-guiado-base-contra-cursor" id="toc-ejercicio-guiado-base-contra-cursor" class="nav-link" data-scroll-target="#ejercicio-guiado-base-contra-cursor">Ejercicio guiado: base contra cursor</a></li>
   <li><a href="#acceso-después-de-munmap" id="toc-acceso-después-de-munmap" class="nav-link" data-scroll-target="#acceso-después-de-munmap">Acceso después de <code>munmap</code></a></li>
   <li><a href="#cleanup-con-región-mapeada" id="toc-cleanup-con-región-mapeada" class="nav-link" data-scroll-target="#cleanup-con-región-mapeada">Cleanup con región mapeada</a></li>
   <li><a href="#dos-rutas-de-error" id="toc-dos-rutas-de-error" class="nav-link" data-scroll-target="#dos-rutas-de-error">Dos rutas de error</a></li>
@@ -1456,45 +1457,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="ejercicio-guiado-base-contra-cursor" class="level2">
+<h2 class="anchored" data-anchor-id="ejercicio-guiado-base-contra-cursor">Ejercicio guiado: base contra cursor</h2>
+<p>Lee este patrón y decide qué registro debe ir a <code>munmap</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x19<span class="op">,</span> x0        <span class="op">//</span> base retornada por mmap</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x20<span class="op">,</span> x19       <span class="op">//</span> cursor</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">add</span> x20<span class="op">,</span> x20<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>  <span class="op">//</span> avanzar cursor</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La región sigue empezando en <code>x19</code>. <code>x20</code> apunta dentro de la región y sirve para recorrer, pero no describe el rango original. Si <code>munmap</code> recibe <code>x20</code>, estás entregando al kernel una dirección distinta de la base que quieres liberar.</p>
+</section>
 <section id="acceso-después-de-munmap" class="level2">
 <h2 class="anchored" data-anchor-id="acceso-después-de-munmap">Acceso después de <code>munmap</code></h2>
 <p>Después de <code>munmap</code>, la región ya no pertenece al proceso.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>// Después de munmap<span class="op">,</span> la región ya no pertenece <span class="kw">al</span> proceso<span class="op">.</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>// Este patrón <span class="kw">es</span> incorrecto<span class="op">.</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>// strb w1<span class="op">,</span> <span class="op">[</span>x19<span class="op">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>// Después de munmap<span class="op">,</span> la región ya no pertenece <span class="kw">al</span> proceso<span class="op">.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>// Este patrón <span class="kw">es</span> incorrecto<span class="op">.</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>// strb w1<span class="op">,</span> <span class="op">[</span>x19<span class="op">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>x19</code> puede conservar el número de dirección, pero el contrato terminó. Usarlo es el equivalente conceptual de use-after-free.</p>
 <p>Una forma segura de leerlo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">antes</span> de munmap</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x19</span> = dirección válida</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">después</span> de munmap</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x19</span> = número viejo</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">no</span> es permiso para acceder</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">antes</span> de munmap</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x19</span> = dirección válida</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">después</span> de munmap</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x19</span> = número viejo</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">no</span> es permiso para acceder</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El registro no se borra solo. La invalidez está en el mapa de memoria del proceso, no en el valor aritmético guardado en el registro.</p>
 </section>
 <section id="cleanup-con-región-mapeada" class="level2">
 <h2 class="anchored" data-anchor-id="cleanup-con-región-mapeada">Cleanup con región mapeada</h2>
 <p>Si algo falla después de <code>mmap</code>, debes liberar antes de salir:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mmap</span> funciona</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">usar</span> región</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">si</span> falla algo:</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">munmap</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">si</span> todo bien:</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">munmap</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mmap</span> funciona</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">usar</span> región</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">si</span> falla algo:</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">munmap</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">si</span> todo bien:</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">munmap</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Estructura conceptual:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cleanup:</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> x19</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">4096</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">215</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">error:</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cleanup:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> x19</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">4096</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">215</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">error:</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="dos-rutas-de-error" class="level2">
 <h2 class="anchored" data-anchor-id="dos-rutas-de-error">Dos rutas de error</h2>
@@ -1521,12 +1530,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="munmap-también-puede-fallar" class="level2">
 <h2 class="anchored" data-anchor-id="munmap-también-puede-fallar"><code>munmap</code> también puede fallar</h2>
 <p>En ejemplos pequeños solemos salir después de <code>munmap</code>, pero el retorno sigue importando:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> x19</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">4096</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">215</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> x19</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">4096</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">215</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Un fallo de <code>munmap</code> suele indicar que el rango no era válido: dirección incorrecta, longitud incoherente o región ya no existente. La solución no es ignorar el retorno; es revisar qué rango estás entregando al kernel.</p>
 </section>
 <section id="relación-con-unidad-12" class="level2">
@@ -1566,11 +1575,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué pasa si usas <code>x19</code> después de <code>munmap</code>?</li>
 <li>¿Cuándo saltas a <code>error_sin_region</code>?</li>
 <li>¿Cuándo saltas a <code>cleanup</code>?</li>
+<li>En el ejemplo <code>x19</code>/<code>x20</code>, ¿cuál registro representa la base?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>munmap</code> completa la mitad que <code>mmap</code> empezó. Una región mapeada sin ruta de liberación es un recurso mal administrado.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>strace(1)</code>: <a href="https://man7.org/linux/man-pages/man1/strace.1.html" class="uri">https://man7.org/linux/man-pages/man1/strace.1.html</a></li>
+</ul>
 
 
 </section>

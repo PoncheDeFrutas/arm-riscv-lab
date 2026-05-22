@@ -1318,12 +1318,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-pregunta-responde-readelf--h" id="toc-qué-pregunta-responde-readelf--h" class="nav-link active" data-scroll-target="#qué-pregunta-responde-readelf--h">Qué pregunta responde <code>readelf -h</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-pregunta-responde-readelf--h" id="toc-qué-pregunta-responde-readelf--h" class="nav-link" data-scroll-target="#qué-pregunta-responde-readelf--h">Qué pregunta responde <code>readelf -h</code></a></li>
   <li><a href="#campos-que-sí-importan-al-inicio" id="toc-campos-que-sí-importan-al-inicio" class="nav-link" data-scroll-target="#campos-que-sí-importan-al-inicio">Campos que sí importan al inicio</a></li>
   <li><a href="#entry-point-no-es-siempre-main" id="toc-entry-point-no-es-siempre-main" class="nav-link" data-scroll-target="#entry-point-no-es-siempre-main">Entry point no es siempre <code>main</code></a></li>
+  <li><a href="#start-main-y-runtime" id="toc-start-main-y-runtime" class="nav-link" data-scroll-target="#start-main-y-runtime"><code>_start</code>, <code>main</code> y runtime</a></li>
   <li><a href="#comparar-.o-y-ejecutable" id="toc-comparar-.o-y-ejecutable" class="nav-link" data-scroll-target="#comparar-.o-y-ejecutable">Comparar <code>.o</code> y ejecutable</a></li>
   <li><a href="#qué-usa-esta-información" id="toc-qué-usa-esta-información" class="nav-link" data-scroll-target="#qué-usa-esta-información">Qué usa esta información</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#lectura-rápida-del-header" id="toc-lectura-rápida-del-header" class="nav-link" data-scroll-target="#lectura-rápida-del-header">Lectura rápida del header</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1363,6 +1366,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El ELF header es la tarjeta de identidad del archivo. Antes de mirar secciones, símbolos o instrucciones, debes saber qué clase de objeto tienes enfrente.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a usar el ELF header como primera lectura técnica. Antes de preguntar “qué instrucciones tiene”, confirmarás formato, arquitectura, tipo de archivo y punto de entrada.</p>
+</section>
 <section id="qué-pregunta-responde-readelf--h" class="level2">
 <h2 class="anchored" data-anchor-id="qué-pregunta-responde-readelf--h">Qué pregunta responde <code>readelf -h</code></h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-h</span> min</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1452,6 +1459,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="start-main-y-runtime" class="level2">
+<h2 class="anchored" data-anchor-id="start-main-y-runtime"><code>_start</code>, <code>main</code> y runtime</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Programa</th>
+<th>Símbolo que escribes</th>
+<th>Entry point típico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>assembly mínimo sin libc</td>
+<td><code>_start</code></td>
+<td>puede apuntar directamente a <code>_start</code></td>
+</tr>
+<tr class="even">
+<td>programa C con libc</td>
+<td><code>main</code></td>
+<td>suele apuntar a código de arranque</td>
+</tr>
+<tr class="odd">
+<td>PIE dinámico</td>
+<td><code>main</code> o funciones C</td>
+<td>entry point reubicable dentro de objeto <code>DYN</code></td>
+</tr>
+</tbody>
+</table>
+<p>El loader no busca <code>main</code> por nombre. Lee el entry point del ELF y transfiere control ahí. Si hay runtime de C, ese runtime será quien termine llamando a <code>main</code>.</p>
+</section>
 <section id="comparar-.o-y-ejecutable" class="level2">
 <h2 class="anchored" data-anchor-id="comparar-.o-y-ejecutable">Comparar <code>.o</code> y ejecutable</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-h</span> min.o</span>
@@ -1516,6 +1558,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="error-común">Error común</h2>
 <p>Ver <code>Entry point address</code> y asumir que es dirección fija en todos los sistemas. Con PIE y ASLR, la dirección efectiva de carga puede cambiar. Esta unidad lo prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo.</p>
 </section>
+<section id="lectura-rápida-del-header" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-rápida-del-header">Lectura rápida del header</h2>
+<p>Cuando revises una salida de <code>readelf -h</code>, usa este orden:</p>
+<ol type="1">
+<li><code>Class</code> y <code>Data</code> para confirmar ELF64 little-endian.</li>
+<li><code>Machine</code> para confirmar AArch64.</li>
+<li><code>Type</code> para saber si es <code>REL</code>, <code>EXEC</code> o <code>DYN</code>.</li>
+<li><code>Entry point address</code> solo si el tipo puede ejecutarse.</li>
+<li>offsets de program/section headers para saber qué otras tablas existen.</li>
+</ol>
+</section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
@@ -1529,6 +1582,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/elf-linking-loading/03-secciones-simbolos-relocations.html">Secciones, símbolos y relocations</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils, <em>readelf</em>: <a href="https://sourceware.org/binutils/docs/binutils/readelf.html" class="uri">https://sourceware.org/binutils/docs/binutils/readelf.html</a></li>
+</ul>
 
 
 </section>

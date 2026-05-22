@@ -1320,12 +1320,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link active" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
   <li><a href="#sesión-mínima" id="toc-sesión-mínima" class="nav-link" data-scroll-target="#sesión-mínima">Sesión mínima</a></li>
   <li><a href="#lectura-de-memoria" id="toc-lectura-de-memoria" class="nav-link" data-scroll-target="#lectura-de-memoria">Lectura de memoria</a></li>
   <li><a href="#lectura-de-stack" id="toc-lectura-de-stack" class="nav-link" data-scroll-target="#lectura-de-stack">Lectura de stack</a></li>
   <li><a href="#verificar-syscalls" id="toc-verificar-syscalls" class="nav-link" data-scroll-target="#verificar-syscalls">Verificar syscalls</a></li>
   <li><a href="#diagnóstico-breve-de-fallo" id="toc-diagnóstico-breve-de-fallo" class="nav-link" data-scroll-target="#diagnóstico-breve-de-fallo">Diagnóstico breve de fallo</a></li>
+  <li><a href="#checklist-de-diagnóstico-rápido" id="toc-checklist-de-diagnóstico-rápido" class="nav-link" data-scroll-target="#checklist-de-diagnóstico-rápido">Checklist de diagnóstico rápido</a></li>
   <li><a href="#método-visual" id="toc-método-visual" class="nav-link" data-scroll-target="#método-visual">Método visual</a></li>
   <li><a href="#checklist-final-de-unidad" id="toc-checklist-final-de-unidad" class="nav-link" data-scroll-target="#checklist-final-de-unidad">Checklist final de unidad</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1366,6 +1368,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta práctica junta lo esencial: detener, mirar registros, avanzar, leer memoria, revisar stack y contrastar syscalls. No agrega herramientas nuevas; ordena las que ya viste.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a practicar una sesión completa sin convertir la depuración en una lista de comandos. Cada paso debe tener una hipótesis: qué esperas ver y qué cambia si no aparece.</p>
+</section>
 <section id="método-de-lectura" class="level2">
 <h2 class="anchored" data-anchor-id="método-de-lectura">Método de lectura</h2>
 <p>Usa siempre el mismo orden inicial:</p>
@@ -1479,6 +1485,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="checklist-de-diagnóstico-rápido" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-diagnóstico-rápido">Checklist de diagnóstico rápido</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Comando inicial</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿dónde estoy?</td>
+<td><code>x/i $pc</code></td>
+</tr>
+<tr class="even">
+<td>¿qué estado tengo?</td>
+<td><code>info registers ...</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué cambiará al avanzar?</td>
+<td>leer instrucción y operandos</td>
+</tr>
+<tr class="even">
+<td>¿qué bytes hay en el puntero?</td>
+<td><code>x/16xb $registro</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué cadena de llamadas existe?</td>
+<td><code>bt</code></td>
+</tr>
+<tr class="even">
+<td>¿qué syscall falló?</td>
+<td><code>strace -e trace=...</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué quedó tras el crash?</td>
+<td><code>gdb binario core</code></td>
+</tr>
+</tbody>
+</table>
+<p>Usa esta tabla como punto de partida. Si una respuesta no coincide con tu hipótesis, reduce el paso: una instrucción, un registro, una dirección.</p>
+</section>
 <section id="método-visual" class="level2">
 <h2 class="anchored" data-anchor-id="método-visual">Método visual</h2>
 <div class="cell" data-layout-align="default">
@@ -1523,6 +1571,15 @@ Figura&nbsp;1: Método recomendado para depurar sin convertir GDB en lista de co
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Depurar bien no significa usar muchos comandos. Significa mirar el estado correcto en el momento correcto. En AArch64, eso empieza con registros, instrucción actual, memoria y syscalls.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>Linux man-pages, <code>strace(1)</code>: <a href="https://man7.org/linux/man-pages/man1/strace.1.html" class="uri">https://man7.org/linux/man-pages/man1/strace.1.html</a></li>
+<li>Linux man-pages, <code>core(5)</code>: <a href="https://www.man7.org/linux/man-pages/man5/core.5.html" class="uri">https://www.man7.org/linux/man-pages/man5/core.5.html</a></li>
+</ul>
 
 
 </section>

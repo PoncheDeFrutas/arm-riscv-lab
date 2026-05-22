@@ -1320,6 +1320,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#qué-es-una-página" id="toc-qué-es-una-página" class="nav-link active" data-scroll-target="#qué-es-una-página">Qué es una página</a></li>
   <li><a href="#page-size" id="toc-page-size" class="nav-link" data-scroll-target="#page-size">Page size</a></li>
+  <li><a href="#cómo-consultar-el-tamaño-real" id="toc-cómo-consultar-el-tamaño-real" class="nav-link" data-scroll-target="#cómo-consultar-el-tamaño-real">Cómo consultar el tamaño real</a></li>
   <li><a href="#dirección-virtual" id="toc-dirección-virtual" class="nav-link" data-scroll-target="#dirección-virtual">Dirección virtual</a></li>
   <li><a href="#mapa-mental-de-un-proceso" id="toc-mapa-mental-de-un-proceso" class="nav-link" data-scroll-target="#mapa-mental-de-un-proceso">Mapa mental de un proceso</a></li>
   <li><a href="#permisos-de-página" id="toc-permisos-de-página" class="nav-link" data-scroll-target="#permisos-de-página">Permisos de página</a></li>
@@ -1428,6 +1429,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>No memorices <code>4096</code> como regla de arquitectura. Memoriza la idea: <code>length</code> está en bytes, pero el sistema protege y administra memoria en páginas.</p>
+</section>
+<section id="cómo-consultar-el-tamaño-real" class="level2">
+<h2 class="anchored" data-anchor-id="cómo-consultar-el-tamaño-real">Cómo consultar el tamaño real</h2>
+<p>En programas C o herramientas de sistema puedes consultar el tamaño de página con APIs como <code>sysconf(_SC_PAGESIZE)</code> o comandos del entorno. En esta ruta seguimos usando syscalls directas y ejemplos pequeños, así que fijamos <code>4096</code> como valor didáctico.</p>
+<p>La regla profesional es distinta: si tu programa necesita ser portable entre configuraciones de página, no debe asumir que toda máquina usa el mismo tamaño. Para aprender <code>mmap</code>, sí conviene mantener una página típica para no mezclar el contrato de memoria con detección de plataforma.</p>
 </section>
 <section id="dirección-virtual" class="level2">
 <h2 class="anchored" data-anchor-id="dirección-virtual">Dirección virtual</h2>
@@ -1655,11 +1661,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué diferencia hay entre región mapeada y bytes usados?</li>
 <li>¿Qué permiso necesitas para escribir?</li>
 <li>¿Por qué no toda memoria debe tener <code>X</code>?</li>
+<li>¿Por qué <code>length</code> está en bytes aunque el sistema administre páginas?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>mmap</code> se entiende mejor si primero ves el terreno: páginas, direcciones virtuales y permisos. La syscall no crea variables; crea regiones virtuales que tu programa puede usar como memoria.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>sysconf(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/sysconf.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/sysconf.3.html</a></li>
+<li>Linux man-pages, <code>getpagesize(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/getpagesize.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/getpagesize.2.html</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+</ul>
 
 
 </section>

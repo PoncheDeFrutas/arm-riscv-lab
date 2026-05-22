@@ -1283,12 +1283,14 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
   <li><a href="#viene-de-unidades-anteriores" id="toc-viene-de-unidades-anteriores" class="nav-link" data-scroll-target="#viene-de-unidades-anteriores">Viene de unidades anteriores</a></li>
   <li><a href="#contrato-mínimo-aarch64-linux" id="toc-contrato-mínimo-aarch64-linux" class="nav-link" data-scroll-target="#contrato-mínimo-aarch64-linux">Contrato mínimo AArch64 Linux</a></li>
   <li><a href="#syscalls-de-esta-unidad" id="toc-syscalls-de-esta-unidad" class="nav-link" data-scroll-target="#syscalls-de-esta-unidad">Syscalls de esta unidad</a></li>
   <li><a href="#file-descriptors-iniciales" id="toc-file-descriptors-iniciales" class="nav-link" data-scroll-target="#file-descriptors-iniciales">File descriptors iniciales</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#diagnóstico-básico" id="toc-diagnóstico-básico" class="nav-link" data-scroll-target="#diagnóstico-básico">Diagnóstico básico</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1345,6 +1347,11 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="../../../slides/aarch64/09-syscalls-esenciales/" class="lab-button">Ver presentación Slidev</a></p>
 </div>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Esta unidad trata a Linux como API del kernel. En vez de llamar funciones de <code>libc</code>, el programa prepara registros y usa <code>svc #0</code> para pedir servicios como leer, escribir, abrir, cerrar o terminar.</p>
+<p>El objetivo no es memorizar una tabla enorme de syscalls. El objetivo es leer el contrato: número en <code>x8</code>, argumentos en <code>x0</code>-<code>x5</code>, retorno en <code>x0</code> y error como valor negativo.</p>
+</section>
 <section id="mapa-rápido" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
 <div class="lab-flow">
@@ -1565,6 +1572,19 @@ ul.task-list li input[type="checkbox"] {
 </section>
 </div>
 </section>
+<section id="diagnóstico-básico" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-básico">Diagnóstico básico</h2>
+<p>Si una syscall no funciona, revisa en este orden:</p>
+<ol type="1">
+<li>número correcto en <code>x8</code>;</li>
+<li>argumentos correctos en <code>x0</code>-<code>x5</code>;</li>
+<li>direcciones válidas para buffers o strings;</li>
+<li>longitudes correctas;</li>
+<li>retorno en <code>x0</code> antes de sobrescribirlo;</li>
+<li>salto a manejo de error si <code>x0 &lt; 0</code>.</li>
+</ol>
+<p>Esta lista será más útil que buscar errores al azar.</p>
+</section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
 <table class="caption-top table">
@@ -1623,6 +1643,16 @@ ul.task-list li input[type="checkbox"] {
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/syscalls-esenciales/01-contrato-syscall.html">Contrato de syscall</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/read.2.html"><code>read(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+</ul>
 
 
 </section>

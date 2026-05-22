@@ -1318,15 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-es-pstate" id="toc-qué-es-pstate" class="nav-link active" data-scroll-target="#qué-es-pstate">Qué es PSTATE</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-es-pstate" id="toc-qué-es-pstate" class="nav-link" data-scroll-target="#qué-es-pstate">Qué es PSTATE</a></li>
   <li><a href="#comparar-y-saltar" id="toc-comparar-y-saltar" class="nav-link" data-scroll-target="#comparar-y-saltar">Comparar y saltar</a></li>
   <li><a href="#flag-z" id="toc-flag-z" class="nav-link" data-scroll-target="#flag-z">Flag <code>Z</code></a></li>
   <li><a href="#flags-c-y-v" id="toc-flags-c-y-v" class="nav-link" data-scroll-target="#flags-c-y-v">Flags <code>C</code> y <code>V</code></a></li>
   <li><a href="#instrucciones-que-actualizan-flags" id="toc-instrucciones-que-actualizan-flags" class="nav-link" data-scroll-target="#instrucciones-que-actualizan-flags">Instrucciones que actualizan flags</a></li>
+  <li><a href="#flags-sobrescritos" id="toc-flags-sobrescritos" class="nav-link" data-scroll-target="#flags-sobrescritos">Flags sobrescritos</a></li>
   <li><a href="#qué-verá-gdb" id="toc-qué-verá-gdb" class="nav-link" data-scroll-target="#qué-verá-gdb">Qué verá GDB</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1365,6 +1368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Además de registros generales, AArch64 mantiene estado de condición. Los flags permiten que una comparación deje señales para que una instrucción posterior decida si salta o no.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a ubicar <code>PSTATE</code> como parte del estado visible del procesador y a enfocarte en cuatro flags: <code>N</code>, <code>Z</code>, <code>C</code> y <code>V</code>. Estos flags explican por qué una rama condicional se toma o no se toma.</p>
+<p>Esta lección prepara control de flujo, aritmética con overflow y debugging.</p>
+</section>
 <section id="qué-es-pstate" class="level2">
 <h2 class="anchored" data-anchor-id="qué-es-pstate">Qué es PSTATE</h2>
 <p><code>PSTATE</code> contiene estado del procesador visible a nivel arquitectónico. En esta unidad solo usaremos una parte pequeña: los flags <code>NZCV</code>.</p>
@@ -1449,7 +1457,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="flags-c-y-v" class="level2">
 <h2 class="anchored" data-anchor-id="flags-c-y-v">Flags <code>C</code> y <code>V</code></h2>
-<p><code>C</code> y <code>V</code> vienen de la unidad anterior:</p>
+<p><code>C</code> y <code>V</code> separan dos lecturas de la aritmética:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1494,6 +1502,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Resta y actualiza flags</td>
 </tr>
 <tr class="even">
+<td><code>tst</code></td>
+<td>Prueba bits y actualiza flags</td>
+</tr>
+<tr class="odd">
 <td><code>b.cond</code></td>
 <td>Consulta flags para decidir salto</td>
 </tr>
@@ -1503,27 +1515,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>vs overflow_signed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Este ejemplo prepara una unidad futura de aritmética y saltos. Aquí no se desarrollan todas las condiciones.</p>
 </section>
+<section id="flags-sobrescritos" class="level2">
+<h2 class="anchored" data-anchor-id="flags-sobrescritos">Flags sobrescritos</h2>
+<p>Los flags no duran como una variable protegida. Si otra instrucción actualiza <code>NZCV</code>, la rama posterior usará los flags nuevos.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">10</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>subs x2<span class="op">,</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt menor</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>b.lt</code> ya no corresponde a <code>cmp x0, #10</code>; corresponde a <code>subs x2, x2, #1</code>.</p>
+</section>
 <section id="qué-verá-gdb" class="level2">
 <h2 class="anchored" data-anchor-id="qué-verá-gdb">Qué verá GDB</h2>
 <p>GDB puede mostrar flags dentro de registros de estado como <code>cpsr</code> o mediante vista de registros.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">info</span> registers cpsr</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">info</span> registers cpsr</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La forma exacta de presentación puede variar por GDB y entorno. Lo importante es que el depurador permite observar el estado de condición.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="callout callout-style-simple callout-warning callout-titled" title="Flags no duran como variables normales">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Flags no duran como variables normales
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Una instrucción posterior puede cambiar flags. No pienses en <code>Z</code> o <code>C</code> como variables guardadas para siempre.</p>
-</div>
-</div>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que flags son variables normales</td>
+<td>cambian con instrucciones que actualizan <code>NZCV</code></td>
+</tr>
+<tr class="even">
+<td>Usar branch sin saber qué preparó flags</td>
+<td>busca <code>cmp</code>, <code>subs</code>, <code>adds</code> o <code>tst</code> anterior</td>
+</tr>
+<tr class="odd">
+<td>Confundir <code>C</code> con <code>V</code></td>
+<td><code>C</code> para unsigned, <code>V</code> para signed</td>
+</tr>
+<tr class="even">
+<td>Creer que toda instrucción cambia flags</td>
+<td>solo algunas formas lo hacen</td>
+</tr>
+<tr class="odd">
+<td>Mirar flags en GDB sin instrucción previa</td>
+<td>interpreta con contexto</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1533,6 +1574,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Indica qué flag se relaciona con overflow signed.</li>
 <li>Indica qué flag se relaciona con carry unsigned.</li>
 <li>Explica por qué no todas las instrucciones cambian flags.</li>
+<li>Explica qué pasa si <code>subs</code> aparece entre <code>cmp</code> y <code>b.eq</code>.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1543,8 +1585,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar <code>cmp</code> + <code>b.eq</code>.</label></li>
 <li><label><input type="checkbox">Puedo distinguir <code>C</code> de <code>V</code>.</label></li>
 <li><label><input type="checkbox">Sé que flags no son registros generales.</label></li>
+<li><label><input type="checkbox">Puedo reconocer flags sobrescritos.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Los flags son pequeñas señales de estado. No reemplazan registros generales, pero hacen posible que una comparación afecte una rama posterior. Leer control de flujo exige saber qué instrucción actualizó <code>NZCV</code>.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/modelo-aarch64/04-simd-floating-registers.html">SIMD/Floating Point</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GDB, <a href="https://sourceware.org/gdb/documentation/">Debugging with GDB</a>.</li>
+</ul>
 
 
 </section>

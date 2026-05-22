@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#file-wrapper" id="toc-file-wrapper" class="nav-link" data-scroll-target="#file-wrapper">File wrapper</a></li>
   <li><a href="#descriptor-no-es-recurso-completo" id="toc-descriptor-no-es-recurso-completo" class="nav-link" data-scroll-target="#descriptor-no-es-recurso-completo">Descriptor no es recurso completo</a></li>
   <li><a href="#descriptor-propio-como-contrato" id="toc-descriptor-propio-como-contrato" class="nav-link" data-scroll-target="#descriptor-propio-como-contrato">Descriptor propio como contrato</a></li>
+  <li><a href="#checklist-de-descriptor" id="toc-checklist-de-descriptor" class="nav-link" data-scroll-target="#checklist-de-descriptor">Checklist de descriptor</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1567,6 +1568,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Si el descriptor no responde esas preguntas, todavía no está completo.</p>
 </section>
+<section id="checklist-de-descriptor" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-descriptor">Checklist de descriptor</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Revisión</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>identidad</td>
+<td>¿este valor es handle, puntero o metadata?</td>
+</tr>
+<tr class="even">
+<td>recurso</td>
+<td>¿qué cosa real describe?</td>
+</tr>
+<tr class="odd">
+<td>ownership</td>
+<td>¿quién debe cerrarlo o liberarlo?</td>
+</tr>
+<tr class="even">
+<td>validez</td>
+<td>¿qué valor significa “vacío” o “cerrado”?</td>
+</tr>
+<tr class="odd">
+<td>límites</td>
+<td>¿hay <code>len</code>, <code>cap</code>, <code>rows</code> o <code>cols</code> suficientes?</td>
+</tr>
+<tr class="even">
+<td>cleanup</td>
+<td>¿qué función deja el descriptor en estado seguro?</td>
+</tr>
+</tbody>
+</table>
+<p>Un descriptor pequeño puede evitar pasar muchos argumentos sueltos, pero solo si su estado cuenta la verdad. Un fd cerrado guardado como si siguiera abierto es un descriptor mentiroso.</p>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1616,11 +1655,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué diferencia hay entre <code>len</code> y <code>cap</code>?</li>
 <li>¿Qué describe <code>Matrix</code> además de <code>data</code>?</li>
 <li>¿Por qué file wrapper necesita destructor?</li>
+<li>¿Qué valor podría representar “sin fd abierto”?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Descriptores hacen programas de bajo nivel más legibles. En vez de pasar cinco valores sueltos, guardas estado en un layout y operas con reglas.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>openat(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/openat.2.html</a></li>
+<li>Linux man-pages, <code>read(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/read.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/read.2.html</a></li>
+<li>Linux man-pages, <code>write(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/write.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/write.2.html</a></li>
+<li>Linux man-pages, <code>close(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/close.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/close.2.html</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

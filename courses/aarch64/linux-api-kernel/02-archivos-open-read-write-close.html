@@ -1318,10 +1318,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#patrón-principal" id="toc-patrón-principal" class="nav-link active" data-scroll-target="#patrón-principal">Patrón principal</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#patrón-principal" id="toc-patrón-principal" class="nav-link" data-scroll-target="#patrón-principal">Patrón principal</a></li>
   <li><a href="#syscalls-usadas" id="toc-syscalls-usadas" class="nav-link" data-scroll-target="#syscalls-usadas">Syscalls usadas</a></li>
   <li><a href="#programa-leer-un-archivo-y-escribir-en-stdout" id="toc-programa-leer-un-archivo-y-escribir-en-stdout" class="nav-link" data-scroll-target="#programa-leer-un-archivo-y-escribir-en-stdout">Programa: leer un archivo y escribir en stdout</a></li>
   <li><a href="#ejecutar" id="toc-ejecutar" class="nav-link" data-scroll-target="#ejecutar">Ejecutar</a></li>
+  <li><a href="#lectura-paso-a-paso-con-predicción" id="toc-lectura-paso-a-paso-con-predicción" class="nav-link" data-scroll-target="#lectura-paso-a-paso-con-predicción">Lectura paso a paso con predicción</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#qué-ocurre-con-el-buffer" id="toc-qué-ocurre-con-el-buffer" class="nav-link" data-scroll-target="#qué-ocurre-con-el-buffer">Qué ocurre con el buffer</a></li>
   <li><a href="#read-no-promete-llenar-el-buffer" id="toc-read-no-promete-llenar-el-buffer" class="nav-link" data-scroll-target="#read-no-promete-llenar-el-buffer"><code>read</code> no promete llenar el buffer</a></li>
   <li><a href="#write-también-retorna-cantidad" id="toc-write-también-retorna-cantidad" class="nav-link" data-scroll-target="#write-también-retorna-cantidad"><code>write</code> también retorna cantidad</a></li>
@@ -1365,6 +1370,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta lección une las syscalls esenciales en un flujo real. Abrimos un archivo, guardamos el <code>fd</code>, leemos bytes hacia un buffer, escribimos esos bytes en <code>stdout</code> y cerramos el recurso.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Flujo completo: <code>openat</code> → <code>read</code> → <code>write</code> → <code>close</code>.</li>
+<li>Cómo pasar el fd entre syscalls sin perderlo.</li>
+<li>Por qué <code>read</code> no promete llenar el buffer.</li>
+<li>Cómo usar la cantidad real leída en <code>write</code>.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender file descriptors y el contrato de syscall. Revisa <a href="../../../courses/aarch64/linux-api-kernel/01-file-descriptors-recursos.html">File descriptors y recursos</a>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Cada syscall produce un valor en <code>x0</code> que la siguiente syscall necesita. El arte es guardar esos valores en registros callee-saved (<code>x19</code>, <code>x20</code>) para que sobrevivan entre llamadas. <code>read</code> retorna bytes reales, no el máximo pedido. <code>write</code> debe recibir esa cantidad real, no el tamaño del buffer.</p>
+</section>
 <section id="patrón-principal" class="level2">
 <h2 class="anchored" data-anchor-id="patrón-principal">Patrón principal</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openat</span><span class="er">(</span><span class="ex">nombre</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> fd</span>
@@ -1495,6 +1517,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
+<section id="lectura-paso-a-paso-con-predicción" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-paso-a-paso-con-predicción">Lectura paso a paso con predicción</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Syscall</th>
+<th><code>x0</code> antes</th>
+<th style="text-align: right;"><code>x8</code></th>
+<th><code>x0</code> después</th>
+<th>Qué guardar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>openat</code></td>
+<td><code>AT_FDCWD</code></td>
+<td style="text-align: right;"><code>56</code></td>
+<td>fd o error</td>
+<td><code>x19 = fd</code></td>
+</tr>
+<tr class="even">
+<td><code>read</code></td>
+<td><code>x19</code> (fd)</td>
+<td style="text-align: right;"><code>63</code></td>
+<td>bytes leídos</td>
+<td><code>x20 = bytes</code></td>
+</tr>
+<tr class="odd">
+<td><code>write</code></td>
+<td><code>1</code> (stdout)</td>
+<td style="text-align: right;"><code>64</code></td>
+<td>bytes escritos</td>
+<td>verificar <code>&gt;= 0</code></td>
+</tr>
+<tr class="even">
+<td><code>close</code></td>
+<td><code>x19</code> (fd)</td>
+<td style="text-align: right;"><code>57</code></td>
+<td><code>0</code> o error</td>
+<td>verificar <code>&gt;= 0</code></td>
+</tr>
+<tr class="odd">
+<td><code>exit</code></td>
+<td><code>0</code></td>
+<td style="text-align: right;"><code>93</code></td>
+<td>no retorna</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Usar tamaño del buffer en <code>write</code></strong>: si <code>read</code> leyó 5 bytes de un buffer de 128, <code>write</code> con <code>x2 = 128</code> envía basura después de los 5 bytes válidos.</li>
+<li><strong>No verificar retorno de <code>read</code></strong>: <code>read</code> puede retornar <code>0</code> (EOF) o negativo (error). Ambos requieren manejo distinto.</li>
+<li><strong>Asumir que <code>read</code> llena el buffer</strong>: con archivos pequeños, pipes o terminales, <code>read</code> puede devolver menos bytes de los pedidos.</li>
+<li><strong>Olvidar <code>close</code> en ruta de éxito</strong>: el ejemplo tiene <code>close</code> antes de <code>exit</code>. Si lo omites, el kernel limpia al terminar, pero el hábito es cerrar.</li>
+</ul>
+</section>
 <section id="qué-ocurre-con-el-buffer" class="level2">
 <h2 class="anchored" data-anchor-id="qué-ocurre-con-el-buffer">Qué ocurre con el buffer</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">buffer</span> en .bss</span>
@@ -1531,6 +1613,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Un archivo en Linux se trabaja como recurso: abrir produce <code>fd</code>, leer o escribir usa ese <code>fd</code>, y cerrar termina el ciclo.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>openat(2)</code>, <code>read(2)</code>, <code>write(2)</code>, <code>close(2)</code>: contrato, retorno, errores. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>intro(2)</code>: introducción a syscalls y convenciones de retorno. <a href="https://www.man7.org/linux/man-pages/man2/intro.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/intro.2.html</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): instrucción <code>svc #0</code>. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+</ul>
 
 
 </section>

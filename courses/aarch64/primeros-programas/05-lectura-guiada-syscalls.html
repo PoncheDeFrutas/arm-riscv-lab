@@ -1318,12 +1318,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#patrón-general" id="toc-patrón-general" class="nav-link active" data-scroll-target="#patrón-general">Patrón general</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#patrón-general" id="toc-patrón-general" class="nav-link" data-scroll-target="#patrón-general">Patrón general</a></li>
   <li><a href="#leer-exit" id="toc-leer-exit" class="nav-link" data-scroll-target="#leer-exit">Leer <code>exit</code></a></li>
   <li><a href="#leer-write" id="toc-leer-write" class="nav-link" data-scroll-target="#leer-write">Leer <code>write</code></a></li>
   <li><a href="#dirección-no-es-contenido" id="toc-dirección-no-es-contenido" class="nav-link" data-scroll-target="#dirección-no-es-contenido">Dirección no es contenido</a></li>
   <li><a href="#svc-0-no-decide-solo" id="toc-svc-0-no-decide-solo" class="nav-link" data-scroll-target="#svc-0-no-decide-solo"><code>svc #0</code> no decide solo</a></li>
   <li><a href="#lectura-final-de-hello-world" id="toc-lectura-final-de-hello-world" class="nav-link" data-scroll-target="#lectura-final-de-hello-world">Lectura final de Hello World</a></li>
+  <li><a href="#diagnóstico-mínimo" id="toc-diagnóstico-mínimo" class="nav-link" data-scroll-target="#diagnóstico-mínimo">Diagnóstico mínimo</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre-de-la-unidad" id="toc-cierre-de-la-unidad" class="nav-link" data-scroll-target="#cierre-de-la-unidad">Cierre de la unidad</a></li>
@@ -1365,6 +1368,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta página junta los dos programas de la unidad y los lee por registros. La pregunta siempre es la misma: qué syscall pide <code>x8</code> y qué argumentos puso el programa antes de <code>svc #0</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer programas pequeños por contrato de syscall. En vez de memorizar líneas sueltas, vas a hacer siempre las mismas preguntas:</p>
+<ol type="1">
+<li>¿Qué número hay en <code>x8</code>?</li>
+<li>¿Qué syscall representa?</li>
+<li>¿Qué registros son argumentos para esa syscall?</li>
+<li>¿Qué cambia después de <code>svc #0</code>?</li>
+</ol>
+<p>Este método sirve para <code>exit</code>, <code>write</code>, <code>read</code> y muchas syscalls posteriores.</p>
+</section>
 <section id="patrón-general" class="level2">
 <h2 class="anchored" data-anchor-id="patrón-general">Patrón general</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">preparar</span> argumentos en registros</span>
@@ -1397,6 +1411,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>El kernel interpreta los argumentos según el número de syscall. Por eso leer <code>x0</code> sin mirar <code>x8</code> es una lectura incompleta.</p>
 </section>
 <section id="leer-exit" class="level2">
 <h2 class="anchored" data-anchor-id="leer-exit">Leer <code>exit</code></h2>
@@ -1424,7 +1439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p><code>svc #0</code> entra al kernel. Como <code>x8 = 93</code>, Linux interpreta el pedido como <code>exit</code>.</p>
+<p><code>svc #0</code> entra al kernel. Como <code>x8 = 93</code>, Linux interpreta el pedido como <code>exit</code>. El proceso termina y el shell puede mostrar <code>7</code> con <code>echo $?</code>.</p>
 </section>
 <section id="leer-write" class="level2">
 <h2 class="anchored" data-anchor-id="leer-write">Leer <code>write</code></h2>
@@ -1464,6 +1479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>Después de <code>write</code>, <code>x0</code> deja de ser file descriptor y pasa a contener el retorno: cantidad de bytes escritos o un error negativo. Si el programa va a usar ese valor, debe leerlo antes de sobrescribir <code>x0</code>.</p>
 </section>
 <section id="dirección-no-es-contenido" class="level2">
 <h2 class="anchored" data-anchor-id="dirección-no-es-contenido">Dirección no es contenido</h2>
@@ -1542,6 +1558,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>Lectura completa:</p>
+<ol type="1">
+<li><code>x8 = 64</code>, entonces el primer <code>svc #0</code> pide <code>write</code>.</li>
+<li>Para ese <code>write</code>, <code>x0 = 1</code> significa stdout.</li>
+<li><code>x1</code> apunta a <code>mensaje</code>.</li>
+<li><code>x2</code> indica cuántos bytes se escriben.</li>
+<li>Luego se prepara <code>x8 = 93</code>, entonces el segundo <code>svc #0</code> pide <code>exit</code>.</li>
+<li>Para ese <code>exit</code>, <code>x0 = 0</code> significa código de salida.</li>
+</ol>
+</section>
+<section id="diagnóstico-mínimo" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-mínimo">Diagnóstico mínimo</h2>
+<p>Cuando un programa con syscalls no hace lo esperado, revisa en este orden:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿<code>x8</code> tiene la syscall correcta?</td>
+<td><code>64</code> para <code>write</code>, <code>93</code> para <code>exit</code></td>
+</tr>
+<tr class="even">
+<td>¿Los argumentos corresponden a esa syscall?</td>
+<td><code>x0</code>, <code>x1</code>, <code>x2</code> para <code>write</code></td>
+</tr>
+<tr class="odd">
+<td>¿La dirección apunta a datos válidos?</td>
+<td><code>ldr x1, =mensaje</code></td>
+</tr>
+<tr class="even">
+<td>¿La longitud coincide con los bytes reales?</td>
+<td><code>len = . - mensaje</code></td>
+</tr>
+<tr class="odd">
+<td>¿Sobrescribiste un retorno antes de leerlo?</td>
+<td><code>write</code> devuelve en <code>x0</code></td>
+</tr>
+</tbody>
+</table>
+<p>Este orden evita buscar errores al azar.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Resultado típico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Olvidar preparar <code>x8</code></td>
+<td>el kernel interpreta otra syscall o falla</td>
+</tr>
+<tr class="even">
+<td>Pasar contenido en vez de dirección</td>
+<td><code>write</code> lee desde una dirección inválida</td>
+</tr>
+<tr class="odd">
+<td>Usar longitud incorrecta</td>
+<td>salida truncada o bytes extra</td>
+</tr>
+<tr class="even">
+<td>Pensar que <code>x0</code> siempre significa lo mismo</td>
+<td>lectura equivocada de <code>write</code> vs <code>exit</code></td>
+</tr>
+<tr class="odd">
+<td>Ignorar retorno de syscall en programas más grandes</td>
+<td>errores silenciosos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1551,6 +1652,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica qué pasa si <code>x8 = 93</code> y <code>x0 = 1</code>.</li>
 <li>Explica qué pasa si olvidas preparar <code>x2</code> antes de <code>write</code>.</li>
 <li>Explica por qué <code>svc #0</code> necesita contexto.</li>
+<li>Lee el programa <code>hello.s</code> de arriba sin mirar las tablas.</li>
+<li>Explica qué valor queda en <code>x0</code> después de <code>write</code>.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1561,11 +1664,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar <code>x8</code>.</label></li>
 <li><label><input type="checkbox">Puedo explicar <code>svc #0</code>.</label></li>
 <li><label><input type="checkbox">Puedo distinguir dirección de contenido.</label></li>
+<li><label><input type="checkbox">Puedo revisar un programa siguiendo preguntas ordenadas.</label></li>
 </ul>
 </section>
 <section id="cierre-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="cierre-de-la-unidad">Cierre de la unidad</h2>
 <p>Ya puedes escribir programas AArch64 pequeños que hacen trabajo real en Linux: terminan correctamente, escriben bytes y muestran su resultado con herramientas del laboratorio.</p>
+<p>Más importante: ya tienes un método de lectura. Primero identifica <code>x8</code>; después interpreta los argumentos. Esa regla se repetirá en <code>read</code>, archivos, memoria, procesos y diagnóstico con <code>strace</code>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/exit.2.html"><code>exit(2)</code></a>.</li>
+</ul>
 
 
 </section>

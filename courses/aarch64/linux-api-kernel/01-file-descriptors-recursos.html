@@ -1318,11 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-es-un-file-descriptor" id="toc-qué-es-un-file-descriptor" class="nav-link active" data-scroll-target="#qué-es-un-file-descriptor">Qué es un file descriptor</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#qué-es-un-file-descriptor" id="toc-qué-es-un-file-descriptor" class="nav-link" data-scroll-target="#qué-es-un-file-descriptor">Qué es un file descriptor</a></li>
   <li><a href="#ciclo-de-vida-de-un-recurso" id="toc-ciclo-de-vida-de-un-recurso" class="nav-link" data-scroll-target="#ciclo-de-vida-de-un-recurso">Ciclo de vida de un recurso</a></li>
   <li><a href="#guardar-el-fd-retornado-por-openat" id="toc-guardar-el-fd-retornado-por-openat" class="nav-link" data-scroll-target="#guardar-el-fd-retornado-por-openat">Guardar el fd retornado por <code>openat</code></a></li>
   <li><a href="#lectura-del-ejemplo" id="toc-lectura-del-ejemplo" class="nav-link" data-scroll-target="#lectura-del-ejemplo">Lectura del ejemplo</a></li>
   <li><a href="#por-qué-cerrar" id="toc-por-qué-cerrar" class="nav-link" data-scroll-target="#por-qué-cerrar">Por qué cerrar</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#lectura-paso-a-paso" id="toc-lectura-paso-a-paso" class="nav-link" data-scroll-target="#lectura-paso-a-paso">Lectura paso a paso</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1363,6 +1368,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un programa Linux no escribe directamente en pantalla ni manipula archivos por cuenta propia. Pide recursos al kernel. Cuando el kernel abre uno, devuelve un file descriptor: un entero pequeño que el proceso usa como handle.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué es un file descriptor y qué NO es.</li>
+<li>Los tres fd iniciales: stdin, stdout, stderr.</li>
+<li>Ciclo de vida: abrir, usar, cerrar.</li>
+<li>Por qué debes guardar el fd antes de otra syscall.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender el contrato de syscall (registros <code>x0</code>-<code>x5</code>, <code>x8</code>, <code>svc #0</code>, retorno en <code>x0</code>). Revisa la unidad de syscalls esenciales si necesitas repaso.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Un fd es un número, no un puntero. El kernel lo asigna cuando abres un recurso y tu programa lo usa como handle para operaciones posteriores. Los fd 0, 1 y 2 ya existen al iniciar; cada <code>openat</code> exitoso devuelve el siguiente disponible.</p>
+<p>El problema principal en assembly: <code>x0</code> recibe el retorno de cada syscall y también es el primer argumento. Si no guardas el fd en otro registro (<code>x19</code> por ejemplo), lo pierdes en la siguiente llamada.</p>
+</section>
 <section id="qué-es-un-file-descriptor" class="level2">
 <h2 class="anchored" data-anchor-id="qué-es-un-file-descriptor">Qué es un file descriptor</h2>
 <p>Un file descriptor, o <code>fd</code>, es un número entero dentro del proceso. Ese número no contiene el archivo ni apunta al buffer. Solo identifica un recurso que el kernel mantiene abierto para ese proceso.</p>
@@ -1528,19 +1551,108 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>close</code> no recibe una dirección de archivo. Recibe el número <code>fd</code>.</p>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Tratar fd como puntero</strong>: <code>ldr x1, [x0]</code> con un fd en <code>x0</code> es un error. El fd es un handle entero, no una dirección de memoria.</li>
+<li><strong>Asumir que <code>openat</code> siempre devuelve fd 3</strong>: si ya cerraste fd 3, el kernel reusa el número más bajo disponible. Siempre usa el valor real de <code>x0</code>.</li>
+<li><strong>No guardar el fd antes de otra syscall</strong>: <code>x0</code> se sobrescribe. Si llamas <code>close</code> sin guardar el fd, cierras basura o el recurso equivocado.</li>
+<li><strong>Confundir fd 1 con exit code 1</strong>: fd 1 es stdout. Exit code 1 es un código de error. Son contextos completamente distintos.</li>
+</ul>
+</section>
+<section id="lectura-paso-a-paso" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-paso-a-paso">Lectura paso a paso</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Línea</th>
+<th>Qué hace</th>
+<th>Estado después</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mov x0, #AT_FDCWD</code></td>
+<td>Argumento 1: directorio de trabajo actual</td>
+<td><code>x0 = -100</code></td>
+</tr>
+<tr class="even">
+<td><code>ldr x1, =nombre</code></td>
+<td>Argumento 2: puntero al nombre</td>
+<td><code>x1 = dirección</code></td>
+</tr>
+<tr class="odd">
+<td><code>mov x2, #O_RDONLY</code></td>
+<td>Argumento 3: flags solo lectura</td>
+<td><code>x2 = 0</code></td>
+</tr>
+<tr class="even">
+<td><code>mov x8, #56</code></td>
+<td>Número de syscall: <code>openat</code></td>
+<td><code>x8 = 56</code></td>
+</tr>
+<tr class="odd">
+<td><code>svc #0</code></td>
+<td>Entra al kernel</td>
+<td>Kernel abre archivo</td>
+</tr>
+<tr class="even">
+<td><code>cmp x0, #0</code></td>
+<td>Revisa retorno</td>
+<td><code>x0 &gt;= 0</code> = éxito</td>
+</tr>
+<tr class="odd">
+<td><code>mov x19, x0</code></td>
+<td>Guarda fd</td>
+<td><code>x19 = fd</code>, <code>x0</code> libre</td>
+</tr>
+<tr class="even">
+<td><code>mov x0, x19</code></td>
+<td>Prepara argumento para <code>close</code></td>
+<td><code>x0 = fd</code></td>
+</tr>
+<tr class="odd">
+<td><code>mov x8, #57</code></td>
+<td>Número de syscall: <code>close</code></td>
+<td><code>x8 = 57</code></td>
+</tr>
+<tr class="even">
+<td><code>svc #0</code></td>
+<td>Cierra el recurso</td>
+<td><code>x0 = 0</code> o error</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado antes de verificar con QEMU.</p>
 <ol type="1">
 <li>¿Qué contiene <code>x0</code> después de <code>openat</code> si funciona?</li>
 <li>¿Qué contiene <code>x0</code> después de <code>openat</code> si falla?</li>
 <li>¿Por qué el ejemplo copia <code>x0</code> hacia <code>x19</code>?</li>
 <li>¿Qué pasaría si <code>write</code> se ejecutara antes de guardar el <code>fd</code>?</li>
 <li>Explica por qué <code>fd 1</code> y código de salida <code>1</code> no significan lo mismo.</li>
+<li>Si abres dos archivos seguidos sin cerrar ninguno, ¿qué fd obtiene el segundo?</li>
+<li>¿Qué pasa si cierras fd 1 y luego intentas <code>write</code> a stdout?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Pensar en Linux como API del kernel empieza por esta idea: el kernel abre un recurso, entrega un número y espera que el proceso use ese número correctamente.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>openat(2)</code>, <code>close(2)</code>: contrato de syscalls, retorno, errores. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>stdin(3)</code>, <code>stdout(3)</code>, <code>stderr(3)</code>: file descriptors estándar. <a href="https://www.man7.org/linux/man-pages/man3/" class="uri">https://www.man7.org/linux/man-pages/man3/</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): instrucción <code>svc #0</code> y exception handling. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+</ul>
 
 
 </section>

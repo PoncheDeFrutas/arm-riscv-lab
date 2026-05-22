@@ -1318,11 +1318,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#secciones-organización-para-construir" id="toc-secciones-organización-para-construir" class="nav-link active" data-scroll-target="#secciones-organización-para-construir">Secciones: organización para construir</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#secciones-organización-para-construir" id="toc-secciones-organización-para-construir" class="nav-link" data-scroll-target="#secciones-organización-para-construir">Secciones: organización para construir</a></li>
   <li><a href="#ejemplo-con-datos-visibles" id="toc-ejemplo-con-datos-visibles" class="nav-link" data-scroll-target="#ejemplo-con-datos-visibles">Ejemplo con datos visibles</a></li>
   <li><a href="#símbolos" id="toc-símbolos" class="nav-link" data-scroll-target="#símbolos">Símbolos</a></li>
   <li><a href="#relocation" id="toc-relocation" class="nav-link" data-scroll-target="#relocation">Relocation</a></li>
+  <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-de-diagnóstico" id="toc-errores-de-diagnóstico" class="nav-link" data-scroll-target="#errores-de-diagnóstico">Errores de diagnóstico</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1362,6 +1365,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Las secciones organizan el contenido del archivo. Los símbolos nombran direcciones o piezas de código/datos. Las relocations marcan lugares que el linker debe ajustar cuando conozca el layout final.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer tres vistas que suelen aparecer juntas: secciones para organizar contenido, símbolos para nombrarlo y relocations para registrar ajustes pendientes. La clave es no confundirlas con lo que ejecuta directamente el CPU.</p>
+</section>
 <section id="secciones-organización-para-construir" class="level2">
 <h2 class="anchored" data-anchor-id="secciones-organización-para-construir">Secciones: organización para construir</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-S</span> min</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1520,9 +1527,83 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-objdump <span class="at">-dr</span> main.o</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En <code>.o</code>, pueden aparecer relocations. En el ejecutable final, muchas ya estarán resueltas. En binarios dinámicos, algunas quedan para el dynamic loader.</p>
 </section>
+<section id="método-de-lectura" class="level2">
+<h2 class="anchored" data-anchor-id="método-de-lectura">Método de lectura</h2>
+<p>Usa este orden cuando tengas un objeto <code>.o</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paso</th>
+<th>Comando</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>readelf -S main.o</code></td>
+<td>¿qué secciones produjo el assembler?</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>nm main.o</code></td>
+<td>¿qué nombres define o necesita?</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><code>readelf -r main.o</code></td>
+<td>¿qué direcciones quedan pendientes?</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><code>objdump -dr main.o</code></td>
+<td>¿qué instrucción tiene relocation asociada?</td>
+</tr>
+</tbody>
+</table>
+<p>Después de enlazar, repite parte de la lectura en el ejecutable. Muchas relocations del <code>.o</code> deben desaparecer porque el linker ya conoce el layout final.</p>
+</section>
 <section id="error-común" class="level2">
 <h2 class="anchored" data-anchor-id="error-común">Error común</h2>
 <p>Confundir símbolo con variable. Una variable puede tener un símbolo, pero símbolo es más general: puede nombrar función, etiqueta, objeto, sección o referencia externa.</p>
+</section>
+<section id="errores-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="errores-de-diagnóstico">Errores de diagnóstico</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Mejor lectura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que <code>.bss</code> ocupa todos sus ceros en disco</td>
+<td>comparar tamaño de sección y tamaño de archivo</td>
+</tr>
+<tr class="even">
+<td>leer <code>U printf</code> como bug inmediato</td>
+<td>puede ser normal antes de enlazar con <code>libc</code></td>
+</tr>
+<tr class="odd">
+<td>creer que relocation es instrucción</td>
+<td>verla como trabajo pendiente del linker</td>
+</tr>
+<tr class="even">
+<td>buscar una variable solo por dirección</td>
+<td>revisar primero símbolo y sección</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1538,6 +1619,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/elf-linking-loading/04-segmentos-loader-permisos.html">Segmentos, loader y permisos</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils, <em>nm</em>: <a href="https://sourceware.org/binutils/docs/binutils/nm.html" class="uri">https://sourceware.org/binutils/docs/binutils/nm.html</a></li>
+<li>GNU Binutils, <em>objdump</em>: <a href="https://sourceware.org/binutils/docs/binutils/objdump.html" class="uri">https://sourceware.org/binutils/docs/binutils/objdump.html</a></li>
+<li>GNU Binutils, <em>readelf</em>: <a href="https://sourceware.org/binutils/docs/binutils/readelf.html" class="uri">https://sourceware.org/binutils/docs/binutils/readelf.html</a></li>
+</ul>
 
 
 </section>

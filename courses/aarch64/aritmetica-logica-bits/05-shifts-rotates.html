@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#rotar-con-ror" id="toc-rotar-con-ror" class="nav-link" data-scroll-target="#rotar-con-ror">Rotar con <code>ror</code></a></li>
   <li><a href="#extr-ventana-entre-dos-registros" id="toc-extr-ventana-entre-dos-registros" class="nav-link" data-scroll-target="#extr-ventana-entre-dos-registros"><code>extr</code>: ventana entre dos registros</a></li>
   <li><a href="#cuándo-usar-cada-uno" id="toc-cuándo-usar-cada-uno" class="nav-link" data-scroll-target="#cuándo-usar-cada-uno">Cuándo usar cada uno</a></li>
+  <li><a href="#shifts-y-límites" id="toc-shifts-y-límites" class="nav-link" data-scroll-target="#shifts-y-límites">Shifts y límites</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1498,6 +1499,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="shifts-y-límites" class="level2">
+<h2 class="anchored" data-anchor-id="shifts-y-límites">Shifts y límites</h2>
+<p>Un shift no sabe si tu cálculo tenía sentido lógico. Solo mueve bits:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Caso</th>
+<th>Riesgo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>lsl</code> con valor grande</td>
+<td>bits altos pueden perderse</td>
+</tr>
+<tr class="even">
+<td><code>lsr</code> sobre signed negativo</td>
+<td>entra cero y cambia interpretación</td>
+</tr>
+<tr class="odd">
+<td><code>asr</code> sobre campo unsigned</td>
+<td>conserva signo que quizá no existe</td>
+</tr>
+<tr class="even">
+<td>usar shift como multiplicación</td>
+<td>solo es equivalente si no importan bits perdidos</td>
+</tr>
+</tbody>
+</table>
+<p>Para offsets de arrays, <code>lsl #3</code> suele ser correcto cuando cada elemento mide 8 bytes. Para valores signed, decide primero si el desplazamiento representa aritmética o manipulación de bits.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1519,10 +1555,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Cuál conserva signo?</li>
 <li>¿Cuál usarías para campos de bits?</li>
 </ul>
+<ol start="3" type="1">
+<li>Si <code>x1</code> es índice de elementos de 8 bytes, ¿por qué <code>lsl x2, x1, #3</code> produce offset en bytes?</li>
+</ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Shifts son herramientas de escala y selección. Rotates son herramientas de reordenamiento sin pérdida. En ambos casos, sigues trabajando dentro de registros.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

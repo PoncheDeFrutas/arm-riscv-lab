@@ -1321,13 +1321,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve-una-syscall" id="toc-qué-problema-resuelve-una-syscall" class="nav-link active" data-scroll-target="#qué-problema-resuelve-una-syscall">Qué problema resuelve una syscall</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve-una-syscall" id="toc-qué-problema-resuelve-una-syscall" class="nav-link" data-scroll-target="#qué-problema-resuelve-una-syscall">Qué problema resuelve una syscall</a></li>
+  <li><a href="#user-mode-y-kernel-mode" id="toc-user-mode-y-kernel-mode" class="nav-link" data-scroll-target="#user-mode-y-kernel-mode">User mode y kernel mode</a></li>
   <li><a href="#svc-0" id="toc-svc-0" class="nav-link" data-scroll-target="#svc-0"><code>svc #0</code></a></li>
   <li><a href="#tabla-de-registros" id="toc-tabla-de-registros" class="nav-link" data-scroll-target="#tabla-de-registros">Tabla de registros</a></li>
   <li><a href="#plantilla-mental" id="toc-plantilla-mental" class="nav-link" data-scroll-target="#plantilla-mental">Plantilla mental</a></li>
   <li><a href="#syscall-vs-función-de-libc" id="toc-syscall-vs-función-de-libc" class="nav-link" data-scroll-target="#syscall-vs-función-de-libc">Syscall vs función de <code>libc</code></a></li>
   <li><a href="#retornos" id="toc-retornos" class="nav-link" data-scroll-target="#retornos">Retornos</a></li>
+  <li><a href="#diagnóstico-mínimo" id="toc-diagnóstico-mínimo" class="nav-link" data-scroll-target="#diagnóstico-mínimo">Diagnóstico mínimo</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1367,6 +1371,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Una syscall es una petición al kernel. Tu programa corre en user mode y no puede hacer todo directamente: para leer entrada, escribir salida, abrir archivos o terminar el proceso, prepara registros y ejecuta <code>svc #0</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a formalizar el patrón que ya apareció en programas mínimos. Una syscall no es una función de C y <code>svc #0</code> no tiene significado completo por sí sola. Linux decide qué hacer leyendo registros.</p>
+<p>Al terminar, debes poder explicar qué va en <code>x8</code>, qué va en <code>x0</code>-<code>x5</code>, qué devuelve <code>x0</code> y cómo reconocer un error mínimo.</p>
+</section>
 <section id="qué-problema-resuelve-una-syscall" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve-una-syscall">Qué problema resuelve una syscall</h2>
 <p>Un programa de usuario no escribe directamente en la terminal ni abre archivos por su cuenta. Esas operaciones pertenecen al sistema operativo.</p>
@@ -1395,6 +1404,11 @@ Figura&nbsp;1: Contrato conceptual de una syscall Linux en AArch64.
 </div>
 </div>
 <p><code>EL0</code> y <code>EL1</code> vienen del mapa inicial de Unidad 03. Aquí no estudiaremos excepciones en detalle; solo usaremos la idea práctica: userland pide, kernel responde.</p>
+</section>
+<section id="user-mode-y-kernel-mode" class="level2">
+<h2 class="anchored" data-anchor-id="user-mode-y-kernel-mode">User mode y kernel mode</h2>
+<p>En user mode, tu programa tiene permisos limitados. Puede calcular, mover datos entre registros y acceder a memoria válida del proceso, pero no debe controlar directamente recursos compartidos como archivos, terminal, memoria del kernel o dispositivos.</p>
+<p>El kernel mantiene esas reglas. Por eso el programa prepara una petición y entra por una puerta controlada. En AArch64 Linux, esa puerta para syscalls es <code>svc #0</code>.</p>
 </section>
 <section id="svc-0" class="level2">
 <h2 class="anchored" data-anchor-id="svc-0"><code>svc #0</code></h2>
@@ -1550,6 +1564,18 @@ Figura&nbsp;1: Contrato conceptual de una syscall Linux en AArch64.
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No convertiremos todavía ese valor a <code>errno</code>. Basta reconocer la rama de error.</p>
 </section>
+<section id="diagnóstico-mínimo" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-mínimo">Diagnóstico mínimo</h2>
+<p>Cuando algo falla, pregunta:</p>
+<ol type="1">
+<li>¿<code>x8</code> tiene el número correcto?</li>
+<li>¿Los argumentos están en registros correctos?</li>
+<li>¿Un argumento es dirección o valor inmediato?</li>
+<li>¿Leí <code>x0</code> antes de sobrescribirlo?</li>
+<li>¿Estoy interpretando <code>x0</code> según la syscall correcta?</li>
+</ol>
+<p>Este orden ayuda a depurar sin adivinar.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1557,11 +1583,33 @@ Figura&nbsp;1: Contrato conceptual de una syscall Linux en AArch64.
 <li>¿Qué registro contiene retorno?</li>
 <li>¿Qué hace <code>svc #0</code> si no preparaste <code>x8</code>?</li>
 <li>¿Por qué <code>printf</code> no es lo mismo que <code>write</code> syscall?</li>
+<li>Explica por qué <code>x0</code> puede ser argumento antes y retorno después.</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo explicar qué es una syscall.</label></li>
+<li><label><input type="checkbox">Puedo explicar qué hace <code>svc #0</code>.</label></li>
+<li><label><input type="checkbox">Puedo ubicar número de syscall en <code>x8</code>.</label></li>
+<li><label><input type="checkbox">Puedo ubicar argumentos en <code>x0</code>-<code>x5</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer retorno en <code>x0</code>.</label></li>
+<li><label><input type="checkbox">Puedo reconocer error negativo.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>El contrato no cambia de una syscall a otra: preparas registros, pones número en <code>x8</code>, ejecutas <code>svc #0</code>, lees retorno en <code>x0</code>. Las lecciones siguientes solo cambian qué número y qué argumentos se usan.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/syscalls-esenciales/02-exit-write.html"><code>exit</code> y <code>write</code></a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/intro.2.html"><code>intro(2)</code></a>.</li>
+</ul>
 
 
 </section>

@@ -1318,13 +1318,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#dirección-contenido-y-valor" id="toc-dirección-contenido-y-valor" class="nav-link active" data-scroll-target="#dirección-contenido-y-valor">Dirección, contenido y valor</a></li>
-  <li><a href="#punteros-como-números" id="toc-punteros-como-números" class="nav-link" data-scroll-target="#punteros-como-números">Punteros como números</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#dirección-contenido-y-valor" id="toc-dirección-contenido-y-valor" class="nav-link" data-scroll-target="#dirección-contenido-y-valor">Dirección, contenido y valor</a></li>
+  <li><a href="#punteros-como-números" id="toc-punteros-como-números" class="nav-link" data-scroll-target="#punteros-como-números">Punteros como números</a>
+  <ul class="collapse">
+  <li><a href="#lectura-paso-a-paso-con-predicción" id="toc-lectura-paso-a-paso-con-predicción" class="nav-link" data-scroll-target="#lectura-paso-a-paso-con-predicción">Lectura paso a paso con predicción</a></li>
+  </ul></li>
   <li><a href="#mismos-bytes-varias-interpretaciones" id="toc-mismos-bytes-varias-interpretaciones" class="nav-link" data-scroll-target="#mismos-bytes-varias-interpretaciones">Mismos bytes, varias interpretaciones</a></li>
   <li><a href="#ejemplo-de-memoria" id="toc-ejemplo-de-memoria" class="nav-link" data-scroll-target="#ejemplo-de-memoria">Ejemplo de memoria</a></li>
   <li><a href="#relación-con-debugging" id="toc-relación-con-debugging" class="nav-link" data-scroll-target="#relación-con-debugging">Relación con debugging</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre-de-la-unidad" id="toc-cierre-de-la-unidad" class="nav-link" data-scroll-target="#cierre-de-la-unidad">Cierre de la unidad</a></li>
   </ul>
@@ -1365,6 +1373,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta lección cierra la unidad con la distinción más importante para debugging: dirección, contenido y valor no son lo mismo. Si entiendes esa separación, podrás mirar registros y memoria sin confundir lo que estás viendo.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Diferencia entre dirección, contenido y valor interpretado.</li>
+<li>Cómo funcionan los punteros como direcciones en registros.</li>
+<li>Cómo leer memoria con distintos tamaños.</li>
+<li>Por qué el contexto decide si un número es puntero o dato.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender endianness y tamaños de acceso (byte, word, doubleword). Revisa <a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html">Endianness y alineación</a> si necesitas repaso.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Tres conceptos que siempre deben separarse:</p>
+<ol type="1">
+<li><strong>Dirección</strong>: un número que identifica dónde está algo en memoria.</li>
+<li><strong>Contenido</strong>: los bytes guardados en esa dirección.</li>
+<li><strong>Valor</strong>: lo que esos bytes significan según cómo los interpretes.</li>
+</ol>
+<p>Un puntero es simplemente un registro que guarda una dirección. En AArch64, las direcciones de userland son de 64 bits y se guardan en registros <code>Xn</code>. Usar <code>Wn</code> para una dirección es un error porque trunca los 32 bits altos.</p>
+</section>
 <section id="dirección-contenido-y-valor" class="level2">
 <h2 class="anchored" data-anchor-id="dirección-contenido-y-valor">Dirección, contenido y valor</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Dirección:</span> 0x400080</span>
@@ -1440,11 +1471,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<section id="lectura-paso-a-paso-con-predicción" class="level3">
+<h3 class="anchored" data-anchor-id="lectura-paso-a-paso-con-predicción">Lectura paso a paso con predicción</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">valor:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">42</span>          <span class="op">//</span> <span class="bn">0x0000002A</span> en little endian<span class="op">:</span> <span class="dv">2</span><span class="er">A</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>text</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    adr x0<span class="op">,</span> valor     <span class="op">//</span> paso <span class="dv">1</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    ldr w1<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span>      <span class="op">//</span> paso <span class="dv">2</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    ldrb w2<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span>     <span class="op">//</span> paso <span class="dv">3</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    ldr x3<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span>      <span class="op">//</span> paso <span class="dv">4</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paso</th>
+<th>Instrucción</th>
+<th>Registro</th>
+<th>Valor esperado</th>
+<th>Qué pasó</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>adr x0, valor</code></td>
+<td><code>x0</code></td>
+<td><code>0x400080</code></td>
+<td>Dirección de <code>valor</code></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>ldr w1, [x0]</code></td>
+<td><code>w1</code></td>
+<td><code>42</code></td>
+<td>Lee 4 bytes y reconstruye el word</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><code>ldrb w2, [x0]</code></td>
+<td><code>w2</code></td>
+<td><code>0x2A</code> = <code>42</code></td>
+<td>Lee solo el primer byte</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><code>ldr x3, [x0]</code></td>
+<td><code>x3</code></td>
+<td><code>42</code></td>
+<td>Lee 8 bytes (doubleword), pero solo los primeros 4 son <code>valor</code></td>
+</tr>
+</tbody>
+</table>
+<p>El paso 4 es peligroso: <code>ldr x3, [x0]</code> lee 8 bytes desde la dirección. Si solo definimos un <code>.word</code> (4 bytes), los siguientes 4 bytes pertenecen a otra cosa o a padding. Esto puede leer datos inesperados.</p>
+</section>
 </section>
 <section id="mismos-bytes-varias-interpretaciones" class="level2">
 <h2 class="anchored" data-anchor-id="mismos-bytes-varias-interpretaciones">Mismos bytes, varias interpretaciones</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Bytes:</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">41</span> 42 43 00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Bytes:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">41</span> 42 43 00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -1479,17 +1571,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ejemplo-de-memoria" class="level2">
 <h2 class="anchored" data-anchor-id="ejemplo-de-memoria">Ejemplo de memoria</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Dirección</span>      Byte</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400080</span>       41</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400081</span>       42</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400082</span>       43</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400083</span>       00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Dirección</span>      Byte</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400080</span>       41</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400081</span>       42</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400082</span>       43</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0x400083</span>       00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si lees byte por byte:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0x41,</span> 0x42, 0x43, 0x00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0x41,</span> 0x42, 0x43, 0x00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si lees como texto ASCII:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ABC\0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ABC\0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si lees como <code>word</code> little endian:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0x00434241</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0x00434241</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="relación-con-debugging" class="level2">
 <h2 class="anchored" data-anchor-id="relación-con-debugging">Relación con debugging</h2>
@@ -1537,15 +1629,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Usar <code>Wn</code> para guardar una dirección</strong>: <code>w0</code> tiene 32 bits. Una dirección AArch64 necesita 64 bits. Si guardas una dirección en <code>w0</code>, truncas los 32 bits altos y el puntero apunta a memoria incorrecta.</li>
+<li><strong>Leer más bytes de los definidos</strong>: <code>ldr x0, [sp]</code> lee 8 bytes. Si solo reservaste 4 bytes en el stack, lees basura o datos de otra variable.</li>
+<li><strong>Confundir dirección con contenido</strong>: <code>x0 = 0x400080</code> no significa que <code>x0</code> vale <code>0x400080</code> como dato. Significa que <code>x0</code> apunta a esa dirección. El contenido está en <code>[x0]</code>.</li>
+<li><strong>No verificar alineación antes de <code>ldr</code></strong>: acceder a un <code>word</code> desde una dirección no múltiplo de 4 puede funcionar pero con penalización, o causar fault en configuraciones estrictas.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado antes de verificar con GDB.</p>
 <ol type="1">
 <li>En el ejemplo <code>2A 00 00 00</code>, explica el valor como <code>uint32</code> little endian.</li>
 <li>Explica la diferencia entre <code>adr x0, valor</code> y <code>ldr w1, [x0]</code>.</li>
 <li>Interpreta <code>41 42 43 00</code> como ASCII.</li>
 <li>Interpreta <code>41 42 43 00</code> como <code>uint32</code> little endian.</li>
 <li>Explica por qué una dirección también es un valor guardado en un registro.</li>
+<li>Si <code>x0 = 0x400100</code> y en esa dirección hay los bytes <code>FF FF FF FF</code>, ¿cuál es el valor de <code>w0</code> después de <code>ldr w0, [x0]</code>? ¿Y el valor signed de 32 bits?</li>
+<li>¿Por qué es incorrecto usar <code>mov w0, #0x400100</code> para guardar una dirección?</li>
 </ol>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Debes poder mirar un registro y preguntarte: ¿es dirección o es dato? Si es dirección, ¿cuántos bytes leo desde ahí? Si es dato, ¿qué tamaño y interpretación aplico? Esa triple pregunta es la base para todo debugging en AArch64.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1560,6 +1668,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="cierre-de-la-unidad">Cierre de la unidad</h2>
 <p>Si puedes mirar bytes y preguntarte “qué tamaño leo” y “qué interpretación aplico”, ya tienes la base mental para estudiar memoria, registros, punteros, stack y debugging en AArch64.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture — A64 Instruction Set Architecture Guide</em>: instrucciones <code>adr</code>, <code>ldr</code>, <code>ldrb</code>, direccionamiento y tamaños de acceso. <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): modelo de memoria AArch64, accesos alineados y no alineados. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: punteros, direccionamiento indirecto y lectura de memoria.</li>
+<li>Sourceware, <em>GDB Documentation</em>: inspección de registros y memoria con <code>print</code>, <code>x</code>, <code>examine</code>. <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

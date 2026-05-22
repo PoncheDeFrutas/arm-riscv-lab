@@ -1318,10 +1318,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#del-archivo-fuente-al-ejecutable" id="toc-del-archivo-fuente-al-ejecutable" class="nav-link active" data-scroll-target="#del-archivo-fuente-al-ejecutable">Del archivo fuente al ejecutable</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#del-archivo-fuente-al-ejecutable" id="toc-del-archivo-fuente-al-ejecutable" class="nav-link" data-scroll-target="#del-archivo-fuente-al-ejecutable">Del archivo fuente al ejecutable</a></li>
+  <li><a href="#objeto-estática-y-compartida" id="toc-objeto-estática-y-compartida" class="nav-link" data-scroll-target="#objeto-estática-y-compartida">Objeto, estática y compartida</a></li>
   <li><a href="#librería-estática" id="toc-librería-estática" class="nav-link" data-scroll-target="#librería-estática">Librería estática</a></li>
   <li><a href="#librería-compartida" id="toc-librería-compartida" class="nav-link" data-scroll-target="#librería-compartida">Librería compartida</a></li>
+  <li><a href="#qué-revisar-cuando-una-librería-no-funciona" id="toc-qué-revisar-cuando-una-librería-no-funciona" class="nav-link" data-scroll-target="#qué-revisar-cuando-una-librería-no-funciona">Qué revisar cuando una librería no funciona</a></li>
   <li><a href="#lectura-guiada-c-assembly-printf" id="toc-lectura-guiada-c-assembly-printf" class="nav-link" data-scroll-target="#lectura-guiada-c-assembly-printf">Lectura guiada: C + assembly + printf</a></li>
+  <li><a href="#lectura-integrada" id="toc-lectura-integrada" class="nav-link" data-scroll-target="#lectura-integrada">Lectura integrada</a></li>
   <li><a href="#qué-queda-para-unidad-posterior" id="toc-qué-queda-para-unidad-posterior" class="nav-link" data-scroll-target="#qué-queda-para-unidad-posterior">Qué queda para unidad posterior</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1363,6 +1367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando una función assembly respeta ABI, puede dejar de ser un ejemplo aislado. Puede convertirse en objeto reutilizable, librería estática o librería compartida.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a conectar la ABI con empaquetado de código. La misma función assembly puede vivir como objeto <code>.o</code>, dentro de una librería estática <code>.a</code> o dentro de una librería compartida <code>.so</code>; en todos los casos debe respetar el contrato de llamada.</p>
+</section>
 <section id="del-archivo-fuente-al-ejecutable" class="level2">
 <h2 class="anchored" data-anchor-id="del-archivo-fuente-al-ejecutable">Del archivo fuente al ejecutable</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sumar.s</span></span>
@@ -1374,6 +1382,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">-</span><span class="op">&gt;</span> app con runtime de C y libc</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>GCC puede manejar este flujo:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc main.c sumar.s <span class="at">-o</span> app</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="objeto-estática-y-compartida" class="level2">
+<h2 class="anchored" data-anchor-id="objeto-estática-y-compartida">Objeto, estática y compartida</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Forma</th>
+<th>Qué contiene</th>
+<th>Cuándo se resuelve</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.o</code></td>
+<td>un objeto compilado</td>
+<td>al enlazar</td>
+</tr>
+<tr class="even">
+<td><code>.a</code></td>
+<td>archivo con varios <code>.o</code></td>
+<td>al enlazar, se copia lo necesario</td>
+</tr>
+<tr class="odd">
+<td><code>.so</code></td>
+<td>librería compartida</td>
+<td>al cargar o durante ejecución</td>
+</tr>
+</tbody>
+</table>
+<p>La ABI es independiente del paquete. Si <code>sumar</code> rompe <code>x19</code> como objeto, también lo romperá dentro de una librería.</p>
 </section>
 <section id="librería-estática" class="level2">
 <h2 class="anchored" data-anchor-id="librería-estática">Librería estática</h2>
@@ -1405,6 +1443,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esta unidad no entra en GOT, PLT ni dynamic linker en profundidad. Solo muestra que el mismo contrato ABI permite empaquetar funciones.</p>
+</section>
+<section id="qué-revisar-cuando-una-librería-no-funciona" class="level2">
+<h2 class="anchored" data-anchor-id="qué-revisar-cuando-una-librería-no-funciona">Qué revisar cuando una librería no funciona</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Revisión</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>símbolo exportado</td>
+<td>¿la función tiene <code>.global</code> y nombre esperado por C?</td>
+</tr>
+<tr class="even">
+<td>prototipo</td>
+<td>¿C declara los mismos tipos que assembly implementa?</td>
+</tr>
+<tr class="odd">
+<td>enlace</td>
+<td>¿la librería aparece en el comando o Makefile correcto?</td>
+</tr>
+<tr class="even">
+<td>ABI</td>
+<td>¿la función preserva lo que debe preservar?</td>
+</tr>
+<tr class="odd">
+<td>runtime</td>
+<td>¿se usa <code>gcc</code> cuando hay C o <code>libc</code>?</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="lectura-guiada-c-assembly-printf" class="level2">
 <h2 class="anchored" data-anchor-id="lectura-guiada-c-assembly-printf">Lectura guiada: C + assembly + printf</h2>
@@ -1440,6 +1515,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x0</span> = formato</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x1</span> = resultado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El estudiante debe poder explicar este programa sin ver C como magia ni assembly como bloque separado. Ambos lados hablan por ABI.</p>
+</section>
+<section id="lectura-integrada" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-integrada">Lectura integrada</h2>
+<p>Una forma útil de narrar el programa completo es:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">main.c</span> declara extern sumar</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">linker</span> encuentra sumar en assembly u otra librería</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">main</span> coloca argumentos en x0 y x1</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">sumar</span> calcula y deja resultado en x0</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">main</span> pasa formato y resultado a printf</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">runtime</span> recibe retorno de main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si el estudiante puede contar esta historia, ya no está viendo archivos separados: está viendo el contrato que los une.</p>
 </section>
 <section id="qué-queda-para-unidad-posterior" class="level2">
 <h2 class="anchored" data-anchor-id="qué-queda-para-unidad-posterior">Qué queda para unidad posterior</h2>
@@ -1480,14 +1566,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Creer que <code>.a</code> y <code>.so</code> son iguales.</li>
-<li>Creer que una librería compartida copia todo al ejecutable.</li>
-<li>Crear una función assembly en librería sin <code>.global</code>.</li>
-<li>Romper ABI dentro de una librería y culpar al linker.</li>
-<li>Esperar que <code>ld</code> directo resuelva runtime y <code>libc</code> sin configuración.</li>
-<li>Meter GOT/PLT demasiado pronto.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que <code>.a</code> y <code>.so</code> son iguales</td>
+<td>distinguir copia al enlace vs carga compartida</td>
+</tr>
+<tr class="even">
+<td>creer que <code>.so</code> copia todo al ejecutable</td>
+<td>recordar que se carga como dependencia</td>
+</tr>
+<tr class="odd">
+<td>omitir <code>.global</code> en función de librería</td>
+<td>exportar el símbolo esperado</td>
+</tr>
+<tr class="even">
+<td>romper ABI dentro de librería</td>
+<td>revisar registros y stack antes de culpar al linker</td>
+</tr>
+<tr class="odd">
+<td>usar <code>ld</code> directo con <code>libc</code> sin contexto</td>
+<td>enlazar con <code>gcc</code> para estos ejemplos</td>
+</tr>
+<tr class="even">
+<td>meter GOT/PLT demasiado pronto</td>
+<td>dejar linking dinámico profundo para ELF</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1499,6 +1615,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo leer un programa C + assembly + <code>printf</code>.</label></li>
 </ul>
 <p>Fin de unidad. Siguiente tema natural: ELF, linking, loading y binarios.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GNU Binutils, <em>GNU linker manual</em>: <a href="https://sourceware.org/binutils/docs/ld/" class="uri">https://sourceware.org/binutils/docs/ld/</a></li>
+<li>GCC documentation: <a href="https://gcc.gnu.org/onlinedocs/" class="uri">https://gcc.gnu.org/onlinedocs/</a></li>
+</ul>
 
 
 </section>

@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#por-qué-usamos-_start" id="toc-por-qué-usamos-_start" class="nav-link active" data-scroll-target="#por-qué-usamos-_start">Por qué usamos <code>_start</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#por-qué-usamos-_start" id="toc-por-qué-usamos-_start" class="nav-link" data-scroll-target="#por-qué-usamos-_start">Por qué usamos <code>_start</code></a></li>
+  <li><a href="#qué-hace-el-linker" id="toc-qué-hace-el-linker" class="nav-link" data-scroll-target="#qué-hace-el-linker">Qué hace el linker</a></li>
   <li><a href="#dónde-aparece-main" id="toc-dónde-aparece-main" class="nav-link" data-scroll-target="#dónde-aparece-main">Dónde aparece <code>main</code></a></li>
   <li><a href="#qué-hace-normalmente-libc" id="toc-qué-hace-normalmente-libc" class="nav-link" data-scroll-target="#qué-hace-normalmente-libc">Qué hace normalmente <code>libc</code></a></li>
   <li><a href="#por-qué-no-usamos-printf" id="toc-por-qué-no-usamos-printf" class="nav-link" data-scroll-target="#por-qué-no-usamos-printf">Por qué no usamos <code>printf</code></a></li>
+  <li><a href="#relación-con-abi" id="toc-relación-con-abi" class="nav-link" data-scroll-target="#relación-con-abi">Relación con ABI</a></li>
   <li><a href="#límite-práctico" id="toc-límite-práctico" class="nav-link" data-scroll-target="#límite-práctico">Límite práctico</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1363,6 +1368,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>En estos programas no usamos <code>main</code>, <code>printf</code> ni runtime de C. El binario entra directamente por <code>_start</code> y el programa llama syscalls de Linux por su cuenta.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a separar tres niveles que a menudo aparecen mezclados:</p>
+<ul>
+<li><code>_start</code>: punto de entrada bajo nivel del ejecutable;</li>
+<li><code>main</code>: función de entrada usual en programas C;</li>
+<li><code>libc</code>: biblioteca y runtime que preparan parte del entorno de C.</li>
+</ul>
+<p>En esta unidad usamos <code>_start</code> para ver el contrato directo con Linux. Más adelante usaremos ABI, stack y llamadas a C; por ahora conviene quitar capas.</p>
+</section>
 <section id="por-qué-usamos-_start" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-usamos-_start">Por qué usamos <code>_start</code></h2>
 <p><code>_start</code> es el símbolo de entrada que usamos cuando enlazamos un programa mínimo sin runtime de C.</p>
@@ -1373,28 +1388,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>El linker necesita saber dónde inicia el programa. En estas prácticas, esa entrada es <code>_start</code>.</p>
+<p>El linker necesita saber dónde inicia el programa. En estas prácticas, esa entrada es <code>_start</code>. Al no usar runtime de C, nadie llamará a <code>main</code> por nosotros.</p>
+</section>
+<section id="qué-hace-el-linker" class="level2">
+<h2 class="anchored" data-anchor-id="qué-hace-el-linker">Qué hace el linker</h2>
+<p>El enlazador toma archivos objeto y produce un ejecutable. Entre otras cosas, resuelve símbolos y define una entrada para el binario.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">exit.o</span> <span class="at">-</span><span class="op">&gt;</span> ld <span class="at">-</span><span class="op">&gt;</span> exit</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si el programa usa <code>_start</code>, ese símbolo representa la dirección inicial. Si el programa usa el entorno normal de C, el punto de entrada real suele estar en código de arranque que luego llama a <code>main</code>.</p>
 </section>
 <section id="dónde-aparece-main" class="level2">
 <h2 class="anchored" data-anchor-id="dónde-aparece-main">Dónde aparece <code>main</code></h2>
 <p>En programas normales escritos con C, el código no entra directamente a <code>main</code> desde el kernel. Antes hay código de arranque de runtime.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kernel</span> carga proceso</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">runtime</span> de C prepara entorno</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>       <span class="ex">main</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>       <span class="bu">exit</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Aquí no estamos usando ese runtime. Por eso no escribimos <code>main</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kernel</span> carga proceso</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">runtime</span> de C prepara entorno</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>       <span class="ex">main</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>       <span class="bu">exit</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ese runtime prepara argumentos, entorno y detalles necesarios para que <code>main</code> pueda ejecutarse como función C normal. Por eso <code>main</code> no es equivalente a <code>_start</code>.</p>
 </section>
 <section id="qué-hace-normalmente-libc" class="level2">
 <h2 class="anchored" data-anchor-id="qué-hace-normalmente-libc">Qué hace normalmente <code>libc</code></h2>
 <p><code>libc</code> suele dar funciones como <code>printf</code>, manejar arranque del programa, preparar argumentos de <code>main</code>, inicializar partes del entorno y terminar el proceso de forma ordenada.</p>
 <p>En esta unidad no usamos <code>libc</code> para que la relación con Linux sea visible:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registros</span> <span class="at">-</span><span class="op">&gt;</span> svc <span class="co">#0 -&gt; kernel</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registros</span> <span class="at">-</span><span class="op">&gt;</span> svc <span class="co">#0 -&gt; kernel</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esto reduce comodidad, pero aumenta claridad. En vez de pedir “imprime este texto” a <code>printf</code>, preparamos directamente <code>write</code>: file descriptor, dirección, longitud y número de syscall.</p>
 </section>
 <section id="por-qué-no-usamos-printf" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-no-usamos-printf">Por qué no usamos <code>printf</code></h2>
@@ -1426,10 +1448,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>Con <code>printf</code>, además tendrías que entender formato, llamadas a funciones, convención de llamada, stack y enlazado con libc. Esos temas importan, pero no son el primer paso.</p>
+</section>
+<section id="relación-con-abi" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-abi">Relación con ABI</h2>
+<p>Cuando una función llama a otra, necesita reglas compartidas: dónde van los argumentos, qué registros puede modificar, cómo se alinea el stack y dónde vuelve la ejecución. En AArch64 esas reglas se estudian con AAPCS64.</p>
+<p>Esta lección todavía no entra en detalle. Solo deja una advertencia: syscalls y llamadas a funciones no son lo mismo, aunque ambas usen registros.</p>
 </section>
 <section id="límite-práctico" class="level2">
 <h2 class="anchored" data-anchor-id="límite-práctico">Límite práctico</h2>
 <p>Más adelante usaremos funciones, stack, ABI y llamadas a C. Por ahora, <code>_start</code> mantiene el programa pequeño y visible.</p>
+<p>Usa esta regla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Si quieres estudiar…</th>
+<th>Usa primero…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>contrato directo con Linux</td>
+<td><code>_start</code> + syscalls</td>
+</tr>
+<tr class="even">
+<td>funciones y biblioteca C</td>
+<td><code>main</code> + runtime/libc</td>
+</tr>
+<tr class="odd">
+<td>mezcla C/assembly</td>
+<td>ABI + linker + libc</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección conceptual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que <code>main</code> siempre es donde empieza el binario</td>
+<td><code>main</code> es entrada del programa C, no necesariamente entrada ELF</td>
+</tr>
+<tr class="even">
+<td>Pensar que <code>printf</code> es syscall</td>
+<td><code>printf</code> es función de biblioteca</td>
+</tr>
+<tr class="odd">
+<td>Mezclar ABI de funciones con ABI de syscalls</td>
+<td>syscalls usan <code>x8</code>; funciones AAPCS64 tienen otras reglas</td>
+</tr>
+<tr class="even">
+<td>Quitar <code>exit</code> porque “main retorna”</td>
+<td>aquí no hay runtime que maneje retorno de <code>main</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1438,6 +1522,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica qué capa agrega <code>libc</code>.</li>
 <li>Explica por qué <code>printf</code> no aparece en el programa.</li>
 <li>Dibuja el camino <code>registros -&gt; svc #0 -&gt; kernel</code>.</li>
+<li>Explica por qué <code>main</code> necesita runtime de C.</li>
+<li>Explica por qué syscall y llamada a función no son lo mismo.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1447,8 +1533,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar qué hace normalmente <code>libc</code>.</label></li>
 <li><label><input type="checkbox">Puedo explicar por qué aquí no usamos <code>printf</code>.</label></li>
 <li><label><input type="checkbox">Sé que <code>write</code> es syscall y <code>printf</code> es biblioteca.</label></li>
+<li><label><input type="checkbox">Puedo anticipar que ABI será necesaria para mezclar C y assembly.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p><code>_start</code> nos permite ver el programa sin capas extra. <code>main</code> y <code>printf</code> son útiles, pero pertenecen al mundo del runtime de C y la ABI de funciones. Esta separación evita confundir syscalls con llamadas a biblioteca.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/primeros-programas/05-lectura-guiada-syscalls.html">Lectura guiada de syscalls</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">ELF for the Arm 64-bit Architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/ld/">Using ld</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/execve.2.html"><code>execve(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man3/printf.3.html"><code>printf(3)</code></a>.</li>
+</ul>
 
 
 </section>

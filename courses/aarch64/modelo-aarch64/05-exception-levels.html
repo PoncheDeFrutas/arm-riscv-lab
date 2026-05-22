@@ -1318,14 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-de-niveles" id="toc-mapa-de-niveles" class="nav-link active" data-scroll-target="#mapa-de-niveles">Mapa de niveles</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-de-niveles" id="toc-mapa-de-niveles" class="nav-link" data-scroll-target="#mapa-de-niveles">Mapa de niveles</a></li>
   <li><a href="#user-mode-vs-kernel-mode" id="toc-user-mode-vs-kernel-mode" class="nav-link" data-scroll-target="#user-mode-vs-kernel-mode">User mode vs kernel mode</a></li>
   <li><a href="#syscall-como-cambio-de-contexto-conceptual" id="toc-syscall-como-cambio-de-contexto-conceptual" class="nav-link" data-scroll-target="#syscall-como-cambio-de-contexto-conceptual">Syscall como cambio de contexto conceptual</a></li>
   <li><a href="#qué-no-puede-tocar-libremente-un-programa" id="toc-qué-no-puede-tocar-libremente-un-programa" class="nav-link" data-scroll-target="#qué-no-puede-tocar-libremente-un-programa">Qué no puede tocar libremente un programa</a></li>
   <li><a href="#por-qué-esto-importa-para-debugging" id="toc-por-qué-esto-importa-para-debugging" class="nav-link" data-scroll-target="#por-qué-esto-importa-para-debugging">Por qué esto importa para debugging</a></li>
   <li><a href="#límite-de-esta-unidad" id="toc-límite-de-esta-unidad" class="nav-link" data-scroll-target="#límite-de-esta-unidad">Límite de esta unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1364,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>AArch64 separa niveles de privilegio. Esta lección solo da el mapa: dónde corre un programa de usuario, dónde corre el kernel y por qué no todo el estado del procesador está disponible para tu programa.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a ubicar <code>EL0</code>, <code>EL1</code>, <code>EL2</code> y <code>EL3</code> como niveles de privilegio. Para esta ruta, lo más importante es distinguir programa de usuario (<code>EL0</code>) y kernel (<code>EL1</code>).</p>
+<p>Esto explica por qué un programa usa syscalls para pedir servicios al sistema operativo.</p>
+</section>
 <section id="mapa-de-niveles" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-de-niveles">Mapa de niveles</h2>
 <table class="caption-top table">
@@ -1484,6 +1492,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="por-qué-esto-importa-para-debugging" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-esto-importa-para-debugging">Por qué esto importa para debugging</h2>
 <p>Si GDB muestra registros de un programa, estás mirando estado de ese proceso en su contexto de usuario. No estás viendo todo el estado interno del kernel ni de hardware privilegiado.</p>
+<p>También explica por qué un fallo de acceso a memoria no permite al programa “arreglar” directamente las tablas de páginas: eso pertenece al sistema.</p>
 </section>
 <section id="límite-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="límite-de-esta-unidad">Límite de esta unidad</h2>
@@ -1501,6 +1510,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que userland controla todo</td>
+<td>userland corre en <code>EL0</code></td>
+</tr>
+<tr class="even">
+<td>Confundir syscall con llamada normal</td>
+<td>syscall entra al kernel</td>
+</tr>
+<tr class="odd">
+<td>Esperar ver todo estado del kernel en GDB de usuario</td>
+<td>GDB muestra contexto del proceso</td>
+</tr>
+<tr class="even">
+<td>Profundizar en EL2/EL3 demasiado pronto</td>
+<td>primero domina EL0/EL1</td>
+</tr>
+<tr class="odd">
+<td>Tratar registros de sistema como registros generales</td>
+<td>muchos son privilegiados</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1508,6 +1554,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Indica en qué nivel corre el kernel.</li>
 <li>Explica por qué un programa de usuario no puede tocar todo el estado.</li>
 <li>Explica qué idea representa <code>svc #0</code> sin entrar en syscalls.</li>
+<li>Explica por qué GDB de usuario no muestra todo el estado del kernel.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1518,8 +1565,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Sé que <code>EL2</code> se relaciona con virtualización.</label></li>
 <li><label><input type="checkbox">Sé que <code>EL3</code> se relaciona con secure monitor.</label></li>
 <li><label><input type="checkbox">Puedo explicar user mode vs kernel mode.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué existen syscalls.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Los exception levels explican el límite entre programa y sistema operativo. Para esta ruta, el punto central es simple: tus programas empiezan en <code>EL0</code> y piden servicios al kernel en <code>EL1</code>.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.html">Lectura de registros con GDB</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+</ul>
 
 
 </section>

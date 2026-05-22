@@ -1319,6 +1319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#qué-debes-mirar" id="toc-qué-debes-mirar" class="nav-link active" data-scroll-target="#qué-debes-mirar">Qué debes mirar</a></li>
+  <li><a href="#estados-de-la-región" id="toc-estados-de-la-región" class="nav-link" data-scroll-target="#estados-de-la-región">Estados de la región</a></li>
   <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link" data-scroll-target="#programa-completo">Programa completo</a></li>
   <li><a href="#construir-y-ejecutar" id="toc-construir-y-ejecutar" class="nav-link" data-scroll-target="#construir-y-ejecutar">Construir y ejecutar</a></li>
   <li><a href="#lectura-por-bloques" id="toc-lectura-por-bloques" class="nav-link" data-scroll-target="#lectura-por-bloques">Lectura por bloques</a></li>
@@ -1333,6 +1334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#por-qué-no-escribimos-después-de-mprotect" id="toc-por-qué-no-escribimos-después-de-mprotect" class="nav-link" data-scroll-target="#por-qué-no-escribimos-después-de-mprotect">Por qué no escribimos después de <code>mprotect</code></a></li>
   <li><a href="#por-qué-hay-cleanup" id="toc-por-qué-hay-cleanup" class="nav-link" data-scroll-target="#por-qué-hay-cleanup">Por qué hay <code>cleanup</code></a></li>
+  <li><a href="#rutas-del-programa" id="toc-rutas-del-programa" class="nav-link" data-scroll-target="#rutas-del-programa">Rutas del programa</a></li>
   <li><a href="#qué-no-hace-este-programa" id="toc-qué-no-hace-este-programa" class="nav-link" data-scroll-target="#qué-no-hace-este-programa">Qué no hace este programa</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1414,6 +1416,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+</section>
+<section id="estados-de-la-región" class="level2">
+<h2 class="anchored" data-anchor-id="estados-de-la-región">Estados de la región</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Fase</th>
+<th>Estado</th>
+<th>Acceso válido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>antes de <code>mmap</code></td>
+<td>sin región</td>
+<td>no usar puntero</td>
+</tr>
+<tr class="even">
+<td>después de <code>mmap</code> exitoso</td>
+<td>región viva <code>RW</code></td>
+<td>leer y escribir</td>
+</tr>
+<tr class="odd">
+<td>después de <code>mprotect</code> exitoso</td>
+<td>región viva <code>R</code></td>
+<td>leer, no escribir</td>
+</tr>
+<tr class="even">
+<td>después de <code>munmap</code></td>
+<td>sin región</td>
+<td>no acceder</td>
+</tr>
+</tbody>
+</table>
+<p>El programa no necesita imprimir para ser útil. La lectura correcta es seguir cómo cambia el contrato de la región.</p>
 </section>
 <section id="programa-completo" class="level2">
 <h2 class="anchored" data-anchor-id="programa-completo">Programa completo</h2>
@@ -1661,6 +1698,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span> 1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si <code>mmap</code> falla, no hay región. Por eso va directo a <code>error_sin_region</code>.</p>
 </section>
+<section id="rutas-del-programa" class="level2">
+<h2 class="anchored" data-anchor-id="rutas-del-programa">Rutas del programa</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ruta</th>
+<th>Cuándo ocurre</th>
+<th>Qué debe hacer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>normal</td>
+<td>todas las syscalls funcionan</td>
+<td><code>mmap</code>, escribir, <code>mprotect</code>, <code>munmap</code>, <code>exit 0</code></td>
+</tr>
+<tr class="even">
+<td><code>cleanup</code></td>
+<td>falló algo después de <code>mmap</code></td>
+<td>liberar región y salir con error</td>
+</tr>
+<tr class="odd">
+<td><code>error_sin_region</code></td>
+<td><code>mmap</code> falló o ya no hay región que liberar</td>
+<td>salir con error</td>
+</tr>
+</tbody>
+</table>
+<p>La diferencia entre <code>cleanup</code> y <code>error_sin_region</code> evita liberar una región que nunca existió y evita perder una región que sí fue creada.</p>
+</section>
 <section id="qué-no-hace-este-programa" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-hace-este-programa">Qué no hace este programa</h2>
 <table class="caption-top table">
@@ -1702,11 +1774,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica qué ruta se toma si <code>mmap</code> falla.</li>
 <li>Explica qué ruta se toma si <code>mprotect</code> falla.</li>
 <li>Explica por qué <code>munmap</code> usa <code>4096</code>.</li>
+<li>Señala en el programa cuándo <code>x0</code> es argumento y cuándo es retorno.</li>
+<li>Agrega una nota de qué pasaría si se escribe después de <code>mprotect</code>.</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Este programa muestra el ciclo completo de una región virtual: pedir, usar, proteger, liberar. Ese ciclo prepara temas futuros de MMU, permisos, loaders, seguridad y memoria dinámica real.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>mprotect(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mprotect.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mprotect.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+<li>Linux man-pages, <code>write(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/write.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/write.2.html</a></li>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+</ul>
 
 
 </section>

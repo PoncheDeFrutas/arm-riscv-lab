@@ -1318,7 +1318,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#cbz-y-cbnz" id="toc-cbz-y-cbnz" class="nav-link active" data-scroll-target="#cbz-y-cbnz"><code>cbz</code> y <code>cbnz</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#cbz-y-cbnz" id="toc-cbz-y-cbnz" class="nav-link" data-scroll-target="#cbz-y-cbnz"><code>cbz</code> y <code>cbnz</code></a></li>
   <li><a href="#tbz-y-tbnz" id="toc-tbz-y-tbnz" class="nav-link" data-scroll-target="#tbz-y-tbnz"><code>tbz</code> y <code>tbnz</code></a></li>
   <li><a href="#ejemplo-con-bit-de-estado" id="toc-ejemplo-con-bit-de-estado" class="nav-link" data-scroll-target="#ejemplo-con-bit-de-estado">Ejemplo con bit de estado</a></li>
   <li><a href="#conditional-select-con-csel" id="toc-conditional-select-con-csel" class="nav-link" data-scroll-target="#conditional-select-con-csel">Conditional select con <code>csel</code></a></li>
@@ -1326,7 +1327,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cset-convertir-condición-en-0-o-1" id="toc-cset-convertir-condición-en-0-o-1" class="nav-link" data-scroll-target="#cset-convertir-condición-en-0-o-1"><code>cset</code>: convertir condición en 0 o 1</a></li>
   <li><a href="#cinc-y-cneg" id="toc-cinc-y-cneg" class="nav-link" data-scroll-target="#cinc-y-cneg"><code>cinc</code> y <code>cneg</code></a></li>
   <li><a href="#cuándo-usar-branch-y-cuándo-csel" id="toc-cuándo-usar-branch-y-cuándo-csel" class="nav-link" data-scroll-target="#cuándo-usar-branch-y-cuándo-csel">Cuándo usar branch y cuándo <code>csel</code></a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1366,6 +1369,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>No toda decisión necesita <code>cmp</code> + <code>b.cond</code>. AArch64 tiene instrucciones para casos frecuentes: saltar si un registro es cero, saltar según un bit o elegir entre dos valores sin abrir dos caminos largos.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a reconocer instrucciones que simplifican decisiones comunes. Algunas reducen <code>cmp + branch</code>; otras evitan una rama cuando solo quieres seleccionar un valor.</p>
+<p>La regla de claridad: usa estas instrucciones cuando expresen mejor la intención. No son obligación ni reemplazan todo <code>if</code>.</p>
+</section>
 <section id="cbz-y-cbnz" class="level2">
 <h2 class="anchored" data-anchor-id="cbz-y-cbnz"><code>cbz</code> y <code>cbnz</code></h2>
 <p><code>cbz</code> compara un registro contra cero y salta si es cero.</p>
@@ -1532,6 +1540,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Usar <code>cbz</code> para relación <code>&lt;</code> o <code>&gt;</code></td>
+<td>usa <code>cmp</code> + rama condicional</td>
+</tr>
+<tr class="even">
+<td>Pensar que <code>tbz</code> prueba todo el registro</td>
+<td>prueba un bit específico</td>
+</tr>
+<tr class="odd">
+<td>Usar <code>csel</code> para bloques grandes</td>
+<td>branch es más claro</td>
+</tr>
+<tr class="even">
+<td>Olvidar que <code>csel</code> depende de flags previos</td>
+<td>prepara flags con <code>cmp</code> o similar</td>
+</tr>
+<tr class="odd">
+<td>Confundir condición signed/unsigned en <code>csel</code></td>
+<td>condición sigue reglas de <code>NZCV</code></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1546,11 +1591,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <ol start="4" type="1">
 <li>¿Cuándo sería más claro usar branch en lugar de <code>csel</code>?</li>
+<li>Escribe equivalencia mental de <code>cbnz x0, destino</code>.</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo usar <code>cbz</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar <code>cbnz</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer <code>tbz</code> y <code>tbnz</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer <code>csel</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar <code>cset</code> para 0/1.</label></li>
+<li><label><input type="checkbox">Puedo decidir entre branch y conditional select.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Branches especializados evitan código repetitivo para casos comunes. Conditional select evita ramas pequeñas cuando solo necesitas elegir un valor. La claridad del flujo sigue siendo la regla principal.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/control-flujo/06-branch-link-register.html">Link y branch por registro</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

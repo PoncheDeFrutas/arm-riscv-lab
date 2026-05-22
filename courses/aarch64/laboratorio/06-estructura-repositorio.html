@@ -1318,11 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link active" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
+  <li><a href="#por-qué-separar-.vscode-y-src" id="toc-por-qué-separar-.vscode-y-src" class="nav-link" data-scroll-target="#por-qué-separar-.vscode-y-src">Por qué separar <code>.vscode/</code> y <code>src/</code></a></li>
   <li><a href="#flujo-único" id="toc-flujo-único" class="nav-link" data-scroll-target="#flujo-único">Flujo único</a></li>
   <li><a href="#templates-disponibles" id="toc-templates-disponibles" class="nav-link" data-scroll-target="#templates-disponibles">Templates disponibles</a></li>
+  <li><a href="#cuándo-usar-examples-y-projects" id="toc-cuándo-usar-examples-y-projects" class="nav-link" data-scroll-target="#cuándo-usar-examples-y-projects">Cuándo usar <code>examples/</code> y <code>projects/</code></a></li>
+  <li><a href="#qué-debe-tener-una-práctica-nueva" id="toc-qué-debe-tener-una-práctica-nueva" class="nav-link" data-scroll-target="#qué-debe-tener-una-práctica-nueva">Qué debe tener una práctica nueva</a></li>
   <li><a href="#carpetas-del-curso" id="toc-carpetas-del-curso" class="nav-link" data-scroll-target="#carpetas-del-curso">Carpetas del curso</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1361,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas. Cada ejemplo pequeño puede vivir como una carpeta simple con <code>.vscode/</code> y <code>src/</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Esta lección explica cómo organizar prácticas y ejemplos. La estructura no es solo orden visual: reduce errores de ejecución, facilita depuración y permite que el mismo flujo funcione en QEMU o ARM64 nativo.</p>
+<p>El objetivo es que puedas crear una práctica nueva sin inventar rutas ni comandos cada vez.</p>
+</section>
 <section id="proyecto-mínimo" class="level2">
 <h2 class="anchored" data-anchor-id="proyecto-mínimo">Proyecto mínimo</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
@@ -1391,23 +1402,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>El binario generado queda en <code>src/build/main</code> visto desde VS Code, y en <code>build/main</code> cuando ya estás dentro de <code>src/</code>.</p>
 </section>
+<section id="por-qué-separar-.vscode-y-src" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-separar-.vscode-y-src">Por qué separar <code>.vscode/</code> y <code>src/</code></h2>
+<p><code>.vscode/</code> guarda configuración de editor y debugging. <code>src/</code> guarda el programa y su flujo de construcción. Mantenerlos separados evita mezclar configuración de herramientas con código fuente.</p>
+<p>Para un estudiante, la regla práctica es:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">abrir</span> carpeta del ejemplo en VS Code</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">trabajar</span> dentro de src/</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ejecutar</span> make desde src/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 <section id="flujo-único" class="level2">
 <h2 class="anchored" data-anchor-id="flujo-único">Flujo único</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como <code>src/Makefile</code>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Comando</th>
+<th>Intención</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>make</code></td>
+<td>construir el binario</td>
+</tr>
+<tr class="even">
+<td><code>make run</code></td>
+<td>ejecutar el binario</td>
+</tr>
+<tr class="odd">
+<td><code>make gdb</code></td>
+<td>iniciar flujo de depuración</td>
+</tr>
+<tr class="even">
+<td><code>make clean</code></td>
+<td>limpiar artefactos generados</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="templates-disponibles" class="level2">
 <h2 class="anchored" data-anchor-id="templates-disponibles">Templates disponibles</h2>
 <p>Los templates viven en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1449,6 +1494,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="cuándo-usar-examples-y-projects" class="level2">
+<h2 class="anchored" data-anchor-id="cuándo-usar-examples-y-projects">Cuándo usar <code>examples/</code> y <code>projects/</code></h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Carpeta</th>
+<th>Úsala para</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>examples/</code></td>
+<td>programas pequeños que muestran una idea concreta</td>
+</tr>
+<tr class="even">
+<td><code>projects/</code></td>
+<td>prácticas más largas con varias partes o estructura propia</td>
+</tr>
+<tr class="odd">
+<td><code>tooling/</code></td>
+<td>plantillas, Dockerfile y soporte reusable</td>
+</tr>
+</tbody>
+</table>
+<p>Ejemplo autocontenido: un programa que muestra <code>write</code>, <code>read</code>, un loop o una operación de bits. Proyecto: una práctica con varias funciones, archivos, depuración y entregables.</p>
+</section>
+<section id="qué-debe-tener-una-práctica-nueva" class="level2">
+<h2 class="anchored" data-anchor-id="qué-debe-tener-una-práctica-nueva">Qué debe tener una práctica nueva</h2>
+<p>Una práctica mínima debería incluir:</p>
+<ul>
+<li>carpeta clara con nombre numerado;</li>
+<li><code>src/main.s</code>;</li>
+<li><code>src/Makefile</code> copiado desde un template;</li>
+<li>salida esperada;</li>
+<li>instrucciones para <code>make</code>, <code>make run</code> y <code>make clean</code>;</li>
+<li>pasos de depuración si aplica;</li>
+<li>explicación breve del concepto que practica.</li>
+</ul>
+<p>Si la práctica necesita varios archivos <code>.s</code>, usa un template <code>multi</code>. Si solo tiene <code>main.s</code>, usa uno <code>single</code>.</p>
+</section>
 <section id="carpetas-del-curso" class="level2">
 <h2 class="anchored" data-anchor-id="carpetas-del-curso">Carpetas del curso</h2>
 <table class="caption-top table">
@@ -1486,6 +1575,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Consecuencia</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ejecutar <code>make</code> desde carpeta equivocada</td>
+<td>Makefile no encontrado</td>
+<td>entra a <code>src/</code></td>
+</tr>
+<tr class="even">
+<td>Copiar template ARM64 en host x86_64</td>
+<td>ejecución falla o no usa QEMU</td>
+<td>usa template <code>qemu</code></td>
+</tr>
+<tr class="odd">
+<td>Copiar template <code>single</code> para varios <code>.s</code></td>
+<td>faltan objetos en enlace</td>
+<td>usa template <code>multi</code></td>
+</tr>
+<tr class="even">
+<td>Guardar binarios fuera de <code>build/</code></td>
+<td>repo queda desordenado</td>
+<td>mantener artefactos en <code>build/</code></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
@@ -1494,6 +1622,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Uso <code>make</code>, <code>make run</code> y <code>make gdb</code>.</label></li>
 <li><label><input type="checkbox">Si cambio de entorno, reemplazo <code>src/Makefile</code>.</label></li>
 <li><label><input type="checkbox">VS Code apunta a <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox">Sé cuándo usar <code>examples/</code>, <code>projects/</code> y <code>tooling/</code>.</label></li>
+</ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Una estructura estable hace que el estudiante se concentre en el programa, no en adivinar comandos. En este repositorio, el Makefile define el entorno y la carpeta <code>src/</code> concentra el trabajo práctico.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Make, <a href="https://www.gnu.org/software/make/manual/">GNU Make Manual</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/ld/">Using ld</a>.</li>
+<li>QEMU, <a href="https://www.qemu.org/docs/master/user/">User-mode emulation</a>.</li>
 </ul>
 
 

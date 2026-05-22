@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-problema-resuelve-cada-región" id="toc-qué-problema-resuelve-cada-región" class="nav-link" data-scroll-target="#qué-problema-resuelve-cada-región">Qué problema resuelve cada región</a></li>
   <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
   <li><a href="#glosario-mínimo" id="toc-glosario-mínimo" class="nav-link" data-scroll-target="#glosario-mínimo">Glosario mínimo</a></li>
+  <li><a href="#mapa-de-diagnóstico" id="toc-mapa-de-diagnóstico" class="nav-link" data-scroll-target="#mapa-de-diagnóstico">Mapa de diagnóstico</a></li>
   <li><a href="#ciclo-completo" id="toc-ciclo-completo" class="nav-link" data-scroll-target="#ciclo-completo">Ciclo completo</a></li>
   <li><a href="#errores-que-esta-unidad-prepara" id="toc-errores-que-esta-unidad-prepara" class="nav-link" data-scroll-target="#errores-que-esta-unidad-prepara">Errores que esta unidad prepara</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
@@ -1697,6 +1698,49 @@ Figura&nbsp;1: Mapa conceptual de regiones de memoria en un proceso.
 </table>
 <p>Este vocabulario aparecerá todo el tiempo. Si solo recuerdas “dirección”, te faltará media historia. El programa también necesita saber cuánto cabe, cuánto se usó y quién es responsable.</p>
 </section>
+<section id="mapa-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="mapa-de-diagnóstico">Mapa de diagnóstico</h2>
+<p>Cuando un bloque dinámico falla, revisa el contrato completo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Dato que debes ubicar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿dónde empieza?</td>
+<td>puntero base guardado</td>
+</tr>
+<tr class="even">
+<td>¿cuánto cabe?</td>
+<td>capacidad del bloque</td>
+</tr>
+<tr class="odd">
+<td>¿cuánto está usado?</td>
+<td>longitud o contador de bytes válidos</td>
+</tr>
+<tr class="even">
+<td>¿quién lo posee?</td>
+<td>función, módulo u objeto responsable</td>
+</tr>
+<tr class="odd">
+<td>¿sigue vivo?</td>
+<td>no ha sido liberado</td>
+</tr>
+<tr class="even">
+<td>¿cómo se libera?</td>
+<td><code>free</code>, <code>munmap</code> u otro mecanismo</td>
+</tr>
+<tr class="odd">
+<td>¿qué pasa si algo falla?</td>
+<td>ruta de cleanup</td>
+</tr>
+</tbody>
+</table>
+<p>El heap se vuelve difícil cuando solo miras el puntero. Un puntero sin capacidad, uso y ownership no basta para saber si un acceso es correcto.</p>
+</section>
 <section id="ciclo-completo" class="level2">
 <h2 class="anchored" data-anchor-id="ciclo-completo">Ciclo completo</h2>
 <p>La <a href="#fig-heap-block-lifecycle" class="quarto-xref">Figura&nbsp;2</a> muestra el ciclo mínimo que debe respetar cualquier bloque dinámico.</p>
@@ -1851,6 +1895,16 @@ Figura&nbsp;2: Ciclo de vida conceptual de un bloque dinámico.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/heap-memoria-dinamica/01-stack-vs-heap.html">Stack vs heap</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>free(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/free.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/free.3.html</a></li>
+<li>Linux man-pages, <code>brk(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/brk.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/brk.2.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+</ul>
 
 
 </section>

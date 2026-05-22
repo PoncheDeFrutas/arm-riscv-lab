@@ -1323,6 +1323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#objetivo-de-la-unidad" id="toc-objetivo-de-la-unidad" class="nav-link active" data-scroll-target="#objetivo-de-la-unidad">Objetivo de la unidad</a></li>
   <li><a href="#mapa-mental" id="toc-mapa-mental" class="nav-link" data-scroll-target="#mapa-mental">Mapa mental</a></li>
+  <li><a href="#herramienta-según-la-pregunta" id="toc-herramienta-según-la-pregunta" class="nav-link" data-scroll-target="#herramienta-según-la-pregunta">Herramienta según la pregunta</a></li>
   <li><a href="#herramientas-de-la-unidad" id="toc-herramientas-de-la-unidad" class="nav-link" data-scroll-target="#herramientas-de-la-unidad">Herramientas de la unidad</a></li>
   <li><a href="#comandos-gdb-iniciales" id="toc-comandos-gdb-iniciales" class="nav-link" data-scroll-target="#comandos-gdb-iniciales">Comandos GDB iniciales</a></li>
   <li><a href="#memoria-inspeccionable" id="toc-memoria-inspeccionable" class="nav-link" data-scroll-target="#memoria-inspeccionable">Memoria inspeccionable</a></li>
@@ -1454,6 +1455,61 @@ Figura&nbsp;1: Flujo básico de depuración: detener, observar, avanzar e interp
 </div>
 </div>
 <p>La idea no es usar todas las herramientas a la vez. Cada herramienta responde una pregunta distinta. GDB responde “qué estado tiene el proceso ahora”. QEMU responde “cómo ejecuto AArch64 cuando mi host no es ARM64”. <code>strace</code> responde “qué le pidió el programa al kernel”. Un core dump responde “qué estado quedó guardado después de fallar”.</p>
+</section>
+<section id="herramienta-según-la-pregunta" class="level2">
+<h2 class="anchored" data-anchor-id="herramienta-según-la-pregunta">Herramienta según la pregunta</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Herramienta principal</th>
+<th>Evidencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿qué instrucción estoy por ejecutar?</td>
+<td>GDB</td>
+<td><code>x/i $pc</code>, <code>disassemble</code></td>
+</tr>
+<tr class="even">
+<td>¿qué valores tienen los registros?</td>
+<td>GDB</td>
+<td><code>info registers</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué bytes hay en esta dirección?</td>
+<td>GDB</td>
+<td><code>x/.. dirección</code></td>
+</tr>
+<tr class="even">
+<td>¿cómo ejecuto AArch64 en host no ARM64?</td>
+<td>QEMU user-mode</td>
+<td><code>qemu-aarch64</code></td>
+</tr>
+<tr class="odd">
+<td>¿cómo conecto GDB a QEMU?</td>
+<td>QEMU <code>-g</code> + GDB remoto</td>
+<td><code>target remote :puerto</code></td>
+</tr>
+<tr class="even">
+<td>¿qué syscalls llegaron al kernel?</td>
+<td><code>strace</code></td>
+<td>líneas <code>syscall(args) = retorno</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué quedó después del fallo?</td>
+<td>core dump + GDB</td>
+<td><code>bt</code>, registros, <code>$pc</code></td>
+</tr>
+</tbody>
+</table>
+<p>El método recomendado es elegir una pregunta antes del comando. Si empiezas por comandos sueltos, GDB y <code>strace</code> se vuelven ruido; si empiezas por una hipótesis, cada salida confirma o corrige algo concreto.</p>
 </section>
 <section id="herramientas-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="herramientas-de-la-unidad">Herramientas de la unidad</h2>
@@ -1731,6 +1787,16 @@ Figura&nbsp;1: Flujo básico de depuración: detener, observar, avanzar e interp
 <li><label><input type="checkbox">Puedo leer <code>sp</code>, <code>x29</code> y <code>x30</code>.</label></li>
 <li><label><input type="checkbox">Puedo verificar syscalls con <code>strace</code>.</label></li>
 <li><label><input type="checkbox">Puedo explicar qué es un core dump introductorio.</label></li>
+</ul>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>QEMU user-mode documentation: <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>Linux man-pages, <code>strace(1)</code>: <a href="https://man7.org/linux/man-pages/man1/strace.1.html" class="uri">https://man7.org/linux/man-pages/man1/strace.1.html</a></li>
+<li>Linux man-pages, <code>core(5)</code>: <a href="https://www.man7.org/linux/man-pages/man5/core.5.html" class="uri">https://www.man7.org/linux/man-pages/man5/core.5.html</a></li>
+<li>Linux man-pages, <code>proc(5)</code>: <a href="https://www.man7.org/linux/man-pages/man5/proc.5.html" class="uri">https://www.man7.org/linux/man-pages/man5/proc.5.html</a></li>
 </ul>
 
 

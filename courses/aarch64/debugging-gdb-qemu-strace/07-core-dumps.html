@@ -1321,13 +1321,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#caso-mínimo-en-c" id="toc-caso-mínimo-en-c" class="nav-link" data-scroll-target="#caso-mínimo-en-c">Caso mínimo en C</a></li>
   <li><a href="#activar-core-dumps" id="toc-activar-core-dumps" class="nav-link" data-scroll-target="#activar-core-dumps">Activar core dumps</a></li>
   <li><a href="#abrir-con-gdb" id="toc-abrir-con-gdb" class="nav-link" data-scroll-target="#abrir-con-gdb">Abrir con GDB</a></li>
+  <li><a href="#rutina-post-mortem" id="toc-rutina-post-mortem" class="nav-link" data-scroll-target="#rutina-post-mortem">Rutina post-mortem</a></li>
   <li><a href="#qué-esperar" id="toc-qué-esperar" class="nav-link" data-scroll-target="#qué-esperar">Qué esperar</a></li>
   <li><a href="#diagrama" id="toc-diagrama" class="nav-link" data-scroll-target="#diagrama">Diagrama</a></li>
   <li><a href="#relación-con-debugging-en-vivo" id="toc-relación-con-debugging-en-vivo" class="nav-link" data-scroll-target="#relación-con-debugging-en-vivo">Relación con debugging en vivo</a></li>
+  <li><a href="#limitaciones-reales" id="toc-limitaciones-reales" class="nav-link" data-scroll-target="#limitaciones-reales">Limitaciones reales</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1368,6 +1371,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un core dump es una fotografía del proceso cuando falló. No reemplaza a depurar paso a paso, pero ayuda cuando el fallo ya ocurrió y necesitas leer registros, stack y backtrace después del accidente.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a usar un core dump como evidencia post-mortem. No podrás avanzar instrucciones, pero sí podrás leer dónde quedó el programa, qué registros tenía y qué cadena de llamadas se puede reconstruir.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>Algunos errores no son cómodos de reproducir instrucción por instrucción. Un programa puede fallar por acceso inválido, retorno a dirección rota, stack corrupto o escritura fuera de región válida. Si el sistema guarda un core dump, GDB puede abrir ese estado.</p>
@@ -1424,6 +1431,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+</section>
+<section id="rutina-post-mortem" class="level2">
+<h2 class="anchored" data-anchor-id="rutina-post-mortem">Rutina post-mortem</h2>
+<p>Al abrir el core, no empieces cambiando cosas. Lee:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">frame</span> 0</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/i</span> <span class="va">$pc</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/8gx</span> <span class="va">$sp</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Con eso separas tres preguntas: dónde falló, con qué estado falló y qué había en la pila alrededor del fallo.</p>
 </section>
 <section id="qué-esperar" class="level2">
 <h2 class="anchored" data-anchor-id="qué-esperar">Qué esperar</h2>
@@ -1485,6 +1502,39 @@ Figura&nbsp;1: Flujo introductorio de análisis con core dump.
 </table>
 <p>Lo ideal es combinar: core dump para ubicar el punto de fallo, GDB en vivo para reproducir y observar cómo se llegó a ese estado.</p>
 </section>
+<section id="limitaciones-reales" class="level2">
+<h2 class="anchored" data-anchor-id="limitaciones-reales">Limitaciones reales</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Limitación</th>
+<th>Implicación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>puede no generarse archivo local</td>
+<td>revisar <code>ulimit</code>, <code>core_pattern</code> o <code>systemd-coredump</code></td>
+</tr>
+<tr class="even">
+<td>requiere binario correcto</td>
+<td>símbolos y direcciones deben coincidir</td>
+</tr>
+<tr class="odd">
+<td>no ejecuta instrucciones</td>
+<td>sirve para observar estado final</td>
+</tr>
+<tr class="even">
+<td>puede faltar información legible</td>
+<td>compilar con <code>-g</code> ayuda</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1535,6 +1585,15 @@ Figura&nbsp;1: Flujo introductorio de análisis con core dump.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/08-practica-guiada.html">Práctica guiada</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>Linux man-pages, <code>core(5)</code>: <a href="https://www.man7.org/linux/man-pages/man5/core.5.html" class="uri">https://www.man7.org/linux/man-pages/man5/core.5.html</a></li>
+<li>Linux man-pages, <code>getrlimit(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/getrlimit.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/getrlimit.2.html</a></li>
+<li>Linux man-pages, <code>proc(5)</code>: <a href="https://www.man7.org/linux/man-pages/man5/proc.5.html" class="uri">https://www.man7.org/linux/man-pages/man5/proc.5.html</a></li>
+</ul>
 
 
 </section>

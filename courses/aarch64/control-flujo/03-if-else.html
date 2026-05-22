@@ -1318,13 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#patrón-básico-de-if" id="toc-patrón-básico-de-if" class="nav-link active" data-scroll-target="#patrón-básico-de-if">Patrón básico de <code>if</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#patrón-básico-de-if" id="toc-patrón-básico-de-if" class="nav-link" data-scroll-target="#patrón-básico-de-if">Patrón básico de <code>if</code></a></li>
   <li><a href="#ifelse-con-salida-común" id="toc-ifelse-con-salida-común" class="nav-link" data-scroll-target="#ifelse-con-salida-común"><code>if/else</code> con salida común</a></li>
   <li><a href="#programa-completo-con-código-de-salida" id="toc-programa-completo-con-código-de-salida" class="nav-link" data-scroll-target="#programa-completo-con-código-de-salida">Programa completo con código de salida</a></li>
   <li><a href="#condición-invertida" id="toc-condición-invertida" class="nav-link" data-scroll-target="#condición-invertida">Condición invertida</a></li>
   <li><a href="#decidir-signed-o-unsigned" id="toc-decidir-signed-o-unsigned" class="nav-link" data-scroll-target="#decidir-signed-o-unsigned">Decidir signed o unsigned</a></li>
   <li><a href="#switch-conceptual" id="toc-switch-conceptual" class="nav-link" data-scroll-target="#switch-conceptual"><code>switch</code> conceptual</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1364,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El procesador no tiene una instrucción llamada <code>if</code>. Un <code>if</code> se construye con una comparación, una rama condicional y etiquetas que separan los caminos.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a traducir decisiones simples a assembly. La estructura visual cambia, pero la idea es la misma: preparar una condición, elegir un camino y reunir el flujo en una etiqueta común.</p>
+<p>El punto delicado es la caída de flujo: si no saltas al final, puedes ejecutar también el bloque que querías evitar.</p>
+</section>
 <section id="patrón-básico-de-if" class="level2">
 <h2 class="anchored" data-anchor-id="patrón-básico-de-if">Patrón básico de <code>if</code></h2>
 <p>Idea de alto nivel:</p>
@@ -1467,30 +1475,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>b caso_default</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No veremos jump tables reales todavía. Por ahora basta reconocer que un <code>switch</code> también es selección por saltos.</p>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Olvidar salida común</td>
+<td>ambos caminos deben reunirse</td>
+</tr>
+<tr class="even">
+<td>Olvidar <code>b fin_if</code> en primer bloque</td>
+<td>el flujo cae al segundo bloque</td>
+</tr>
+<tr class="odd">
+<td>Invertir condición sin cambiar lectura</td>
+<td>escribe comentario o mapa mental</td>
+</tr>
+<tr class="even">
+<td>Usar signed para índices</td>
+<td>usa condición unsigned si representa tamaño/índice</td>
+</tr>
+<tr class="odd">
+<td>No ubicar caso default</td>
+<td>siempre define camino para no coincidencias</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
-<li>Explica por qué este patrón necesita <code>b fin_if</code>:</li>
+<li>Cambia <code>mov x0, #7</code> a <code>mov x0, #12</code>. ¿Qué código de salida esperas?</li>
+<li>Explica por qué <code>b fin_if</code> evita ejecutar el otro bloque.</li>
+<li>Escribe un <code>if</code> sin <code>else</code> que ejecute bloque solo si <code>x0 == 0</code>.</li>
+<li>¿Qué condición usarías para <code>if (i &lt; len)</code> si ambos son unsigned?</li>
+<li>Dibuja el flujo de un <code>switch</code> con dos casos y default.</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq caso_igual</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">caso_distinto:</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    b fin_if</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">caso_igual:</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fin_if:</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<ol start="2" type="1">
-<li><p>Cambia mentalmente el ejemplo para que <code>x0 = 12</code>. ¿Qué código de salida obtendrías?</p></li>
-<li><p>Si comparas tamaños, ¿usarías <code>b.lt</code> o <code>b.lo</code>?</p></li>
-</ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo traducir un <code>if</code>.</label></li>
+<li><label><input type="checkbox">Puedo traducir un <code>if/else</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar salida común.</label></li>
+<li><label><input type="checkbox">Puedo explicar condición invertida.</label></li>
+<li><label><input type="checkbox">Puedo elegir signed o unsigned.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Un <code>if</code> en assembly es una ruta. Comparas, eliges un salto y aseguras que cada camino llegue al punto correcto. La claridad del flujo importa más que reducir una instrucción.</p>
+<p>Un <code>if</code> en assembly es una decisión explícita: comparación, branch, etiquetas y flujo de caída. Cuando lees el código, no sigas solo el orden del archivo; sigue las ramas.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/control-flujo/04-loops-recorrido.html">Loops y recorrido</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

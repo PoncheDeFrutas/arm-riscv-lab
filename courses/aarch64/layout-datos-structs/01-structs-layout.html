@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#padding" id="toc-padding" class="nav-link" data-scroll-target="#padding">Padding</a></li>
   <li><a href="#padding-final" id="toc-padding-final" class="nav-link" data-scroll-target="#padding-final">Padding final</a></li>
   <li><a href="#orden-de-campos" id="toc-orden-de-campos" class="nav-link" data-scroll-target="#orden-de-campos">Orden de campos</a></li>
+  <li><a href="#ejercicio-de-offset-manual" id="toc-ejercicio-de-offset-manual" class="nav-link" data-scroll-target="#ejercicio-de-offset-manual">Ejercicio de offset manual</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1617,6 +1618,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ex">padding</span> final</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No optimices antes de entender. Primero diseña layout correcto y fácil de leer. Luego puedes pensar en compactar.</p>
 </section>
+<section id="ejercicio-de-offset-manual" class="level2">
+<h2 class="anchored" data-anchor-id="ejercicio-de-offset-manual">Ejercicio de offset manual</h2>
+<p>Diseña este layout antes de escribir código:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">flag</span>   1 byte</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">value</span>  8 bytes</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mode</span>   1 byte</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Una forma clara, con alignment de 8 para <code>value</code>, es:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th style="text-align: right;">Offset</th>
+<th style="text-align: right;">Tamaño</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>flag</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td>byte</td>
+</tr>
+<tr class="even">
+<td>padding</td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"><code>7</code></td>
+<td>alinear <code>value</code></td>
+</tr>
+<tr class="odd">
+<td><code>value</code></td>
+<td style="text-align: right;"><code>8</code></td>
+<td style="text-align: right;"><code>8</code></td>
+<td>doubleword</td>
+</tr>
+<tr class="even">
+<td><code>mode</code></td>
+<td style="text-align: right;"><code>16</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td>byte</td>
+</tr>
+<tr class="odd">
+<td>padding final</td>
+<td style="text-align: right;"><code>17</code></td>
+<td style="text-align: right;"><code>7</code></td>
+<td>alinear siguiente elemento</td>
+</tr>
+<tr class="even">
+<td><code>SIZE</code></td>
+<td style="text-align: right;"><code>24</code></td>
+<td style="text-align: right;">-</td>
+<td>tamaño total</td>
+</tr>
+</tbody>
+</table>
+<p>Este ejercicio muestra por qué <code>SIZE</code> no siempre es la suma simple de tamaños útiles. Si haces un array de estos objetos, el segundo elemento debe empezar en una base alineada.</p>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1662,11 +1720,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué <code>POINT_Y</code> no es “el valor de y”?</li>
 <li>¿Qué problema resuelve <code>.equ</code>?</li>
 <li>¿Por qué aparece padding?</li>
+<li>En el layout <code>flag/value/mode</code>, ¿por qué <code>SIZE</code> termina en 24?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Un struct manual es un contrato. Si el contrato dice <code>x</code> en offset 0 y <code>y</code> en offset 8, todo el código debe respetarlo.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

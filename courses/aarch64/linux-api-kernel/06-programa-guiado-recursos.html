@@ -1318,11 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link active" data-scroll-target="#programa-completo">Programa completo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link" data-scroll-target="#programa-completo">Programa completo</a></li>
   <li><a href="#construir-y-ejecutar" id="toc-construir-y-ejecutar" class="nav-link" data-scroll-target="#construir-y-ejecutar">Construir y ejecutar</a></li>
   <li><a href="#lectura-por-bloques" id="toc-lectura-por-bloques" class="nav-link" data-scroll-target="#lectura-por-bloques">Lectura por bloques</a></li>
   <li><a href="#por-qué-hay-dos-rutas-de-error" id="toc-por-qué-hay-dos-rutas-de-error" class="nav-link" data-scroll-target="#por-qué-hay-dos-rutas-de-error">Por qué hay dos rutas de error</a></li>
   <li><a href="#qué-no-resuelve-todavía" id="toc-qué-no-resuelve-todavía" class="nav-link" data-scroll-target="#qué-no-resuelve-todavía">Qué no resuelve todavía</a></li>
+  <li><a href="#diagnóstico-con-strace" id="toc-diagnóstico-con-strace" class="nav-link" data-scroll-target="#diagnóstico-con-strace">Diagnóstico con strace</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1363,6 +1368,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta lección junta la unidad completa en un programa pequeño. El programa abre <code>entrada.txt</code>, lee hasta 128 bytes, escribe lo leído en <code>stdout</code>, cierra el fd y sale con código <code>0</code>. Si algo falla después de abrir, pasa por <code>cleanup</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Unir <code>openat</code>, <code>read</code>, <code>write</code>, <code>close</code> y manejo de error en un solo programa.</li>
+<li>Dos rutas de error: antes y después de tener un fd abierto.</li>
+<li>Cómo verificar el programa con <code>strace</code>.</li>
+<li>Qué pasa cuando el archivo no existe.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Haber visto las lecciones anteriores de esta unidad. Necesitas entender fd, buffer, retorno negativo y las etiquetas <code>cleanup</code> y <code>error_sin_fd</code>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Este programa es el primer ejemplo que parece un programa Linux real: pide un recurso, lo usa, verifica cada retorno y limpia antes de salir. El modelo mental ya no es “syscalls sueltas” sino “manejo de recursos con rutas de error”.</p>
+</section>
 <section id="programa-completo" class="level2">
 <h2 class="anchored" data-anchor-id="programa-completo">Programa completo</h2>
 <p>Guarda este archivo como <code>mostrar-archivo.s</code>.</p>
@@ -1549,8 +1571,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="diagnóstico-con-strace" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-con-strace">Diagnóstico con strace</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=openat,read,write,close,exit_group qemu-aarch64 ./mostrar-archivo</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">openat</span><span class="er">(</span><span class="ex">AT_FDCWD,</span> <span class="st">"entrada.txt"</span>, O_RDONLY<span class="kw">)</span> <span class="ex">=</span> 3</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span><span class="er">(</span><span class="ex">3,</span> <span class="st">"Contenido de prueba\n"</span>, 128<span class="kw">)</span>   <span class="ex">=</span> 20</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span><span class="er">(</span><span class="ex">1,</span> <span class="st">"Contenido de prueba\n"</span>, 20<span class="kw">)</span>   <span class="ex">=</span> 20</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">close</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span>                                <span class="ex">=</span> 0</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">exit_group</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span>                           <span class="ex">=</span> <span class="pp">?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si el archivo no existe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> strace <span class="at">-e</span> trace=openat,write,exit_group qemu-aarch64 ./mostrar-archivo</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">openat</span><span class="er">(</span><span class="ex">AT_FDCWD,</span> <span class="st">"entrada.txt"</span>, O_RDONLY<span class="kw">)</span> <span class="ex">=</span> <span class="at">-1</span> ENOENT</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span><span class="er">(</span><span class="ex">2,</span> <span class="st">"Error en syscall\n"</span>, 17<span class="kw">)</span>      <span class="ex">=</span> 17</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">exit_group</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span>                           <span class="ex">=</span> <span class="pp">?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>strace</code> confirma que las syscalls se ejecutan en el orden esperado y que los valores de retorno coinciden con lo que predice el código.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Archivo vacío</strong>: si <code>entrada.txt</code> existe pero está vacío, <code>read</code> retorna <code>0</code>. El programa salta a <code>cleanup</code> porque <code>cmp x0, #0</code> con <code>b.lt</code> no captura el caso <code>0</code>. Para un programa robusto, <code>0</code> significa EOF, no error.</li>
+<li><strong>Buffer insuficiente</strong>: si el archivo tiene más de 128 bytes, solo se lee el primer bloque. Leer el archivo completo requiere un loop.</li>
+<li><strong>No crear <code>entrada.txt</code> antes de ejecutar</strong>: <code>openat</code> falla con <code>ENOENT</code> y el programa sale por <code>error_sin_fd</code>.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Modifica y predice antes de ejecutar.</p>
 <ol type="1">
 <li>Cambia el tamaño del buffer a 64 bytes.</li>
 <li>Cambia el mensaje de error.</li>
@@ -1558,11 +1604,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica por qué <code>x20</code> guarda la cantidad leída.</li>
 <li>Predice qué ocurre si <code>entrada.txt</code> existe pero está vacío.</li>
 <li>Explica por qué el programa no usa <code>.asciz</code> para <code>msg_error</code>.</li>
+<li>Agrega <code>strace</code> y verifica que <code>read</code> retorna la cantidad correcta de bytes.</li>
+<li>¿Qué cambiarías para que <code>read</code> con retorno <code>0</code> (EOF) no sea tratado como error?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Este programa ya tiene forma de programa Linux real: pide un recurso, lo usa, comprueba retornos y limpia antes de terminar. Todavía es pequeño, pero el modelo mental ya no es “syscalls sueltas”; es manejo de recursos.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>openat(2)</code>, <code>read(2)</code>, <code>write(2)</code>, <code>close(2)</code>: contrato completo. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>strace(1)</code>: traza de syscalls para diagnóstico. <a href="https://www.man7.org/linux/man-pages/man1/strace.1.html" class="uri">https://www.man7.org/linux/man-pages/man1/strace.1.html</a></li>
+<li>QEMU, <em>User-mode documentation</em>: ejecución cruzada de binarios AArch64. <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+</ul>
 
 
 </section>

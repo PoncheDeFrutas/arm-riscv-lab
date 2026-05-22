@@ -1286,13 +1286,14 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
   <li><a href="#preguntas-que-responde-esta-unidad" id="toc-preguntas-que-responde-esta-unidad" class="nav-link" data-scroll-target="#preguntas-que-responde-esta-unidad">Preguntas que responde esta unidad</a></li>
   <li><a href="#estado-visible-inicial" id="toc-estado-visible-inicial" class="nav-link" data-scroll-target="#estado-visible-inicial">Estado visible inicial</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#modelo-mental-de-la-unidad" id="toc-modelo-mental-de-la-unidad" class="nav-link" data-scroll-target="#modelo-mental-de-la-unidad">Modelo mental de la unidad</a></li>
+  <li><a href="#diagnóstico-básico" id="toc-diagnóstico-básico" class="nav-link" data-scroll-target="#diagnóstico-básico">Diagnóstico básico</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
-  <li><a href="#para-investigar-más" id="toc-para-investigar-más" class="nav-link" data-scroll-target="#para-investigar-más">Para investigar más</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1348,6 +1349,11 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="../../../slides/aarch64/03-modelo-aarch64/" class="lab-button">Ver presentación Slidev</a></p>
 </div>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a construir un mapa del estado visible de AArch64. Ese mapa permite leer programas pequeños, entender syscalls, seguir memoria y depurar con GDB sin perder contexto.</p>
+<p>La regla principal: un registro solo muestra bits. El significado depende de la instrucción, del tamaño usado y del rol que el programa le da en ese momento.</p>
+</section>
 <section id="mapa-rápido" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
 <div class="lab-flow">
@@ -1542,7 +1548,19 @@ Figura&nbsp;1: Estado visible inicial de un programa AArch64 en EL0.
 </div>
 </div>
 </div>
-<p>Depurar significa detener el programa y mirar parte de ese estado con contexto. Un número en <code>x0</code> puede ser un entero, una dirección o un valor temporal; la unidad anterior ayuda a interpretarlo.</p>
+<p>Depurar significa detener el programa y mirar parte de ese estado con contexto. Un número en <code>x0</code> puede ser un entero, una dirección o un valor temporal; las unidades posteriores enseñan cómo interpretarlo.</p>
+</section>
+<section id="diagnóstico-básico" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-básico">Diagnóstico básico</h2>
+<p>Cuando mires estado del procesador, pregunta:</p>
+<ol type="1">
+<li>¿el registro contiene valor, dirección, argumento o retorno?</li>
+<li>¿estoy leyendo vista <code>Xn</code> o <code>Wn</code>?</li>
+<li>¿una escritura en <code>Wn</code> limpió bits altos?</li>
+<li>¿los flags todavía corresponden a la comparación que me interesa?</li>
+<li>¿<code>sp</code>, <code>pc</code>, <code>fp</code> o <code>lr</code> tienen un rol especial aquí?</li>
+<li>¿estoy mirando estado de userland (<code>EL0</code>) o pensando en kernel (<code>EL1</code>)?</li>
+</ol>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
@@ -1589,43 +1607,6 @@ Figura&nbsp;1: Estado visible inicial de un programa AArch64 en EL0.
 </tbody>
 </table>
 </section>
-<section id="para-investigar-más" class="level2">
-<h2 class="anchored" data-anchor-id="para-investigar-más">Para investigar más</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Fuente</th>
-<th>Qué buscar</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Arm, <em>Learn the Architecture - A64 Instruction Set Architecture Guide</em></td>
-<td>Registros generales, <code>Xn/Wn</code>, SIMD/FP y PSTATE</td>
-</tr>
-<tr class="even">
-<td>Larry D. Pyeatt, <em>ARM 64-Bit Assembly Language</em></td>
-<td>Registros AArch64, primeros ejemplos y uso de <code>SP</code>, <code>FP</code>, <code>LR</code></td>
-</tr>
-<tr class="odd">
-<td>William Hohl y Christopher Hinds, <em>ARM Assembly Language: Fundamentals and Techniques</em></td>
-<td>Modelo del procesador y registros como estado visible</td>
-</tr>
-<tr class="even">
-<td>Stephen Smith, <em>Raspberry Pi Assembly Language Programming</em></td>
-<td>Lectura práctica de registros en programas pequeños</td>
-</tr>
-<tr class="odd">
-<td><code>gdb</code> / <code>gdb-multiarch</code></td>
-<td>Comandos <code>info registers</code> y lectura básica de estado</td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="checklist-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="checklist-de-cierre">Checklist de cierre</h2>
 <ul class="task-list">
@@ -1643,6 +1624,15 @@ Figura&nbsp;1: Estado visible inicial de un programa AArch64 en EL0.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/modelo-aarch64/01-registros-generales.html">Registros generales</a>. Si ya entiendes <code>Xn</code> y <code>Wn</code>, avanza a <a href="../../../courses/aarch64/modelo-aarch64/02-registros-especiales.html">Registros especiales</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</a>.</li>
+<li>GDB, <a href="https://sourceware.org/gdb/documentation/">Debugging with GDB</a>.</li>
+</ul>
 
 
 </section>

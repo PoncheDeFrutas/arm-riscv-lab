@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#destructor-depende-de-ownership" id="toc-destructor-depende-de-ownership" class="nav-link" data-scroll-target="#destructor-depende-de-ownership">Destructor depende de ownership</a></li>
   <li><a href="#método-manual" id="toc-método-manual" class="nav-link" data-scroll-target="#método-manual">Método manual</a></li>
   <li><a href="#ciclo-de-vida" id="toc-ciclo-de-vida" class="nav-link" data-scroll-target="#ciclo-de-vida">Ciclo de vida</a></li>
+  <li><a href="#checklist-de-ciclo-de-vida" id="toc-checklist-de-ciclo-de-vida" class="nav-link" data-scroll-target="#checklist-de-ciclo-de-vida">Checklist de ciclo de vida</a></li>
   <li><a href="#función-no-hoja-y-self" id="toc-función-no-hoja-y-self" class="nav-link" data-scroll-target="#función-no-hoja-y-self">Función no hoja y <code>self</code></a></li>
   <li><a href="#cuándo-usar-stack" id="toc-cuándo-usar-stack" class="nav-link" data-scroll-target="#cuándo-usar-stack">Cuándo usar stack</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
@@ -1519,6 +1520,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">memoria</span> del objeto deja de usarse o se reutiliza</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Separar memoria del objeto y recursos internos evita confusión. Un descriptor puede vivir en <code>.data</code>, pero su campo <code>data</code> puede apuntar a bloque dinámico.</p>
 </section>
+<section id="checklist-de-ciclo-de-vida" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-ciclo-de-vida">Checklist de ciclo de vida</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Etapa</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>antes de <code>init</code></td>
+<td>¿la memoria del descriptor existe?</td>
+</tr>
+<tr class="even">
+<td><code>init</code></td>
+<td>¿todos los campos quedan definidos?</td>
+</tr>
+<tr class="odd">
+<td>operación</td>
+<td>¿recibe <code>self</code> correcto en <code>x0</code>?</td>
+</tr>
+<tr class="even">
+<td>operación no hoja</td>
+<td>¿conserva <code>self</code> si ejecuta <code>bl</code>?</td>
+</tr>
+<tr class="odd">
+<td>destructor</td>
+<td>¿libera solo recursos que posee?</td>
+</tr>
+<tr class="even">
+<td>después de destruir</td>
+<td>¿el objeto queda marcado como cerrado o inválido?</td>
+</tr>
+</tbody>
+</table>
+<p>Un objeto manual correcto no depende de que el programa “se acuerde” de no usar basura. Sus funciones deben dejar estados fáciles de razonar.</p>
+</section>
 <section id="función-no-hoja-y-self" class="level2">
 <h2 class="anchored" data-anchor-id="función-no-hoja-y-self">Función no hoja y <code>self</code></h2>
 <p>Si un método llama otra función:</p>
@@ -1599,11 +1642,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué debe hacer un destructor?</li>
 <li>¿Por qué <code>buffer_clear</code> no necesita borrar todos los bytes?</li>
 <li>¿Por qué conviene guardar <code>self</code> si llamas otra función?</li>
+<li>¿Qué diferencia hay entre memoria del descriptor y recurso interno?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Objetos manuales no agregan instrucciones nuevas. Agregan disciplina: layout, constructor, operaciones, destructor y manejo correcto de <code>self</code>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Linux man-pages, <code>close(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/close.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/close.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+</ul>
 
 
 </section>

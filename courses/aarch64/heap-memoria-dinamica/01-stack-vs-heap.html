@@ -1326,6 +1326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#stack-vs-heap-en-errores-típicos" id="toc-stack-vs-heap-en-errores-típicos" class="nav-link" data-scroll-target="#stack-vs-heap-en-errores-típicos">Stack vs heap en errores típicos</a></li>
   <li><a href="#mapa-visual" id="toc-mapa-visual" class="nav-link" data-scroll-target="#mapa-visual">Mapa visual</a></li>
   <li><a href="#comparación-práctica" id="toc-comparación-práctica" class="nav-link" data-scroll-target="#comparación-práctica">Comparación práctica</a></li>
+  <li><a href="#pregunta-de-vida-útil" id="toc-pregunta-de-vida-útil" class="nav-link" data-scroll-target="#pregunta-de-vida-útil">Pregunta de vida útil</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1549,6 +1550,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="pregunta-de-vida-útil" class="level2">
+<h2 class="anchored" data-anchor-id="pregunta-de-vida-útil">Pregunta de vida útil</h2>
+<p>Antes de elegir región, pregunta:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Si la respuesta es sí</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿el dato existe todo el proceso?</td>
+<td>estática: <code>.rodata</code>, <code>.data</code> o <code>.bss</code></td>
+</tr>
+<tr class="even">
+<td>¿solo vive dentro de una llamada?</td>
+<td>stack</td>
+</tr>
+<tr class="odd">
+<td>¿debe sobrevivir al retorno?</td>
+<td>heap u objeto gestionado por otro dueño</td>
+</tr>
+<tr class="even">
+<td>¿su tamaño se decide al correr?</td>
+<td>heap o mapeo dinámico</td>
+</tr>
+<tr class="odd">
+<td>¿necesita cleanup explícito?</td>
+<td>heap/recurso dinámico</td>
+</tr>
+</tbody>
+</table>
+<p>La decisión no es “stack rápido, heap lento”. La decisión correcta empieza por vida útil y ownership.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1557,11 +1597,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué heap sirve para datos que crecen?</li>
 <li>¿Por qué una dirección de stack puede dejar de ser válida?</li>
 <li>¿Qué región vive normalmente hasta terminar el proceso?</li>
+<li>¿Qué pregunta harías antes de devolver un puntero desde una función?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Heap no reemplaza stack ni <code>.bss</code>. Cada región resuelve una vida distinta. Elegir bien empieza por preguntar cuánto debe vivir el dato.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+</ul>
 
 
 </section>

@@ -1318,13 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#exit-terminar-proceso" id="toc-exit-terminar-proceso" class="nav-link active" data-scroll-target="#exit-terminar-proceso"><code>exit</code>: terminar proceso</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#exit-terminar-proceso" id="toc-exit-terminar-proceso" class="nav-link" data-scroll-target="#exit-terminar-proceso"><code>exit</code>: terminar proceso</a></li>
   <li><a href="#ver-código-de-salida" id="toc-ver-código-de-salida" class="nav-link" data-scroll-target="#ver-código-de-salida">Ver código de salida</a></li>
   <li><a href="#write-escribir-bytes" id="toc-write-escribir-bytes" class="nav-link" data-scroll-target="#write-escribir-bytes"><code>write</code>: escribir bytes</a></li>
   <li><a href="#write-no-es-printf" id="toc-write-no-es-printf" class="nav-link" data-scroll-target="#write-no-es-printf"><code>write</code> no es <code>printf</code></a></li>
   <li><a href="#stdout-y-stderr" id="toc-stdout-y-stderr" class="nav-link" data-scroll-target="#stdout-y-stderr">stdout y stderr</a></li>
   <li><a href="#resultado-de-write" id="toc-resultado-de-write" class="nav-link" data-scroll-target="#resultado-de-write">Resultado de <code>write</code></a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1364,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Ya usaste <code>exit</code> y <code>write</code> en Unidad 05. Aquí las leemos como contrato formal: qué argumentos recibe cada syscall, qué devuelve y qué errores comunes conviene evitar.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a estudiar dos syscalls pequeñas pero fundamentales. <code>exit</code> termina el proceso y entrega un código de salida. <code>write</code> escribe bytes hacia un file descriptor y devuelve cuántos bytes logró escribir.</p>
+<p>Estas dos llamadas muestran toda la regla: <code>x8</code> elige syscall, <code>x0</code>-<code>x2</code> transportan argumentos y <code>x0</code> cambia de significado después de <code>svc #0</code>.</p>
+</section>
 <section id="exit-terminar-proceso" class="level2">
 <h2 class="anchored" data-anchor-id="exit-terminar-proceso"><code>exit</code>: terminar proceso</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
@@ -1514,7 +1522,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Revisar retorno antes de sobrescribir <code>x0</code> será tema de errores mínimos.</p>
+<p>Revisa retorno antes de sobrescribir <code>x0</code>. Si haces <code>mov x0, #0</code> para preparar <code>exit</code>, ya perdiste la información devuelta por <code>write</code>.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Longitud menor que el mensaje</td>
+<td>salida truncada</td>
+</tr>
+<tr class="even">
+<td>Longitud mayor que el mensaje</td>
+<td>bytes extra o lectura no deseada</td>
+</tr>
+<tr class="odd">
+<td>Confundir fd <code>1</code> con exit code <code>1</code></td>
+<td>interpretación equivocada</td>
+</tr>
+<tr class="even">
+<td>No revisar retorno de <code>write</code></td>
+<td>error silencioso</td>
+</tr>
+<tr class="odd">
+<td>Pensar que <code>.asciz</code> ayuda a <code>write</code></td>
+<td><code>write</code> no busca byte cero</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1523,11 +1564,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué <code>write</code> necesita longitud?</li>
 <li>¿Qué contiene <code>x0</code> después de <code>write</code>?</li>
 <li>¿Por qué <code>stdout = 1</code> no es lo mismo que código de salida <code>1</code>?</li>
+<li>Explica qué pasa si <code>x2</code> vale <code>3</code> para un mensaje de 10 bytes.</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo preparar <code>exit</code>.</label></li>
+<li><label><input type="checkbox">Puedo preparar <code>write</code>.</label></li>
+<li><label><input type="checkbox">Puedo distinguir fd de código de salida.</label></li>
+<li><label><input type="checkbox">Puedo explicar dirección y longitud.</label></li>
+<li><label><input type="checkbox">Puedo leer retorno de <code>write</code>.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>exit</code> y <code>write</code> son pequeñas pero muestran todo el contrato: número en <code>x8</code>, argumentos en registros, retorno en <code>x0</code>. Lo que cambia en otras syscalls es el significado de esos argumentos.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/syscalls-esenciales/03-read-buffers.html"><code>read</code> y buffers</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/exit.2.html"><code>exit(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

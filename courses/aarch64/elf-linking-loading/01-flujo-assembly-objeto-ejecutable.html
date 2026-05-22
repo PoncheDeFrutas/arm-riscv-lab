@@ -1321,14 +1321,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#tres-archivos-tres-preguntas" id="toc-tres-archivos-tres-preguntas" class="nav-link active" data-scroll-target="#tres-archivos-tres-preguntas">Tres archivos, tres preguntas</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#tres-archivos-tres-preguntas" id="toc-tres-archivos-tres-preguntas" class="nav-link" data-scroll-target="#tres-archivos-tres-preguntas">Tres archivos, tres preguntas</a></li>
   <li><a href="#programa-mínimo-para-inspección" id="toc-programa-mínimo-para-inspección" class="nav-link" data-scroll-target="#programa-mínimo-para-inspección">Programa mínimo para inspección</a></li>
   <li><a href="#ensamblar-y-enlazar" id="toc-ensamblar-y-enlazar" class="nav-link" data-scroll-target="#ensamblar-y-enlazar">Ensamblar y enlazar</a></li>
   <li><a href="#qué-hizo-el-assembler" id="toc-qué-hizo-el-assembler" class="nav-link" data-scroll-target="#qué-hizo-el-assembler">Qué hizo el assembler</a></li>
+  <li><a href="#qué-queda-pendiente-en-el-.o" id="toc-qué-queda-pendiente-en-el-.o" class="nav-link" data-scroll-target="#qué-queda-pendiente-en-el-.o">Qué queda pendiente en el <code>.o</code></a></li>
   <li><a href="#qué-hizo-el-linker" id="toc-qué-hizo-el-linker" class="nav-link" data-scroll-target="#qué-hizo-el-linker">Qué hizo el linker</a></li>
   <li><a href="#inspección-mínima" id="toc-inspección-mínima" class="nav-link" data-scroll-target="#inspección-mínima">Inspección mínima</a></li>
   <li><a href="#relación-con-unidades-anteriores" id="toc-relación-con-unidades-anteriores" class="nav-link" data-scroll-target="#relación-con-unidades-anteriores">Relación con unidades anteriores</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#lectura-rápida-de-fallos" id="toc-lectura-rápida-de-fallos" class="nav-link" data-scroll-target="#lectura-rápida-de-fallos">Lectura rápida de fallos</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1368,6 +1371,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El primer error común es pensar que “compilar” produce una sola cosa. En esta unidad separaremos tres objetos: archivo fuente, archivo objeto y ejecutable. Cada uno resuelve un problema distinto.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a seguir el camino mínimo desde un archivo <code>.s</code> hasta un proceso ejecutable. La meta es distinguir qué decide el assembler, qué decide el linker y qué queda para el loader cuando Linux crea el proceso.</p>
+</section>
 <section id="tres-archivos-tres-preguntas" class="level2">
 <h2 class="anchored" data-anchor-id="tres-archivos-tres-preguntas">Tres archivos, tres preguntas</h2>
 <table class="caption-top table">
@@ -1449,6 +1456,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>En este caso mínimo casi todo queda en <code>.text</code>. En programas con datos verás también <code>.rodata</code>, <code>.data</code> y <code>.bss</code>.</p>
 <p>El assembler no sabe “ejecutar” tu programa. Su trabajo es traducir unidades locales. Si encuentra una instrucción A64, codifica bits. Si encuentra una etiqueta, crea un símbolo. Si encuentra una directiva como <code>.text</code>, cambia la sección actual. Si encuentra una referencia que depende de una dirección final, puede dejar una relocation para el linker. Ese resultado es técnico y legible con herramientas, aunque todavía no sea ejecutable final.</p>
 </section>
+<section id="qué-queda-pendiente-en-el-.o" class="level2">
+<h2 class="anchored" data-anchor-id="qué-queda-pendiente-en-el-.o">Qué queda pendiente en el <code>.o</code></h2>
+<p>Un objeto relocatable puede estar perfectamente ensamblado y aun así no estar listo para ejecutarse. Todavía pueden faltar:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pendiente</th>
+<th>Quién lo resuelve</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dirección final de cada sección</td>
+<td>linker</td>
+</tr>
+<tr class="even">
+<td>símbolos definidos en otros objetos</td>
+<td>linker</td>
+</tr>
+<tr class="odd">
+<td>relocations de direcciones</td>
+<td>linker o dynamic loader</td>
+</tr>
+<tr class="even">
+<td>program headers de ejecución</td>
+<td>linker</td>
+</tr>
+<tr class="odd">
+<td>entry point final</td>
+<td>linker</td>
+</tr>
+</tbody>
+</table>
+<p>Por eso <code>min.o</code> es útil para inspección y enlace, pero no es el contrato que el kernel espera para iniciar un proceso.</p>
+</section>
 <section id="qué-hizo-el-linker" class="level2">
 <h2 class="anchored" data-anchor-id="qué-hizo-el-linker">Qué hizo el linker</h2>
 <p>El linker tomó <code>min.o</code> y creó un archivo ejecutable:</p>
@@ -1509,6 +1551,39 @@ Figura&nbsp;1: Trabajo mínimo del linker con un objeto AArch64.
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./min.o</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Eso falla porque <code>min.o</code> no es el contrato que Linux espera para ejecutar. Es una pieza de construcción, no el edificio terminado.</p>
 </section>
+<section id="lectura-rápida-de-fallos" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-rápida-de-fallos">Lectura rápida de fallos</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mensaje o situación</th>
+<th>Lectura probable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>undefined reference</code></td>
+<td>el linker no encontró un símbolo prometido</td>
+</tr>
+<tr class="even">
+<td><code>file</code> dice <code>relocatable</code></td>
+<td>todavía falta enlazar</td>
+</tr>
+<tr class="odd">
+<td>no aparece <code>Entry point</code> útil</td>
+<td>no estás mirando un ejecutable final</td>
+</tr>
+<tr class="even">
+<td>el binario no corre con QEMU</td>
+<td>revisar si es ejecutable ELF y arquitectura correcta</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
@@ -1523,6 +1598,15 @@ Figura&nbsp;1: Trabajo mínimo del linker con un objeto AArch64.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/elf-linking-loading/02-elf-header-entry-point.html">ELF header y entry point</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GNU Binutils, <em>GNU linker manual</em>: <a href="https://sourceware.org/binutils/docs/ld/" class="uri">https://sourceware.org/binutils/docs/ld/</a></li>
+</ul>
 
 
 </section>

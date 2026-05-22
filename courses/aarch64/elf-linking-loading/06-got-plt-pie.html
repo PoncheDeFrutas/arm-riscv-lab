@@ -1321,13 +1321,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#problema" id="toc-problema" class="nav-link active" data-scroll-target="#problema">Problema</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#problema" id="toc-problema" class="nav-link" data-scroll-target="#problema">Problema</a></li>
   <li><a href="#got-conceptual" id="toc-got-conceptual" class="nav-link" data-scroll-target="#got-conceptual">GOT conceptual</a></li>
   <li><a href="#plt-conceptual" id="toc-plt-conceptual" class="nav-link" data-scroll-target="#plt-conceptual">PLT conceptual</a></li>
   <li><a href="#diagrama-mental" id="toc-diagrama-mental" class="nav-link" data-scroll-target="#diagrama-mental">Diagrama mental</a></li>
   <li><a href="#pie" id="toc-pie" class="nav-link" data-scroll-target="#pie">PIE</a></li>
   <li><a href="#qué-cambia-con-pie" id="toc-qué-cambia-con-pie" class="nav-link" data-scroll-target="#qué-cambia-con-pie">Qué cambia con PIE</a></li>
+  <li><a href="#señales-en-herramientas" id="toc-señales-en-herramientas" class="nav-link" data-scroll-target="#señales-en-herramientas">Señales en herramientas</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#límites-de-esta-lección" id="toc-límites-de-esta-lección" class="nav-link" data-scroll-target="#límites-de-esta-lección">Límites de esta lección</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1367,6 +1370,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>GOT, PLT y PIE aparecen cuando las direcciones no deben quedar completamente fijas al ensamblar o enlazar. El objetivo aquí no es dominar dynamic linker internals, sino entender por qué existen esas piezas.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer GOT, PLT y PIE como respuestas al mismo problema: algunas direcciones se conocen tarde o pueden cambiar. La meta es reconocer señales en herramientas, no implementar un dynamic linker.</p>
+</section>
 <section id="problema" class="level2">
 <h2 class="anchored" data-anchor-id="problema">Problema</h2>
 <p>Un programa dinámico puede llamar <code>printf</code>, pero <code>printf</code> vive en <code>libc</code>. La dirección real de <code>libc</code> puede conocerse al cargar el programa, no cuando tú escribes <code>hello.c</code>.</p>
@@ -1494,9 +1501,51 @@ Figura&nbsp;1: Modelo conceptual de llamada dinámica con PLT y GOT.
 <p>No entraremos todavía en ASLR profundo. La idea mínima: PIE hace que el binario no dependa de una única dirección base.</p>
 <p>Al leer direcciones de un PIE, piensa más en offsets que en direcciones absolutas eternas. La instrucción puede estar a cierto desplazamiento dentro de la imagen, pero la base real se decide al cargar. Esto prepara debugging moderno: una dirección vista en <code>objdump</code> y una dirección vista en GDB pueden requerir sumar la base de carga.</p>
 </section>
+<section id="señales-en-herramientas" class="level2">
+<h2 class="anchored" data-anchor-id="señales-en-herramientas">Señales en herramientas</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Señal</th>
+<th>Lectura inicial</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>printf@plt</code> en <code>objdump</code></td>
+<td>llamada a función dinámica por stub</td>
+</tr>
+<tr class="even">
+<td><code>.got</code> o <code>.got.plt</code> en secciones</td>
+<td>tabla relacionada con direcciones dinámicas</td>
+</tr>
+<tr class="odd">
+<td><code>Type: DYN</code> en ejecutable</td>
+<td>puede ser PIE o shared object; revisar contexto</td>
+</tr>
+<tr class="even">
+<td><code>INTERP</code> en program headers</td>
+<td>participa dynamic loader</td>
+</tr>
+<tr class="odd">
+<td><code>NEEDED libc.so.6</code></td>
+<td>dependencia dinámica</td>
+</tr>
+</tbody>
+</table>
+<p>Ninguna señal aislada cuenta toda la historia. La lectura correcta cruza header, program headers, dynamic section y desensamblado.</p>
+</section>
 <section id="error-común" class="level2">
 <h2 class="anchored" data-anchor-id="error-común">Error común</h2>
 <p>Intentar explicar GOT/PLT como si ya estuviéramos escribiendo dynamic linker. No hace falta. En esta unidad basta con entender que son estructuras para conectar código propio con direcciones que pueden resolverse al cargar.</p>
+</section>
+<section id="límites-de-esta-lección" class="level2">
+<h2 class="anchored" data-anchor-id="límites-de-esta-lección">Límites de esta lección</h2>
+<p>Quedan fuera lazy binding detallado, relocations dinámicas campo por campo, symbol versioning, RELRO, exploits y resolución manual. Se mencionan solo para no confundirlos con la meta actual: entender el modelo mental.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1512,6 +1561,16 @@ Figura&nbsp;1: Modelo conceptual de llamada dinámica con PLT y GOT.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/elf-linking-loading/07-herramientas-lectura-guiada.html">Herramientas y lectura guiada</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils, <em>objdump</em>: <a href="https://sourceware.org/binutils/docs/binutils/objdump.html" class="uri">https://sourceware.org/binutils/docs/binutils/objdump.html</a></li>
+<li>GNU Binutils, <em>readelf</em>: <a href="https://sourceware.org/binutils/docs/binutils/readelf.html" class="uri">https://sourceware.org/binutils/docs/binutils/readelf.html</a></li>
+<li>Linux man-pages, <code>ld.so(8)</code>: <a href="https://www.man7.org/linux/man-pages/man8/ld.so.8.html" class="uri">https://www.man7.org/linux/man-pages/man8/ld.so.8.html</a></li>
+</ul>
 
 
 </section>

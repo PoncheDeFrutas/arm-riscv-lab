@@ -1318,13 +1318,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#enteros-por-tamaño" id="toc-enteros-por-tamaño" class="nav-link active" data-scroll-target="#enteros-por-tamaño">Enteros por tamaño</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#enteros-por-tamaño" id="toc-enteros-por-tamaño" class="nav-link" data-scroll-target="#enteros-por-tamaño">Enteros por tamaño</a></li>
+  <li><a href="#tamaño-no-es-tipo" id="toc-tamaño-no-es-tipo" class="nav-link" data-scroll-target="#tamaño-no-es-tipo">Tamaño no es tipo</a></li>
+  <li><a href="#little-endian" id="toc-little-endian" class="nav-link" data-scroll-target="#little-endian">Little endian</a></li>
   <li><a href="#ascii-y-.asciz" id="toc-ascii-y-.asciz" class="nav-link" data-scroll-target="#ascii-y-.asciz"><code>.ascii</code> y <code>.asciz</code></a></li>
+  <li><a href="#calcular-longitudes" id="toc-calcular-longitudes" class="nav-link" data-scroll-target="#calcular-longitudes">Calcular longitudes</a></li>
   <li><a href="#skip-y-.space" id="toc-skip-y-.space" class="nav-link" data-scroll-target="#skip-y-.space"><code>.skip</code> y <code>.space</code></a></li>
-  <li><a href="#datos-no-son-tipos-de-lenguaje" id="toc-datos-no-son-tipos-de-lenguaje" class="nav-link" data-scroll-target="#datos-no-son-tipos-de-lenguaje">Datos no son tipos de lenguaje</a></li>
+  <li><a href="#alineación-básica" id="toc-alineación-básica" class="nav-link" data-scroll-target="#alineación-básica">Alineación básica</a></li>
   <li><a href="#ejemplo-integrado" id="toc-ejemplo-integrado" class="nav-link" data-scroll-target="#ejemplo-integrado">Ejemplo integrado</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1363,6 +1369,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Declarar datos en assembly significa colocar bytes en una sección. El assembler no está creando variables de alto nivel; está generando contenido binario con nombres simbólicos.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a usar directivas para colocar bytes concretos o reservar espacio. También vas a separar tres ideas:</p>
+<ul>
+<li>tamaño de almacenamiento;</li>
+<li>interpretación del dato;</li>
+<li>dirección donde empieza el dato.</li>
+</ul>
+<p>En assembly, <code>.word 10</code> no crea un <code>int</code> como en C. Coloca bytes. El significado depende de cómo el programa lea esos bytes después.</p>
+</section>
 <section id="enteros-por-tamaño" class="level2">
 <h2 class="anchored" data-anchor-id="enteros-por-tamaño">Enteros por tamaño</h2>
 <table class="caption-top table">
@@ -1405,17 +1421,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="bn">0x12345678</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">q:</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    .quad <span class="bn">0x1122334455667788</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cada etiqueta nombra la dirección donde empieza el dato. La directiva define cuántos bytes se colocan.</p>
+</section>
+<section id="tamaño-no-es-tipo" class="level2">
+<h2 class="anchored" data-anchor-id="tamaño-no-es-tipo">Tamaño no es tipo</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">valor:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esto coloca 4 bytes. Que luego lo interpretes como signed, unsigned, contador o dirección depende del código que lo lea.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>.word</code> define tamaño de almacenamiento. No crea automáticamente un <code>int</code> como en un lenguaje de alto nivel.</p>
+</div>
+</div>
+</section>
+<section id="little-endian" class="level2">
+<h2 class="anchored" data-anchor-id="little-endian">Little endian</h2>
 <p>En plataformas AArch64 Linux usuales, estos valores se verán en memoria como little endian cuando ocupen más de un byte.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">w:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="bn">0x12345678</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En memoria, byte por byte, podrías observar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">78</span> 56 34 12</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El valor lógico es <code>0x12345678</code>, pero el byte menos significativo queda primero en memoria. Esta idea será importante al inspeccionar binarios o memoria con GDB.</p>
 </section>
 <section id="ascii-y-.asciz" class="level2">
 <h2 class="anchored" data-anchor-id="ascii-y-.asciz"><code>.ascii</code> y <code>.asciz</code></h2>
 <p><code>.ascii</code> coloca bytes de texto sin terminador automático. <code>.asciz</code> agrega byte cero al final.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sin_cero:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"ABC"</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">con_cero:</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"ABC"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sin_cero:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"ABC"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">con_cero:</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"ABC"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1447,52 +1491,118 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>No asumas que <code>.ascii</code> termina string. Si necesitas byte cero, usa <code>.asciz</code> o agrega <code>.byte 0</code>.</p>
 </div>
 </div>
+<p>Para syscall <code>write</code>, el byte cero no marca el final. <code>write</code> necesita una longitud explícita. Para funciones C que esperan cadenas, el terminador cero sí importa.</p>
+</section>
+<section id="calcular-longitudes" class="level2">
+<h2 class="anchored" data-anchor-id="calcular-longitudes">Calcular longitudes</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola\n"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>mensaje_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El símbolo <code>mensaje_len</code> queda con la distancia entre el punto actual <code>.</code> y la etiqueta <code>mensaje</code>. Si el cálculo está inmediatamente después del texto, la longitud coincide con los bytes del mensaje.</p>
+<p>Este patrón evita contar bytes a mano.</p>
 </section>
 <section id="skip-y-.space" class="level2">
 <h2 class="anchored" data-anchor-id="skip-y-.space"><code>.skip</code> y <code>.space</code></h2>
 <p>Reservan espacio.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.bss</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">otro_buffer:</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    .space <span class="dv">32</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>.bss</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">otro_buffer:</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    .space <span class="dv">32</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>buffer</code> nombra la primera dirección del bloque reservado. Si luego cargas esa dirección en un registro, podrás usarla como inicio de un área de trabajo.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> buffer</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> buffer</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En las prácticas iniciales, <code>.skip</code> y <code>.space</code> cumplen el mismo papel: separar un pedazo de memoria para usarlo después. Conviene ponerlos en <code>.bss</code> cuando el contenido inicial no importa y el programa solo necesita el espacio.</p>
 </section>
-<section id="datos-no-son-tipos-de-lenguaje" class="level2">
-<h2 class="anchored" data-anchor-id="datos-no-son-tipos-de-lenguaje">Datos no son tipos de lenguaje</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">valor:</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Esto coloca 4 bytes. Que luego lo interpretes como signed, unsigned, contador o dirección depende del código que lo lea.</p>
-<div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Idea clave
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>.word</code> define tamaño de almacenamiento. No crea automáticamente un <code>int</code> como en un lenguaje de alto nivel.</p>
-</div>
-</div>
+<section id="alineación-básica" class="level2">
+<h2 class="anchored" data-anchor-id="alineación-básica">Alineación básica</h2>
+<p>Algunos datos se leen mejor cuando están alineados a su tamaño natural. Por ejemplo, una palabra de 4 bytes suele ubicarse en una dirección múltiplo de 4. El assembler ofrece directivas de alineación, pero en esta unidad basta conocer la idea: mezclar bytes sueltos y palabras puede cambiar la dirección del dato siguiente.</p>
+<p>Ejemplo conceptual:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">a:</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="dv">1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">b:</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">2</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Más adelante verás cómo alinear explícitamente cuando haga falta. Por ahora, cuando declares tablas o structs manuales, revisa tamaños y offsets con cuidado.</p>
 </section>
 <section id="ejemplo-integrado" class="level2">
 <h2 class="anchored" data-anchor-id="ejemplo-integrado">Ejemplo integrado</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contador:</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"Hola AArch64\n"</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>.bss</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contador:</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">10</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola AArch64\n"</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>mensaje_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>.bss</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Símbolo</th>
+<th>Qué nombra</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>contador</code></td>
+<td>dirección de 4 bytes inicializados</td>
+</tr>
+<tr class="even">
+<td><code>mensaje</code></td>
+<td>dirección del primer byte del texto</td>
+</tr>
+<tr class="odd">
+<td><code>mensaje_len</code></td>
+<td>valor constante con longitud del texto</td>
+</tr>
+<tr class="even">
+<td><code>buffer</code></td>
+<td>dirección inicial de 64 bytes reservados</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Confundir <code>.word</code> con variable de alto nivel</td>
+<td>piensa en bytes y tamaño</td>
+</tr>
+<tr class="even">
+<td>Usar <code>.ascii</code> esperando byte cero</td>
+<td>usa <code>.asciz</code> o agrega <code>.byte 0</code></td>
+</tr>
+<tr class="odd">
+<td>Contar longitud a mano</td>
+<td>usa <code>. - etiqueta</code></td>
+</tr>
+<tr class="even">
+<td>Reservar buffers en <code>.rodata</code></td>
+<td>usa <code>.bss</code> para espacio de trabajo</td>
+</tr>
+<tr class="odd">
+<td>Ignorar endianness al inspeccionar memoria</td>
+<td>recuerda little endian</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1501,6 +1611,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Elige directiva para guardar 8 bytes.</li>
 <li>Explica diferencia entre <code>.ascii "A"</code> y <code>.asciz "A"</code>.</li>
 <li>Reserva 128 bytes para un buffer.</li>
+<li>Calcula longitud de <code>"ABC\n"</code> usando <code>. - etiqueta</code>.</li>
+<li>Explica cómo se vería <code>0x12345678</code> en memoria little endian.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1512,8 +1624,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo usar <code>.quad</code>.</label></li>
 <li><label><input type="checkbox">Puedo distinguir <code>.ascii</code> de <code>.asciz</code>.</label></li>
 <li><label><input type="checkbox">Puedo reservar espacio con <code>.skip</code> o <code>.space</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar tamaño, dirección e interpretación.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Definir datos en assembly es controlar bytes. Las etiquetas te dan direcciones, las directivas colocan o reservan memoria, y tu código decide cómo interpretar lo que lee.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/gnu-assembly/05-pseudo-instrucciones-direcciones.html">Pseudo-instrucciones y direcciones</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/Pseudo-Ops.html">Assembler Directives</a>.</li>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - Memory and data</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+</ul>
 
 
 </section>

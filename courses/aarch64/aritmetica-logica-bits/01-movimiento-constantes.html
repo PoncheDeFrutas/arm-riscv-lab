@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#movn-mover-e-invertir" id="toc-movn-mover-e-invertir" class="nav-link" data-scroll-target="#movn-mover-e-invertir"><code>movn</code>: mover e invertir</a></li>
   <li><a href="#wn-y-constantes-de-32-bits" id="toc-wn-y-constantes-de-32-bits" class="nav-link" data-scroll-target="#wn-y-constantes-de-32-bits"><code>Wn</code> y constantes de 32 bits</a></li>
   <li><a href="#cuándo-usar-cada-forma" id="toc-cuándo-usar-cada-forma" class="nav-link" data-scroll-target="#cuándo-usar-cada-forma">Cuándo usar cada forma</a></li>
+  <li><a href="#diagnóstico-de-constantes" id="toc-diagnóstico-de-constantes" class="nav-link" data-scroll-target="#diagnóstico-de-constantes">Diagnóstico de constantes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1585,6 +1586,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="diagnóstico-de-constantes" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-constantes">Diagnóstico de constantes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Síntoma</th>
+<th>Revisión</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>valor grande no cabe como inmediato</td>
+<td>construir con <code>movz</code>/<code>movk</code></td>
+</tr>
+<tr class="even">
+<td>valor tiene muchos bits en <code>1</code></td>
+<td>considerar <code>movn</code></td>
+</tr>
+<tr class="odd">
+<td>esperabas contenido y obtuviste dirección</td>
+<td>falta <code>ldr xN, [xM]</code></td>
+</tr>
+<tr class="even">
+<td>escribiste en <code>w0</code> y se borró parte alta</td>
+<td>recordar que <code>Wn</code> limpia bits 63..32</td>
+</tr>
+<tr class="odd">
+<td><code>movk</code> no dio el valor esperado</td>
+<td>revisar bloque de 16 bits y <code>lsl</code> usado</td>
+</tr>
+</tbody>
+</table>
+<p>Antes de culpar al assembler, escribe la constante en bloques de 16 bits. Ese paso casi siempre muestra qué parte falta o qué bloque fue reemplazado.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1611,6 +1650,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Movimiento de constantes es preparación de operandos. Si la constante es simple, <code>mov</code> basta como forma legible. Si el valor es grande, piensa en bloques de 16 bits con <code>movz</code> y <code>movk</code>. Si hay muchos <code>1</code>, <code>movn</code> puede ser más directo.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

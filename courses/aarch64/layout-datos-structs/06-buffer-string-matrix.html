@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cómo-elegir-entre-estos-diseños" id="toc-cómo-elegir-entre-estos-diseños" class="nav-link" data-scroll-target="#cómo-elegir-entre-estos-diseños">Cómo elegir entre estos diseños</a></li>
   <li><a href="#programa-completo-matrix" id="toc-programa-completo-matrix" class="nav-link" data-scroll-target="#programa-completo-matrix">Programa completo: Matrix</a></li>
   <li><a href="#comparación-rápida" id="toc-comparación-rápida" class="nav-link" data-scroll-target="#comparación-rápida">Comparación rápida</a></li>
+  <li><a href="#diagnóstico-por-diseño" id="toc-diagnóstico-por-diseño" class="nav-link" data-scroll-target="#diagnóstico-por-diseño">Diagnóstico por diseño</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1803,6 +1804,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Los tres tienen algo en común: descriptor pequeño + bloque de datos separado.</p>
 </section>
+<section id="diagnóstico-por-diseño" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-por-diseño">Diagnóstico por diseño</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Diseño</th>
+<th>Revisa primero</th>
+<th>Error típico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Buffer</td>
+<td><code>len &lt;= cap</code></td>
+<td>escribir sin espacio</td>
+</tr>
+<tr class="even">
+<td>String</td>
+<td><code>len</code> antes de imprimir</td>
+<td>leer basura después del texto</td>
+</tr>
+<tr class="odd">
+<td>Matrix</td>
+<td><code>row &lt; rows</code> y <code>col &lt; cols</code></td>
+<td>calcular offset fuera del bloque</td>
+</tr>
+<tr class="even">
+<td>Matrix</td>
+<td>multiplicar por tamaño de elemento</td>
+<td>leer dirección equivocada</td>
+</tr>
+</tbody>
+</table>
+<p>La técnica base no cambia: cargar descriptor, validar invariante, calcular offset y acceder con el tamaño correcto.</p>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1852,11 +1893,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Cómo se calcula índice row-major?</li>
 <li>¿Por qué <code>lsl #3</code> equivale a multiplicar por 8?</li>
 <li>¿Qué comparación evita acceso fuera de matriz?</li>
+<li>¿Qué campo consultarías antes de imprimir un string con descriptor?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Buffer, String y Matrix muestran misma técnica en tres formas: descriptor, puntero a datos, tamaños, reglas y acceso con offsets.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Linux man-pages, <code>write(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/write.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/write.2.html</a></li>
+</ul>
 
 
 </section>

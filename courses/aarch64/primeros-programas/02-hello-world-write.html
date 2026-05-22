@@ -1318,13 +1318,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#archivo-hello.s" id="toc-archivo-hello.s" class="nav-link active" data-scroll-target="#archivo-hello.s">Archivo <code>hello.s</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#archivo-hello.s" id="toc-archivo-hello.s" class="nav-link" data-scroll-target="#archivo-hello.s">Archivo <code>hello.s</code></a></li>
+  <li><a href="#contrato-de-write" id="toc-contrato-de-write" class="nav-link" data-scroll-target="#contrato-de-write">Contrato de <code>write</code></a></li>
   <li><a href="#construir-y-ejecutar" id="toc-construir-y-ejecutar" class="nav-link" data-scroll-target="#construir-y-ejecutar">Construir y ejecutar</a></li>
-  <li><a href="#registros-de-write" id="toc-registros-de-write" class="nav-link" data-scroll-target="#registros-de-write">Registros de <code>write</code></a></li>
+  <li><a href="#dirección-no-es-contenido" id="toc-dirección-no-es-contenido" class="nav-link" data-scroll-target="#dirección-no-es-contenido">Dirección no es contenido</a></li>
   <li><a href="#mensaje-en-memoria" id="toc-mensaje-en-memoria" class="nav-link" data-scroll-target="#mensaje-en-memoria">Mensaje en memoria</a></li>
+  <li><a href="#por-qué-usamos-.rodata" id="toc-por-qué-usamos-.rodata" class="nav-link" data-scroll-target="#por-qué-usamos-.rodata">Por qué usamos <code>.rodata</code></a></li>
   <li><a href="#por-qué-usamos-.ascii" id="toc-por-qué-usamos-.ascii" class="nav-link" data-scroll-target="#por-qué-usamos-.ascii">Por qué usamos <code>.ascii</code></a></li>
+  <li><a href="#retorno-de-write" id="toc-retorno-de-write" class="nav-link" data-scroll-target="#retorno-de-write">Retorno de <code>write</code></a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1363,45 +1370,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Ahora el programa sí produce salida visible. No usaremos <code>printf</code>: el programa le pedirá directamente al kernel que escriba bytes en <code>stdout</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>En esta lección vas a usar la syscall <code>write</code>. El programa prepara cuatro valores: destino de escritura, dirección del mensaje, cantidad de bytes y número de syscall. Después ejecuta <code>svc #0</code>.</p>
+<p>La diferencia con la lección anterior es que ahora el programa no solo termina: también pasa una dirección de memoria al kernel. Por eso aparecen dos ideas fundamentales: <strong>dirección</strong> y <strong>longitud</strong>.</p>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Ya debes reconocer este patrón:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">preparar</span> registros</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">svc</span> <span class="co">#0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Para <code>exit</code>, solo importaban <code>x0</code> y <code>x8</code>. Para <code>write</code>, el kernel necesita más datos porque no puede adivinar qué bytes quieres escribir ni cuántos son.</p>
+</section>
 <section id="archivo-hello.s" class="level2">
 <h2 class="anchored" data-anchor-id="archivo-hello.s">Archivo <code>hello.s</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span>          <span class="op">//</span> stdout</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>mensaje    <span class="op">//</span> dirección del mensaje</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len        <span class="op">//</span> cantidad de bytes</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> syscall write</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span>         <span class="op">//</span> syscall exit</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola AArch64\n"</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span>          <span class="op">//</span> stdout</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>mensaje    <span class="op">//</span> dirección del mensaje</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len        <span class="op">//</span> cantidad de bytes</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> syscall write</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span>         <span class="op">//</span> syscall exit</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola AArch64\n"</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Este programa hace dos syscalls. La primera escribe bytes. La segunda termina el proceso con código <code>0</code>.</p>
 </section>
-<section id="construir-y-ejecutar" class="level2">
-<h2 class="anchored" data-anchor-id="construir-y-ejecutar">Construir y ejecutar</h2>
-<p>Ruta x86_64 con QEMU:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> hello.s <span class="at">-o</span> hello.o</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-ld</span> hello.o <span class="at">-o</span> hello</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> ./hello</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Ruta ARM64 nativa:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as</span> hello.s <span class="at">-o</span> hello.o</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ld</span> hello.o <span class="at">-o</span> hello</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./hello</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Salida esperada:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> AArch64</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="registros-de-write" class="level2">
-<h2 class="anchored" data-anchor-id="registros-de-write">Registros de <code>write</code></h2>
+<section id="contrato-de-write" class="level2">
+<h2 class="anchored" data-anchor-id="contrato-de-write">Contrato de <code>write</code></h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1435,21 +1439,100 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p><code>svc #0</code> no imprime por sí solo. La impresión ocurre porque antes preparaste <code>x8 = 64</code> y los argumentos de <code>write</code>.</p>
 </section>
+<section id="construir-y-ejecutar" class="level2">
+<h2 class="anchored" data-anchor-id="construir-y-ejecutar">Construir y ejecutar</h2>
+<p>Ruta x86_64 con QEMU:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> hello.s <span class="at">-o</span> hello.o</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-ld</span> hello.o <span class="at">-o</span> hello</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> ./hello</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ruta ARM64 nativa:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as</span> hello.s <span class="at">-o</span> hello.o</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ld</span> hello.o <span class="at">-o</span> hello</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./hello</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> AArch64</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La primera línea viene de <code>write</code>. El <code>0</code> viene del <code>echo $?</code> ejecutado después.</p>
+</section>
+<section id="dirección-no-es-contenido" class="level2">
+<h2 class="anchored" data-anchor-id="dirección-no-es-contenido">Dirección no es contenido</h2>
+<p>Esta línea no copia el texto dentro de <code>x1</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lo que prepara es una dirección. El registro queda apuntando al primer byte del mensaje:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> <span class="at">-</span><span class="op">&gt;</span> mensaje <span class="at">-</span><span class="op">&gt;</span> <span class="st">"Hola AArch64\n"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Después <code>write</code> usa esa dirección junto con <code>x2</code>. Sin longitud, el kernel no sabe cuántos bytes leer. En C muchas funciones esperan cadenas terminadas en byte cero; <code>write</code> no funciona así. <code>write</code> escribe exactamente la cantidad de bytes que le pasas.</p>
+</section>
 <section id="mensaje-en-memoria" class="level2">
 <h2 class="anchored" data-anchor-id="mensaje-en-memoria">Mensaje en memoria</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mensaje:</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">48</span> 6f 6c 61 20 41 41 72 63 68 36 34 0a</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>x1</code> apunta al primer byte. <code>x2</code> dice cuántos bytes debe leer <code>write</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> <span class="at">-</span><span class="op">&gt;</span> mensaje</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x2</span> <span class="at">-</span><span class="op">&gt;</span> len</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mensaje:</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">48</span> 6f 6c 61 20 41 41 72 63 68 36 34 0a</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cada número hexadecimal representa un byte. La etiqueta <code>mensaje</code> marca dónde empieza esa secuencia. El salto de línea final es <code>0a</code>.</p>
+</section>
+<section id="por-qué-usamos-.rodata" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-usamos-.rodata">Por qué usamos <code>.rodata</code></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola AArch64\n"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>.rodata</code> se usa para datos de solo lectura. El mensaje no cambia durante el programa, así que no necesita estar en una sección modificable. Esta separación ayuda a entender cómo un binario organiza código y datos.</p>
 </section>
 <section id="por-qué-usamos-.ascii" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-usamos-.ascii">Por qué usamos <code>.ascii</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola AArch64\n"</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola AArch64\n"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>.ascii</code> coloca los bytes exactos del mensaje. <code>len = . - mensaje</code> calcula la cantidad de bytes desde la etiqueta hasta la posición actual.</p>
-<p>Si usaras <code>.asciz</code>, se agregaría un byte cero al final. Para <code>write</code>, ese byte también se escribiría si lo cuentas dentro de la longitud.</p>
+<p>Si usaras <code>.asciz</code>, se agregaría un byte cero al final. Para <code>write</code>, ese byte también se escribiría si lo cuentas dentro de la longitud. <code>write</code> no busca el fin de la cadena; obedece <code>x2</code>.</p>
+</section>
+<section id="retorno-de-write" class="level2">
+<h2 class="anchored" data-anchor-id="retorno-de-write">Retorno de <code>write</code></h2>
+<p>Después de <code>svc #0</code>, <code>x0</code> contiene el retorno de la syscall. Para <code>write</code>, un retorno positivo indica cuántos bytes se escribieron. Un valor negativo indica error.</p>
+<p>En este programa mínimo no manejamos el retorno porque el objetivo es entender el contrato básico. Más adelante, al estudiar errores, revisarás <code>x0</code> antes de continuar.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Qué pasa</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Poner el texto en <code>x1</code></td>
+<td>un registro no puede guardar toda una cadena</td>
+<td>pasa dirección del mensaje</td>
+</tr>
+<tr class="even">
+<td>Usar longitud menor que <code>len</code></td>
+<td>salida truncada</td>
+<td>revisa <code>x2</code></td>
+</tr>
+<tr class="odd">
+<td>Usar longitud mayor que <code>len</code></td>
+<td>puede escribir bytes de más</td>
+<td>calcula longitud con <code>len = . - mensaje</code></td>
+</tr>
+<tr class="even">
+<td>Olvidar <code>exit</code></td>
+<td>el programa no termina de forma clara</td>
+<td>llama <code>exit</code> después de <code>write</code></td>
+</tr>
+<tr class="odd">
+<td>Confundir <code>stdout</code> con exit code</td>
+<td><code>x0 = 1</code> significa stdout solo para <code>write</code></td>
+<td>interpreta registros según <code>x8</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1458,6 +1541,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Cambia <code>x0</code> de <code>1</code> a <code>2</code> y observa la salida.</li>
 <li>Quita <code>\n</code> y mira cómo cambia la terminal.</li>
 <li>Explica qué pasaría si <code>x2</code> es menor que <code>len</code>.</li>
+<li>Explica por qué <code>.ascii</code> no agrega byte cero.</li>
+<li>Explica qué contiene <code>x1</code>: dirección o contenido.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1468,8 +1553,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar dirección del mensaje en <code>x1</code>.</label></li>
 <li><label><input type="checkbox">Puedo explicar longitud en <code>x2</code>.</label></li>
 <li><label><input type="checkbox">Puedo terminar con <code>exit</code>.</label></li>
+<li><label><input type="checkbox">Puedo distinguir <code>.ascii</code>, etiqueta y longitud.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p><code>write</code> conecta registros con memoria. El kernel recibe un file descriptor, una dirección y una longitud. Si cualquiera de esos datos está mal, la syscall no tiene suficiente contexto para producir la salida correcta.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/primeros-programas/03-stdout-stderr-exit-codes.html">stdout, stderr y exit codes</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+</ul>
 
 
 </section>

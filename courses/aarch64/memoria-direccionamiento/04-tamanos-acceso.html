@@ -1318,12 +1318,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#tamaños-frecuentes" id="toc-tamaños-frecuentes" class="nav-link active" data-scroll-target="#tamaños-frecuentes">Tamaños frecuentes</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#tamaños-frecuentes" id="toc-tamaños-frecuentes" class="nav-link" data-scroll-target="#tamaños-frecuentes">Tamaños frecuentes</a></li>
   <li><a href="#leer-la-misma-memoria-con-tamaños-distintos" id="toc-leer-la-misma-memoria-con-tamaños-distintos" class="nav-link" data-scroll-target="#leer-la-misma-memoria-con-tamaños-distintos">Leer la misma memoria con tamaños distintos</a></li>
   <li><a href="#escribir-menos-de-64-bits" id="toc-escribir-menos-de-64-bits" class="nav-link" data-scroll-target="#escribir-menos-de-64-bits">Escribir menos de 64 bits</a></li>
-  <li><a href="#ldrsw-cargar-32-bits-con-signo-hacia-64-bits" id="toc-ldrsw-cargar-32-bits-con-signo-hacia-64-bits" class="nav-link" data-scroll-target="#ldrsw-cargar-32-bits-con-signo-hacia-64-bits"><code>ldrsw</code>: cargar 32 bits con signo hacia 64 bits</a></li>
+  <li><a href="#cargas-con-cero-y-cargas-con-signo" id="toc-cargas-con-cero-y-cargas-con-signo" class="nav-link" data-scroll-target="#cargas-con-cero-y-cargas-con-signo">Cargas con cero y cargas con signo</a></li>
   <li><a href="#alineación-práctica" id="toc-alineación-práctica" class="nav-link" data-scroll-target="#alineación-práctica">Alineación práctica</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicio" id="toc-mini-ejercicio" class="nav-link" data-scroll-target="#mini-ejercicio">Mini ejercicio</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1363,6 +1366,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>La memoria guarda bytes. La instrucción decide cuántos bytes leer o escribir. Esta lección conecta tamaños de la Unidad 02 con instrucciones reales de carga y almacenamiento.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer la misma dirección con tamaños distintos. Esto explica por qué un byte, una palabra de 32 bits y una palabra de 64 bits pueden empezar en la misma dirección pero producir valores distintos.</p>
+<p>También verás que algunas cargas extienden con ceros y otras con signo.</p>
+</section>
 <section id="tamaños-frecuentes" class="level2">
 <h2 class="anchored" data-anchor-id="tamaños-frecuentes">Tamaños frecuentes</h2>
 <table class="caption-top table">
@@ -1406,6 +1414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>El sufijo importa. <code>strb</code> escribe un byte; <code>str xN</code> escribe ocho bytes.</p>
 </section>
 <section id="leer-la-misma-memoria-con-tamaños-distintos" class="level2">
 <h2 class="anchored" data-anchor-id="leer-la-misma-memoria-con-tamaños-distintos">Leer la misma memoria con tamaños distintos</h2>
@@ -1453,9 +1462,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">55</span> AA AA AA</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>strb</code> no escribe una palabra completa. Escribe un byte.</p>
 </section>
-<section id="ldrsw-cargar-32-bits-con-signo-hacia-64-bits" class="level2">
-<h2 class="anchored" data-anchor-id="ldrsw-cargar-32-bits-con-signo-hacia-64-bits"><code>ldrsw</code>: cargar 32 bits con signo hacia 64 bits</h2>
-<p><code>ldr wN, [xM]</code> carga 32 bits y limpia la mitad alta. <code>ldrsw xN, [xM]</code> carga 32 bits, interpreta bit de signo y extiende hacia 64 bits.</p>
+<section id="cargas-con-cero-y-cargas-con-signo" class="level2">
+<h2 class="anchored" data-anchor-id="cargas-con-cero-y-cargas-con-signo">Cargas con cero y cargas con signo</h2>
+<p><code>ldrb</code> y <code>ldrh</code> cargan valores pequeños y los extienden con ceros en el registro destino. Para 32 bits firmados hacia 64 bits, existe <code>ldrsw</code>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">data</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">negativo:</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="bn">0xFFFFFFFF</span></span>
@@ -1487,6 +1496,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    .quad <span class="bn">0x1122334455667788</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No entraremos todavía en penalizaciones, excepciones, ABI ni layout avanzado.</p>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Usar <code>ldr x</code> cuando solo querías un byte</td>
+<td>usa <code>ldrb</code></td>
+</tr>
+<tr class="even">
+<td>Usar <code>str x</code> sobre una zona de 4 bytes</td>
+<td>escribe ocho bytes, puede pisar datos vecinos</td>
+</tr>
+<tr class="odd">
+<td>Ignorar little endian</td>
+<td>recuerda orden de bytes en memoria</td>
+</tr>
+<tr class="even">
+<td>Confundir <code>ldr w</code> con <code>ldrsw</code></td>
+<td>uno limpia mitad alta, otro extiende signo</td>
+</tr>
+<tr class="odd">
+<td>Mezclar <code>.byte</code> y <code>.quad</code> sin alinear</td>
+<td>usa <code>.balign</code> cuando convenga</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicio" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicio">Mini ejercicio</h2>
 <p>Con estos bytes:</p>
@@ -1497,11 +1543,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué lee <code>ldrb w1, [x0]</code>?</li>
 <li>¿Qué lee <code>ldr w2, [x0]</code> en little-endian?</li>
 <li>¿Por qué no significan lo mismo aunque empiezan en la misma dirección?</li>
+<li>¿Qué diferencia habría entre <code>ldr w2, [x0]</code> y <code>ldrsw x2, [x0]</code> si el bit de signo está activo?</li>
+</ul>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo elegir carga/store de 1, 2, 4 u 8 bytes.</label></li>
+<li><label><input type="checkbox">Puedo explicar little endian en una carga.</label></li>
+<li><label><input type="checkbox">Puedo distinguir <code>ldr w</code> de <code>ldr x</code>.</label></li>
+<li><label><input type="checkbox">Puedo distinguir <code>ldr w</code> de <code>ldrsw</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué la alineación ayuda.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>No existe “leer una variable” como idea única. Existen instrucciones que leen 1, 2, 4 u 8 bytes desde una dirección. Elegir tamaño correcto es parte del programa.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/memoria-direccionamiento/05-modos-direccionamiento.html">Modos de direccionamiento</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

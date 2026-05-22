@@ -1318,14 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#fórmula-mental" id="toc-fórmula-mental" class="nav-link active" data-scroll-target="#fórmula-mental">Fórmula mental</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#fórmula-mental" id="toc-fórmula-mental" class="nav-link" data-scroll-target="#fórmula-mental">Fórmula mental</a></li>
   <li><a href="#array-de-64-bits" id="toc-array-de-64-bits" class="nav-link" data-scroll-target="#array-de-64-bits">Array de 64 bits</a></li>
   <li><a href="#índice-en-registro" id="toc-índice-en-registro" class="nav-link" data-scroll-target="#índice-en-registro">Índice en registro</a></li>
   <li><a href="#array-de-32-bits" id="toc-array-de-32-bits" class="nav-link" data-scroll-target="#array-de-32-bits">Array de 32 bits</a></li>
   <li><a href="#recorrido-con-post-index" id="toc-recorrido-con-post-index" class="nav-link" data-scroll-target="#recorrido-con-post-index">Recorrido con post-index</a></li>
   <li><a href="#recorrido-con-acumulación-pequeña" id="toc-recorrido-con-acumulación-pequeña" class="nav-link" data-scroll-target="#recorrido-con-acumulación-pequeña">Recorrido con acumulación pequeña</a></li>
   <li><a href="#puntero-a-elemento" id="toc-puntero-a-elemento" class="nav-link" data-scroll-target="#puntero-a-elemento">Puntero a elemento</a></li>
-  <li><a href="#mini-ejercicio" id="toc-mini-ejercicio" class="nav-link" data-scroll-target="#mini-ejercicio">Mini ejercicio</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1365,6 +1368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un array es memoria consecutiva. La dirección del elemento depende del inicio del array, el índice y el tamaño de cada elemento. Esta lección arma esa fórmula con instrucciones AArch64.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a calcular direcciones de elementos. Un array no guarda información mágica de índice o tamaño para la CPU: el programa debe saber dónde empieza, cuánto ocupa cada elemento y qué índice quiere leer.</p>
+<p>Esta lección prepara loops, strings, buffers y estructuras.</p>
+</section>
 <section id="fórmula-mental" class="level2">
 <h2 class="anchored" data-anchor-id="fórmula-mental">Fórmula mental</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dirección</span> de array<span class="pp">[</span><span class="ss">i</span><span class="pp">]</span> = base + i <span class="pp">*</span> tamaño</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1513,21 +1521,76 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ldr x5<span class="op">,</span> <span class="op">[</span>x4<span class="op">]</span>        <span class="op">//</span> x5 <span class="op">=</span> array<span class="op">[</span><span class="dv">2</span><span class="op">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El puntero sigue siendo un número. Lo importante es saber a qué zona apunta y qué tamaño de dato esperas leer.</p>
 </section>
-<section id="mini-ejercicio" class="level2">
-<h2 class="anchored" data-anchor-id="mini-ejercicio">Mini ejercicio</h2>
-<p>Para este array:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nums:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">word</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">6</span><span class="op">,</span> <span class="dv">7</span><span class="op">,</span> <span class="dv">8</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Responde:</p>
-<ul>
-<li>¿Qué escala usa el índice?</li>
-<li>¿Qué instrucción leería <code>nums[3]</code> en <code>w2</code>?</li>
-<li>¿Cuántos bytes hay entre <code>nums[0]</code> y <code>nums[3]</code>?</li>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Usar índice como bytes sin escalar</td>
+<td>multiplica por tamaño del elemento</td>
+</tr>
+<tr class="even">
+<td>Usar escala de <code>.quad</code> en <code>.word</code></td>
+<td><code>.word</code> usa <code>lsl #2</code></td>
+</tr>
+<tr class="odd">
+<td>Avanzar puntero y perder base original</td>
+<td>guarda copia si necesitas volver al inicio</td>
+</tr>
+<tr class="even">
+<td>Leer fuera del array</td>
+<td>controla índice y cantidad de elementos</td>
+</tr>
+<tr class="odd">
+<td>Usar <code>ldr x</code> en array <code>.word</code></td>
+<td>usa <code>ldr w</code> para 32 bits</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<ol type="1">
+<li>Calcula dirección relativa de <code>array[3]</code> en <code>.quad</code>.</li>
+<li>Calcula dirección relativa de <code>array32[3]</code> en <code>.word</code>.</li>
+<li>Explica por qué <code>lsl #3</code> equivale a multiplicar por 8.</li>
+<li>Explica qué valor queda en <code>x0</code> después de tres cargas post-index de 8 bytes.</li>
+<li>Escribe la fórmula para acceder a <code>array[i]</code>.</li>
+</ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo explicar <code>base + i * tamaño</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer array de <code>.quad</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer array de <code>.word</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar offset escalado.</label></li>
+<li><label><input type="checkbox">Puedo usar post-index para recorrer.</label></li>
+<li><label><input type="checkbox">Puedo distinguir puntero a base y puntero a elemento.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Arrays no son tema aparte de memoria. Son memoria consecutiva con una regla de offset. Si sabes calcular <code>base + índice * tamaño</code>, puedes leerlos.</p>
+<p>Un array es una convención de memoria consecutiva. La CPU no conoce <code>array[i]</code> como concepto de alto nivel; tu código calcula dirección, elige tamaño y carga o guarda bytes.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.html">Lectura guiada de memoria</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

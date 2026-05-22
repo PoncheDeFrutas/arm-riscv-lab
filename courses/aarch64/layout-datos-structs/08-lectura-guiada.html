@@ -1328,8 +1328,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#buffer_clear" id="toc-buffer_clear" class="nav-link" data-scroll-target="#buffer_clear"><code>buffer_clear</code></a></li>
   <li><a href="#error-por-capacidad" id="toc-error-por-capacidad" class="nav-link" data-scroll-target="#error-por-capacidad">Error por capacidad</a></li>
   <li><a href="#estado-de-registros-dentro-de-push_byte" id="toc-estado-de-registros-dentro-de-push_byte" class="nav-link" data-scroll-target="#estado-de-registros-dentro-de-push_byte">Estado de registros dentro de <code>push_byte</code></a></li>
+  <li><a href="#precondiciones-y-postcondiciones" id="toc-precondiciones-y-postcondiciones" class="nav-link" data-scroll-target="#precondiciones-y-postcondiciones">Precondiciones y postcondiciones</a></li>
   <li><a href="#por-qué-el-llamador-recarga-x0" id="toc-por-qué-el-llamador-recarga-x0" class="nav-link" data-scroll-target="#por-qué-el-llamador-recarga-x0">Por qué el llamador recarga <code>x0</code></a></li>
   <li><a href="#qué-revisar-en-gdb" id="toc-qué-revisar-en-gdb" class="nav-link" data-scroll-target="#qué-revisar-en-gdb">Qué revisar en GDB</a></li>
+  <li><a href="#rutas-de-diagnóstico" id="toc-rutas-de-diagnóstico" class="nav-link" data-scroll-target="#rutas-de-diagnóstico">Rutas de diagnóstico</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1633,6 +1635,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Cuando la función retorna, <code>x0</code> ya no es <code>self</code>: es código de resultado. Por eso el llamador vuelve a cargar <code>buffer_desc</code> antes de cada llamada.</p>
 </section>
+<section id="precondiciones-y-postcondiciones" class="level2">
+<h2 class="anchored" data-anchor-id="precondiciones-y-postcondiciones">Precondiciones y postcondiciones</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operación</th>
+<th>Antes</th>
+<th>Después si funciona</th>
+<th>Después si falla</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>buffer_push_byte</code></td>
+<td><code>len &lt;= cap</code></td>
+<td>byte escrito, <code>len = len + 1</code>, <code>x0 = 0</code></td>
+<td>no escribe, <code>x0 = -1</code></td>
+</tr>
+<tr class="even">
+<td><code>buffer_clear</code></td>
+<td>descriptor válido</td>
+<td><code>len = 0</code>, <code>data</code> y <code>cap</code> no cambian</td>
+<td>no tiene ruta de fallo aquí</td>
+</tr>
+</tbody>
+</table>
+<p>Leer así evita pensar en funciones como bloques aislados. Cada operación recibe un estado, intenta transformarlo y debe dejar el ADT en un estado explicable.</p>
+</section>
 <section id="por-qué-el-llamador-recarga-x0" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-el-llamador-recarga-x0">Por qué el llamador recarga <code>x0</code></h2>
 <p>Después de:</p>
@@ -1649,6 +1685,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/3gx</span> <span class="kw">&amp;</span><span class="ex">buffer_desc</span></span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/4bx</span> <span class="kw">&amp;</span><span class="ex">storage</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No es obligatorio para completar la unidad, pero ayuda a ver descriptor y bytes separados.</p>
+</section>
+<section id="rutas-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="rutas-de-diagnóstico">Rutas de diagnóstico</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Síntoma</th>
+<th>Revisión</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>push_byte</code> retorna <code>-1</code></td>
+<td>comparar <code>len</code> y <code>cap</code></td>
+</tr>
+<tr class="even">
+<td>storage no cambia</td>
+<td>revisar si se tomó <code>buffer_full</code></td>
+</tr>
+<tr class="odd">
+<td><code>len</code> no cambia</td>
+<td>revisar <code>str x3, [x0, #BUF_LEN]</code></td>
+</tr>
+<tr class="even">
+<td>se escribió más de un byte</td>
+<td>buscar <code>str xN</code> donde debía ser <code>strb</code></td>
+</tr>
+<tr class="odd">
+<td>siguiente llamada falla</td>
+<td>recordar que <code>x0</code> fue retorno y hay que recargar <code>self</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
@@ -1695,11 +1768,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué <code>buffer_clear</code> solo modifica <code>len</code>?</li>
 <li>¿Qué pasa cuando <code>len == cap</code>?</li>
 <li>¿Qué diferencia hay entre <code>buffer_desc</code> y <code>storage</code>?</li>
+<li>¿Por qué el llamador recarga <code>x0</code> antes de cada llamada?</li>
+<li>¿Qué postcondición debe cumplir <code>buffer_push_byte</code> si retorna <code>0</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Este <code>Buffer</code> es pequeño, pero contiene toda la idea de la unidad: layout, offsets, descriptor, función con <code>self</code>, invariante y manejo de error.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

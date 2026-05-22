@@ -1318,13 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#contrato-de-read" id="toc-contrato-de-read" class="nav-link active" data-scroll-target="#contrato-de-read">Contrato de <code>read</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#contrato-de-read" id="toc-contrato-de-read" class="nav-link" data-scroll-target="#contrato-de-read">Contrato de <code>read</code></a></li>
   <li><a href="#buffer-en-.bss" id="toc-buffer-en-.bss" class="nav-link" data-scroll-target="#buffer-en-.bss">Buffer en <code>.bss</code></a></li>
+  <li><a href="#por-qué-limitar-con-x2" id="toc-por-qué-limitar-con-x2" class="nav-link" data-scroll-target="#por-qué-limitar-con-x2">Por qué limitar con <code>x2</code></a></li>
   <li><a href="#eco-básico-stdin---stdout" id="toc-eco-básico-stdin---stdout" class="nav-link" data-scroll-target="#eco-básico-stdin---stdout">Eco básico: stdin -&gt; stdout</a></li>
   <li><a href="#por-qué-mov-x2-x0" id="toc-por-qué-mov-x2-x0" class="nav-link" data-scroll-target="#por-qué-mov-x2-x0">Por qué <code>mov x2, x0</code></a></li>
   <li><a href="#retorno-0" id="toc-retorno-0" class="nav-link" data-scroll-target="#retorno-0">Retorno <code>0</code></a></li>
   <li><a href="#error-mínimo" id="toc-error-mínimo" class="nav-link" data-scroll-target="#error-mínimo">Error mínimo</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1364,6 +1368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p><code>read</code> llena un buffer con bytes que vienen de un file descriptor. Para usarla bien necesitas memoria reservada, dirección del buffer, tamaño máximo y lectura del retorno.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a conectar syscalls con memoria modificable. <code>read</code> no crea un buffer por ti. Tu programa debe reservar espacio, pasar la dirección y limitar cuántos bytes puede recibir.</p>
+<p>La idea clave: después de <code>read</code>, <code>x0</code> ya no contiene el file descriptor. Ahora contiene cuántos bytes llegaron, <code>0</code> si terminó la entrada o un error negativo.</p>
+</section>
 <section id="contrato-de-read" class="level2">
 <h2 class="anchored" data-anchor-id="contrato-de-read">Contrato de <code>read</code></h2>
 <table class="caption-top table">
@@ -1408,45 +1417,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>buffer</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No confundas dirección con contenido. <code>x1</code> apunta al buffer; los bytes llegarán a la memoria apuntada por <code>x1</code>.</p>
 </section>
+<section id="por-qué-limitar-con-x2" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-limitar-con-x2">Por qué limitar con <code>x2</code></h2>
+<p><code>x2</code> protege el tamaño del buffer. Si el buffer tiene 64 bytes, no debes pedir que <code>read</code> escriba 200 bytes ahí. El kernel necesita saber el límite máximo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">buffer:</span> 64 bytes</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x2:</span>     máximo 64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Este valor no garantiza que lleguen 64 bytes. Solo dice cuántos bytes caben como máximo en esta llamada.</p>
+</section>
 <section id="eco-básico-stdin---stdout" class="level2">
 <h2 class="anchored" data-anchor-id="eco-básico-stdin---stdout">Eco básico: stdin -&gt; stdout</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>          <span class="op">//</span> stdin</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>buffer     <span class="op">//</span> buffer destino</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> máximo de bytes</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">63</span>         <span class="op">//</span> read</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span>              <span class="op">//</span> x0 <span class="op">=</span> bytes leídos o error negativo</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> x0          <span class="op">//</span> cantidad leída</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span>          <span class="op">//</span> stdout</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>buffer</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> write</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>.bss</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>          <span class="op">//</span> stdin</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>buffer     <span class="op">//</span> buffer destino</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> máximo de bytes</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">63</span>         <span class="op">//</span> read</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span>              <span class="op">//</span> x0 <span class="op">=</span> bytes leídos o error negativo</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> x0          <span class="op">//</span> cantidad leída</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span>          <span class="op">//</span> stdout</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>buffer</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> write</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>.bss</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="fu">buffer:</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    .skip <span class="dv">64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Construir y probar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as read-echo.s <span class="at">-o</span> read-echo.o</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld read-echo.o <span class="at">-o</span> read-echo</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> printf <span class="st">'abc\n'</span> <span class="kw">|</span> <span class="ex">qemu-aarch64</span> ./read-echo</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">abc</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as read-echo.s <span class="at">-o</span> read-echo.o</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld read-echo.o <span class="at">-o</span> read-echo</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> printf <span class="st">'abc\n'</span> <span class="kw">|</span> <span class="ex">qemu-aarch64</span> ./read-echo</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">abc</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="por-qué-mov-x2-x0" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-mov-x2-x0">Por qué <code>mov x2, x0</code></h2>
 <p>Después de <code>read</code>, <code>x0</code> ya no es fd. Ahora <code>x0</code> es retorno: cantidad de bytes leídos.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">antes</span> de read:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = 0       stdin</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">después</span> de read:</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = n       bytes leídos</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">antes</span> de read:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = 0       stdin</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">después</span> de read:</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = n       bytes leídos</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para escribir exactamente lo leído, copiamos ese retorno a <code>x2</code>, porque <code>write</code> usa <code>x2</code> como longitud.</p>
 </section>
 <section id="retorno-0" class="level2">
@@ -1466,7 +1482,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td><code>0</code></td>
-<td>nada leído / fin de entrada</td>
+<td>fin de entrada</td>
 </tr>
 <tr class="odd">
 <td><code>&lt; 0</code></td>
@@ -1478,10 +1494,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="error-mínimo" class="level2">
 <h2 class="anchored" data-anchor-id="error-mínimo">Error mínimo</h2>
 <p>Todavía no entraremos a <code>errno</code>, pero el patrón mínimo ya se ve:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Importante: revisa <code>x0</code> antes de usarlo como longitud si quieres detectar error.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Importante: revisa <code>x0</code> antes de usarlo como longitud si quieres detectar error. En el eco básico se omite para mantener el ejemplo corto, pero un programa más cuidadoso debe comprobarlo.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Consecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>No reservar buffer</td>
+<td>dirección inválida o comportamiento incorrecto</td>
+</tr>
+<tr class="even">
+<td>Pasar contenido en vez de dirección</td>
+<td>el kernel escribe donde no esperas</td>
+</tr>
+<tr class="odd">
+<td>Pedir más bytes que el buffer</td>
+<td>riesgo de sobrescritura</td>
+</tr>
+<tr class="even">
+<td>Usar <code>x0</code> como fd después de <code>read</code></td>
+<td><code>x0</code> ya contiene retorno</td>
+</tr>
+<tr class="odd">
+<td>No distinguir <code>0</code> de error</td>
+<td>EOF no es error negativo</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1490,11 +1543,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué contiene <code>x0</code> antes de <code>read</code>?</li>
 <li>¿Qué contiene <code>x0</code> después de <code>read</code>?</li>
 <li>¿Por qué usamos el retorno de <code>read</code> como longitud para <code>write</code>?</li>
+<li>¿Qué significa que <code>read</code> devuelva <code>0</code>?</li>
+<li>¿Por qué <code>x2</code> debe coincidir con el tamaño real del buffer?</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo reservar un buffer en <code>.bss</code>.</label></li>
+<li><label><input type="checkbox">Puedo pasar dirección del buffer en <code>x1</code>.</label></li>
+<li><label><input type="checkbox">Puedo limitar lectura con <code>x2</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer retorno de <code>read</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar retorno de <code>read</code> como longitud para <code>write</code>.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>read</code> conecta syscalls con memoria. Linux no “crea” tu buffer: tú reservas espacio, pasas su dirección y luego lees cuántos bytes llegaron.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/syscalls-esenciales/04-openat-close.html"><code>openat</code> y <code>close</code></a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/read.2.html"><code>read(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

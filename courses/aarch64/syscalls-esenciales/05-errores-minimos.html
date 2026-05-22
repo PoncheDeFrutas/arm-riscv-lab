@@ -1318,12 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#regla-mínima" id="toc-regla-mínima" class="nav-link active" data-scroll-target="#regla-mínima">Regla mínima</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#regla-mínima" id="toc-regla-mínima" class="nav-link" data-scroll-target="#regla-mínima">Regla mínima</a></li>
   <li><a href="#no-sobrescribir-x0-antes-de-revisar" id="toc-no-sobrescribir-x0-antes-de-revisar" class="nav-link" data-scroll-target="#no-sobrescribir-x0-antes-de-revisar">No sobrescribir <code>x0</code> antes de revisar</a></li>
   <li><a href="#error-al-abrir-archivo" id="toc-error-al-abrir-archivo" class="nav-link" data-scroll-target="#error-al-abrir-archivo">Error al abrir archivo</a></li>
   <li><a href="#stderr-para-errores" id="toc-stderr-para-errores" class="nav-link" data-scroll-target="#stderr-para-errores">stderr para errores</a></li>
   <li><a href="#errno-queda-fuera" id="toc-errno-queda-fuera" class="nav-link" data-scroll-target="#errno-queda-fuera"><code>errno</code> queda fuera</a></li>
+  <li><a href="#dónde-revisar" id="toc-dónde-revisar" class="nav-link" data-scroll-target="#dónde-revisar">Dónde revisar</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1363,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Las syscalls no siempre funcionan. Un archivo puede no existir, un fd puede ser inválido o una operación puede fallar. En esta unidad usaremos una regla mínima: si el retorno en <code>x0</code> es negativo, saltamos a un bloque de error.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a agregar el primer manejo de error real. Hasta ahora muchos ejemplos asumían éxito. Eso sirve para aprender el contrato, pero un programa debe leer el retorno antes de seguir.</p>
+<p>La regla de esta unidad: después de una syscall que puede fallar, compara <code>x0</code> contra cero. Si es negativo, toma otro camino.</p>
+</section>
 <section id="regla-mínima" class="level2">
 <h2 class="anchored" data-anchor-id="regla-mínima">Regla mínima</h2>
 <table class="caption-top table">
@@ -1475,6 +1484,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="dónde-revisar" class="level2">
+<h2 class="anchored" data-anchor-id="dónde-revisar">Dónde revisar</h2>
+<p>No todas las syscalls terminan el proceso al fallar. Por eso el programa debe decidir:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Syscall</th>
+<th>Si falla…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>openat</code></td>
+<td>no hay fd válido para usar</td>
+</tr>
+<tr class="even">
+<td><code>read</code></td>
+<td>no hay bytes confiables para procesar</td>
+</tr>
+<tr class="odd">
+<td><code>write</code></td>
+<td>no sabes si el mensaje salió completo</td>
+</tr>
+<tr class="even">
+<td><code>close</code></td>
+<td>el recurso pudo no cerrarse correctamente</td>
+</tr>
+</tbody>
+</table>
+<p>En programas de práctica basta saltar a un bloque común de error. En programas reales, cada caso puede necesitar respuesta distinta.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Revisar <code>x0</code> después de sobrescribirlo</td>
+<td>comparar inmediatamente después de <code>svc #0</code></td>
+</tr>
+<tr class="even">
+<td>Tratar <code>0</code> como error en <code>read</code></td>
+<td><code>0</code> puede ser EOF</td>
+</tr>
+<tr class="odd">
+<td>Usar <code>stderr</code> como código de salida</td>
+<td>fd <code>2</code> y exit code son conceptos distintos</td>
+</tr>
+<tr class="even">
+<td>Convertir a <code>errno</code> sin entender retorno negativo</td>
+<td>primero domina el patrón mínimo</td>
+</tr>
+<tr class="odd">
+<td>Saltar a error sin terminar proceso</td>
+<td>el bloque de error debe cerrar o salir</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1482,11 +1559,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué <code>b.lt error</code> tiene sentido para retorno negativo?</li>
 <li>¿Qué fd se usa para escribir mensajes de error?</li>
 <li>¿Qué queda fuera cuando decimos “sin <code>errno</code> completo”?</li>
+<li>¿Qué pasa si <code>openat</code> falla y usas ese valor como fd?</li>
+<li>¿Por qué <code>read</code> con retorno <code>0</code> no debe ir necesariamente a <code>error</code>?</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo detectar retorno negativo.</label></li>
+<li><label><input type="checkbox">Puedo usar <code>cmp x0, #0</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar <code>b.lt error</code>.</label></li>
+<li><label><input type="checkbox">Puedo escribir error a <code>stderr</code>.</label></li>
+<li><label><input type="checkbox">Puedo salir con código distinto de cero.</label></li>
+<li><label><input type="checkbox">Puedo explicar qué parte queda fuera de <code>errno</code>.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Una syscall útil no termina en <code>svc #0</code>. Termina cuando lees su retorno y decides qué hacer si falló. Esta unidad usa el patrón mínimo: comparar <code>x0</code> contra cero y saltar si es negativo.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/syscalls-esenciales/06-programa-guiado.html">Programa guiado</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/intro.2.html"><code>intro(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man3/errno.3.html"><code>errno(3)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html"><code>openat(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+</ul>
 
 
 </section>

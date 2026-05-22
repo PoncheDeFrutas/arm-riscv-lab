@@ -1325,7 +1325,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-pasa-si-no-guardas-lr" id="toc-qué-pasa-si-no-guardas-lr" class="nav-link" data-scroll-target="#qué-pasa-si-no-guardas-lr">Qué pasa si no guardas <code>LR</code></a></li>
   <li><a href="#programa-con-llamada-anidada" id="toc-programa-con-llamada-anidada" class="nav-link" data-scroll-target="#programa-con-llamada-anidada">Programa con llamada anidada</a></li>
   <li><a href="#preservar-registros-versión-introductoria" id="toc-preservar-registros-versión-introductoria" class="nav-link" data-scroll-target="#preservar-registros-versión-introductoria">Preservar registros, versión introductoria</a></li>
+  <li><a href="#caller-saved-y-callee-saved-sin-tabla-completa" id="toc-caller-saved-y-callee-saved-sin-tabla-completa" class="nav-link" data-scroll-target="#caller-saved-y-callee-saved-sin-tabla-completa">Caller-saved y callee-saved, sin tabla completa</a></li>
   <li><a href="#guardar-un-valor-temporal" id="toc-guardar-un-valor-temporal" class="nav-link" data-scroll-target="#guardar-un-valor-temporal">Guardar un valor temporal</a></li>
+  <li><a href="#error-guiado-perder-un-temporal" id="toc-error-guiado-perder-un-temporal" class="nav-link" data-scroll-target="#error-guiado-perder-un-temporal">Error guiado: perder un temporal</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1532,6 +1534,37 @@ Figura&nbsp;1: Pérdida del retorno cuando una función no hoja no guarda LR.
 </table>
 <p><code>x0</code>-<code>x7</code> suelen usarse para argumentos y retornos. Si guardas algo importante ahí y llamas otra función, puedes perderlo.</p>
 </section>
+<section id="caller-saved-y-callee-saved-sin-tabla-completa" class="level2">
+<h2 class="anchored" data-anchor-id="caller-saved-y-callee-saved-sin-tabla-completa">Caller-saved y callee-saved, sin tabla completa</h2>
+<p>La idea de fondo es reparto de responsabilidad:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Familia</th>
+<th>Lectura práctica inicial</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>caller-saved</td>
+<td>el caller no debe asumir que sobreviven a una llamada</td>
+</tr>
+<tr class="even">
+<td>callee-saved</td>
+<td>si el callee los usa, debe restaurarlos antes de retornar</td>
+</tr>
+<tr class="odd">
+<td><code>x30/LR</code></td>
+<td>cada <code>bl</code> lo sobrescribe, así que una no hoja debe protegerlo</td>
+</tr>
+</tbody>
+</table>
+<p>Esta página evita la tabla completa para no adelantar la unidad de ABI. Aun así, la regla pedagógica es suficiente: si necesitas un valor después de <code>bl</code>, no lo dejes sin protección en un registro que la llamada puede usar.</p>
+</section>
 <section id="guardar-un-valor-temporal" class="level2">
 <h2 class="anchored" data-anchor-id="guardar-un-valor-temporal">Guardar un valor temporal</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_a:</span></span>
@@ -1550,6 +1583,20 @@ Figura&nbsp;1: Pérdida del retorno cuando una función no hoja no guarda LR.
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Este patrón enseña la idea sin convertir la página en ABI completo.</p>
 </section>
+<section id="error-guiado-perder-un-temporal" class="level2">
+<h2 class="anchored" data-anchor-id="error-guiado-perder-un-temporal">Error guiado: perder un temporal</h2>
+<p>Supón que <code>funcion_a</code> recibe un valor en <code>x0</code>, llama a <code>funcion_b</code> y luego quiere usar el valor original:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_a:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    bl funcion_b</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El <code>add</code> usa el <code>x0</code> que dejó <code>funcion_b</code>, no necesariamente el original. Si el valor anterior importaba, debió guardarse antes del <code>bl</code>.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1558,11 +1605,20 @@ Figura&nbsp;1: Pérdida del retorno cuando una función no hoja no guarda LR.
 <li>¿Qué instrucción sobrescribe <code>LR</code>?</li>
 <li>¿Por qué no debes asumir que <code>x0</code> sobrevive después de <code>bl</code>?</li>
 <li>¿Qué dos registros restaura el epílogo mínimo?</li>
+<li>¿Qué harías si necesitas un valor de <code>x0</code> después de llamar a otra función?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Función no hoja significa responsabilidad extra. Si tu función llama a otra, ya no basta con <code>ret</code>; debes proteger el retorno y cualquier valor que necesites después de la llamada.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

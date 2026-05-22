@@ -1326,6 +1326,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#puntero-colgante" id="toc-puntero-colgante" class="nav-link" data-scroll-target="#puntero-colgante">Puntero colgante</a></li>
   <li><a href="#no-es-unidad-de-exploits" id="toc-no-es-unidad-de-exploits" class="nav-link" data-scroll-target="#no-es-unidad-de-exploits">No es unidad de exploits</a></li>
   <li><a href="#relación-con-cleanup" id="toc-relación-con-cleanup" class="nav-link" data-scroll-target="#relación-con-cleanup">Relación con cleanup</a></li>
+  <li><a href="#checklist-de-diagnóstico" id="toc-checklist-de-diagnóstico" class="nav-link" data-scroll-target="#checklist-de-diagnóstico">Checklist de diagnóstico</a></li>
+  <li><a href="#señales-al-revisar-código" id="toc-señales-al-revisar-código" class="nav-link" data-scroll-target="#señales-al-revisar-código">Señales al revisar código</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1550,6 +1552,85 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">salir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esa lógica se parece a la de <code>fd</code>, pero liberar memoria y cerrar fd son mecanismos distintos.</p>
 </section>
+<section id="checklist-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-diagnóstico">Checklist de diagnóstico</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Error que detecta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿se perdió el último puntero?</td>
+<td>leak</td>
+</tr>
+<tr class="even">
+<td>¿el bloque ya fue liberado?</td>
+<td>use-after-free</td>
+</tr>
+<tr class="odd">
+<td>¿dos rutas liberan el mismo bloque?</td>
+<td>double free</td>
+</tr>
+<tr class="even">
+<td>¿el puntero era prestado?</td>
+<td>liberación por quien no era dueño</td>
+</tr>
+<tr class="odd">
+<td>¿se invalidó una copia local después de liberar?</td>
+<td>reduce uso accidental</td>
+</tr>
+<tr class="even">
+<td>¿cleanup sabe qué recursos existen?</td>
+<td>evita liberar lo que nunca se adquirió</td>
+</tr>
+</tbody>
+</table>
+<p>La herramienta más importante aquí es el estado mental del bloque. GDB puede mostrar direcciones y bytes, pero no puede decidir por ti quién era dueño.</p>
+</section>
+<section id="señales-al-revisar-código" class="level2">
+<h2 class="anchored" data-anchor-id="señales-al-revisar-código">Señales al revisar código</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Señal</th>
+<th>Riesgo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>muchos saltos a <code>error</code> sin cleanup</td>
+<td>leak</td>
+</tr>
+<tr class="even">
+<td>dos etiquetas llaman a la misma liberación sin marcar estado</td>
+<td>double free</td>
+</tr>
+<tr class="odd">
+<td>puntero copiado a varios registros sin dueño claro</td>
+<td>ownership confuso</td>
+</tr>
+<tr class="even">
+<td>acceso después de una etiqueta <code>free</code>/<code>munmap</code></td>
+<td>use-after-free</td>
+</tr>
+<tr class="odd">
+<td><code>mov ptr, #0</code> sin liberación real antes</td>
+<td>leak disfrazado</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1558,11 +1639,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué error aparece si liberas dos veces?</li>
 <li>¿Por qué poner un registro en cero no libera memoria?</li>
 <li>¿Por qué cleanup debe saber si la reserva funcionó?</li>
+<li>¿Qué error puede aparecer si dos funciones creen ser dueñas del mismo bloque?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Errores de heap son errores de vida útil y ownership. Antes de aprender allocators, debes poder reconocer cuándo un bloque está vivo, quién lo posee y cuándo deja de ser válido.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>free(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/free.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/free.3.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

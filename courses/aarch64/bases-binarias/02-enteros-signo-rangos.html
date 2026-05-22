@@ -1318,13 +1318,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#unsigned" id="toc-unsigned" class="nav-link active" data-scroll-target="#unsigned">Unsigned</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#unsigned" id="toc-unsigned" class="nav-link" data-scroll-target="#unsigned">Unsigned</a></li>
   <li><a href="#signed" id="toc-signed" class="nav-link" data-scroll-target="#signed">Signed</a></li>
   <li><a href="#el-mismo-byte-dos-lecturas" id="toc-el-mismo-byte-dos-lecturas" class="nav-link" data-scroll-target="#el-mismo-byte-dos-lecturas">El mismo byte, dos lecturas</a></li>
-  <li><a href="#complemento-a-dos" id="toc-complemento-a-dos" class="nav-link" data-scroll-target="#complemento-a-dos">Complemento a dos</a></li>
+  <li><a href="#complemento-a-dos" id="toc-complemento-a-dos" class="nav-link" data-scroll-target="#complemento-a-dos">Complemento a dos</a>
+  <ul class="collapse">
+  <li><a href="#tabla-completa-de-4-bits" id="toc-tabla-completa-de-4-bits" class="nav-link" data-scroll-target="#tabla-completa-de-4-bits">Tabla completa de 4 bits</a></li>
+  </ul></li>
   <li><a href="#relación-con-aarch64" id="toc-relación-con-aarch64" class="nav-link" data-scroll-target="#relación-con-aarch64">Relación con AArch64</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1364,6 +1372,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un patrón de bits no trae una etiqueta que diga “soy positivo”, “soy negativo” o “soy texto”. El programa decide cómo interpretarlo. Esta lección separa el patrón guardado de la lectura signed o unsigned.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Diferencia entre enteros unsigned y signed.</li>
+<li>Cómo calcular rangos de n bits.</li>
+<li>Cómo funciona complemento a dos.</li>
+<li>Por qué el mismo byte puede ser <code>255</code> o <code>-1</code>.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Saber qué es un byte y leer hexadecimal. Si no dominas conversión entre bases, revisa <a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html">Bits, bytes y bases</a>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Los bits no tienen signo. El signo es una convención que aplica la instrucción que lee los datos. <code>0xFF</code> en un byte es siempre el patrón <code>11111111</code>. Si la instrucción lo trata como unsigned, vale <code>255</code>. Si lo trata como signed de 8 bits, vale <code>-1</code> porque el bit más alto (bit 7) se interpreta como signo en complemento a dos.</p>
+<p>AArch64 no tiene registros “signed” ni “unsigned”. Tiene instrucciones que deciden cómo interpretar los bits: <code>adds</code> vs <code>add</code>, <code>cmp</code> que afecta flags, <code>mul</code> que funciona igual para ambos, y branches condicionales como <code>b.lo</code> (unsigned) vs <code>b.lt</code> (signed).</p>
+</section>
 <section id="unsigned" class="level2">
 <h2 class="anchored" data-anchor-id="unsigned">Unsigned</h2>
 <p>Un entero unsigned usa todos sus bits para representar magnitud no negativa.</p>
@@ -1509,6 +1535,132 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">-1</span> = 11111111</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">+5</span> = 00000101</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">-5</span> = 11111011</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="tabla-completa-de-4-bits" class="level3">
+<h3 class="anchored" data-anchor-id="tabla-completa-de-4-bits">Tabla completa de 4 bits</h3>
+<p>4 bits es el tamaño mínimo útil para ver el patrón. Cada nibble puede interpretarse así:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Binario</th>
+<th>Hex</th>
+<th style="text-align: right;">Unsigned</th>
+<th style="text-align: right;">Signed (4 bits)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>0000</code></td>
+<td><code>0</code></td>
+<td style="text-align: right;"><code>0</code></td>
+<td style="text-align: right;"><code>0</code></td>
+</tr>
+<tr class="even">
+<td><code>0001</code></td>
+<td><code>1</code></td>
+<td style="text-align: right;"><code>1</code></td>
+<td style="text-align: right;"><code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>0010</code></td>
+<td><code>2</code></td>
+<td style="text-align: right;"><code>2</code></td>
+<td style="text-align: right;"><code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>0011</code></td>
+<td><code>3</code></td>
+<td style="text-align: right;"><code>3</code></td>
+<td style="text-align: right;"><code>3</code></td>
+</tr>
+<tr class="odd">
+<td><code>0100</code></td>
+<td><code>4</code></td>
+<td style="text-align: right;"><code>4</code></td>
+<td style="text-align: right;"><code>4</code></td>
+</tr>
+<tr class="even">
+<td><code>0101</code></td>
+<td><code>5</code></td>
+<td style="text-align: right;"><code>5</code></td>
+<td style="text-align: right;"><code>5</code></td>
+</tr>
+<tr class="odd">
+<td><code>0110</code></td>
+<td><code>6</code></td>
+<td style="text-align: right;"><code>6</code></td>
+<td style="text-align: right;"><code>6</code></td>
+</tr>
+<tr class="even">
+<td><code>0111</code></td>
+<td><code>7</code></td>
+<td style="text-align: right;"><code>7</code></td>
+<td style="text-align: right;"><code>7</code></td>
+</tr>
+<tr class="odd">
+<td><code>1000</code></td>
+<td><code>8</code></td>
+<td style="text-align: right;"><code>8</code></td>
+<td style="text-align: right;"><code>-8</code></td>
+</tr>
+<tr class="even">
+<td><code>1001</code></td>
+<td><code>9</code></td>
+<td style="text-align: right;"><code>9</code></td>
+<td style="text-align: right;"><code>-7</code></td>
+</tr>
+<tr class="odd">
+<td><code>1010</code></td>
+<td><code>A</code></td>
+<td style="text-align: right;"><code>10</code></td>
+<td style="text-align: right;"><code>-6</code></td>
+</tr>
+<tr class="even">
+<td><code>1011</code></td>
+<td><code>B</code></td>
+<td style="text-align: right;"><code>11</code></td>
+<td style="text-align: right;"><code>-5</code></td>
+</tr>
+<tr class="odd">
+<td><code>1100</code></td>
+<td><code>C</code></td>
+<td style="text-align: right;"><code>12</code></td>
+<td style="text-align: right;"><code>-4</code></td>
+</tr>
+<tr class="even">
+<td><code>1101</code></td>
+<td><code>D</code></td>
+<td style="text-align: right;"><code>13</code></td>
+<td style="text-align: right;"><code>-3</code></td>
+</tr>
+<tr class="odd">
+<td><code>1110</code></td>
+<td><code>E</code></td>
+<td style="text-align: right;"><code>14</code></td>
+<td style="text-align: right;"><code>-2</code></td>
+</tr>
+<tr class="even">
+<td><code>1111</code></td>
+<td><code>F</code></td>
+<td style="text-align: right;"><code>15</code></td>
+<td style="text-align: right;"><code>-1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Nota: el rango signed de 4 bits es <code>-8</code> a <code>7</code>. El bit más alto (bit 3) es el bit de signo. Cuando está en <code>1</code>, el valor es negativo.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Truco rápido">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Truco rápido
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Para convertir un nibble con bit de signo en <code>1</code> a su valor signed: resta 16 al valor unsigned. Ejemplo: <code>0xC</code> = <code>12</code> unsigned → <code>12 - 16 = -4</code> signed.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="relación-con-aarch64" class="level2">
 <h2 class="anchored" data-anchor-id="relación-con-aarch64">Relación con AArch64</h2>
@@ -1553,14 +1705,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Pensar que el bit de signo es “mágico”</strong>: no es un bit separado. Es el bit más alto del tamaño que estás usando. En 8 bits es bit 7, en 32 bits es bit 31.</li>
+<li><strong>Olvidar que <code>-0</code> no existe en complemento a dos</strong>: solo hay un cero, <code>00000000</code>. El patrón <code>10000000</code> en 8 bits es <code>-128</code>, no <code>-0</code>.</li>
+<li><strong>Confundir el truco de resta</strong>: el truco “resta 2^n al valor unsigned” solo funciona cuando el bit de signo está encendido. Si el bit de signo es <code>0</code>, el valor signed y unsigned son iguales.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado antes de verificar.</p>
 <ol type="1">
 <li>Interpreta <code>0x80</code> como unsigned de 8 bits.</li>
 <li>Interpreta <code>0x80</code> como signed de 8 bits.</li>
 <li>Calcula el rango signed de 4 bits.</li>
 <li>Obtén <code>-3</code> en complemento a dos de 8 bits.</li>
+<li>Convierte <code>0xD</code> a signed de 4 bits usando el truco de resta.</li>
+<li>¿Cuál es el valor signed de 8 bits de <code>0xC0</code>?</li>
 </ol>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Debes poder mirar cualquier byte y decir su valor unsigned y signed de 8 bits sin calculadora. Esa habilidad es clave para leer registros en GDB y diagnosticar errores de interpretación.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1572,6 +1739,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar por qué el tamaño cambia la interpretación.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html">Overflow y extensiones</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): instrucciones aritméticas AArch64, interpretación signed/unsigned de operandos. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: complemento a dos, rangos de enteros y representación signed/unsigned.</li>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: directivas <code>.byte</code>, <code>.word</code>, <code>.quad</code> y tamaños de datos. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

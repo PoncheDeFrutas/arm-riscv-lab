@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ownership" id="toc-ownership" class="nav-link" data-scroll-target="#ownership">Ownership</a></li>
   <li><a href="#copias-de-puntero-sin-ownership" id="toc-copias-de-puntero-sin-ownership" class="nav-link" data-scroll-target="#copias-de-puntero-sin-ownership">Copias de puntero sin ownership</a></li>
   <li><a href="#transferir-ownership" id="toc-transferir-ownership" class="nav-link" data-scroll-target="#transferir-ownership">Transferir ownership</a></li>
+  <li><a href="#checklist-de-ownership" id="toc-checklist-de-ownership" class="nav-link" data-scroll-target="#checklist-de-ownership">Checklist de ownership</a></li>
   <li><a href="#perder-puntero" id="toc-perder-puntero" class="nav-link" data-scroll-target="#perder-puntero">Perder puntero</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1525,6 +1526,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">A</span> no libera ese bloque</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En bajo nivel esto es una regla del programa. El CPU no la controla por ti.</p>
 </section>
+<section id="checklist-de-ownership" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-ownership">Checklist de ownership</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Situación</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>guardar puntero</td>
+<td>¿también guardé capacidad?</td>
+</tr>
+<tr class="even">
+<td>pasar puntero</td>
+<td>¿es préstamo o transferencia?</td>
+</tr>
+<tr class="odd">
+<td>escribir bytes</td>
+<td>¿<code>usados &lt; capacidad</code>?</td>
+</tr>
+<tr class="even">
+<td>liberar bloque</td>
+<td>¿soy el dueño actual?</td>
+</tr>
+<tr class="odd">
+<td>salir por error</td>
+<td>¿hay bloque vivo que limpiar?</td>
+</tr>
+</tbody>
+</table>
+<p>Si no puedes responder si un puntero es prestado o propio, el diseño está incompleto. El mismo número de dirección puede circular por varias funciones, pero solo una parte debe ser responsable de liberar.</p>
+</section>
 <section id="perder-puntero" class="level2">
 <h2 class="anchored" data-anchor-id="perder-puntero">Perder puntero</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ldr x19<span class="op">,</span> <span class="op">=</span>buffer    <span class="op">//</span> x19 apunta <span class="kw">al</span> bloque</span>
@@ -1539,11 +1574,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué capacidad no significa datos válidos?</li>
 <li>¿Puntero y ownership significan lo mismo?</li>
 <li>¿Qué pasa si pierdes el último puntero a un bloque dinámico?</li>
+<li>¿Qué diferencia hay entre pasar un puntero prestado y transferir ownership?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Memoria dinámica no se entiende solo como “dirección”. Se entiende como bloque con tamaño reservado, uso actual y dueño responsable.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>free(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/free.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/free.3.html</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

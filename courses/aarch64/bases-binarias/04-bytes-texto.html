@@ -1318,12 +1318,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#ascii-básico" id="toc-ascii-básico" class="nav-link active" data-scroll-target="#ascii-básico">ASCII básico</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#ascii-básico" id="toc-ascii-básico" class="nav-link" data-scroll-target="#ascii-básico">ASCII básico</a>
+  <ul class="collapse">
+  <li><a href="#patrón-útil-en-ascii" id="toc-patrón-útil-en-ascii" class="nav-link" data-scroll-target="#patrón-útil-en-ascii">Patrón útil en ASCII</a></li>
+  </ul></li>
   <li><a href="#número-0-carácter-0-y-byte-0x30" id="toc-número-0-carácter-0-y-byte-0x30" class="nav-link" data-scroll-target="#número-0-carácter-0-y-byte-0x30">Número 0, carácter 0 y byte 0x30</a></li>
+  <li><a href="#null-terminator" id="toc-null-terminator" class="nav-link" data-scroll-target="#null-terminator">Null terminator</a></li>
   <li><a href="#ver-bytes-con-herramientas" id="toc-ver-bytes-con-herramientas" class="nav-link" data-scroll-target="#ver-bytes-con-herramientas">Ver bytes con herramientas</a></li>
   <li><a href="#utf-8-básico" id="toc-utf-8-básico" class="nav-link" data-scroll-target="#utf-8-básico">UTF-8 básico</a></li>
   <li><a href="#relación-con-aarch64" id="toc-relación-con-aarch64" class="nav-link" data-scroll-target="#relación-con-aarch64">Relación con AArch64</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1363,6 +1372,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando un programa imprime texto, en memoria no guarda letras como ideas abstractas. Guarda bytes. Esta lección muestra cómo interpretar bytes como texto sin perder de vista que siguen siendo datos binarios.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Cómo ASCII mapea caracteres a bytes.</li>
+<li>Qué es el null terminator y por qué importa en C.</li>
+<li>Cómo UTF-8 representa caracteres de más de un byte.</li>
+<li>Cómo inspeccionar bytes de texto con herramientas.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Saber leer hexadecimal y entender qué es un byte. Revisa <a href="../../../courses/aarch64/bases-binarias/01-bits-bytes-bases.html">Bits, bytes y bases</a> si necesitas repaso.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>El texto no es un tipo de dato especial para la CPU. Son bytes que un programa decide interpretar como caracteres. ASCII usa 1 byte por carácter (7 bits significativos). UTF-8 usa 1 a 4 bytes por carácter y es compatible con ASCII: los bytes <code>0x00</code> a <code>0x7F</code> significan lo mismo en ambos.</p>
+<p>En assembly, defines texto como bytes en <code>.data</code> o <code>.rodata</code>. El kernel o libc leen esos bytes y los envían a un dispositivo. El null byte <code>0x00</code> marca el fin de strings en C, pero no en todas las convenciones de assembly.</p>
+</section>
 <section id="ascii-básico" class="level2">
 <h2 class="anchored" data-anchor-id="ascii-básico">ASCII básico</h2>
 <p>ASCII asigna valores numéricos a caracteres comunes. En ASCII básico, cada carácter ocupa un byte.</p>
@@ -1405,6 +1432,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: right;"><code>0x0A</code></td>
 <td style="text-align: right;"><code>10</code></td>
 </tr>
+<tr class="odd">
+<td>retorno de carro</td>
+<td style="text-align: right;"><code>0x0D</code></td>
+<td style="text-align: right;"><code>13</code></td>
+</tr>
+<tr class="even">
+<td>tab</td>
+<td style="text-align: right;"><code>0x09</code></td>
+<td style="text-align: right;"><code>9</code></td>
+</tr>
+<tr class="odd">
+<td>espacio</td>
+<td style="text-align: right;"><code>0x20</code></td>
+<td style="text-align: right;"><code>32</code></td>
+</tr>
+<tr class="even">
+<td>null</td>
+<td style="text-align: right;"><code>0x00</code></td>
+<td style="text-align: right;"><code>0</code></td>
+</tr>
 </tbody>
 </table>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
@@ -1413,6 +1460,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Los bytes anteriores pueden leerse como:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ABC</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>porque <code>0x41</code>, <code>0x42</code>, <code>0x43</code> y <code>0x0A</code> corresponden a <code>A</code>, <code>B</code>, <code>C</code> y nueva línea.</p>
+<section id="patrón-útil-en-ascii" class="level3">
+<h3 class="anchored" data-anchor-id="patrón-útil-en-ascii">Patrón útil en ASCII</h3>
+<p>Las letras mayúsculas y minúsculas tienen una relación simple:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="st">'A'</span> = 0x41 = 01000001</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="st">'a'</span> = 0x61 = 01100001</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La diferencia es el bit 5 (valor <code>0x20</code> = <code>32</code>). Para convertir mayúscula a minúscula en ASCII puro: suma <code>0x20</code> o activa el bit 5 con <code>OR</code>.</p>
+</section>
 </section>
 <section id="número-0-carácter-0-y-byte-0x30" class="level2">
 <h2 class="anchored" data-anchor-id="número-0-carácter-0-y-byte-0x30">Número 0, carácter 0 y byte 0x30</h2>
@@ -1439,12 +1493,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">numero_cero:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x00</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">caracter_cero:</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x30</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">numero_cero:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x00</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">caracter_cero:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x30</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-simple callout-warning callout-titled" title="Error común">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1459,21 +1513,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="null-terminator" class="level2">
+<h2 class="anchored" data-anchor-id="null-terminator">Null terminator</h2>
+<p>En C y muchas convenciones de assembly, un string termina con un byte <code>0x00</code> (null terminator). Este byte no se imprime; solo marca el fin.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">msg:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x00</span>        <span class="op">//</span> null terminator</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sin el null terminator, una función que espera un string C seguirá leyendo bytes más allá del texto hasta encontrar un <code>0x00</code> en memoria. Esto puede causar lectura de datos basura o un segmentation fault.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Con</span> null terminator:    48 6F 6C 61 00        // <span class="st">"Hola\0"</span> → 5 bytes</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Sin</span> null terminator:    48 6F 6C 61           // <span class="st">"Hola"</span> → 4 bytes, pero ¿dónde termina<span class="pp">?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-warning callout-titled" title="Importante">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La directiva <code>.asciz</code> de GNU <code>as</code> agrega el null terminator automáticamente. <code>.ascii</code> no lo hace.</p>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">msg1:</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola"</span>       <span class="op">//</span> <span class="dv">4</span> bytes<span class="op">,</span> sin null terminator</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">msg2:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"Hola"</span>       <span class="op">//</span> <span class="dv">5</span> bytes<span class="op">,</span> con null terminator automático</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 <section id="ver-bytes-con-herramientas" class="level2">
 <h2 class="anchored" data-anchor-id="ver-bytes-con-herramientas">Ver bytes con herramientas</h2>
 <p>Estos comandos ayudan a observar bytes. Son útiles porque conectan texto con memoria visible.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'ABC\n'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'ABC\n'</span> <span class="kw">|</span> <span class="fu">hexdump</span> <span class="at">-C</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'A'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'a'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'0'</span> <span class="kw">|</span> <span class="ex">xxd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'ABC\n'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'ABC\n'</span> <span class="kw">|</span> <span class="fu">hexdump</span> <span class="at">-C</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'A'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'a'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'0'</span> <span class="kw">|</span> <span class="ex">xxd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La idea no es aprender <code>xxd</code> a fondo. La idea es notar que una herramienta puede mostrar los bytes de un texto.</p>
 </section>
 <section id="utf-8-básico" class="level2">
 <h2 class="anchored" data-anchor-id="utf-8-básico">UTF-8 básico</h2>
 <p>UTF-8 también representa texto como bytes, pero no todos los caracteres ocupan un byte.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'á'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'€'</span> <span class="kw">|</span> <span class="ex">xxd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'á'</span> <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'€'</span> <span class="kw">|</span> <span class="ex">xxd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En UTF-8:</p>
 <table class="caption-top table">
 <thead>
@@ -1502,13 +1585,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="relación-con-aarch64" class="level2">
 <h2 class="anchored" data-anchor-id="relación-con-aarch64">Relación con AArch64</h2>
 <p>Assembly no impide que pongas bytes de texto directamente en <code>.data</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ascii:</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"ABC\n"</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">bytes:</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x41</span><span class="op">,</span> <span class="bn">0x42</span><span class="op">,</span> <span class="bn">0x43</span><span class="op">,</span> <span class="bn">0x0A</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ascii:</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"ABC\n"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">bytes:</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    .<span class="dt">byte</span> <span class="bn">0x41</span><span class="op">,</span> <span class="bn">0x42</span><span class="op">,</span> <span class="bn">0x43</span><span class="op">,</span> <span class="bn">0x0A</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ambas formas pueden producir los mismos bytes. La diferencia es cómo lo escribes en el archivo fuente.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Olvidar el null terminator</strong>: usar <code>.ascii</code> cuando la función espera un string C. Usa <code>.asciz</code> o agrega <code>.byte 0x00</code> manualmente.</li>
+<li><strong>Contar mal la longitud</strong>: <code>"ABC\n"</code> son 4 bytes (<code>A</code>, <code>B</code>, <code>C</code>, <code>\n</code>). Si usas <code>.asciz</code>, son 5 con el null terminator.</li>
+<li><strong>Asumir que UTF-8 es 1 byte por carácter</strong>: caracteres como <code>á</code>, <code>ñ</code>, <code>€</code> ocupan 2 o 3 bytes en UTF-8. Si cuentas bytes como caracteres, el conteo será incorrecto.</li>
+</ul>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1517,7 +1608,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica qué diferencia hay entre <code>0x00</code> y <code>0x30</code>.</li>
 <li>Escribe <code>ABC</code> usando <code>.byte</code>.</li>
 <li>Explica por qué <code>á</code> no debe asumirse como un solo byte en UTF-8.</li>
+<li>¿Cuántos bytes tiene <code>.asciz "Hi"</code>? ¿Y <code>.ascii "Hi"</code>?</li>
+<li>Usa el patrón del bit 5: ¿qué byte resulta de <code>0x41 | 0x20</code>? ¿Qué carácter es?</li>
+<li>Ejecuta <code>printf 'á' | xxd</code> en tu terminal. ¿Cuántos bytes ves?</li>
 </ol>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Debes poder mirar una secuencia de bytes hexadecimales y reconocer si es texto ASCII, si tiene null terminator, y si algún byte podría ser parte de un carácter UTF-8 multibyte.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1529,6 +1627,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo conectar <code>.ascii</code> y <code>.byte</code> con memoria.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html">Endianness y alineación</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Unicode Consortium, <em>The Unicode Standard — UTF-8</em>: especificación de codificación UTF-8. <a href="https://www.unicode.org/versions/latest/" class="uri">https://www.unicode.org/versions/latest/</a></li>
+<li><code>man ascii</code>: tabla ASCII del sistema local.</li>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: directivas <code>.ascii</code>, <code>.asciz</code>, <code>.string</code>. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: representación de texto y strings en assembly AArch64.</li>
+</ul>
 
 
 </section>

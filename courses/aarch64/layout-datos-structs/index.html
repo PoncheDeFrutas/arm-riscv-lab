@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tabla-mínima-de-point" id="toc-tabla-mínima-de-point" class="nav-link" data-scroll-target="#tabla-mínima-de-point">Tabla mínima de <code>Point</code></a></li>
   <li><a href="#tabla-mínima-de-descriptor-buffer" id="toc-tabla-mínima-de-descriptor-buffer" class="nav-link" data-scroll-target="#tabla-mínima-de-descriptor-buffer">Tabla mínima de descriptor <code>Buffer</code></a></li>
   <li><a href="#adt-en-esta-unidad" id="toc-adt-en-esta-unidad" class="nav-link" data-scroll-target="#adt-en-esta-unidad">ADT en esta unidad</a></li>
+  <li><a href="#mapa-de-diagnóstico" id="toc-mapa-de-diagnóstico" class="nav-link" data-scroll-target="#mapa-de-diagnóstico">Mapa de diagnóstico</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
@@ -1643,6 +1644,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> <span class="op">&lt;</span>= len <span class="op">&lt;</span>= cap</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">data</span> apunta a bloque válido si cap <span class="op">&gt;</span> 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
+<section id="mapa-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="mapa-de-diagnóstico">Mapa de diagnóstico</h2>
+<p>Cuando un objeto manual falla, revisa el contrato completo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Dato que debes confirmar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿cuál es la base?</td>
+<td>puntero al objeto, normalmente <code>x0</code> al entrar</td>
+</tr>
+<tr class="even">
+<td>¿qué campo se accede?</td>
+<td>offset definido con <code>.equ</code></td>
+</tr>
+<tr class="odd">
+<td>¿cuánto mide el campo?</td>
+<td>byte, word o doubleword</td>
+</tr>
+<tr class="even">
+<td>¿hay padding?</td>
+<td>bytes sin significado entre campos</td>
+</tr>
+<tr class="odd">
+<td>¿cuál es <code>SIZE</code>?</td>
+<td>tamaño total, incluido padding final</td>
+</tr>
+<tr class="even">
+<td>¿qué invariante protege el ADT?</td>
+<td>regla como <code>len &lt;= cap</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué función puede cambiarlo?</td>
+<td>operación pública acordada</td>
+</tr>
+</tbody>
+</table>
+<p>Esta tabla evita el bug típico: mirar solo la instrucción <code>ldr</code> o <code>str</code> sin confirmar si el offset, el tamaño y el estado del objeto eran correctos.</p>
+</section>
 <section id="lecciones-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="lecciones-de-esta-unidad">Lecciones de esta unidad</h2>
 <div class="resource-grid">
@@ -1804,6 +1848,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/layout-datos-structs/01-structs-layout.html">Structs y layout</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Linux man-pages, <code>openat(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/openat.2.html</a></li>
+<li>Linux man-pages, <code>close(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/close.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/close.2.html</a></li>
+</ul>
 
 
 </section>

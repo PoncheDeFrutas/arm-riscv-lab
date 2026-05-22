@@ -1318,9 +1318,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
   <li><a href="#viene-de-unidades-anteriores" id="toc-viene-de-unidades-anteriores" class="nav-link" data-scroll-target="#viene-de-unidades-anteriores">Viene de unidades anteriores</a></li>
   <li><a href="#idea-de-trabajo" id="toc-idea-de-trabajo" class="nav-link" data-scroll-target="#idea-de-trabajo">Idea de trabajo</a></li>
+  <li><a href="#diagnóstico-básico-de-control-de-flujo" id="toc-diagnóstico-básico-de-control-de-flujo" class="nav-link" data-scroll-target="#diagnóstico-básico-de-control-de-flujo">Diagnóstico básico de control de flujo</a></li>
   <li><a href="#aarch64-y-ejecución-condicional" id="toc-aarch64-y-ejecución-condicional" class="nav-link" data-scroll-target="#aarch64-y-ejecución-condicional">AArch64 y ejecución condicional</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
@@ -1379,6 +1381,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../slides/aarch64/08-control-flujo/" class="lab-button">Ver presentación Slidev</a></p>
 </div>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a construir estructuras de alto nivel usando piezas de bajo nivel: etiquetas, comparaciones, flags y ramas. El procesador no tiene una palabra especial llamada <code>if</code>; ejecuta instrucciones y cambia el <code>PC</code> cuando una rama lo ordena.</p>
+<p>La meta de la unidad es leer control de flujo preguntando: qué comparación preparó flags, qué condición se consulta, cuál es el destino y qué pasa si la rama no se toma.</p>
+</section>
 <section id="mapa-rápido" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
 <div class="lab-flow">
@@ -1453,6 +1460,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>El procesador no entiende <code>if</code>, <code>while</code> o <code>for</code> como palabras especiales. En assembly esas estructuras se construyen con comparaciones, flags, etiquetas y branches.</p>
 </div>
 </div>
+</section>
+<section id="diagnóstico-básico-de-control-de-flujo" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-básico-de-control-de-flujo">Diagnóstico básico de control de flujo</h2>
+<p>Cuando el programa toma un camino inesperado, revisa:</p>
+<ol type="1">
+<li>qué instrucción actualizó <code>NZCV</code>;</li>
+<li>si otra instrucción sobrescribió flags antes del branch;</li>
+<li>si la condición es signed o unsigned;</li>
+<li>a qué etiqueta salta la rama;</li>
+<li>qué bloque se ejecuta si la rama no se toma;</li>
+<li>si falta un salto para evitar caer en otro bloque;</li>
+<li>si el loop actualiza su contador o puntero.</li>
+</ol>
 </section>
 <section id="aarch64-y-ejecución-condicional" class="level2">
 <h2 class="anchored" data-anchor-id="aarch64-y-ejecución-condicional">AArch64 y ejecución condicional</h2>
@@ -1580,6 +1600,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/control-flujo/01-branching-etiquetas.html">Branching y etiquetas</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

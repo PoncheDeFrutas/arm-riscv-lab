@@ -1318,14 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-simple" id="toc-mapa-simple" class="nav-link active" data-scroll-target="#mapa-simple">Mapa simple</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-simple" id="toc-mapa-simple" class="nav-link" data-scroll-target="#mapa-simple">Mapa simple</a></li>
   <li><a href="#secciones-principales" id="toc-secciones-principales" class="nav-link" data-scroll-target="#secciones-principales">Secciones principales</a></li>
   <li><a href="#ejemplo-con-secciones" id="toc-ejemplo-con-secciones" class="nav-link" data-scroll-target="#ejemplo-con-secciones">Ejemplo con secciones</a></li>
   <li><a href="#bss-no-es-lo-mismo-que-.data" id="toc-bss-no-es-lo-mismo-que-.data" class="nav-link" data-scroll-target="#bss-no-es-lo-mismo-que-.data"><code>.bss</code> no es lo mismo que <code>.data</code></a></li>
   <li><a href="#stack-inicial" id="toc-stack-inicial" class="nav-link" data-scroll-target="#stack-inicial">Stack inicial</a></li>
   <li><a href="#heap-inicial" id="toc-heap-inicial" class="nav-link" data-scroll-target="#heap-inicial">Heap inicial</a></li>
+  <li><a href="#relación-inicial-con-elf" id="toc-relación-inicial-con-elf" class="nav-link" data-scroll-target="#relación-inicial-con-elf">Relación inicial con ELF</a></li>
   <li><a href="#mirar-secciones-con-herramientas" id="toc-mirar-secciones-con-herramientas" class="nav-link" data-scroll-target="#mirar-secciones-con-herramientas">Mirar secciones con herramientas</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicio" id="toc-mini-ejercicio" class="nav-link" data-scroll-target="#mini-ejercicio">Mini ejercicio</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1365,6 +1369,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un archivo <code>.s</code> no coloca todo en el mismo lugar. Las secciones ayudan a separar código, datos de solo lectura, datos modificables y espacio reservado. En esta unidad no estudiaremos ELF en detalle; usaremos las secciones como mapa mental.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a ubicar símbolos dentro de regiones de memoria. Esta lectura ayuda a responder preguntas prácticas: ¿puedo ejecutar esto?, ¿puedo modificarlo?, ¿necesito solo reservar espacio?, ¿esta etiqueta apunta a código o a datos?</p>
+<p>El mapa no pretende describir cada detalle del loader. Es una herramienta para leer programas AArch64 pequeños.</p>
+</section>
 <section id="mapa-simple" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-simple">Mapa simple</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Direcciones</span> bajas</span>
@@ -1478,10 +1487,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>El heap es la región asociada a memoria dinámica. En programas C suele aparecer con <code>malloc</code>, pero aquí no vamos a usar <code>malloc</code> ni <code>libc</code>. También existe <code>mmap</code>, pero queda para una unidad posterior.</p>
 <p>En esta etapa basta con saber que:</p>
 <ul>
-<li><code>.data</code> y <code>.bss</code> son datos del programa.</li>
-<li><code>stack</code> existe desde el inicio y usa <code>sp</code>.</li>
+<li><code>.data</code> y <code>.bss</code> son datos del programa;</li>
+<li><code>stack</code> existe desde el inicio y usa <code>sp</code>;</li>
 <li><code>heap</code> será memoria dinámica más adelante.</li>
 </ul>
+</section>
+<section id="relación-inicial-con-elf" class="level2">
+<h2 class="anchored" data-anchor-id="relación-inicial-con-elf">Relación inicial con ELF</h2>
+<p>Al ensamblar y enlazar, las secciones ayudan a construir el ejecutable ELF. El loader usa esa información para crear el proceso. Todavía no veremos headers ni program headers; basta saber que las secciones del fuente no son decoración: terminan influyendo en cómo se organiza el binario.</p>
 </section>
 <section id="mirar-secciones-con-herramientas" class="level2">
 <h2 class="anchored" data-anchor-id="mirar-secciones-con-herramientas">Mirar secciones con herramientas</h2>
@@ -1491,6 +1504,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> readelf <span class="at">-S</span> secciones</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> objdump <span class="at">-s</span> <span class="at">-j</span> .data secciones</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>readelf</code> muestra la lista de secciones. <code>objdump -s</code> permite mirar bytes de una sección concreta.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Poner datos constantes en <code>.text</code></td>
+<td>usa <code>.rodata</code> para mensajes y tablas constantes</td>
+</tr>
+<tr class="even">
+<td>Usar <code>.data</code> para buffers vacíos grandes</td>
+<td>usa <code>.bss</code></td>
+</tr>
+<tr class="odd">
+<td>Pensar que stack es una sección escrita en el <code>.s</code></td>
+<td>stack es región del proceso</td>
+</tr>
+<tr class="even">
+<td>Pensar que heap aparece por usar <code>.data</code></td>
+<td>heap es memoria dinámica, tema posterior</td>
+</tr>
+<tr class="odd">
+<td>Olvidar sección actual</td>
+<td>etiquetas siguientes quedan donde no esperabas</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicio" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicio">Mini ejercicio</h2>
@@ -1510,11 +1560,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Cuál símbolo apunta a texto constante?</li>
 <li>¿Cuál apunta a dato inicializado?</li>
 <li>¿Cuál apunta a espacio reservado?</li>
+<li>¿Cuál sección usarías para instrucciones?</li>
+</ul>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo explicar <code>.text</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>.rodata</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>.data</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>.bss</code>.</label></li>
+<li><label><input type="checkbox">Puedo ubicar stack y heap como regiones conceptuales.</label></li>
+<li><label><input type="checkbox">Puedo usar <code>readelf</code> y <code>objdump</code> para inspección básica.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Las secciones no son decoración del archivo <code>.s</code>. Son el primer mapa para saber qué direcciones apuntan a código, qué direcciones apuntan a datos y qué zonas se pueden modificar durante la ejecución.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/memoria-direccionamiento/03-load-store-basico.html">Load/store básico</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/binutils/readelf.html">readelf</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/binutils/objdump.html">objdump</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">ELF for the Arm 64-bit Architecture</a>.</li>
+<li>System V ABI, <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html">ELF gABI</a>.</li>
+</ul>
 
 
 </section>

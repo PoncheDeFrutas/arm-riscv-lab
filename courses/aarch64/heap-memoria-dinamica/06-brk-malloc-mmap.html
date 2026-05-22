@@ -1321,10 +1321,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tres-capas" id="toc-tres-capas" class="nav-link active" data-scroll-target="#tres-capas">Tres capas</a></li>
   <li><a href="#brk-como-contexto-histórico" id="toc-brk-como-contexto-histórico" class="nav-link" data-scroll-target="#brk-como-contexto-histórico"><code>brk</code> como contexto histórico</a></li>
   <li><a href="#mallocfree" id="toc-mallocfree" class="nav-link" data-scroll-target="#mallocfree"><code>malloc/free</code></a></li>
+  <li><a href="#contratos-de-error-distintos" id="toc-contratos-de-error-distintos" class="nav-link" data-scroll-target="#contratos-de-error-distintos">Contratos de error distintos</a></li>
   <li><a href="#instrucción-syscall-o-función" id="toc-instrucción-syscall-o-función" class="nav-link" data-scroll-target="#instrucción-syscall-o-función">Instrucción, syscall o función</a></li>
   <li><a href="#qué-hace-un-allocator-conceptualmente" id="toc-qué-hace-un-allocator-conceptualmente" class="nav-link" data-scroll-target="#qué-hace-un-allocator-conceptualmente">Qué hace un allocator conceptualmente</a></li>
   <li><a href="#por-qué-no-implementar-allocator-ahora" id="toc-por-qué-no-implementar-allocator-ahora" class="nav-link" data-scroll-target="#por-qué-no-implementar-allocator-ahora">Por qué no implementar allocator ahora</a></li>
   <li><a href="#por-qué-mmap-viene-después" id="toc-por-qué-mmap-viene-después" class="nav-link" data-scroll-target="#por-qué-mmap-viene-después">Por qué <code>mmap</code> viene después</a></li>
+  <li><a href="#qué-mirar-con-herramientas" id="toc-qué-mirar-con-herramientas" class="nav-link" data-scroll-target="#qué-mirar-con-herramientas">Qué mirar con herramientas</a></li>
   <li><a href="#qué-debe-quedar-claro" id="toc-qué-debe-quedar-claro" class="nav-link" data-scroll-target="#qué-debe-quedar-claro">Qué debe quedar claro</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1411,6 +1413,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">malloc</span><span class="er">(</span><span class="fu">size</span><span class="kw">)</span> <span class="ex">-</span><span class="op">&gt;</span> puntero a bloque o fallo</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">free</span><span class="er">(</span><span class="ex">ptr</span><span class="kw">)</span>    <span class="ex">-</span><span class="op">&gt;</span> devuelve bloque al allocator</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No son instrucciones A64. No son sinónimos simples de una syscall. Una biblioteca puede usar <code>brk</code>, <code>mmap</code> u otras estrategias internas para conseguir memoria del kernel y administrar bloques pequeños.</p>
+</section>
+<section id="contratos-de-error-distintos" class="level2">
+<h2 class="anchored" data-anchor-id="contratos-de-error-distintos">Contratos de error distintos</h2>
+<p>No todos los mecanismos reportan fallo igual:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mecanismo</th>
+<th>Nivel</th>
+<th>Éxito</th>
+<th>Fallo típico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>brk</code></td>
+<td>syscall</td>
+<td>nuevo límite o estado según wrapper</td>
+<td>depende del contrato usado</td>
+</tr>
+<tr class="even">
+<td><code>mmap</code> directo</td>
+<td>syscall</td>
+<td>dirección mapeada</td>
+<td>retorno negativo en syscall directa</td>
+</tr>
+<tr class="odd">
+<td><code>malloc</code></td>
+<td>libc</td>
+<td>puntero</td>
+<td><code>NULL</code> y <code>errno</code> según caso</td>
+</tr>
+<tr class="even">
+<td><code>free</code></td>
+<td>libc</td>
+<td>sin retorno útil</td>
+<td>comportamiento inválido si puntero no corresponde</td>
+</tr>
+</tbody>
+</table>
+<p>Por eso no conviene mezclar reglas. Si estás usando syscalls directas, lee registros. Si estás usando <code>malloc</code>, estás en ABI/libc y debes respetar el contrato de función de biblioteca.</p>
 </section>
 <section id="instrucción-syscall-o-función" class="level2">
 <h2 class="anchored" data-anchor-id="instrucción-syscall-o-función">Instrucción, syscall o función</h2>
@@ -1527,6 +1576,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>En la siguiente unidad se puede estudiar memoria dinámica real desde Linux sin convertir la explicación en implementación de <code>malloc</code>.</p>
 </section>
+<section id="qué-mirar-con-herramientas" class="level2">
+<h2 class="anchored" data-anchor-id="qué-mirar-con-herramientas">Qué mirar con herramientas</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Herramienta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿mi programa llamó <code>brk</code> o <code>mmap</code>?</td>
+<td><code>strace</code></td>
+</tr>
+<tr class="even">
+<td>¿qué función de libc estoy llamando?</td>
+<td>símbolos, <code>objdump</code>, GDB</td>
+</tr>
+<tr class="odd">
+<td>¿qué retornó una syscall directa?</td>
+<td>registro <code>x0</code> después de <code>svc #0</code></td>
+</tr>
+<tr class="even">
+<td>¿qué retornó <code>malloc</code>?</td>
+<td><code>x0</code> según AAPCS64</td>
+</tr>
+</tbody>
+</table>
+<p>La misma ubicación de retorno (<code>x0</code>) no significa el mismo contrato. El contexto decide si interpretas <code>x0</code> como retorno crudo de syscall o retorno de función C.</p>
+</section>
 <section id="qué-debe-quedar-claro" class="level2">
 <h2 class="anchored" data-anchor-id="qué-debe-quedar-claro">Qué debe quedar claro</h2>
 <table class="caption-top table">
@@ -1581,11 +1664,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué problema tendría implementar allocator completo ahora?</li>
 <li>¿Qué syscall futura permitirá pedir regiones de memoria al kernel?</li>
 <li>¿Qué syscall futura libera una región mapeada?</li>
+<li>¿Por qué no debes aplicar reglas de <code>malloc</code> a un retorno crudo de <code>mmap</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>La unidad termina con una frontera clara: ya conoces heap, bloques, ownership y errores. Lo siguiente será pedir memoria real al kernel con <code>mmap</code> y liberarla con <code>munmap</code>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>brk(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/brk.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/brk.2.html</a></li>
+<li>Linux man-pages, <code>malloc(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/malloc.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/malloc.3.html</a></li>
+<li>Linux man-pages, <code>free(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/free.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/free.3.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+</ul>
 
 
 </section>

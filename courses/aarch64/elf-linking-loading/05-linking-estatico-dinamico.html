@@ -1321,13 +1321,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#dos-modelos" id="toc-dos-modelos" class="nav-link active" data-scroll-target="#dos-modelos">Dos modelos</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#dos-modelos" id="toc-dos-modelos" class="nav-link" data-scroll-target="#dos-modelos">Dos modelos</a></li>
   <li><a href="#ejemplo-con-printf" id="toc-ejemplo-con-printf" class="nav-link" data-scroll-target="#ejemplo-con-printf">Ejemplo con <code>printf</code></a></li>
   <li><a href="#dynamic-section" id="toc-dynamic-section" class="nav-link" data-scroll-target="#dynamic-section">Dynamic section</a></li>
   <li><a href="#program-interpreter" id="toc-program-interpreter" class="nav-link" data-scroll-target="#program-interpreter">Program interpreter</a></li>
   <li><a href="#ldd-y-binarios-cruzados" id="toc-ldd-y-binarios-cruzados" class="nav-link" data-scroll-target="#ldd-y-binarios-cruzados"><code>ldd</code> y binarios cruzados</a></li>
+  <li><a href="#método-seguro-de-inspección" id="toc-método-seguro-de-inspección" class="nav-link" data-scroll-target="#método-seguro-de-inspección">Método seguro de inspección</a></li>
   <li><a href="#qué-hace-el-dynamic-loader" id="toc-qué-hace-el-dynamic-loader" class="nav-link" data-scroll-target="#qué-hace-el-dynamic-loader">Qué hace el dynamic loader</a></li>
   <li><a href="#static-linking" id="toc-static-linking" class="nav-link" data-scroll-target="#static-linking">Static linking</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1367,6 +1370,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando llamas <code>printf</code>, tu programa ya no vive solo. Depende de <code>libc</code>, del runtime de C y, normalmente, del dynamic loader. Esta lección separa qué queda fijo al linkear y qué se resuelve al cargar.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a distinguir dos preguntas: qué queda dentro del ejecutable al enlazar y qué queda como dependencia para tiempo de carga. Esa separación explica <code>NEEDED</code>, <code>INTERP</code>, <code>ldd</code>, <code>-static</code> y por qué <code>gcc</code> simplifica programas con <code>libc</code>.</p>
+</section>
 <section id="dos-modelos" class="level2">
 <h2 class="anchored" data-anchor-id="dos-modelos">Dos modelos</h2>
 <table class="caption-top table">
@@ -1437,6 +1444,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 <span class="at">-L</span> /usr/aarch64-linux-gnu ./hello_dyn</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>ldd</code> es útil, pero no universal. Además, no se debe usar sobre ejecutables no confiables; puede involucrar el dynamic loader.</p>
 </section>
+<section id="método-seguro-de-inspección" class="level2">
+<h2 class="anchored" data-anchor-id="método-seguro-de-inspección">Método seguro de inspección</h2>
+<p>Para un binario AArch64 construido en un host que no es AArch64, prioriza:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Comando</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿qué librerías declara?</td>
+<td><code>aarch64-linux-gnu-readelf -d hello_dyn</code></td>
+</tr>
+<tr class="even">
+<td>¿qué loader espera?</td>
+<td><code>aarch64-linux-gnu-readelf -l hello_dyn</code></td>
+</tr>
+<tr class="odd">
+<td>¿puede ejecutarse con sysroot?</td>
+<td><code>qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn</code></td>
+</tr>
+</tbody>
+</table>
+<p>Usa <code>ldd</code> solo cuando entiendas qué loader se va a invocar y confíes en el binario.</p>
+</section>
 <section id="qué-hace-el-dynamic-loader" class="level2">
 <h2 class="anchored" data-anchor-id="qué-hace-el-dynamic-loader">Qué hace el dynamic loader</h2>
 <p>Modelo inicial:</p>
@@ -1473,6 +1511,39 @@ Figura&nbsp;1: Papel del dynamic loader en un ejecutable enlazado dinámicamente
 <p>Un binario estático puede no tener dynamic section útil ni <code>NEEDED</code> para <code>libc</code>. Suele ser mucho más grande.</p>
 <p>El aumento de tamaño tiene sentido: si más código queda dentro del ejecutable, el archivo crece. A cambio, reduce dependencia de librerías externas compatibles en el sistema destino. En laboratorios cruzados esto puede simplificar algunas ejecuciones, pero también oculta el comportamiento real de dynamic loader que queremos estudiar en esta unidad.</p>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que dinámico significa “sin linker”</td>
+<td>siempre hay enlace; cambia qué se difiere</td>
+</tr>
+<tr class="even">
+<td>usar <code>ldd</code> sobre binarios no confiables</td>
+<td>preferir <code>readelf -d</code> para inspección pasiva</td>
+</tr>
+<tr class="odd">
+<td>esperar que un dinámico corra sin sysroot</td>
+<td>pasar <code>-L</code> a QEMU o usar entorno compatible</td>
+</tr>
+<tr class="even">
+<td>concluir que <code>-static</code> siempre es mejor</td>
+<td>considerar tamaño, despliegue y compatibilidad</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
@@ -1487,6 +1558,16 @@ Figura&nbsp;1: Papel del dynamic loader en un ejecutable enlazado dinámicamente
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/elf-linking-loading/06-got-plt-pie.html">GOT, PLT y PIE</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils, <em>GNU linker manual</em>: <a href="https://sourceware.org/binutils/docs/ld/" class="uri">https://sourceware.org/binutils/docs/ld/</a></li>
+<li>Linux man-pages, <code>ld.so(8)</code>: <a href="https://www.man7.org/linux/man-pages/man8/ld.so.8.html" class="uri">https://www.man7.org/linux/man-pages/man8/ld.so.8.html</a></li>
+<li>Linux man-pages, <code>ldd(1)</code>: <a href="https://www.man7.org/linux/man-pages/man1/ldd.1.html" class="uri">https://www.man7.org/linux/man-pages/man1/ldd.1.html</a></li>
+</ul>
 
 
 </section>

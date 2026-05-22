@@ -1318,13 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#registros-generales" id="toc-registros-generales" class="nav-link" data-scroll-target="#registros-generales">Registros generales</a></li>
   <li><a href="#pc-e-instrucción-actual" id="toc-pc-e-instrucción-actual" class="nav-link" data-scroll-target="#pc-e-instrucción-actual">PC e instrucción actual</a></li>
   <li><a href="#desensamblar-una-función-o-etiqueta" id="toc-desensamblar-una-función-o-etiqueta" class="nav-link" data-scroll-target="#desensamblar-una-función-o-etiqueta">Desensamblar una función o etiqueta</a></li>
   <li><a href="#vista-tui" id="toc-vista-tui" class="nav-link" data-scroll-target="#vista-tui">Vista TUI</a></li>
   <li><a href="#registros-especiales-para-debugging" id="toc-registros-especiales-para-debugging" class="nav-link" data-scroll-target="#registros-especiales-para-debugging">Registros especiales para debugging</a></li>
   <li><a href="#relación-con-elf" id="toc-relación-con-elf" class="nav-link" data-scroll-target="#relación-con-elf">Relación con ELF</a></li>
+  <li><a href="#rutina-para-una-instrucción" id="toc-rutina-para-una-instrucción" class="nav-link" data-scroll-target="#rutina-para-una-instrucción">Rutina para una instrucción</a></li>
+  <li><a href="#qué-no-asumir" id="toc-qué-no-asumir" class="nav-link" data-scroll-target="#qué-no-asumir">Qué no asumir</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1365,6 +1368,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>En AArch64 el estado visible del programa vive en registros y memoria. Esta lección se concentra en la mitad más inmediata: qué instrucción se ejecuta y qué valores tienen los registros justo en ese punto.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer una instrucción junto con el estado que la rodea. El objetivo es que <code>pc</code>, registros, desensamblado y símbolos formen una sola explicación, no cuatro salidas separadas.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>Cuando lees código assembly en una página, ves intención. Cuando lees registros en GDB, ves estado real. La diferencia importa porque un programa puede estar perfectamente escrito en apariencia y aun así cargar una dirección incorrecta, sobrescribir <code>x0</code> antes de una syscall o retornar con <code>x30</code> dañado.</p>
@@ -1459,6 +1466,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">disassemble</span> _start</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si quitas símbolos o usas un binario muy reducido, aún puedes depurar por dirección, pero la lectura será menos amable.</p>
 </section>
+<section id="rutina-para-una-instrucción" class="level2">
+<h2 class="anchored" data-anchor-id="rutina-para-una-instrucción">Rutina para una instrucción</h2>
+<p>Cuando una instrucción parece sospechosa, usa este orden:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/i</span> <span class="va">$pc</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers x0 x1 x2 x8 pc sp x29 x30</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">stepi</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/i</span> <span class="va">$pc</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers x0 x1 x2 x8 pc sp x29 x30</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La primera lectura muestra entrada. La segunda muestra efecto. Si es una syscall, agrega una lectura de <code>x0</code> después de <code>svc #0</code>, porque ahí queda el retorno del kernel.</p>
+</section>
+<section id="qué-no-asumir" class="level2">
+<h2 class="anchored" data-anchor-id="qué-no-asumir">Qué no asumir</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Señal</th>
+<th>No asumir</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pc</code> cambió</td>
+<td>que la lógica sea correcta</td>
+</tr>
+<tr class="even">
+<td><code>x0</code> cambió después de <code>svc #0</code></td>
+<td>que sea argumento original; ahora es retorno</td>
+</tr>
+<tr class="odd">
+<td><code>x30</code> tiene dirección</td>
+<td>que sea valor de retorno</td>
+</tr>
+<tr class="even">
+<td><code>disassemble</code> muestra nombres</td>
+<td>que el binario no pueda estar optimizado o sin frames</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
@@ -1509,6 +1559,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/03-lectura-memoria.html">Lectura de memoria</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>GDB manual, <em>Registers</em>: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Registers.html" class="uri">https://sourceware.org/gdb/current/onlinedocs/gdb.html/Registers.html</a></li>
+<li>GDB manual, <em>Machine Code</em>: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html" class="uri">https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html</a></li>
+</ul>
 
 
 </section>

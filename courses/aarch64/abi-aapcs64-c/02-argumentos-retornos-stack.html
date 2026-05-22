@@ -1318,7 +1318,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#primeros-argumentos" id="toc-primeros-argumentos" class="nav-link active" data-scroll-target="#primeros-argumentos">Primeros argumentos</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#primeros-argumentos" id="toc-primeros-argumentos" class="nav-link" data-scroll-target="#primeros-argumentos">Primeros argumentos</a></li>
+  <li><a href="#diagrama-de-una-llamada-simple" id="toc-diagrama-de-una-llamada-simple" class="nav-link" data-scroll-target="#diagrama-de-una-llamada-simple">Diagrama de una llamada simple</a></li>
   <li><a href="#retorno-de-enteros-y-punteros" id="toc-retorno-de-enteros-y-punteros" class="nav-link" data-scroll-target="#retorno-de-enteros-y-punteros">Retorno de enteros y punteros</a></li>
   <li><a href="#floatingsimd" id="toc-floatingsimd" class="nav-link" data-scroll-target="#floatingsimd">Floating/SIMD</a></li>
   <li><a href="#más-de-ocho-argumentos" id="toc-más-de-ocho-argumentos" class="nav-link" data-scroll-target="#más-de-ocho-argumentos">Más de ocho argumentos</a></li>
@@ -1365,6 +1367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>La llamada no transporta valores mágicamente. Antes de <code>bl</code>, el caller coloca argumentos en lugares definidos. Después de <code>ret</code>, el caller mira el lugar de retorno definido.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Esta lección responde una pregunta concreta: cuando C escribe <code>f(a, b, c)</code>, ¿dónde aparecen esos valores para una función assembly? La respuesta empieza en registros, continúa en stack cuando no alcanzan, y termina en un lugar de retorno bien definido.</p>
+</section>
 <section id="primeros-argumentos" class="level2">
 <h2 class="anchored" data-anchor-id="primeros-argumentos">Primeros argumentos</h2>
 <p>Para enteros y punteros, AAPCS64 usa <code>x0</code>-<code>x7</code> para los primeros ocho argumentos.</p>
@@ -1385,104 +1391,159 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>.size sumar3<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> sumar3</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El resultado queda en <code>x0</code>. No hay instrucción especial de retorno de valor. Solo se respeta el contrato.</p>
 </section>
+<section id="diagrama-de-una-llamada-simple" class="level2">
+<h2 class="anchored" data-anchor-id="diagrama-de-una-llamada-simple">Diagrama de una llamada simple</h2>
+<p>Para <code>long sumar3(long a, long b, long c)</code>, el caller prepara:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">antes</span> de bl sumar3</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x0</span> = a</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x1</span> = b</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x2</span> = c</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x30</span> = retorno anterior del caller</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">después</span> de ret</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x0</span> = resultado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Los registros <code>x1</code> y <code>x2</code> no son retornos secundarios. Pueden quedar con valores accidentales o temporales; el caller debe mirar <code>x0</code> para este caso.</p>
+</section>
 <section id="retorno-de-enteros-y-punteros" class="level2">
 <h2 class="anchored" data-anchor-id="retorno-de-enteros-y-punteros">Retorno de enteros y punteros</h2>
 <p>Un entero o puntero simple retorna en <code>x0</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.global identidad_ptr</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>.type identidad_ptr<span class="op">,</span> <span class="op">%</span>function</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">identidad_ptr:</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>.size identidad_ptr<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> identidad_ptr</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.global identidad_ptr</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>.type identidad_ptr<span class="op">,</span> <span class="op">%</span>function</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">identidad_ptr:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>.size identidad_ptr<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> identidad_ptr</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> entra con puntero</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">función</span> no lo cambia</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> sale con el mismo puntero</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> entra con puntero</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">función</span> no lo cambia</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> sale con el mismo puntero</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No confundas “retornar puntero” con copiar memoria. Retornar puntero significa dejar una dirección en <code>x0</code>.</p>
 </section>
 <section id="floatingsimd" class="level2">
 <h2 class="anchored" data-anchor-id="floatingsimd">Floating/SIMD</h2>
 <p>Los argumentos floating y SIMD usan registros <code>v0</code>-<code>v7</code> cuando aplican.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">double</span> f<span class="er">(</span><span class="ex">double</span> a, double b<span class="kw">)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">v0</span> = a</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">v1</span> = b</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">v0</span> = retorno</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">double</span> f<span class="er">(</span><span class="ex">double</span> a, double b<span class="kw">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">v0</span> = a</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">v1</span> = b</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">v0</span> = retorno</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esta unidad no profundiza en ABI vectorial. Pero la regla debe aparecer para no crear una idea falsa de que todo siempre pasa por <code>x0</code>-<code>x7</code>.</p>
 </section>
 <section id="más-de-ocho-argumentos" class="level2">
 <h2 class="anchored" data-anchor-id="más-de-ocho-argumentos">Más de ocho argumentos</h2>
 <p>Cuando ya se usaron <code>x0</code>-<code>x7</code>, argumentos adicionales pasan por stack según AAPCS64.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sum9</span><span class="er">(</span><span class="ex">a,b,c,d,e,f,g,h,i</span><span class="kw">)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = a</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> = b</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">x2</span> = c</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">x3</span> = d</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x4</span> = e</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">x5</span> = f</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">x6</span> = g</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">x7</span> = h</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">stack</span> = i</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sum9</span><span class="er">(</span><span class="ex">a,b,c,d,e,f,g,h,i</span><span class="kw">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = a</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> = b</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">x2</span> = c</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">x3</span> = d</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">x4</span> = e</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">x5</span> = f</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">x6</span> = g</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ex">x7</span> = h</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">stack</span> = i</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Práctica completa:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/04-argumentos-stack/src</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">sum9</span> = 45</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/04-argumentos-stack/src</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">sum9</span> = 45</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La lección debe explicar este caso con diagrama antes de pedir al estudiante que lea el código.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">caller</span> antes de bl sum9</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x0</span> = a</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x1</span> = b</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x2</span> = c</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x3</span> = d</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x4</span> = e</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x5</span> = f</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x6</span> = g</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x7</span> = h</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">stack</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="ex">=</span> i</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El detalle exacto de offsets depende del frame que construya el callee. Por eso la regla docente es: primero identifica si la función movió <code>sp</code>; después decide desde qué base leer el argumento extra.</p>
 </section>
 <section id="sp-alineado-a-16-bytes" class="level2">
 <h2 class="anchored" data-anchor-id="sp-alineado-a-16-bytes"><code>sp</code> alineado a 16 bytes</h2>
 <p>Antes de llamar otra función, <code>sp</code> debe estar alineado a 16 bytes.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sp</span> % 16 == 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sp</span> % 16 == 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto importa especialmente cuando assembly llama C:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>bl printf</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>stp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">,</span> <span class="op">#-</span><span class="dv">16</span><span class="op">]!</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x29<span class="op">,</span> <span class="kw">sp</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>bl printf</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El prólogo resta 16 bytes, no 8, para mantener alineación. Guardar solo 8 bytes con <code>str x30, [sp, #-8]!</code> rompería la regla.</p>
 </section>
 <section id="retorno-de-structs" class="level2">
 <h2 class="anchored" data-anchor-id="retorno-de-structs">Retorno de structs</h2>
 <p>Con structs pequeños, la ABI puede usar registros. Con structs grandes, puede aparecer un mecanismo especial donde el caller proporciona una dirección para guardar el resultado. En AAPCS64, <code>x8</code> puede participar como indirect result location en esos casos.</p>
 <p>Para esta unidad, regla docente:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">struct</span> pequeño</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">puede</span> volver por registros según reglas ABI</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">struct</span> grande</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">no</span> asumir que vuelve todo en x0</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">normalmente</span> se trabaja por puntero de salida</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">struct</span> pequeño</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">puede</span> volver por registros según reglas ABI</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">struct</span> grande</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">no</span> asumir que vuelve todo en x0</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">normalmente</span> se trabaja por puntero de salida</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No necesitamos estudiar todos los casos ahora. Sí necesitamos evitar esta idea incorrecta:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">struct</span> de muchos bytes</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">no</span> cabe mágicamente en x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">struct</span> de muchos bytes</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">no</span> cabe mágicamente en x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cuando el resultado es complejo, una API de curso más legible suele ser pasar un puntero de salida. Esa forma hace visible quién reserva memoria y quién escribe los campos.</p>
 </section>
 <section id="forma-clara-para-curso-pasar-puntero" class="level2">
 <h2 class="anchored" data-anchor-id="forma-clara-para-curso-pasar-puntero">Forma clara para curso: pasar puntero</h2>
 <p>La forma más visible para aprender es pasar puntero a estructura:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> <span class="dt">void</span> point_clear<span class="op">(</span><span class="kw">struct</span> Point <span class="op">*</span>p<span class="op">);</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>// x0 <span class="op">=</span> puntero a Point</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">point_clear:</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> xzr<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> xzr<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> <span class="op">#</span><span class="dv">8</span><span class="op">]</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> <span class="dt">void</span> point_clear<span class="op">(</span><span class="kw">struct</span> Point <span class="op">*</span>p<span class="op">);</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>// x0 <span class="op">=</span> puntero a Point</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">point_clear:</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> xzr<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> xzr<span class="op">,</span> <span class="op">[</span>x0<span class="op">,</span> <span class="op">#</span><span class="dv">8</span><span class="op">]</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto conecta directamente con Unidad 14: C entrega dirección base, assembly usa offsets.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Retornar en <code>x1</code> y esperar que C lo vea.</li>
-<li>Confundir retorno de puntero con copia de bloque.</li>
-<li>Olvidar que <code>x0</code>-<code>x7</code> solo cubren primeros ocho argumentos.</li>
-<li>Leer un argumento de stack con offset incorrecto después de mover <code>sp</code>.</li>
-<li>Romper alineación de <code>sp</code> antes de <code>bl printf</code>.</li>
-<li>Asumir que structs grandes retornan igual que enteros.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Consecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>retornar en <code>x1</code> y esperar que C lo vea</td>
+<td>C lee otro valor desde <code>x0</code></td>
+</tr>
+<tr class="even">
+<td>confundir retorno de puntero con copia de bloque</td>
+<td>se interpreta una dirección como datos copiados</td>
+</tr>
+<tr class="odd">
+<td>olvidar que <code>x0</code>-<code>x7</code> solo cubren ocho argumentos</td>
+<td>el noveno argumento se busca en el lugar equivocado</td>
+</tr>
+<tr class="even">
+<td>leer stack args después de mover <code>sp</code> sin ajustar offsets</td>
+<td>se carga basura o un valor del frame</td>
+</tr>
+<tr class="odd">
+<td>romper alineación antes de <code>bl printf</code></td>
+<td>llamada a libc con contrato inválido</td>
+</tr>
+<tr class="even">
+<td>asumir que structs grandes retornan como enteros</td>
+<td>interfaz C/assembly queda mal definida</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1495,6 +1556,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar retorno de structs sin simplificarlo mal.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/abi-aapcs64-c/03-caller-callee-saved.html">Caller-saved y callee-saved</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>ABI for the Arm Architecture</em>: <a href="https://github.com/ARM-software/abi-aa" class="uri">https://github.com/ARM-software/abi-aa</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

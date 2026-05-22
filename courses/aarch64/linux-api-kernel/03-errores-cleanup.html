@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#retorno-negativo" id="toc-retorno-negativo" class="nav-link active" data-scroll-target="#retorno-negativo">Retorno negativo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#retorno-negativo" id="toc-retorno-negativo" class="nav-link" data-scroll-target="#retorno-negativo">Retorno negativo</a></li>
   <li><a href="#errno-conceptual" id="toc-errno-conceptual" class="nav-link" data-scroll-target="#errno-conceptual"><code>errno</code> conceptual</a></li>
   <li><a href="#por-qué-existe-cleanup" id="toc-por-qué-existe-cleanup" class="nav-link" data-scroll-target="#por-qué-existe-cleanup">Por qué existe <code>cleanup</code></a></li>
   <li><a href="#patrón-con-cleanup" id="toc-patrón-con-cleanup" class="nav-link" data-scroll-target="#patrón-con-cleanup">Patrón con <code>cleanup</code></a></li>
   <li><a href="#dos-rutas-de-error" id="toc-dos-rutas-de-error" class="nav-link" data-scroll-target="#dos-rutas-de-error">Dos rutas de error</a></li>
   <li><a href="#inicializar-o-separar-rutas" id="toc-inicializar-o-separar-rutas" class="nav-link" data-scroll-target="#inicializar-o-separar-rutas">Inicializar o separar rutas</a></li>
   <li><a href="#mensaje-mínimo-a-stderr" id="toc-mensaje-mínimo-a-stderr" class="nav-link" data-scroll-target="#mensaje-mínimo-a-stderr">Mensaje mínimo a stderr</a></li>
+  <li><a href="#diagrama-de-flujo-de-error" id="toc-diagrama-de-flujo-de-error" class="nav-link" data-scroll-target="#diagrama-de-flujo-de-error">Diagrama de flujo de error</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1365,6 +1370,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando una syscall falla, el programa no debería caer al siguiente bloque como si nada hubiera pasado. Debe revisar el retorno, decidir si hay que cerrar algo y salir por una ruta clara.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Detectar errores con retorno negativo en <code>x0</code>.</li>
+<li>Por qué necesitas rutas separadas de error y cleanup.</li>
+<li>Cómo decidir qué recursos cerrar según el punto del programa.</li>
+<li>Diferencia entre <code>errno</code> de libc y retorno directo del kernel.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender el ciclo de vida de un fd y el contrato de syscall. Revisa <a href="../../../courses/aarch64/linux-api-kernel/01-file-descriptors-recursos.html">File descriptors y recursos</a> y <a href="../../../courses/aarch64/linux-api-kernel/02-archivos-open-read-write-close.html">Archivos con syscalls</a>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Cada syscall puede fallar. Cuando falla, el programa debe saber qué recursos están abiertos en ese punto exacto y cerrarlos antes de salir. No basta con un solo bloque <code>error</code> al final: necesitas rutas distintas según qué se abrió y qué no.</p>
+</section>
 <section id="retorno-negativo" class="level2">
 <h2 class="anchored" data-anchor-id="retorno-negativo">Retorno negativo</h2>
 <p>Muchas syscalls devuelven:</p>
@@ -1510,19 +1532,60 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>stderr</code> es fd <code>2</code>. No lo confundas con <code>exit 2</code>; son usos distintos del número.</p>
 </section>
+<section id="diagrama-de-flujo-de-error" class="level2">
+<h2 class="anchored" data-anchor-id="diagrama-de-flujo-de-error">Diagrama de flujo de error</h2>
+<pre><code>_start
+  |
+  +-- openat --&gt; x0 &lt; 0? --sí--&gt; error_sin_fd --&gt; exit 1
+  |                |
+  no               no
+  |                |
+  v                v
+x19 = fd        read --&gt; x0 &lt; 0? --sí--&gt; cleanup --&gt; exit 1
+                   |
+                   no
+                   |
+                   v
+                 close --&gt; x0 &lt; 0? --sí--&gt; error_sin_fd --&gt; exit 1
+                   |
+                   no
+                   |
+                   v
+                 exit 0</code></pre>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Un solo bloque <code>error</code> para todo</strong>: si <code>openat</code> falla y saltas a un bloque que intenta cerrar <code>x19</code>, cierras un fd que nunca se abrió.</li>
+<li><strong>No inicializar <code>x19</code> antes de <code>cleanup</code></strong>: si <code>cleanup</code> usa <code>x19</code> pero <code>openat</code> nunca se ejecutó, <code>x19</code> tiene basura.</li>
+<li><strong>Confundir <code>errno</code> con retorno de syscall</strong>: sin libc no hay <code>errno</code>. El valor negativo en <code>x0</code> ES el código de error del kernel.</li>
+<li><strong>Cerrar dos veces el mismo fd</strong>: si la ruta de error cierra y luego otra rama también cierra, el segundo <code>close</code> opera sobre un fd ya liberado.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice la ruta de ejecución antes de verificar.</p>
 <ol type="1">
 <li>¿Por qué <code>read</code> fallido debe saltar a <code>cleanup</code> y no directo a <code>exit</code>?</li>
 <li>¿Qué valor debe existir en <code>x19</code> antes de ejecutar <code>cleanup</code>?</li>
 <li>¿Qué representa un retorno negativo en <code>x0</code>?</li>
 <li>¿Por qué no hablamos todavía de <code>errno</code> real?</li>
 <li>¿Qué problema aparece si intentas cerrar un fd que nunca se abrió?</li>
+<li>Si <code>openat</code> funciona pero <code>close</code> falla, ¿por qué ruta sale el programa?</li>
+<li>¿Cómo agregarías un mensaje a stderr antes de <code>exit 1</code> en <code>cleanup</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Manejar errores en bajo nivel no es añadir un bloque al final. Es saber qué recursos existen en cada punto del programa y salir por una ruta que los deje en estado razonable.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>openat(2)</code>, <code>read(2)</code>, <code>close(2)</code>: códigos de error negativos. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>errno(3)</code>: diferencia entre errno de libc y retorno directo del kernel. <a href="https://www.man7.org/linux/man-pages/man3/errno.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/errno.3.html</a></li>
+<li>Linux man-pages: <code>intro(2)</code>: convención de errores en syscalls Linux. <a href="https://www.man7.org/linux/man-pages/man2/intro.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/intro.2.html</a></li>
+</ul>
 
 
 </section>

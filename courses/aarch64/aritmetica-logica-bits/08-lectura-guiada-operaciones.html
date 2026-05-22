@@ -1319,6 +1319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#cómo-leer-este-archivo" id="toc-cómo-leer-este-archivo" class="nav-link active" data-scroll-target="#cómo-leer-este-archivo">Cómo leer este archivo</a></li>
+  <li><a href="#método-de-predicción" id="toc-método-de-predicción" class="nav-link" data-scroll-target="#método-de-predicción">Método de predicción</a></li>
   <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link" data-scroll-target="#programa-completo">Programa completo</a></li>
   <li><a href="#construir-y-ejecutar" id="toc-construir-y-ejecutar" class="nav-link" data-scroll-target="#construir-y-ejecutar">Construir y ejecutar</a></li>
   <li><a href="#primera-lectura-constantes" id="toc-primera-lectura-constantes" class="nav-link" data-scroll-target="#primera-lectura-constantes">Primera lectura: constantes</a></li>
@@ -1328,6 +1329,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#quinta-lectura-extensiones" id="toc-quinta-lectura-extensiones" class="nav-link" data-scroll-target="#quinta-lectura-extensiones">Quinta lectura: extensiones</a></li>
   <li><a href="#sexta-lectura-campo-de-bits" id="toc-sexta-lectura-campo-de-bits" class="nav-link" data-scroll-target="#sexta-lectura-campo-de-bits">Sexta lectura: campo de bits</a></li>
   <li><a href="#mapa-final-de-registros" id="toc-mapa-final-de-registros" class="nav-link" data-scroll-target="#mapa-final-de-registros">Mapa final de registros</a></li>
+  <li><a href="#flags-en-la-lectura-guiada" id="toc-flags-en-la-lectura-guiada" class="nav-link" data-scroll-target="#flags-en-la-lectura-guiada">Flags en la lectura guiada</a></li>
   <li><a href="#preguntas-de-cierre" id="toc-preguntas-de-cierre" class="nav-link" data-scroll-target="#preguntas-de-cierre">Preguntas de cierre</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1409,6 +1411,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+</section>
+<section id="método-de-predicción" class="level2">
+<h2 class="anchored" data-anchor-id="método-de-predicción">Método de predicción</h2>
+<p>Antes de avanzar en GDB o leer la siguiente línea, completa mentalmente:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿qué registros son entrada?</td>
+<td><code>x1</code> antes de <code>add</code></td>
+</tr>
+<tr class="even">
+<td>¿qué registro se escribe?</td>
+<td><code>x2</code> en <code>add x2, x1, #5</code></td>
+</tr>
+<tr class="odd">
+<td>¿se actualizan flags?</td>
+<td>sí en <code>subs</code>, no en <code>add</code></td>
+</tr>
+<tr class="even">
+<td>¿la lectura es signed o unsigned?</td>
+<td><code>sxtb</code> vs <code>uxtb</code></td>
+</tr>
+<tr class="odd">
+<td>¿se toca memoria?</td>
+<td>no en <code>ubfx</code>, sí solo en <code>svc</code> por efecto kernel</td>
+</tr>
+</tbody>
+</table>
+<p>La práctica es predecir y luego verificar. Si no puedes predecir una línea, vuelve a la lección de esa familia.</p>
 </section>
 <section id="programa-completo" class="level2">
 <h2 class="anchored" data-anchor-id="programa-completo">Programa completo</h2>
@@ -1619,6 +1656,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="flags-en-la-lectura-guiada" class="level2">
+<h2 class="anchored" data-anchor-id="flags-en-la-lectura-guiada">Flags en la lectura guiada</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Línea</th>
+<th>Qué pasa con <code>NZCV</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>add x2, x1, #5</code></td>
+<td>no actualiza flags</td>
+</tr>
+<tr class="even">
+<td><code>subs x3, x2, x1</code></td>
+<td>actualiza flags según <code>15 - 10</code></td>
+</tr>
+<tr class="odd">
+<td><code>cmp x2, x3</code></td>
+<td>reemplaza flags según <code>15 - 5</code></td>
+</tr>
+<tr class="even">
+<td><code>tst x5, #1</code></td>
+<td>reemplaza flags según <code>x5 AND 1</code></td>
+</tr>
+</tbody>
+</table>
+<p>El último consumidor de flags verá el estado dejado por <code>tst</code>, no por <code>cmp</code> ni por <code>subs</code>.</p>
+</section>
 <section id="preguntas-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="preguntas-de-cierre">Preguntas de cierre</h2>
 <ul>
@@ -1628,11 +1695,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué instrucción apaga bits?</li>
 <li>¿Qué diferencia hay entre <code>uxtb</code> y <code>sxtb</code>?</li>
 <li>¿Por qué <code>ubfx</code> no usa offset de memoria?</li>
+<li>¿Qué instrucción dejó los flags más recientes antes de <code>svc #0</code>?</li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Después de esta unidad, los flags ya no son una idea aislada. Son consecuencia de operaciones sobre registros. Las máscaras, shifts, extensiones y bitfields son formas distintas de mirar y transformar esos mismos bits.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

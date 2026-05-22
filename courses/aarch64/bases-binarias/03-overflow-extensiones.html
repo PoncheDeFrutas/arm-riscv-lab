@@ -1318,15 +1318,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#resultado-limitado-por-tamaño" id="toc-resultado-limitado-por-tamaño" class="nav-link active" data-scroll-target="#resultado-limitado-por-tamaño">Resultado limitado por tamaño</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#resultado-limitado-por-tamaño" id="toc-resultado-limitado-por-tamaño" class="nav-link" data-scroll-target="#resultado-limitado-por-tamaño">Resultado limitado por tamaño</a></li>
   <li><a href="#carry" id="toc-carry" class="nav-link" data-scroll-target="#carry">Carry</a></li>
   <li><a href="#borrow" id="toc-borrow" class="nav-link" data-scroll-target="#borrow">Borrow</a></li>
-  <li><a href="#overflow" id="toc-overflow" class="nav-link" data-scroll-target="#overflow">Overflow</a></li>
+  <li><a href="#overflow" id="toc-overflow" class="nav-link" data-scroll-target="#overflow">Overflow</a>
+  <ul class="collapse">
+  <li><a href="#carry-vs-overflow-tabla-comparativa" id="toc-carry-vs-overflow-tabla-comparativa" class="nav-link" data-scroll-target="#carry-vs-overflow-tabla-comparativa">Carry vs overflow: tabla comparativa</a></li>
+  <li><a href="#regla-rápida-para-detectar-overflow-signed" id="toc-regla-rápida-para-detectar-overflow-signed" class="nav-link" data-scroll-target="#regla-rápida-para-detectar-overflow-signed">Regla rápida para detectar overflow signed</a></li>
+  </ul></li>
   <li><a href="#zero-extension" id="toc-zero-extension" class="nav-link" data-scroll-target="#zero-extension">Zero extension</a></li>
   <li><a href="#sign-extension" id="toc-sign-extension" class="nav-link" data-scroll-target="#sign-extension">Sign extension</a></li>
-  <li><a href="#relación-con-wn-y-xn" id="toc-relación-con-wn-y-xn" class="nav-link" data-scroll-target="#relación-con-wn-y-xn">Relación con <code>Wn</code> y <code>Xn</code></a></li>
+  <li><a href="#relación-con-wn-y-xn" id="toc-relación-con-wn-y-xn" class="nav-link" data-scroll-target="#relación-con-wn-y-xn">Relación con <code>Wn</code> y <code>Xn</code></a>
+  <ul class="collapse">
+  <li><a href="#lectura-paso-a-paso" id="toc-lectura-paso-a-paso" class="nav-link" data-scroll-target="#lectura-paso-a-paso">Lectura paso a paso</a></li>
+  <li><a href="#instrucciones-de-extensión-explícita" id="toc-instrucciones-de-extensión-explícita" class="nav-link" data-scroll-target="#instrucciones-de-extensión-explícita">Instrucciones de extensión explícita</a></li>
+  </ul></li>
   <li><a href="#límite-de-esta-unidad" id="toc-límite-de-esta-unidad" class="nav-link" data-scroll-target="#límite-de-esta-unidad">Límite de esta unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1366,6 +1379,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando el resultado no cabe en el tamaño disponible, los bits visibles se recortan. Para entender lo que ocurrió hay que saber si la operación se pensaba como unsigned o signed.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué es carry y cuándo ocurre en suma unsigned.</li>
+<li>Qué es borrow y cuándo ocurre en resta unsigned.</li>
+<li>Qué es overflow y cuándo ocurre en aritmética signed.</li>
+<li>Diferencia entre zero extension y sign extension.</li>
+<li>Cómo escribir en <code>Wn</code> afecta <code>Xn</code> automáticamente.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender rangos signed y unsigned de n bits. Si no los tienes claros, revisa <a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html">Enteros, signo y rangos</a>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Cuando un resultado aritmético no cabe en el tamaño disponible, los bits visibles se recortan y se activa una señal: <strong>carry</strong> para unsigned, <strong>overflow</strong> para signed. Estas señales se guardan en flags del procesador (<code>C</code> y <code>V</code> en <code>NZCV</code>) que instrucciones posteriores pueden consultar.</p>
+<p>La diferencia clave: carry dice “la suma unsigned excedió el tamaño”; overflow dice “el resultado signed cambió de signo incorrectamente”.</p>
+</section>
 <section id="resultado-limitado-por-tamaño" class="level2">
 <h2 class="anchored" data-anchor-id="resultado-limitado-por-tamaño">Resultado limitado por tamaño</h2>
 <p>Con 8 bits solo puedes guardar 8 bits. Si una suma produce más, el resultado visible conserva los bits bajos.</p>
@@ -1420,6 +1452,60 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Carry y overflow no significan lo mismo. Carry ayuda a razonar operaciones unsigned; overflow ayuda a razonar operaciones signed.</p>
 </div>
 </div>
+<section id="carry-vs-overflow-tabla-comparativa" class="level3">
+<h3 class="anchored" data-anchor-id="carry-vs-overflow-tabla-comparativa">Carry vs overflow: tabla comparativa</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operación (8 bits)</th>
+<th style="text-align: right;">Carry</th>
+<th style="text-align: right;">Overflow</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>0xFF + 0x01 = 0x00</code></td>
+<td style="text-align: right;">Sí</td>
+<td style="text-align: right;">No</td>
+<td>Unsigned: <code>255+1=256</code> no cabe. Signed: no aplica (uno es negativo)</td>
+</tr>
+<tr class="even">
+<td><code>0x7F + 0x01 = 0x80</code></td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">Sí</td>
+<td>Unsigned: <code>127+1=128</code> cabe. Signed: <code>127+1=-128</code> cambió signo</td>
+</tr>
+<tr class="odd">
+<td><code>0x80 + 0x80 = 0x00</code></td>
+<td style="text-align: right;">Sí</td>
+<td style="text-align: right;">Sí</td>
+<td>Unsigned: <code>128+128=256</code> no cabe. Signed: <code>-128+(-128)=-256</code> no cabe</td>
+</tr>
+<tr class="even">
+<td><code>0x01 + 0x02 = 0x03</code></td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+<td>Ambos resultados caben sin problema</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="regla-rápida-para-detectar-overflow-signed" class="level3">
+<h3 class="anchored" data-anchor-id="regla-rápida-para-detectar-overflow-signed">Regla rápida para detectar overflow signed</h3>
+<p>Overflow signed ocurre cuando:</p>
+<ul>
+<li><strong>suma</strong>: dos positivos dan negativo, o dos negativos dan positivo.</li>
+<li><strong>resta</strong>: positivo menos negativo da negativo, o negativo menos positivo da positivo.</li>
+</ul>
+<p>Si los operandos tienen signos distintos en una suma, <strong>nunca</strong> hay overflow.</p>
+</section>
 </section>
 <section id="zero-extension" class="level2">
 <h2 class="anchored" data-anchor-id="zero-extension">Zero extension</h2>
@@ -1474,6 +1560,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">-</span><span class="dv">1</span>      <span class="op">//</span> x0 <span class="op">=</span> <span class="bn">0xFFFFFFFFFFFFFFFF</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> w0<span class="op">,</span> <span class="op">#</span><span class="dv">42</span>     <span class="op">//</span> x0 <span class="op">=</span> <span class="bn">0x000000000000002A</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto prepara una idea clave: muchas instrucciones AArch64 controlan si un valor pequeño se extiende con ceros o con signo antes de operar en un tamaño mayor.</p>
+<section id="lectura-paso-a-paso" class="level3">
+<h3 class="anchored" data-anchor-id="lectura-paso-a-paso">Lectura paso a paso</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x5<span class="op">,</span> <span class="op">#</span><span class="bn">0xFFFFFFFFFFFFFFFF</span>   <span class="op">//</span> todos los bits en <span class="dv">1</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> w5<span class="op">,</span> <span class="op">#</span><span class="bn">0x80</span>                 <span class="op">//</span> <span class="dt">byte</span> <span class="bn">0x80</span> en vista <span class="dv">32</span> bits</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paso</th>
+<th>Registro <code>x5</code></th>
+<th>Qué cambió</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Después de <code>mov x5, #...</code></td>
+<td><code>0xFFFFFFFFFFFFFFFF</code></td>
+<td>Todos los bits encendidos</td>
+</tr>
+<tr class="even">
+<td>Después de <code>mov w5, #0x80</code></td>
+<td><code>0x0000000000000080</code></td>
+<td>Bits 32-63 se pusieron a cero</td>
+</tr>
+</tbody>
+</table>
+<p>El valor <code>0x80</code> en <code>w5</code> es <code>128</code> unsigned. En <code>x5</code> completo sigue siendo <code>128</code> porque los bits altos son cero. Si hubiéramos usado sign extension manual, <code>0x80</code> de 8 bits sign-extended a 64 bits sería <code>0xFFFFFFFFFFFFFF80</code> = <code>-128</code>.</p>
+</section>
+<section id="instrucciones-de-extensión-explícita" class="level3">
+<h3 class="anchored" data-anchor-id="instrucciones-de-extensión-explícita">Instrucciones de extensión explícita</h3>
+<p>AArch64 ofrece instrucciones que extienden valores antes de operar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>uxtw    <span class="op">//</span> zero extend de <span class="dt">word</span> a <span class="dv">64</span> bits</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>sxtb    <span class="op">//</span> sign extend de <span class="dt">byte</span> a <span class="dv">64</span> bits</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sxth    <span class="op">//</span> sign extend de halfword a <span class="dv">64</span> bits</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sxtw    <span class="op">//</span> sign extend de <span class="dt">word</span> a <span class="dv">64</span> bits</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Estas aparecen como modificadores en instrucciones como <code>add</code>, <code>ldr</code>, y otras.</p>
+</section>
 </section>
 <section id="límite-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="límite-de-esta-unidad">Límite de esta unidad</h2>
@@ -1491,15 +1618,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Confundir carry con overflow</strong>: carry es para unsigned, overflow para signed. <code>0xFF + 0x01</code> tiene carry pero no overflow signed.</li>
+<li><strong>Pensar que overflow significa “resultado muy grande”</strong>: overflow signed significa “resultado fuera del rango signed”. <code>-128 + (-128)</code> da overflow aunque el resultado matemático sea “más negativo”, no “más grande”.</li>
+<li><strong>Olvidar que <code>Wn</code> limpia bits altos</strong>: si usas <code>Xn</code> después de escribir en <code>Wn</code>, los bits 32-63 son cero, no lo que tenían antes.</li>
+</ul>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado y si hay carry/overflow antes de verificar.</p>
 <ol type="1">
-<li>Explica qué ocurre con <code>0xFF + 0x01</code> en 8 bits.</li>
+<li>Explica qué ocurre con <code>0xFF + 0x01</code> en 8 bits. ¿Hay carry? ¿Hay overflow?</li>
 <li>Explica por qué <code>127 + 1</code> causa overflow signed de 8 bits.</li>
 <li>Zero extend <code>0x80</code> de 8 a 32 bits.</li>
 <li>Sign extend <code>0x80</code> de 8 a 32 bits.</li>
-<li>Explica qué pasa con <code>x5</code> si escribes en <code>w5</code>.</li>
+<li>Explica qué pasa con <code>x5</code> si escribes en <code>w5</code> después de que <code>x5</code> tenía <code>0xFFFFFFFFFFFFFFFF</code>.</li>
+<li><code>0x7F + 0x02</code> en 8 bits signed: ¿hay overflow? ¿Por qué?</li>
+<li><code>-128 + (-1)</code> en 8 bits signed: ¿hay overflow? ¿Cuál es el resultado visible?</li>
 </ol>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Debes poder mirar una suma o resta de 8 bits y decir si hay carry (unsigned) y si hay overflow (signed) sin calculadora. Esa habilidad es esencial para entender flags <code>NZCV</code> y branches condicionales.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1511,6 +1653,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Sé que escribir en <code>Wn</code> limpia los bits altos de <code>Xn</code>.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html">Bytes y texto</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture — A64 Instruction Set Architecture Guide</em>: flags NZCV, carry y overflow, modificadores de extensión (<code>uxtw</code>, <code>sxtb</code>, <code>sxth</code>, <code>sxtw</code>). <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): comportamiento aritmético de instrucciones AArch64 y flags de estado. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: carry, borrow, overflow y extensión de signos.</li>
+</ul>
 
 
 </section>

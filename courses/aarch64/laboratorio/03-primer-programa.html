@@ -1318,13 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#carpeta-del-ejemplo" id="toc-carpeta-del-ejemplo" class="nav-link active" data-scroll-target="#carpeta-del-ejemplo">Carpeta del ejemplo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#carpeta-del-ejemplo" id="toc-carpeta-del-ejemplo" class="nav-link" data-scroll-target="#carpeta-del-ejemplo">Carpeta del ejemplo</a></li>
+  <li><a href="#flujo-de-construcción" id="toc-flujo-de-construcción" class="nav-link" data-scroll-target="#flujo-de-construcción">Flujo de construcción</a></li>
   <li><a href="#código-mínimo" id="toc-código-mínimo" class="nav-link" data-scroll-target="#código-mínimo">Código mínimo</a></li>
   <li><a href="#compilar" id="toc-compilar" class="nav-link" data-scroll-target="#compilar">Compilar</a></li>
   <li><a href="#ejecutar" id="toc-ejecutar" class="nav-link" data-scroll-target="#ejecutar">Ejecutar</a></li>
   <li><a href="#comandos-útiles" id="toc-comandos-útiles" class="nav-link" data-scroll-target="#comandos-útiles">Comandos útiles</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1363,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El primer programa usa Linux userland y syscalls directas. Aquí no buscamos entender todos los detalles de <code>write</code>, <code>exit</code> o ELF. Solo queremos confirmar que el laboratorio puede construir y ejecutar un binario AArch64.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a recorrer el ciclo mínimo de trabajo: editar un archivo <code>.s</code>, compilarlo con <code>make</code>, ejecutar el binario y reconocer qué parte del resultado viene del programa. Este ciclo será la base de casi todas las prácticas posteriores.</p>
+<p>La meta no es memorizar todavía cada instrucción. La meta es que puedas ubicar las piezas: código fuente, Makefile, directorio <code>build/</code>, ejecutable y salida en terminal.</p>
+</section>
 <section id="carpeta-del-ejemplo" class="level2">
 <h2 class="anchored" data-anchor-id="carpeta-del-ejemplo">Carpeta del ejemplo</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
@@ -1375,28 +1384,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Entra a la carpeta:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Durante las primeras prácticas, <code>src/</code> será el lugar de trabajo. Ahí está el código fuente y ahí se ejecutan los comandos del Makefile.</p>
+</section>
+<section id="flujo-de-construcción" class="level2">
+<h2 class="anchored" data-anchor-id="flujo-de-construcción">Flujo de construcción</h2>
+<p>El flujo general es:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">main.s</span> <span class="at">-</span><span class="op">&gt;</span> main.o <span class="at">-</span><span class="op">&gt;</span> build/main <span class="at">-</span><span class="op">&gt;</span> make run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Paso</th>
+<th>Qué produce</th>
+<th>Para qué sirve</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>editar <code>main.s</code></td>
+<td>fuente assembly</td>
+<td>programa escrito por ti</td>
+</tr>
+<tr class="even">
+<td>ensamblar</td>
+<td>archivo objeto</td>
+<td>instrucciones traducidas parcialmente</td>
+</tr>
+<tr class="odd">
+<td>enlazar</td>
+<td>ELF ejecutable</td>
+<td>binario que Linux puede cargar</td>
+</tr>
+<tr class="even">
+<td>ejecutar</td>
+<td>proceso</td>
+<td>salida visible o código de salida</td>
+</tr>
+</tbody>
+</table>
+<p><code>make</code> es el encargado de ejecutar los comandos correctos para tu entorno. En x86_64 usará herramientas cruzadas y QEMU; en ARM64 nativo usará herramientas locales.</p>
 </section>
 <section id="código-mínimo" class="level2">
 <h2 class="anchored" data-anchor-id="código-mínimo">Código mínimo</h2>
 <p>Archivo principal:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">msg:</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola ARM64\n"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>msg_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> msg</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>text</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    adr x1<span class="op">,</span> msg</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> msg_len</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>data</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">msg:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola ARM64\n"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>msg_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> msg</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>text</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    adr x1<span class="op">,</span> msg</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> msg_len</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura mínima:</p>
 <table class="caption-top table">
 <thead>
@@ -1411,6 +1458,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Guarda bytes del mensaje</td>
 </tr>
 <tr class="even">
+<td><code>msg</code></td>
+<td>Nombra la dirección inicial del mensaje</td>
+</tr>
+<tr class="odd">
+<td><code>msg_len = . - msg</code></td>
+<td>Calcula cuántos bytes tiene el mensaje</td>
+</tr>
+<tr class="even">
 <td><code>.text</code></td>
 <td>Guarda instrucciones</td>
 </tr>
@@ -1419,24 +1474,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Punto donde empieza el proceso</td>
 </tr>
 <tr class="even">
+<td><code>mov x8, #64</code></td>
+<td>Pide syscall <code>write</code></td>
+</tr>
+<tr class="odd">
+<td><code>mov x8, #93</code></td>
+<td>Pide syscall <code>exit</code></td>
+</tr>
+<tr class="even">
 <td><code>svc #0</code></td>
 <td>Entra al kernel para pedir una syscall</td>
 </tr>
 </tbody>
 </table>
+<p>Por ahora basta leerlo así: primero escribe <code>Hola ARM64\n</code>, después termina con código <code>0</code>. Las unidades siguientes explican syscalls y secciones con más detalle.</p>
 </section>
 <section id="compilar" class="level2">
 <h2 class="anchored" data-anchor-id="compilar">Compilar</h2>
 <p>Usa el Makefile correcto para tu entorno y compila:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resultado esperado:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si ese archivo existe, el ciclo de construcción funcionó: el código fuente se transformó en un ejecutable.</p>
 </section>
 <section id="ejecutar" class="level2">
 <h2 class="anchored" data-anchor-id="ejecutar">Ejecutar</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Salida esperada:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> ARM64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> ARM64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En x86_64, <code>make run</code> normalmente ejecuta el binario con QEMU. En ARM64 nativo, lo ejecuta directamente. Esa diferencia vive dentro del Makefile; por eso el comando externo se mantiene igual.</p>
 <div class="callout callout-style-simple callout-tip callout-titled" title="Por qué usamos make">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1447,15 +1513,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>make</code> evita escribir comandos largos. QEMU y Raspberry Pi usan comandos iguales; lo que cambia es el contenido de <code>src/Makefile</code>.</p>
+<p><code>make</code> evita escribir comandos largos y reduce errores de copia. QEMU y Raspberry Pi usan comandos iguales; lo que cambia es el contenido de <code>src/Makefile</code>.</p>
 </div>
 </div>
 </section>
 <section id="comandos-útiles" class="level2">
 <h2 class="anchored" data-anchor-id="comandos-útiles">Comandos útiles</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> info</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> clean</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> info</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> clean</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>make info</code> muestra ayuda del Makefile actual. <code>make clean</code> borra <code>build/</code> para reconstruir desde cero.</p>
+<p>Usa <code>make clean</code> cuando quieras confirmar que el binario se generó otra vez desde el código actual, no desde un resultado anterior.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
@@ -1473,22 +1540,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>compiler not found</code></td>
-<td>Faltan paquetes de la ruta</td>
+<td>faltan paquetes de la ruta elegida</td>
 </tr>
 <tr class="even">
 <td><code>Exec format error</code></td>
-<td>Intentaste ejecutar directo un binario AArch64 en x86_64</td>
+<td>intentaste ejecutar directo un binario AArch64 en x86_64</td>
 </tr>
 <tr class="odd">
 <td>No imprime nada</td>
-<td>Revisa longitud del mensaje y syscall <code>write</code></td>
+<td>revisa longitud del mensaje y syscall <code>write</code></td>
 </tr>
 <tr class="even">
 <td>Copiaste template equivocado</td>
-<td>Revisa la guía de Makefiles según tu máquina</td>
+<td>revisa guía de Makefiles según tu máquina</td>
+</tr>
+<tr class="odd">
+<td><code>make</code> no encuentra reglas</td>
+<td>confirma que estás dentro de <code>src/</code></td>
+</tr>
+<tr class="even">
+<td>Cambiaste <code>main.s</code> y no ves cambios</td>
+<td>ejecuta <code>make clean</code> y vuelve a compilar</td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<ol type="1">
+<li>Cambia <code>Hola ARM64</code> por tu nombre.</li>
+<li>Quita el salto de línea <code>\n</code> y observa cómo queda la terminal.</li>
+<li>Explica qué archivo se genera dentro de <code>build/</code>.</li>
+<li>Explica por qué el mismo <code>make run</code> puede funcionar en QEMU y ARM64 nativo.</li>
+<li>Explica qué parte del programa escribe y qué parte termina.</li>
+</ol>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1499,8 +1584,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox"><code>make run</code> imprimió <code>Hola ARM64</code>.</label></li>
 <li><label><input type="checkbox">Puedo limpiar con <code>make clean</code>.</label></li>
 <li><label><input type="checkbox">Entiendo que todavía no estamos estudiando syscalls a fondo.</label></li>
+<li><label><input type="checkbox">Puedo explicar el flujo <code>main.s -&gt; build/main -&gt; make run</code>.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Este ejemplo confirma que tu laboratorio funciona. Todavía no necesitas dominar ELF, syscalls o secciones. Sí necesitas recordar el ciclo: editar, compilar, ejecutar, observar y limpiar cuando haga falta.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/laboratorio/04-inspeccion-binario.html">Inspección del binario</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Make, <a href="https://www.gnu.org/software/make/manual/">GNU Make Manual</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/ld/">Using ld</a>.</li>
+<li>QEMU, <a href="https://www.qemu.org/docs/master/user/">User-mode emulation</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/execve.2.html"><code>execve(2)</code></a>.</li>
+</ul>
 
 
 </section>

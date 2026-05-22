@@ -1318,15 +1318,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#recordatorio-de-nzcv" id="toc-recordatorio-de-nzcv" class="nav-link active" data-scroll-target="#recordatorio-de-nzcv">Recordatorio de <code>NZCV</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#recordatorio-de-nzcv" id="toc-recordatorio-de-nzcv" class="nav-link" data-scroll-target="#recordatorio-de-nzcv">Recordatorio de <code>NZCV</code></a></li>
   <li><a href="#cmp-prepara-una-resta-sin-guardar-resultado" id="toc-cmp-prepara-una-resta-sin-guardar-resultado" class="nav-link" data-scroll-target="#cmp-prepara-una-resta-sin-guardar-resultado"><code>cmp</code> prepara una resta sin guardar resultado</a></li>
   <li><a href="#igualdad-y-desigualdad" id="toc-igualdad-y-desigualdad" class="nav-link" data-scroll-target="#igualdad-y-desigualdad">Igualdad y desigualdad</a></li>
   <li><a href="#signed-vs-unsigned" id="toc-signed-vs-unsigned" class="nav-link" data-scroll-target="#signed-vs-unsigned">Signed vs unsigned</a></li>
   <li><a href="#comparación-signed" id="toc-comparación-signed" class="nav-link" data-scroll-target="#comparación-signed">Comparación signed</a></li>
   <li><a href="#comparación-unsigned" id="toc-comparación-unsigned" class="nav-link" data-scroll-target="#comparación-unsigned">Comparación unsigned</a></li>
   <li><a href="#subs-también-puede-preparar-branch" id="toc-subs-también-puede-preparar-branch" class="nav-link" data-scroll-target="#subs-también-puede-preparar-branch"><code>subs</code> también puede preparar branch</a></li>
+  <li><a href="#flags-sobrescritos" id="toc-flags-sobrescritos" class="nav-link" data-scroll-target="#flags-sobrescritos">Flags sobrescritos</a></li>
   <li><a href="#tabla-rápida-de-condiciones-de-esta-unidad" id="toc-tabla-rápida-de-condiciones-de-esta-unidad" class="nav-link" data-scroll-target="#tabla-rápida-de-condiciones-de-esta-unidad">Tabla rápida de condiciones de esta unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1366,6 +1370,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Una rama condicional no compara por sí sola. Normalmente consulta flags que quedaron preparados por <code>cmp</code>, <code>subs</code>, <code>adds</code>, <code>tst</code> u otra instrucción que actualiza <code>NZCV</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a conectar comparación, flags y branch condicional. La rama no vuelve a comparar registros; lee el estado <code>NZCV</code> dejado por una instrucción anterior.</p>
+<p>La regla crítica: entre la comparación y la rama no debes ejecutar otra instrucción que cambie flags, a menos que eso sea exactamente lo que quieres.</p>
+</section>
 <section id="recordatorio-de-nzcv" class="level2">
 <h2 class="anchored" data-anchor-id="recordatorio-de-nzcv">Recordatorio de <code>NZCV</code></h2>
 <table class="caption-top table">
@@ -1525,6 +1534,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">si</span> resultado no fue cero, vuelve a loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto aparece mucho en loops con contador.</p>
 </section>
+<section id="flags-sobrescritos" class="level2">
+<h2 class="anchored" data-anchor-id="flags-sobrescritos">Flags sobrescritos</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">10</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>adds x2<span class="op">,</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt menor</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aquí <code>b.lt</code> no mira la comparación original. Mira los flags de <code>adds</code>. Si querías saltar según <code>x0 &lt; 10</code>, la rama debía ir antes de <code>adds</code> o usar una instrucción que no cambie flags.</p>
+</section>
 <section id="tabla-rápida-de-condiciones-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-rápida-de-condiciones-de-esta-unidad">Tabla rápida de condiciones de esta unidad</h2>
 <table class="caption-top table">
@@ -1578,6 +1594,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Usar signed para tamaños</td>
+<td>tamaños e índices suelen ser unsigned</td>
+</tr>
+<tr class="even">
+<td>Usar unsigned para enteros negativos</td>
+<td>usa condiciones signed</td>
+</tr>
+<tr class="odd">
+<td>Insertar instrucción que cambia flags antes del branch</td>
+<td>rama debe seguir flags correctos</td>
+</tr>
+<tr class="even">
+<td>Pensar que <code>cmp</code> guarda resultado</td>
+<td>solo actualiza <code>NZCV</code></td>
+</tr>
+<tr class="odd">
+<td>Leer <code>b.lt</code> sin saber comparación previa</td>
+<td>siempre busca quién preparó flags</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1585,11 +1638,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué condición usarías para comparar dos tamaños unsigned?</li>
 <li>¿Qué condición usarías para comparar dos enteros signed?</li>
 <li>Explica por qué <code>b.gt</code> no es lo mismo que <code>b.hi</code>.</li>
+<li>Explica qué pasa si <code>adds</code> aparece entre <code>cmp</code> y <code>b.eq</code>.</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo explicar <code>NZCV</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>cmp</code>.</label></li>
+<li><label><input type="checkbox">Puedo usar <code>b.eq</code> y <code>b.ne</code>.</label></li>
+<li><label><input type="checkbox">Puedo elegir signed vs unsigned.</label></li>
+<li><label><input type="checkbox">Puedo reconocer flags sobrescritos.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>La rama condicional no decide desde cero. Consulta una historia corta guardada en <code>NZCV</code>. Tu trabajo es preparar flags correctos y escoger condición según la interpretación: signed o unsigned.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/control-flujo/03-if-else.html"><code>if</code> e <code>if/else</code></a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

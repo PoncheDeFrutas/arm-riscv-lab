@@ -1318,13 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#por-qué-openat" id="toc-por-qué-openat" class="nav-link active" data-scroll-target="#por-qué-openat">Por qué <code>openat</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#por-qué-openat" id="toc-por-qué-openat" class="nav-link" data-scroll-target="#por-qué-openat">Por qué <code>openat</code></a></li>
   <li><a href="#contrato-de-openat" id="toc-contrato-de-openat" class="nav-link" data-scroll-target="#contrato-de-openat">Contrato de <code>openat</code></a></li>
+  <li><a href="#modo-0644" id="toc-modo-0644" class="nav-link" data-scroll-target="#modo-0644">Modo <code>0644</code></a></li>
   <li><a href="#abrir-escribir-y-cerrar" id="toc-abrir-escribir-y-cerrar" class="nav-link" data-scroll-target="#abrir-escribir-y-cerrar">Abrir, escribir y cerrar</a></li>
   <li><a href="#por-qué-guardar-el-fd" id="toc-por-qué-guardar-el-fd" class="nav-link" data-scroll-target="#por-qué-guardar-el-fd">Por qué guardar el fd</a></li>
   <li><a href="#close" id="toc-close" class="nav-link" data-scroll-target="#close"><code>close</code></a></li>
   <li><a href="#verificar-archivo" id="toc-verificar-archivo" class="nav-link" data-scroll-target="#verificar-archivo">Verificar archivo</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1364,6 +1368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p><code>openat</code> pide al kernel abrir un archivo y devuelve un file descriptor. Ese fd luego se usa con <code>read</code>, <code>write</code> o <code>close</code>. En esta unidad usaremos flags mínimos y <code>AT_FDCWD</code> sin entrar a directorios avanzados.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a ver el ciclo mínimo de un archivo: abrir, usar y cerrar. Hasta ahora usamos file descriptors ya existentes (<code>0</code>, <code>1</code>, <code>2</code>). Con <code>openat</code>, el kernel crea un nuevo fd para un archivo.</p>
+<p>La idea clave: el nombre del archivo solo se usa al abrir. Después trabajas con el fd devuelto.</p>
+</section>
 <section id="por-qué-openat" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-openat">Por qué <code>openat</code></h2>
 <p>En Linux AArch64 se usa <code>openat</code> como syscall básica para abrir archivos. Recibe un directorio base, nombre de archivo, flags y modo.</p>
@@ -1414,72 +1423,115 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_TRUNC<span class="op">,</span> <span class="dv">512</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>O_WRONLY | O_CREAT | O_TRUNC</code> significa: abrir para escritura, crear si no existe, truncar si ya existe.</p>
 </section>
+<section id="modo-0644" class="level2">
+<h2 class="anchored" data-anchor-id="modo-0644">Modo <code>0644</code></h2>
+<p>Cuando <code>O_CREAT</code> puede crear un archivo, <code>x3</code> contiene el modo inicial. En este ejemplo usamos:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x3<span class="op">,</span> <span class="op">#</span><span class="dv">0644</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura común: dueño puede leer/escribir, grupo y otros pueden leer. En esta unidad no estudiaremos permisos Unix a fondo; solo necesitas saber que el modo importa cuando se crea archivo.</p>
+</section>
 <section id="abrir-escribir-y-cerrar" class="level2">
 <h2 class="anchored" data-anchor-id="abrir-escribir-y-cerrar">Abrir, escribir y cerrar</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> AT_FDCWD<span class="op">,</span> <span class="op">-</span><span class="dv">100</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_WRONLY<span class="op">,</span> <span class="dv">1</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_CREAT<span class="op">,</span> <span class="dv">64</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_TRUNC<span class="op">,</span> <span class="dv">512</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>AT_FDCWD</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>nombre</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#(</span>O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">)</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x3<span class="op">,</span> <span class="op">#</span><span class="dv">0644</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">56</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span>              <span class="op">//</span> x0 <span class="op">=</span> fd o error negativo</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0         <span class="op">//</span> guardar fd para write y close</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> x19</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>mensaje</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> x19</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">57</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">nombre:</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"salida.txt"</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Archivo creado desde syscall\n"</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> AT_FDCWD<span class="op">,</span> <span class="op">-</span><span class="dv">100</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_WRONLY<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_CREAT<span class="op">,</span> <span class="dv">64</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> O_TRUNC<span class="op">,</span> <span class="dv">512</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>AT_FDCWD</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>nombre</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#(</span>O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x3<span class="op">,</span> <span class="op">#</span><span class="dv">0644</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">56</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span>              <span class="op">//</span> x0 <span class="op">=</span> fd o error negativo</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0         <span class="op">//</span> guardar fd para write y close</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> x19</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=</span>mensaje</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> x19</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">57</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="fu">nombre:</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    .asciz <span class="st">"salida.txt"</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Archivo creado desde syscall\n"</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="por-qué-guardar-el-fd" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-guardar-el-fd">Por qué guardar el fd</h2>
 <p>Después de <code>openat</code>, <code>x0</code> contiene el fd. Pero <code>write</code> también usa <code>x0</code> como argumento fd y luego reemplaza <code>x0</code> con su retorno. Si quieres cerrar el mismo archivo después, guarda el fd en otro registro.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openat</span> <span class="at">-</span><span class="op">&gt;</span> x0 = fd</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">guardar</span> fd <span class="at">-</span><span class="op">&gt;</span> x19 = fd</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span> <span class="at">-</span><span class="op">&gt;</span> x0 cambia a bytes escritos</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">close</span> <span class="at">-</span><span class="op">&gt;</span> x0 debe volver a ser fd</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openat</span> <span class="at">-</span><span class="op">&gt;</span> x0 = fd</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">guardar</span> fd <span class="at">-</span><span class="op">&gt;</span> x19 = fd</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span> <span class="at">-</span><span class="op">&gt;</span> x0 cambia a bytes escritos</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">close</span> <span class="at">-</span><span class="op">&gt;</span> x0 debe volver a ser fd</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Más adelante hablaremos de convenciones de registros. Aquí <code>x19</code> solo sirve como registro temporal para mantener el ejemplo legible.</p>
 </section>
 <section id="close" class="level2">
 <h2 class="anchored" data-anchor-id="close"><code>close</code></h2>
 <p><code>close</code> recibe el fd en <code>x0</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> x19</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">57</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> x19</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">57</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Cerrar importa porque un fd es un recurso del proceso. En programas pequeños que terminan enseguida el kernel limpia recursos al salir, pero aprender a cerrar prepara hábitos correctos.</p>
 </section>
 <section id="verificar-archivo" class="level2">
 <h2 class="anchored" data-anchor-id="verificar-archivo">Verificar archivo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as archivo.s <span class="at">-o</span> archivo.o</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld archivo.o <span class="at">-o</span> archivo</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./archivo</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat salida.txt</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Archivo</span> creado desde syscall</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as archivo.s <span class="at">-o</span> archivo.o</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld archivo.o <span class="at">-o</span> archivo</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./archivo</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat salida.txt</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Archivo</span> creado desde syscall</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Consecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>No revisar retorno de <code>openat</code></td>
+<td>puedes guardar un error como si fuera fd</td>
+</tr>
+<tr class="even">
+<td>No guardar fd</td>
+<td><code>write</code> sobrescribe <code>x0</code> con su retorno</td>
+</tr>
+<tr class="odd">
+<td>Olvidar <code>close</code></td>
+<td>recurso queda abierto hasta terminar proceso</td>
+</tr>
+<tr class="even">
+<td>Usar <code>O_CREAT</code> sin modo claro</td>
+<td>permisos iniciales quedan mal definidos</td>
+</tr>
+<tr class="odd">
+<td>Confundir nombre con fd</td>
+<td>después de abrir, las syscalls usan fd</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1488,11 +1540,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué se guarda el fd antes de llamar <code>write</code>?</li>
 <li>¿Qué syscall usa número <code>57</code>?</li>
 <li>¿Qué significa <code>AT_FDCWD</code> en esta unidad?</li>
+<li>¿Qué cambia si quitas <code>O_TRUNC</code>?</li>
+<li>¿Por qué <code>close</code> usa fd y no nombre de archivo?</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo preparar <code>openat</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>AT_FDCWD</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar flags mínimos.</label></li>
+<li><label><input type="checkbox">Puedo guardar fd para uso posterior.</label></li>
+<li><label><input type="checkbox">Puedo cerrar fd con <code>close</code>.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>openat</code> transforma un nombre de archivo en un fd. Ese fd es el valor que las demás syscalls entienden. Abrir, usar y cerrar es el ciclo mínimo de archivo.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/syscalls-esenciales/05-errores-minimos.html">Errores mínimos</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html"><code>openat(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/close.2.html"><code>close(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man7/inode.7.html"><code>inode(7)</code></a>.</li>
+</ul>
 
 
 </section>

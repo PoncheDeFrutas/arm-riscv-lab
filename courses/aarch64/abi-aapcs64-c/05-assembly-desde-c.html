@@ -1318,11 +1318,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#contrato-mínimo" id="toc-contrato-mínimo" class="nav-link active" data-scroll-target="#contrato-mínimo">Contrato mínimo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#contrato-mínimo" id="toc-contrato-mínimo" class="nav-link" data-scroll-target="#contrato-mínimo">Contrato mínimo</a></li>
   <li><a href="#lectura-del-flujo" id="toc-lectura-del-flujo" class="nav-link" data-scroll-target="#lectura-del-flujo">Lectura del flujo</a></li>
+  <li><a href="#coincidencia-de-prototipo-y-símbolo" id="toc-coincidencia-de-prototipo-y-símbolo" class="nav-link" data-scroll-target="#coincidencia-de-prototipo-y-símbolo">Coincidencia de prototipo y símbolo</a></li>
   <li><a href="#compilar-con-gcc" id="toc-compilar-con-gcc" class="nav-link" data-scroll-target="#compilar-con-gcc">Compilar con GCC</a></li>
   <li><a href="#por-qué-usar-.type-y-.size" id="toc-por-qué-usar-.type-y-.size" class="nav-link" data-scroll-target="#por-qué-usar-.type-y-.size">Por qué usar <code>.type</code> y <code>.size</code></a></li>
   <li><a href="#prototipo-c" id="toc-prototipo-c" class="nav-link" data-scroll-target="#prototipo-c">Prototipo C</a></li>
+  <li><a href="#lectura-con-herramientas" id="toc-lectura-con-herramientas" class="nav-link" data-scroll-target="#lectura-con-herramientas">Lectura con herramientas</a></li>
   <li><a href="#objetos-separados" id="toc-objetos-separados" class="nav-link" data-scroll-target="#objetos-separados">Objetos separados</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1364,6 +1367,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Este es el primer caso de interoperabilidad real: C prepara argumentos, ejecuta una llamada y recibe el resultado desde una función escrita en GNU Assembly.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a construir una frontera limpia entre C y assembly. C declara una función, assembly exporta un símbolo, y AAPCS64 define cómo cruzan los valores.</p>
+</section>
 <section id="contrato-mínimo" class="level2">
 <h2 class="anchored" data-anchor-id="contrato-mínimo">Contrato mínimo</h2>
 <p>Para que C llame assembly, hacen falta tres piezas:</p>
@@ -1410,53 +1417,122 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">lee</span> retorno desde x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La función assembly no sabe que fue llamada por C. Solo ve registros. C no sabe cómo está escrita la función. Solo confía en la ABI.</p>
 </section>
+<section id="coincidencia-de-prototipo-y-símbolo" class="level2">
+<h2 class="anchored" data-anchor-id="coincidencia-de-prototipo-y-símbolo">Coincidencia de prototipo y símbolo</h2>
+<p>Estos dos nombres deben coincidir:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> <span class="dt">long</span> sumar<span class="op">(</span><span class="dt">long</span> a<span class="op">,</span> <span class="dt">long</span> b<span class="op">);</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.global sumar</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar:</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si C declara <code>sumar</code> pero assembly exporta <code>sumar_enteros</code>, el linker no encuentra el símbolo esperado. Si el nombre coincide pero el prototipo no coincide, el programa puede enlazar y fallar por datos mal interpretados.</p>
+</section>
 <section id="compilar-con-gcc" class="level2">
 <h2 class="anchored" data-anchor-id="compilar-con-gcc">Compilar con GCC</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc main.c sumar.s <span class="at">-o</span> app</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 <span class="at">-L</span> /usr/aarch64-linux-gnu ./app</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">resultado</span> = 5</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc main.c sumar.s <span class="at">-o</span> app</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 <span class="at">-L</span> /usr/aarch64-linux-gnu ./app</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">resultado</span> = 5</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Práctica completa:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">resultado</span> = 5</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">resultado</span> = 5</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="por-qué-usar-.type-y-.size" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-usar-.type-y-.size">Por qué usar <code>.type</code> y <code>.size</code></h2>
 <p><code>.global</code> hace visible el símbolo para el linker.</p>
 <p><code>.type</code> marca el símbolo como función. <code>.size</code> marca su tamaño. El programa puede enlazar sin ellas en casos simples, pero ayudan a herramientas como GDB, objdump y diagnósticos.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>.type sumar<span class="op">,</span> <span class="op">%</span>function</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>.size sumar<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> sumar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.type sumar<span class="op">,</span> <span class="op">%</span>function</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>.size sumar<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> sumar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En esta unidad conviene escribirlas siempre en funciones exportadas.</p>
 </section>
 <section id="prototipo-c" class="level2">
 <h2 class="anchored" data-anchor-id="prototipo-c">Prototipo C</h2>
 <p>El prototipo debe coincidir con lo que hace la función:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> <span class="dt">long</span> sumar<span class="op">(</span><span class="dt">long</span> a<span class="op">,</span> <span class="dt">long</span> b<span class="op">);</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> <span class="dt">long</span> sumar<span class="op">(</span><span class="dt">long</span> a<span class="op">,</span> <span class="dt">long</span> b<span class="op">);</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si C cree que la función recibe dos <code>long</code>, pondrá argumentos como dos enteros de 64 bits. Si assembly interpreta otra cosa, el error no lo detecta el procesador.</p>
+</section>
+<section id="lectura-con-herramientas" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-con-herramientas">Lectura con herramientas</h2>
+<p>Cuando algo no enlaza o no llama bien, estas herramientas ayudan:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Comando</th>
+<th>Qué confirma</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>nm sumar.o</code></td>
+<td>si el símbolo <code>sumar</code> existe y es global</td>
+</tr>
+<tr class="even">
+<td><code>objdump -d sumar.o</code></td>
+<td>si el cuerpo tiene las instrucciones esperadas</td>
+</tr>
+<tr class="odd">
+<td><code>readelf -s sumar.o</code></td>
+<td>tipo y visibilidad del símbolo</td>
+</tr>
+</tbody>
+</table>
+<p>No hace falta usarlas en cada práctica, pero sí entender qué pregunta responde cada una.</p>
 </section>
 <section id="objetos-separados" class="level2">
 <h2 class="anchored" data-anchor-id="objetos-separados">Objetos separados</h2>
 <p>También puede compilarse en pasos:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc <span class="at">-c</span> main.c <span class="at">-o</span> main.o</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc <span class="at">-c</span> sumar.s <span class="at">-o</span> sumar.o</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc main.o sumar.o <span class="at">-o</span> app</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc <span class="at">-c</span> main.c <span class="at">-o</span> main.o</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc <span class="at">-c</span> sumar.s <span class="at">-o</span> sumar.o</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-gcc main.o sumar.o <span class="at">-o</span> app</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Usa <code>gcc</code> para el enlace final porque el programa usa <code>printf</code> y runtime de C.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Olvidar <code>.global sumar</code>.</li>
-<li>Escribir un prototipo C que no coincide.</li>
-<li>Retornar en <code>x1</code>.</li>
-<li>Destruir <code>x19</code> dentro de la función assembly.</li>
-<li>Enlazar con <code>ld</code> directo aunque el programa usa <code>printf</code>.</li>
-<li>Creer que <code>.type</code> y <code>.size</code> son instrucciones.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Síntoma</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>olvidar <code>.global sumar</code></td>
+<td>el linker no ve la función desde C</td>
+</tr>
+<tr class="even">
+<td>prototipo C distinto al contrato real</td>
+<td>argumentos o retorno se interpretan mal</td>
+</tr>
+<tr class="odd">
+<td>retornar en <code>x1</code></td>
+<td>C lee resultado incorrecto desde <code>x0</code></td>
+</tr>
+<tr class="even">
+<td>destruir <code>x19</code></td>
+<td>bug aparece después de volver al caller</td>
+</tr>
+<tr class="odd">
+<td>enlazar con <code>ld</code> directo usando <code>printf</code></td>
+<td>faltan runtime o símbolos de <code>libc</code></td>
+</tr>
+<tr class="even">
+<td>creer que <code>.type</code> y <code>.size</code> son instrucciones</td>
+<td>confundir metadatos de assembler con CPU</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1468,6 +1544,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar por qué el retorno está en <code>x0</code>.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/abi-aapcs64-c/06-c-desde-assembly-printf.html">C desde assembly y printf</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GNU Binutils, <em>GNU linker manual</em>: <a href="https://sourceware.org/binutils/docs/ld/" class="uri">https://sourceware.org/binutils/docs/ld/</a></li>
+<li>GCC documentation: <a href="https://gcc.gnu.org/onlinedocs/" class="uri">https://gcc.gnu.org/onlinedocs/</a></li>
+</ul>
 
 
 </section>

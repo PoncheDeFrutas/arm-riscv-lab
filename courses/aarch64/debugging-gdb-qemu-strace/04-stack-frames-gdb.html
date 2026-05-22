@@ -1321,12 +1321,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#recordatorio-aarch64" id="toc-recordatorio-aarch64" class="nav-link" data-scroll-target="#recordatorio-aarch64">Recordatorio AArch64</a></li>
   <li><a href="#mirar-registros-de-frame" id="toc-mirar-registros-de-frame" class="nav-link" data-scroll-target="#mirar-registros-de-frame">Mirar registros de frame</a></li>
   <li><a href="#mirar-contenido-del-stack" id="toc-mirar-contenido-del-stack" class="nav-link" data-scroll-target="#mirar-contenido-del-stack">Mirar contenido del stack</a></li>
+  <li><a href="#sesión-guiada" id="toc-sesión-guiada" class="nav-link" data-scroll-target="#sesión-guiada">Sesión guiada</a></li>
   <li><a href="#backtrace" id="toc-backtrace" class="nav-link" data-scroll-target="#backtrace">Backtrace</a></li>
   <li><a href="#x30-no-es-retorno-de-función" id="toc-x30-no-es-retorno-de-función" class="nav-link" data-scroll-target="#x30-no-es-retorno-de-función">x30 no es retorno de función</a></li>
+  <li><a href="#diagnóstico-de-frame-roto" id="toc-diagnóstico-de-frame-roto" class="nav-link" data-scroll-target="#diagnóstico-de-frame-roto">Diagnóstico de frame roto</a></li>
   <li><a href="#diagrama-de-frame" id="toc-diagrama-de-frame" class="nav-link" data-scroll-target="#diagrama-de-frame">Diagrama de frame</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1368,6 +1371,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El stack no es una idea abstracta. En GDB puedes leer <code>sp</code>, mirar palabras en la memoria del stack y comprobar si <code>x29</code> y <code>x30</code> forman un frame coherente.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer una cadena de llamadas usando registros y memoria. La meta no es confiar ciegamente en <code>bt</code>, sino entender qué evidencia usa GDB: <code>sp</code>, <code>x29</code>, <code>x30</code>, símbolos y contenido del stack.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>Cuando un programa con funciones falla, necesitas reconstruir cómo llegó ahí. El stack ayuda a responder:</p>
@@ -1435,13 +1442,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Cada <code>gx</code> muestra 8 bytes. En un frame con <code>stp x29, x30</code>, las primeras palabras pueden contener el frame pointer anterior y la dirección de retorno guardada.</p>
 <p>No todos los programas mantienen frame pointer. Optimizaciones, código manual o prólogos distintos pueden hacer que <code>bt</code> sea menos claro.</p>
 </section>
+<section id="sesión-guiada" class="level2">
+<h2 class="anchored" data-anchor-id="sesión-guiada">Sesión guiada</h2>
+<p>Detente dentro de una función no hoja y lee en este orden:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers sp x29 x30 pc</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/i</span> <span class="va">$pc</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/8gx</span> <span class="va">$sp</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/4gx</span> <span class="va">$x29</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Primero confirmas dónde estás. Luego miras la pila desde <code>sp</code> y desde <code>x29</code>. Por último usas <code>bt</code> para comparar tu lectura manual con la reconstrucción de GDB.</p>
+</section>
 <section id="backtrace" class="level2">
 <h2 class="anchored" data-anchor-id="backtrace">Backtrace</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>bt</code> intenta mostrar la cadena de llamadas:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#0  funcion_interna ()</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#1  funcion_media ()</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#2  _start ()</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#0  funcion_interna ()</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#1  funcion_media ()</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#2  _start ()</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si faltan símbolos, puedes ver direcciones en vez de nombres. Si el frame está roto, GDB puede no reconstruir toda la cadena.</p>
 </section>
 <section id="x30-no-es-retorno-de-función" class="level2">
@@ -1470,6 +1487,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td>¿dónde está la cima del stack?</td>
 <td><code>sp</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="diagnóstico-de-frame-roto" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-frame-roto">Diagnóstico de frame roto</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Observación</th>
+<th>Posible causa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>bt</code> corta la cadena</td>
+<td>faltan símbolos, frame pointer o stack coherente</td>
+</tr>
+<tr class="even">
+<td><code>x30</code> apunta fuera de <code>.text</code></td>
+<td>retorno sobrescrito</td>
+</tr>
+<tr class="odd">
+<td><code>sp</code> no está alineado</td>
+<td>prólogo/epílogo o reserva local incorrecta</td>
+</tr>
+<tr class="even">
+<td><code>[x29, #8]</code> no parece retorno</td>
+<td>frame dañado o layout distinto</td>
+</tr>
+<tr class="odd">
+<td><code>x29</code> vale cero en función esperada</td>
+<td>frame pointer omitido o no establecido</td>
 </tr>
 </tbody>
 </table>
@@ -1551,6 +1605,14 @@ Figura&nbsp;1: Frame típico con x29 y x30 guardados en el stack.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/05-qemu-gdbserver.html">QEMU y gdbserver</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>GDB manual, <em>Backtrace</em>: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Backtrace.html" class="uri">https://sourceware.org/gdb/current/onlinedocs/gdb.html/Backtrace.html</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

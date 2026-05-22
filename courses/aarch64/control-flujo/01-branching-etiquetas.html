@@ -1318,14 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#flujo-normal" id="toc-flujo-normal" class="nav-link active" data-scroll-target="#flujo-normal">Flujo normal</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#flujo-normal" id="toc-flujo-normal" class="nav-link" data-scroll-target="#flujo-normal">Flujo normal</a></li>
   <li><a href="#etiqueta-como-destino" id="toc-etiqueta-como-destino" class="nav-link" data-scroll-target="#etiqueta-como-destino">Etiqueta como destino</a></li>
   <li><a href="#salto-incondicional-hacia-adelante" id="toc-salto-incondicional-hacia-adelante" class="nav-link" data-scroll-target="#salto-incondicional-hacia-adelante">Salto incondicional hacia adelante</a></li>
   <li><a href="#verificar-con-código-de-salida" id="toc-verificar-con-código-de-salida" class="nav-link" data-scroll-target="#verificar-con-código-de-salida">Verificar con código de salida</a></li>
   <li><a href="#salto-hacia-atrás" id="toc-salto-hacia-atrás" class="nav-link" data-scroll-target="#salto-hacia-atrás">Salto hacia atrás</a></li>
+  <li><a href="#caída-de-flujo" id="toc-caída-de-flujo" class="nav-link" data-scroll-target="#caída-de-flujo">Caída de flujo</a></li>
   <li><a href="#salto-incondicional-para-evitar-caer-en-otro-bloque" id="toc-salto-incondicional-para-evitar-caer-en-otro-bloque" class="nav-link" data-scroll-target="#salto-incondicional-para-evitar-caer-en-otro-bloque">Salto incondicional para evitar caer en otro bloque</a></li>
   <li><a href="#mapa-visual" id="toc-mapa-visual" class="nav-link" data-scroll-target="#mapa-visual">Mapa visual</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1365,6 +1369,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El primer paso para entender control de flujo es separar etiqueta y branch. La etiqueta solo nombra una posición del programa. <code>b</code> es la instrucción que cambia qué se ejecuta después.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer saltos incondicionales y etiquetas. Esta lección no usa todavía condiciones complejas; busca que puedas seguir el camino real de ejecución y no solo el orden visual del archivo.</p>
+<p>La pregunta principal: ¿qué instrucción se ejecuta después?</p>
+</section>
 <section id="flujo-normal" class="level2">
 <h2 class="anchored" data-anchor-id="flujo-normal">Flujo normal</h2>
 <p>Sin saltos, el procesador ejecuta una instrucción y luego la siguiente.</p>
@@ -1434,29 +1443,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">loop</span> <span class="at">-</span><span class="op">&gt;</span> suma <span class="at">-</span><span class="op">&gt;</span> compara <span class="at">-</span><span class="op">&gt;</span> si x0 <span class="op">&lt;</span> 3, vuelve a loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Un loop no es magia. Es una rama hacia atrás controlada por una condición.</p>
 </section>
-<section id="salto-incondicional-para-evitar-caer-en-otro-bloque" class="level2">
-<h2 class="anchored" data-anchor-id="salto-incondicional-para-evitar-caer-en-otro-bloque">Salto incondicional para evitar caer en otro bloque</h2>
-<p>En <code>if/else</code>, muchas veces necesitas saltar al final después de ejecutar el caso verdadero, para no caer dentro del caso falso.</p>
+<section id="caída-de-flujo" class="level2">
+<h2 class="anchored" data-anchor-id="caída-de-flujo">Caída de flujo</h2>
+<p>Si una rama no se toma, el flujo sigue bajando a la siguiente instrucción. Esa “caída” importa mucho en <code>if/else</code>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq es_cero</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">no_es_cero:</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    b fin</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">es_cero:</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fin:</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si <code>x0</code> no es cero, <code>b.eq</code> no salta y el flujo cae en <code>no_es_cero</code>.</p>
+</section>
+<section id="salto-incondicional-para-evitar-caer-en-otro-bloque" class="level2">
+<h2 class="anchored" data-anchor-id="salto-incondicional-para-evitar-caer-en-otro-bloque">Salto incondicional para evitar caer en otro bloque</h2>
+<p>En <code>if/else</code>, muchas veces necesitas saltar al final después de ejecutar el caso verdadero, para no caer dentro del caso falso.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq es_cero</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">no_es_cero:</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    b fin</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">es_cero:</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fin:</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El <code>b fin</code> evita que el flujo siga bajando al bloque <code>es_cero</code>.</p>
 </section>
 <section id="mapa-visual" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-visual">Mapa visual</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">salto</span> hacia adelante:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">inicio</span> <span class="at">-</span><span class="op">&gt;</span> b destino <span class="at">-</span><span class="op">&gt;</span> destino</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">salto</span> hacia atrás:</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">loop</span> <span class="at">-</span><span class="op">&gt;</span> cuerpo <span class="at">-</span><span class="op">&gt;</span> condición <span class="at">-</span><span class="op">&gt;</span> b loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">salto</span> hacia adelante:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">inicio</span> <span class="at">-</span><span class="op">&gt;</span> b destino <span class="at">-</span><span class="op">&gt;</span> destino</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">salto</span> hacia atrás:</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">loop</span> <span class="at">-</span><span class="op">&gt;</span> cuerpo <span class="at">-</span><span class="op">&gt;</span> condición <span class="at">-</span><span class="op">&gt;</span> b loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1484,22 +1503,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que una etiqueta ejecuta algo</td>
+<td>solo nombra dirección</td>
+</tr>
+<tr class="even">
+<td>Olvidar <code>b fin</code> en <code>if/else</code></td>
+<td>el flujo cae al siguiente bloque</td>
+</tr>
+<tr class="odd">
+<td>Leer archivo solo de arriba abajo</td>
+<td>sigue branches y destinos</td>
+</tr>
+<tr class="even">
+<td>Crear loop sin condición de salida</td>
+<td>el programa repite para siempre</td>
+</tr>
+<tr class="odd">
+<td>No distinguir salto adelante/atrás</td>
+<td>adelante omite, atrás repite</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
 <li>En el ejemplo de <code>b salir</code>, explica por qué <code>mov x0, #99</code> no se ejecuta.</li>
 <li>Indica si este branch va hacia adelante o hacia atrás:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    b loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    b loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="3" type="1">
 <li>Explica qué pasaría si quitas <code>b fin</code> en un patrón <code>if/else</code>.</li>
+<li>Marca las etiquetas y branches en un programa <code>exit</code> simple.</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo reconocer una etiqueta.</label></li>
+<li><label><input type="checkbox">Puedo reconocer <code>b</code> como branch incondicional.</label></li>
+<li><label><input type="checkbox">Puedo seguir un salto hacia adelante.</label></li>
+<li><label><input type="checkbox">Puedo seguir un salto hacia atrás.</label></li>
+<li><label><input type="checkbox">Puedo explicar caída de flujo.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Control de flujo empieza con una idea simple: el programa tiene posiciones nombradas y ramas que cambian la siguiente posición ejecutada. Todo <code>if</code> y todo loop se construye desde ahí.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/control-flujo/02-condiciones-flags.html">Condiciones y flags</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

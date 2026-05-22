@@ -1318,14 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#archivo-mínimo" id="toc-archivo-mínimo" class="nav-link active" data-scroll-target="#archivo-mínimo">Archivo mínimo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#archivo-mínimo" id="toc-archivo-mínimo" class="nav-link" data-scroll-target="#archivo-mínimo">Archivo mínimo</a></li>
+  <li><a href="#directivas" id="toc-directivas" class="nav-link" data-scroll-target="#directivas">Directivas</a></li>
   <li><a href="#comentarios" id="toc-comentarios" class="nav-link" data-scroll-target="#comentarios">Comentarios</a></li>
   <li><a href="#etiquetas" id="toc-etiquetas" class="nav-link" data-scroll-target="#etiquetas">Etiquetas</a></li>
   <li><a href="#símbolos" id="toc-símbolos" class="nav-link" data-scroll-target="#símbolos">Símbolos</a></li>
   <li><a href="#punto-actual-." id="toc-punto-actual-." class="nav-link" data-scroll-target="#punto-actual-.">Punto actual <code>.</code></a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#type-y-.size" id="toc-type-y-.size" class="nav-link" data-scroll-target="#type-y-.size"><code>.type</code> y <code>.size</code></a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1364,6 +1368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Antes de aprender más instrucciones, conviene leer bien el archivo fuente. Un <code>.s</code> no es solo una lista de instrucciones: también contiene información para el assembler.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a separar cuatro elementos que aparecen juntos en un archivo assembly: directivas, etiquetas, símbolos e instrucciones. Esta separación evita una confusión común: creer que todo lo que aparece en un <code>.s</code> es ejecutado por la CPU.</p>
+<p>La CPU ejecuta instrucciones. El assembler interpreta directivas y etiquetas para construir el archivo objeto.</p>
+</section>
 <section id="archivo-mínimo" class="level2">
 <h2 class="anchored" data-anchor-id="archivo-mínimo">Archivo mínimo</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
@@ -1423,22 +1432,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="directivas" class="level2">
+<h2 class="anchored" data-anchor-id="directivas">Directivas</h2>
+<p>Una directiva empieza con punto y habla con el assembler. No es una instrucción A64. Por ejemplo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>.ascii <span class="st">"Hola\n"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Estas líneas controlan visibilidad, sección actual o bytes generados. El assembler las consume para producir el objeto. La CPU no ejecuta <code>.global</code> ni <code>.text</code>.</p>
+</section>
 <section id="comentarios" class="level2">
 <h2 class="anchored" data-anchor-id="comentarios">Comentarios</h2>
 <p>En GNU Assembly para AArch64, los comentarios suelen escribirse con <code>//</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>      <span class="op">//</span> código de salida</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span>     <span class="op">//</span> syscall exit en Linux AArch64</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span>          <span class="op">//</span> entrar <span class="kw">al</span> kernel</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Usa comentarios para explicar intención, no para repetir cada instrucción.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>      <span class="op">//</span> código de salida</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span>     <span class="op">//</span> syscall exit en Linux AArch64</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span>          <span class="op">//</span> entrar <span class="kw">al</span> kernel</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Usa comentarios para explicar intención, no para repetir cada instrucción. Un buen comentario dice por qué ese valor importa, no solo que <code>mov</code> mueve un valor.</p>
 </section>
 <section id="etiquetas" class="level2">
 <h2 class="anchored" data-anchor-id="etiquetas">Etiquetas</h2>
 <p>Una etiqueta nombra una posición. Termina con <code>:</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inicio:</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fin:</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inicio:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fin:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La etiqueta no guarda un valor como variable de alto nivel. Nombra una dirección que puede apuntar a código o datos.</p>
 <div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
@@ -1457,10 +1475,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="símbolos" class="level2">
 <h2 class="anchored" data-anchor-id="símbolos">Símbolos</h2>
 <p>Un símbolo es un nombre que el assembler, linker o depurador puede usar. Una etiqueta crea un símbolo. Una constante con <code>.equ</code> también crea un símbolo.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_exit<span class="op">,</span> <span class="dv">93</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_exit</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_exit<span class="op">,</span> <span class="dv">93</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_exit</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1479,30 +1497,60 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+<p>La diferencia práctica: <code>SYS_exit</code> representa un valor conocido por el assembler; <code>_start</code> representa una posición dentro del programa.</p>
 </section>
 <section id="punto-actual-." class="level2">
 <h2 class="anchored" data-anchor-id="punto-actual-.">Punto actual <code>.</code></h2>
 <p>En expresiones del assembler, <code>.</code> representa la posición actual.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">msg:</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola\n"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>msg_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> msg</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Lectura: <code>msg_len</code> vale distancia entre posición actual y etiqueta <code>msg</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">msg:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola\n"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>msg_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> msg</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura: <code>msg_len</code> vale distancia entre posición actual y etiqueta <code>msg</code>. Si <code>msg</code> marca el inicio del texto y <code>.</code> quedó al final, la resta calcula la longitud.</p>
+<p>Este patrón aparece mucho al usar <code>write</code>, porque la syscall necesita dirección y cantidad de bytes.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="callout callout-style-simple callout-warning callout-titled" title="No todo símbolo es variable">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>No todo símbolo es variable
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Una etiqueta como <code>_start</code> o <code>msg</code> nombra una dirección. No significa automáticamente “variable” en sentido de lenguaje de alto nivel.</p>
-</div>
-</div>
+<section id="type-y-.size" class="level2">
+<h2 class="anchored" data-anchor-id="type-y-.size"><code>.type</code> y <code>.size</code></h2>
+<p>Estas directivas ayudan a herramientas como linker, depurador y utilidades de inspección.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>.type _start<span class="op">,</span> <span class="op">%</span>function</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>.size _start<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> _start</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>No son obligatorias para todos los programas mínimos, pero hacen que el símbolo quede mejor descrito. En material educativo ayudan a mostrar que un archivo objeto no solo contiene bytes: también puede contener metadatos sobre símbolos.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección conceptual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que <code>.text</code> se ejecuta</td>
+<td><code>.text</code> es directiva para el assembler</td>
+</tr>
+<tr class="even">
+<td>Pensar que una etiqueta es una variable</td>
+<td>una etiqueta nombra dirección</td>
+</tr>
+<tr class="odd">
+<td>Usar <code>msg_len = . - msg</code> lejos del mensaje</td>
+<td>la longitud saldrá mal</td>
+</tr>
+<tr class="even">
+<td>Olvidar <code>.global _start</code></td>
+<td>el linker puede no encontrar el símbolo de entrada</td>
+</tr>
+<tr class="odd">
+<td>Comentar lo obvio</td>
+<td>comenta intención y contrato, no cada operación mecánica</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1511,6 +1559,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Clasifica <code>_start:</code>.</li>
 <li>Clasifica <code>mov x0, #0</code>.</li>
 <li>Explica qué significa <code>msg_len = . - msg</code>.</li>
+<li>Explica por qué <code>.ascii</code> es directiva y <code>mov</code> es instrucción.</li>
+<li>Explica qué herramienta usa un símbolo: assembler, linker o depurador.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1521,8 +1571,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo reconocer etiqueta.</label></li>
 <li><label><input type="checkbox">Puedo reconocer instrucción A64.</label></li>
 <li><label><input type="checkbox">Puedo explicar <code>_start</code> como símbolo de entrada.</label></li>
+<li><label><input type="checkbox">Puedo explicar el punto actual <code>.</code>.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Leer un archivo <code>.s</code> empieza por clasificar líneas. Si sabes distinguir directivas, etiquetas, símbolos e instrucciones, puedes seguir el flujo del assembler sin confundir metadatos con código ejecutado.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/gnu-assembly/02-secciones.html">Secciones</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/Pseudo-Ops.html">Assembler Directives</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">ELF for the Arm 64-bit Architecture</a>.</li>
+</ul>
 
 
 </section>

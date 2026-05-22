@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#archivo-exit.s" id="toc-archivo-exit.s" class="nav-link active" data-scroll-target="#archivo-exit.s">Archivo <code>exit.s</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#archivo-exit.s" id="toc-archivo-exit.s" class="nav-link" data-scroll-target="#archivo-exit.s">Archivo <code>exit.s</code></a></li>
+  <li><a href="#contrato-mínimo-de-exit" id="toc-contrato-mínimo-de-exit" class="nav-link" data-scroll-target="#contrato-mínimo-de-exit">Contrato mínimo de <code>exit</code></a></li>
   <li><a href="#ensamblar-y-enlazar-en-x86_64-con-qemu" id="toc-ensamblar-y-enlazar-en-x86_64-con-qemu" class="nav-link" data-scroll-target="#ensamblar-y-enlazar-en-x86_64-con-qemu">Ensamblar y enlazar en x86_64 con QEMU</a></li>
   <li><a href="#ensamblar-y-ejecutar-en-arm64-nativo" id="toc-ensamblar-y-ejecutar-en-arm64-nativo" class="nav-link" data-scroll-target="#ensamblar-y-ejecutar-en-arm64-nativo">Ensamblar y ejecutar en ARM64 nativo</a></li>
   <li><a href="#cambiar-código-de-salida" id="toc-cambiar-código-de-salida" class="nav-link" data-scroll-target="#cambiar-código-de-salida">Cambiar código de salida</a></li>
   <li><a href="#qué-pasa-si-no-llamas-exit" id="toc-qué-pasa-si-no-llamas-exit" class="nav-link" data-scroll-target="#qué-pasa-si-no-llamas-exit">Qué pasa si no llamas <code>exit</code></a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1363,17 +1368,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El programa más pequeño útil en Linux AArch64 no imprime nada. Solo le dice al kernel que terminó. Esto confirma que puedes escribir código, ensamblarlo, enlazarlo y ejecutarlo.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>En esta lección vas a construir un binario AArch64 mínimo. No usaremos <code>main</code>, <code>printf</code> ni biblioteca estándar de C. El programa entra en <code>_start</code>, prepara una syscall de Linux y termina con <code>exit</code>.</p>
+<p>La idea central es simple: un programa en Linux no termina “por accidente”. Debe entregar un resultado al sistema operativo. En estos ejemplos iniciales, ese resultado será un código de salida visible con <code>echo $?</code>.</p>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Debes tener claro este flujo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">exit.s</span> <span class="at">-</span><span class="op">&gt;</span> exit.o <span class="at">-</span><span class="op">&gt;</span> exit <span class="at">-</span><span class="op">&gt;</span> proceso ejecutado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>exit.s</code> es el código fuente assembly. <code>exit.o</code> es un archivo objeto. <code>exit</code> es el ejecutable ELF final. Cuando lo ejecutas, Linux crea un proceso y empieza en la dirección marcada como punto de entrada.</p>
+<p>En una computadora x86_64 usarás herramientas cruzadas y QEMU. En una máquina ARM64 nativa puedes usar <code>as</code>, <code>ld</code> y ejecutar directo.</p>
+</section>
 <section id="archivo-exit.s" class="level2">
 <h2 class="anchored" data-anchor-id="archivo-exit.s">Archivo <code>exit.s</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>      <span class="op">//</span> código de salida</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span>     <span class="op">//</span> syscall exit</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>      <span class="op">//</span> código de salida</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span>     <span class="op">//</span> syscall exit</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura mínima:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Línea</th>
@@ -1383,59 +1404,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>.global _start</code></td>
-<td>Hace visible el punto de entrada</td>
+<td>Hace visible el símbolo <code>_start</code> para el enlazador</td>
 </tr>
 <tr class="even">
+<td><code>.text</code></td>
+<td>Indica que viene código ejecutable</td>
+</tr>
+<tr class="odd">
 <td><code>_start:</code></td>
-<td>Dirección donde inicia el programa</td>
-</tr>
-<tr class="odd">
-<td><code>mov x0, #0</code></td>
-<td>Código de salida</td>
+<td>Marca la dirección donde inicia el programa</td>
 </tr>
 <tr class="even">
-<td><code>mov x8, #93</code></td>
-<td>Número de syscall <code>exit</code></td>
+<td><code>mov x0, #0</code></td>
+<td>Prepara el primer argumento: código de salida <code>0</code></td>
 </tr>
 <tr class="odd">
+<td><code>mov x8, #93</code></td>
+<td>Prepara el número de syscall: <code>exit</code> en Linux AArch64</td>
+</tr>
+<tr class="even">
 <td><code>svc #0</code></td>
-<td>Entra al kernel</td>
+<td>Entra al kernel para ejecutar la syscall</td>
 </tr>
 </tbody>
 </table>
+<p><code>svc #0</code> no significa “salir” por sí solo. La instrucción cambia al modo kernel; el kernel mira <code>x8</code> para saber qué servicio se pidió. Como <code>x8</code> contiene <code>93</code>, Linux interpreta la llamada como <code>exit</code>.</p>
+</section>
+<section id="contrato-mínimo-de-exit" class="level2">
+<h2 class="anchored" data-anchor-id="contrato-mínimo-de-exit">Contrato mínimo de <code>exit</code></h2>
+<p>Para esta syscall solo necesitamos dos datos:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Registro</th>
+<th style="text-align: right;">Valor</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>x8</code></td>
+<td style="text-align: right;"><code>93</code></td>
+<td>número de syscall <code>exit</code> en Linux AArch64</td>
+</tr>
+<tr class="even">
+<td><code>x0</code></td>
+<td style="text-align: right;">código</td>
+<td>resultado que verá el proceso padre</td>
+</tr>
+</tbody>
+</table>
+<p>El código de salida no se imprime automáticamente. El shell lo guarda como resultado del último comando y permite consultarlo con:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Por convención, <code>0</code> suele significar que el programa terminó correctamente. Un valor distinto de cero suele indicar error, caso especial o resultado de prueba. Linux no decide por ti qué significa <code>7</code>; esa interpretación la define tu programa o quien lo ejecuta.</p>
 </section>
 <section id="ensamblar-y-enlazar-en-x86_64-con-qemu" class="level2">
 <h2 class="anchored" data-anchor-id="ensamblar-y-enlazar-en-x86_64-con-qemu">Ensamblar y enlazar en x86_64 con QEMU</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> exit.s <span class="at">-o</span> exit.o</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-ld</span> exit.o <span class="at">-o</span> exit</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> ./exit</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> exit.s <span class="at">-o</span> exit.o</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-ld</span> exit.o <span class="at">-o</span> exit</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> ./exit</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Salida esperada:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El ensamblador traduce instrucciones a un objeto. El enlazador produce un ELF ejecutable. QEMU user-mode permite ejecutar ese binario AArch64 desde una máquina x86_64.</p>
 </section>
 <section id="ensamblar-y-ejecutar-en-arm64-nativo" class="level2">
 <h2 class="anchored" data-anchor-id="ensamblar-y-ejecutar-en-arm64-nativo">Ensamblar y ejecutar en ARM64 nativo</h2>
 <p>En Raspberry Pi o Linux ARM64:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as</span> exit.s <span class="at">-o</span> exit.o</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ld</span> exit.o <span class="at">-o</span> exit</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./exit</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as</span> exit.s <span class="at">-o</span> exit.o</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ld</span> exit.o <span class="at">-o</span> exit</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./exit</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Salida esperada:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aquí no hace falta QEMU porque la arquitectura del binario coincide con la arquitectura de la máquina.</p>
 </section>
 <section id="cambiar-código-de-salida" class="level2">
 <h2 class="anchored" data-anchor-id="cambiar-código-de-salida">Cambiar código de salida</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">7</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">7</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ejecuta de nuevo y revisa:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resultado esperado:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">7</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">7</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Solo cambió <code>x0</code>. La syscall sigue siendo <code>exit</code> porque <code>x8</code> sigue valiendo <code>93</code>. Este detalle es importante: el mismo registro puede tener roles distintos según la syscall, pero <code>x8</code> decide cuál syscall se ejecuta.</p>
 <div class="callout callout-style-simple callout-warning callout-titled" title="Revisa inmediatamente">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1453,13 +1510,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-pasa-si-no-llamas-exit" class="level2">
 <h2 class="anchored" data-anchor-id="qué-pasa-si-no-llamas-exit">Qué pasa si no llamas <code>exit</code></h2>
 <p>Un proceso necesita terminar de forma definida. Si tu código llega a bytes que no son una salida válida o continúa hacia memoria que no preparaste como instrucciones, el resultado puede ser un fallo o comportamiento confuso.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    // falta exit</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Regla práctica: en estos programas mínimos, termina siempre con syscall <code>exit</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    // falta exit</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Regla práctica: en estos programas mínimos, termina siempre con syscall <code>exit</code>. Más adelante estudiarás funciones, <code>ret</code>, runtime de C y otros caminos de terminación; por ahora la salida explícita mantiene visible el contrato con Linux.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Síntoma posible</th>
+<th>Cómo pensarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Poner <code>93</code> en <code>x0</code></td>
+<td>el programa sale con código <code>93</code>, no necesariamente ejecuta <code>exit</code> correctamente</td>
+<td>el número de syscall va en <code>x8</code></td>
+</tr>
+<tr class="even">
+<td>Olvidar <code>.global _start</code></td>
+<td>el linker puede no encontrar entrada clara</td>
+<td><code>_start</code> debe ser visible</td>
+</tr>
+<tr class="odd">
+<td>Revisar tarde <code>echo $?</code></td>
+<td>ves el resultado de otro comando</td>
+<td>consulta <code>$?</code> justo después</td>
+</tr>
+<tr class="even">
+<td>Ejecutar directo en x86_64</td>
+<td>error de formato de ejecutable</td>
+<td>usa <code>qemu-aarch64 ./exit</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1467,7 +1563,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Cambia el código de salida a <code>3</code>.</li>
 <li>Ejecuta y revisa <code>echo $?</code>.</li>
 <li>Explica por qué <code>93</code> va en <code>x8</code>.</li>
-<li>Explica por qué <code>0</code> o <code>7</code> van en <code>x0</code>.</li>
+<li>Explica por qué <code>0</code>, <code>3</code> o <code>7</code> van en <code>x0</code>.</li>
+<li>Dibuja el flujo <code>exit.s -&gt; exit.o -&gt; exit -&gt; proceso</code>.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1478,8 +1575,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo enlazar a <code>exit</code>.</label></li>
 <li><label><input type="checkbox">Puedo ejecutar el programa.</label></li>
 <li><label><input type="checkbox">Puedo revisar código de salida.</label></li>
+<li><label><input type="checkbox">Puedo explicar el papel de <code>x0</code>, <code>x8</code> y <code>svc #0</code>.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Este primer programa ya tiene todos los elementos mínimos de un binario Linux AArch64: punto de entrada, sección de código, registros preparados y transición al kernel. Aunque no imprime nada, enseña el contrato básico entre programa y sistema operativo.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/primeros-programas/02-hello-world-write.html">Hello World con write</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/ld/">Using ld</a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/exit.2.html"><code>exit(2)</code></a>.</li>
+</ul>
 
 
 </section>

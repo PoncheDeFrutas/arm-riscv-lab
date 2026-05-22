@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#caller-y-callee" id="toc-caller-y-callee" class="nav-link active" data-scroll-target="#caller-y-callee">Caller y callee</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#caller-y-callee" id="toc-caller-y-callee" class="nav-link" data-scroll-target="#caller-y-callee">Caller y callee</a></li>
+  <li><a href="#etiqueta-no-siempre-significa-función" id="toc-etiqueta-no-siempre-significa-función" class="nav-link" data-scroll-target="#etiqueta-no-siempre-significa-función">Etiqueta no siempre significa función</a></li>
   <li><a href="#b-vs-bl" id="toc-b-vs-bl" class="nav-link" data-scroll-target="#b-vs-bl"><code>b</code> vs <code>bl</code></a></li>
   <li><a href="#ret" id="toc-ret" class="nav-link" data-scroll-target="#ret"><code>ret</code></a></li>
+  <li><a href="#vida-útil-de-lr" id="toc-vida-útil-de-lr" class="nav-link" data-scroll-target="#vida-útil-de-lr">Vida útil de <code>LR</code></a></li>
   <li><a href="#programa-completo-función-simple" id="toc-programa-completo-función-simple" class="nav-link" data-scroll-target="#programa-completo-función-simple">Programa completo: función simple</a></li>
   <li><a href="#lectura-del-flujo" id="toc-lectura-del-flujo" class="nav-link" data-scroll-target="#lectura-del-flujo">Lectura del flujo</a></li>
   <li><a href="#función-hoja" id="toc-función-hoja" class="nav-link" data-scroll-target="#función-hoja">Función hoja</a></li>
+  <li><a href="#responsabilidad-mínima-del-caller-y-callee" id="toc-responsabilidad-mínima-del-caller-y-callee" class="nav-link" data-scroll-target="#responsabilidad-mínima-del-caller-y-callee">Responsabilidad mínima del caller y callee</a></li>
   <li><a href="#cuándo-esto-deja-de-ser-suficiente" id="toc-cuándo-esto-deja-de-ser-suficiente" class="nav-link" data-scroll-target="#cuándo-esto-deja-de-ser-suficiente">Cuándo esto deja de ser suficiente</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1365,6 +1370,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Una función no es una construcción mágica. A nivel máquina es una zona de código a la que se salta, con una forma de regresar al punto correcto. En AArch64 ese regreso empieza con <code>bl</code>, <code>x30/LR</code> y <code>ret</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>En esta lección vas a separar tres ideas que suelen mezclarse al inicio:</p>
+<ul>
+<li>una etiqueta solo nombra una dirección de código;</li>
+<li>una llamada necesita recordar dónde debe continuar;</li>
+<li>una función bien formada debe regresar sin destruir el camino de vuelta.</li>
+</ul>
+<p>El objetivo no es aprender ABI completo todavía. El objetivo es entender por qué <code>bl</code> y <code>ret</code> bastan para una función hoja, pero no bastan para todas las funciones.</p>
+</section>
 <section id="caller-y-callee" class="level2">
 <h2 class="anchored" data-anchor-id="caller-y-callee">Caller y callee</h2>
 <table class="caption-top table">
@@ -1394,12 +1409,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El caller necesita continuar después de la llamada. Por eso una llamada no puede ser solo un salto normal.</p>
 </section>
+<section id="etiqueta-no-siempre-significa-función" class="level2">
+<h2 class="anchored" data-anchor-id="etiqueta-no-siempre-significa-función">Etiqueta no siempre significa función</h2>
+<p>En assembly una etiqueta puede servir para varias cosas: inicio de un loop, destino de un <code>if</code>, ruta de error o entrada de una función. Lo que la convierte en función no es el nombre, sino el contrato de llamada y retorno.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loop:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    subs x0<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    b<span class="op">.</span>ne loop</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>loop</code> es una etiqueta de control de flujo. No espera ser llamada con <code>bl</code> ni termina con <code>ret</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">doble:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x0</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>doble</code> sí puede tratarse como función simple: recibe un valor de trabajo en <code>x0</code>, produce otro en <code>x0</code> y retorna al caller.</p>
+</section>
 <section id="b-vs-bl" class="level2">
 <h2 class="anchored" data-anchor-id="b-vs-bl"><code>b</code> vs <code>bl</code></h2>
 <p><code>b</code> cambia el flujo, pero no guarda retorno.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>b destino</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>b destino</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>bl</code> cambia el flujo y guarda la dirección de retorno en <code>x30</code>, también llamado <code>LR</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bl funcion</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bl funcion</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1438,61 +1465,131 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="ret" class="level2">
 <h2 class="anchored" data-anchor-id="ret"><code>ret</code></h2>
 <p>La forma común:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lee la dirección de retorno desde <code>x30/LR</code> y vuelve ahí. Si <code>LR</code> contiene basura o fue sobrescrito por otra llamada, el flujo se rompe.</p>
+</section>
+<section id="vida-útil-de-lr" class="level2">
+<h2 class="anchored" data-anchor-id="vida-útil-de-lr">Vida útil de <code>LR</code></h2>
+<p><code>LR</code> es útil solo mientras conserva la dirección correcta. Cada <code>bl</code> escribe una nueva dirección de retorno en <code>x30</code>. Eso significa que una función puede usar <code>ret</code> directamente solo si no necesita sobrevivir a otra llamada.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span> ejecuta bl funcion_a</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x30</span> = volver a _start</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">funcion_a</span> ejecuta bl funcion_b</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x30</span> = volver dentro de funcion_a</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Después del segundo <code>bl</code>, el retorno original de <code>funcion_a</code> ya no está en <code>x30</code>. Si no se guardó antes, se perdió.</p>
 </section>
 <section id="programa-completo-función-simple" class="level2">
 <h2 class="anchored" data-anchor-id="programa-completo-función-simple">Programa completo: función simple</h2>
 <p>Guarda como <code>funcion-simple.s</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    bl funcion_simple</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_simple:</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">42</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    bl funcion_simple</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">funcion_simple:</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">42</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Construir y ejecutar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as funcion-simple.s <span class="at">-o</span> funcion-simple.o</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld funcion-simple.o <span class="at">-o</span> funcion-simple</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./funcion-simple</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as funcion-simple.s <span class="at">-o</span> funcion-simple.o</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld funcion-simple.o <span class="at">-o</span> funcion-simple</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./funcion-simple</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="lectura-del-flujo" class="level2">
 <h2 class="anchored" data-anchor-id="lectura-del-flujo">Lectura del flujo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">bl</span> funcion_simple</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">x30</span> = dirección después de bl</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">PC</span> salta a funcion_simple</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">funcion_simple</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">mov</span> x1, <span class="co">#42</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ret</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">PC</span> vuelve a dirección en x30</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">bl</span> funcion_simple</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">x30</span> = dirección después de bl</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">PC</span> salta a funcion_simple</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">funcion_simple</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">mov</span> x1, <span class="co">#42</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ret</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">PC</span> vuelve a dirección en x30</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="ex">_start</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="función-hoja" class="level2">
 <h2 class="anchored" data-anchor-id="función-hoja">Función hoja</h2>
 <p>Una función hoja no llama a otra función. Por eso puede ser muy simple si no necesita stack ni preservar registros.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar_simple:</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x1</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar_simple:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x1</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Aquí <code>x0</code> y <code>x1</code> entran como valores de trabajo, y <code>x0</code> queda como resultado. Todavía no estamos explicando ABI completo; solo usamos una convención mínima para ejemplos pequeños.</p>
+</section>
+<section id="responsabilidad-mínima-del-caller-y-callee" class="level2">
+<h2 class="anchored" data-anchor-id="responsabilidad-mínima-del-caller-y-callee">Responsabilidad mínima del caller y callee</h2>
+<p>Por ahora usa esta lectura práctica:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parte</th>
+<th>Responsabilidad mínima</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>caller</td>
+<td>ejecuta <code>bl</code> y espera continuar después de la llamada</td>
+</tr>
+<tr class="even">
+<td>callee hoja</td>
+<td>hace su trabajo y retorna con <code>ret</code></td>
+</tr>
+<tr class="odd">
+<td>callee no hoja</td>
+<td>guarda <code>LR</code> si va a ejecutar otro <code>bl</code></td>
+</tr>
+</tbody>
+</table>
+<p>Más adelante AAPCS64 formaliza qué registros se usan para argumentos, retornos y preservación. Aquí basta recordar que <code>x30</code> es especial porque sostiene el camino de vuelta.</p>
 </section>
 <section id="cuándo-esto-deja-de-ser-suficiente" class="level2">
 <h2 class="anchored" data-anchor-id="cuándo-esto-deja-de-ser-suficiente">Cuándo esto deja de ser suficiente</h2>
 <p>El ejemplo simple funciona porque <code>funcion_simple</code> no ejecuta otro <code>bl</code>. Si una función llama a otra, ese nuevo <code>bl</code> sobrescribe <code>x30</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">caller</span> <span class="at">-</span><span class="op">&gt;</span> bl funcion_a</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">funcion_a</span> <span class="at">-</span><span class="op">&gt;</span> bl funcion_b</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">caller</span> <span class="at">-</span><span class="op">&gt;</span> bl funcion_a</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">funcion_a</span> <span class="at">-</span><span class="op">&gt;</span> bl funcion_b</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En ese caso <code>funcion_a</code> debe guardar su propio retorno antes de llamar a <code>funcion_b</code>. Para eso aparece el stack frame.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Síntoma probable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>usar <code>b funcion</code> cuando se esperaba retorno</td>
+<td>la función no sabe a dónde volver</td>
+</tr>
+<tr class="even">
+<td>ejecutar otro <code>bl</code> sin guardar <code>LR</code></td>
+<td><code>ret</code> vuelve al lugar incorrecto</td>
+</tr>
+<tr class="odd">
+<td>tratar cualquier etiqueta como función</td>
+<td>saltos internos terminan con flujo confuso</td>
+</tr>
+<tr class="even">
+<td>modificar <code>x30</code> como registro temporal</td>
+<td>se rompe el retorno</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1502,11 +1599,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué usa <code>ret</code> para volver?</li>
 <li>¿Por qué <code>sumar_simple</code> es función hoja?</li>
 <li>¿Qué riesgo aparece si una función ejecuta otro <code>bl</code>?</li>
+<li>¿Por qué <code>loop</code> no es necesariamente una función?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Una función empieza como control de flujo disciplinado: saltar, recordar dónde volver y retornar. El stack aparece cuando ese retorno debe sobrevivir a más trabajo.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+</ul>
 
 
 </section>

@@ -1318,14 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#memoria-como-arreglo-de-bytes" id="toc-memoria-como-arreglo-de-bytes" class="nav-link active" data-scroll-target="#memoria-como-arreglo-de-bytes">Memoria como arreglo de bytes</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#memoria-como-arreglo-de-bytes" id="toc-memoria-como-arreglo-de-bytes" class="nav-link" data-scroll-target="#memoria-como-arreglo-de-bytes">Memoria como arreglo de bytes</a></li>
   <li><a href="#dirección-contenido-y-valor" id="toc-dirección-contenido-y-valor" class="nav-link" data-scroll-target="#dirección-contenido-y-valor">Dirección, contenido y valor</a></li>
   <li><a href="#cargar-dirección-vs-cargar-contenido" id="toc-cargar-dirección-vs-cargar-contenido" class="nav-link" data-scroll-target="#cargar-dirección-vs-cargar-contenido">Cargar dirección vs cargar contenido</a></li>
-  <li><a href="#corchetes-significan-leer-desde-memoria" id="toc-corchetes-significan-leer-desde-memoria" class="nav-link" data-scroll-target="#corchetes-significan-leer-desde-memoria">Corchetes significan “leer desde memoria”</a></li>
+  <li><a href="#corchetes-significan-acceso-a-memoria" id="toc-corchetes-significan-acceso-a-memoria" class="nav-link" data-scroll-target="#corchetes-significan-acceso-a-memoria">Corchetes significan acceso a memoria</a></li>
   <li><a href="#puntero-inicial" id="toc-puntero-inicial" class="nav-link" data-scroll-target="#puntero-inicial">Puntero inicial</a></li>
-  <li><a href="#pc-relative-como-forma-de-ubicar-datos" id="toc-pc-relative-como-forma-de-ubicar-datos" class="nav-link" data-scroll-target="#pc-relative-como-forma-de-ubicar-datos">PC-relative como forma de ubicar datos</a></li>
+  <li><a href="#adr-y-ldr-símbolo" id="toc-adr-y-ldr-símbolo" class="nav-link" data-scroll-target="#adr-y-ldr-símbolo"><code>adr</code> y <code>ldr =símbolo</code></a></li>
+  <li><a href="#relación-con-syscalls" id="toc-relación-con-syscalls" class="nav-link" data-scroll-target="#relación-con-syscalls">Relación con syscalls</a></li>
   <li><a href="#prueba-mínima" id="toc-prueba-mínima" class="nav-link" data-scroll-target="#prueba-mínima">Prueba mínima</a></li>
-  <li><a href="#mini-ejercicio" id="toc-mini-ejercicio" class="nav-link" data-scroll-target="#mini-ejercicio">Mini ejercicio</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1365,6 +1369,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando depuras un programa, casi siempre estás leyendo números. Un registro puede contener un valor normal, una dirección o un resultado temporal. La CPU no adivina el significado: la instrucción y el programador le dan sentido.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a separar tres palabras que suelen mezclarse: dirección, contenido y valor. También vas a practicar una regla básica de lectura: sin corchetes normalmente estás preparando un valor o una dirección; con corchetes estás accediendo a la memoria apuntada.</p>
+<p>Esta distinción aparece en syscalls, arrays, strings, stack y estructuras.</p>
+</section>
 <section id="memoria-como-arreglo-de-bytes" class="level2">
 <h2 class="anchored" data-anchor-id="memoria-como-arreglo-de-bytes">Memoria como arreglo de bytes</h2>
 <p>Piensa la memoria como una fila larga de casillas. Cada casilla tiene una dirección y guarda un byte.</p>
@@ -1440,17 +1449,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>ldr x0, =valor</code></td>
-<td>Una dirección, por ejemplo <code>0x410158</code></td>
+<td>una dirección, por ejemplo <code>0x410158</code></td>
 </tr>
 <tr class="even">
 <td><code>ldr x1, [x0]</code></td>
-<td>El contenido leído desde esa dirección: <code>42</code></td>
+<td>el contenido leído desde esa dirección: <code>42</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="corchetes-significan-leer-desde-memoria" class="level2">
-<h2 class="anchored" data-anchor-id="corchetes-significan-leer-desde-memoria">Corchetes significan “leer desde memoria”</h2>
+<section id="corchetes-significan-acceso-a-memoria" class="level2">
+<h2 class="anchored" data-anchor-id="corchetes-significan-acceso-a-memoria">Corchetes significan acceso a memoria</h2>
 <p>En AArch64, los corchetes marcan un acceso a memoria.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ldr x0<span class="op">,</span> <span class="op">=</span>valor    <span class="op">//</span> carga dirección de valor</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">[</span>x0<span class="op">]</span>      <span class="op">//</span> carga contenido apuntado por x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1464,37 +1473,100 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0x410158:</span>  2A 00 00 00 00 00 00 00</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si haces <code>ldr x1, [x0]</code>, <code>x0</code> se interpreta como dirección y <code>x1</code> recibe los ocho bytes guardados allí.</p>
 </section>
-<section id="pc-relative-como-forma-de-ubicar-datos" class="level2">
-<h2 class="anchored" data-anchor-id="pc-relative-como-forma-de-ubicar-datos">PC-relative como forma de ubicar datos</h2>
-<p>Muchas veces el assembler ayuda a obtener direcciones cercanas al código.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> valor       <span class="op">//</span> x0 <span class="op">=</span> dirección de valor <span class="kw">si</span> está cerca</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>valor      <span class="op">//</span> pseudo<span class="op">-</span>instrucción<span class="op">:</span> el assembler elige cómo materializar la dirección</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="adr-y-ldr-símbolo" class="level2">
+<h2 class="anchored" data-anchor-id="adr-y-ldr-símbolo"><code>adr</code> y <code>ldr =símbolo</code></h2>
+<p>Muchas veces necesitas poner una dirección en un registro.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>adr x0<span class="op">,</span> valor       <span class="op">//</span> dirección de valor <span class="kw">si</span> está cerca del PC</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>valor      <span class="op">//</span> pseudo<span class="op">-</span>instrucción<span class="op">:</span> assembler elige cómo materializarla</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No necesitas dominar todavía relocations ni literal pools. Quédate con esta regla: estas formas ayudan a poner una dirección en un registro; no cargan el contenido final por sí solas.</p>
+</section>
+<section id="relación-con-syscalls" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-syscalls">Relación con syscalls</h2>
+<p>Cuando llamas <code>write</code>, <code>x1</code> no contiene todo el texto. Contiene dirección del primer byte:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>mensaje</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El kernel usa dirección (<code>x1</code>) y longitud (<code>x2</code>) para leer bytes desde memoria. Por eso esta unidad importa antes de estudiar strings, arrays y buffers grandes.</p>
 </section>
 <section id="prueba-mínima" class="level2">
 <h2 class="anchored" data-anchor-id="prueba-mínima">Prueba mínima</h2>
 <p>Guarda el ejemplo como <code>direccion.s</code> y ejecútalo con el flujo de la Unidad 05.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as direccion.s <span class="at">-o</span> direccion.o</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld direccion.o <span class="at">-o</span> direccion</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./direccion</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-as direccion.s <span class="at">-o</span> direccion.o</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-ld direccion.o <span class="at">-o</span> direccion</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./direccion</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="mini-ejercicio" class="level2">
-<h2 class="anchored" data-anchor-id="mini-ejercicio">Mini ejercicio</h2>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Confundir etiqueta con contenido</td>
+<td>etiqueta nombra dirección</td>
+</tr>
+<tr class="even">
+<td>Usar <code>[x0]</code> cuando <code>x0</code> no contiene dirección válida</td>
+<td>primero carga o calcula dirección</td>
+</tr>
+<tr class="odd">
+<td>Pensar que <code>ldr x0, =valor</code> lee el <code>42</code></td>
+<td>solo prepara dirección</td>
+</tr>
+<tr class="even">
+<td>No decidir tamaño de lectura</td>
+<td>el tamaño depende de <code>ldr x</code>, <code>ldr w</code>, <code>ldrb</code>, etc.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <p>Mira estas dos instrucciones:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ldr x2<span class="op">,</span> <span class="op">=</span>contador</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ldr x3<span class="op">,</span> <span class="op">[</span>x2<span class="op">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ldr x2<span class="op">,</span> <span class="op">=</span>contador</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ldr x3<span class="op">,</span> <span class="op">[</span>x2<span class="op">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Responde:</p>
 <ul>
 <li>¿Cuál registro contiene una dirección?</li>
 <li>¿Cuál registro contiene el valor leído?</li>
 <li>¿Qué pasaría si <code>x2</code> no tuviera una dirección válida?</li>
+<li>¿Qué cambiaría si usaras <code>ldr w3, [x2]</code>?</li>
+</ul>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo distinguir dirección, contenido y valor.</label></li>
+<li><label><input type="checkbox">Puedo explicar una etiqueta como dirección.</label></li>
+<li><label><input type="checkbox">Puedo reconocer corchetes como acceso a memoria.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>ldr x0, =valor</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar <code>ldr x1, [x0]</code>.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Esta lección deja la base para todo lo que sigue: primero consigues una dirección, luego eliges cuántos bytes leer o escribir desde esa dirección.</p>
+<p>Siguiente: <a href="../../../courses/aarch64/memoria-direccionamiento/02-secciones-mapa-memoria.html">Secciones y mapa inicial</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - Memory and data</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+</ul>
 
 
 </section>

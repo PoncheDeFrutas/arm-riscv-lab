@@ -1318,13 +1318,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link active" data-scroll-target="#programa-completo">Programa completo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#programa-completo" id="toc-programa-completo" class="nav-link" data-scroll-target="#programa-completo">Programa completo</a></li>
   <li><a href="#construir-y-ejecutar" id="toc-construir-y-ejecutar" class="nav-link" data-scroll-target="#construir-y-ejecutar">Construir y ejecutar</a></li>
   <li><a href="#lectura-por-bloques" id="toc-lectura-por-bloques" class="nav-link" data-scroll-target="#lectura-por-bloques">Lectura por bloques</a></li>
+  <li><a href="#bloque-openat" id="toc-bloque-openat" class="nav-link" data-scroll-target="#bloque-openat">Bloque <code>openat</code></a></li>
   <li><a href="#por-qué-se-guarda-x19" id="toc-por-qué-se-guarda-x19" class="nav-link" data-scroll-target="#por-qué-se-guarda-x19">Por qué se guarda <code>x19</code></a></li>
+  <li><a href="#bloque-write" id="toc-bloque-write" class="nav-link" data-scroll-target="#bloque-write">Bloque <code>write</code></a></li>
   <li><a href="#manejo-de-error-compartido" id="toc-manejo-de-error-compartido" class="nav-link" data-scroll-target="#manejo-de-error-compartido">Manejo de error compartido</a></li>
   <li><a href="#qué-no-hace-este-programa" id="toc-qué-no-hace-este-programa" class="nav-link" data-scroll-target="#qué-no-hace-este-programa">Qué no hace este programa</a></li>
+  <li><a href="#diagnóstico-guiado" id="toc-diagnóstico-guiado" class="nav-link" data-scroll-target="#diagnóstico-guiado">Diagnóstico guiado</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1364,6 +1369,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta lección junta el contrato de la unidad en un programa completo. El objetivo es leer cada bloque: abrir archivo, revisar error, escribir bytes, cerrar fd y terminar con código de salida.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer un programa completo por bloques de syscall. Cada bloque prepara argumentos, ejecuta <code>svc #0</code>, revisa retorno y decide el siguiente paso.</p>
+<p>No es un programa robusto de producción. Es un mapa de lectura para juntar <code>openat</code>, <code>write</code>, <code>close</code>, <code>exit</code> y manejo mínimo de error.</p>
+</section>
 <section id="programa-completo" class="level2">
 <h2 class="anchored" data-anchor-id="programa-completo">Programa completo</h2>
 <p>Guarda este archivo como <code>crear-archivo.s</code>.</p>
@@ -1460,16 +1470,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>error si negativo</td>
 </tr>
 <tr class="odd">
+<td>guardar</td>
+<td><code>mov x19, x0</code></td>
+<td>fd conservado</td>
+</tr>
+<tr class="even">
 <td>escribir</td>
 <td><code>write</code></td>
 <td><code>x0 = bytes escritos</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>cerrar</td>
 <td><code>close</code></td>
 <td><code>x0 = 0</code> si funciona</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>salir</td>
 <td><code>exit</code></td>
 <td>proceso termina</td>
@@ -1477,22 +1492,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="bloque-openat" class="level2">
+<h2 class="anchored" data-anchor-id="bloque-openat">Bloque <code>openat</code></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>AT_FDCWD</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>nombre</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#(</span>O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x3<span class="op">,</span> <span class="op">#</span><span class="dv">0644</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">56</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Este bloque convierte <code>nombre</code> en fd. Si <code>x0</code> es negativo, no hay fd válido y el programa salta a error.</p>
+</section>
 <section id="por-qué-se-guarda-x19" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-se-guarda-x19">Por qué se guarda <code>x19</code></h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x19<span class="op">,</span> x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x19<span class="op">,</span> x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Después de <code>openat</code>, <code>x0</code> contiene fd. Luego <code>write</code> usa <code>x0</code> como argumento y lo reemplaza con retorno. Si no guardas el fd, no sabrás qué cerrar.</p>
 <p>En una unidad futura veremos qué registros debe preservar una función según ABI. Aquí no llamamos funciones externas; usamos <code>x19</code> como lugar claro para guardar el fd en un programa pequeño.</p>
+</section>
+<section id="bloque-write" class="level2">
+<h2 class="anchored" data-anchor-id="bloque-write">Bloque <code>write</code></h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> x19</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>mensaje</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span>len</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aquí <code>x0</code> vuelve a ser argumento: el fd. Después de <code>svc #0</code>, <code>x0</code> vuelve a cambiar: ahora es retorno de <code>write</code>.</p>
 </section>
 <section id="manejo-de-error-compartido" class="level2">
 <h2 class="anchored" data-anchor-id="manejo-de-error-compartido">Manejo de error compartido</h2>
 <p>Varios bloques saltan a la misma etiqueta:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto evita duplicar mensaje de error. Si algo falla, el programa escribe en <code>stderr</code> y termina con código <code>1</code>.</p>
 </section>
 <section id="qué-no-hace-este-programa" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-hace-este-programa">Qué no hace este programa</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Tema</th>
@@ -1516,8 +1558,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>No procesa argumentos</td>
 <td>eso requiere stack/ABI futuros</td>
 </tr>
+<tr class="odd">
+<td>No garantiza cerrar fd si falla <code>write</code></td>
+<td>manejo robusto queda para unidad posterior</td>
+</tr>
 </tbody>
 </table>
+</section>
+<section id="diagnóstico-guiado" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-guiado">Diagnóstico guiado</h2>
+<p>Si el programa no crea el archivo:</p>
+<ol type="1">
+<li>revisa <code>x8 = 56</code> en <code>openat</code>;</li>
+<li>revisa dirección de <code>nombre</code>;</li>
+<li>revisa flags y modo;</li>
+<li>revisa si <code>x0</code> fue negativo;</li>
+<li>revisa que <code>x19</code> conserve fd válido;</li>
+<li>revisa que <code>write</code> use <code>x0 = x19</code>;</li>
+<li>revisa que el bloque de error escriba a fd <code>2</code>.</li>
+</ol>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1527,11 +1586,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Quita <code>O_CREAT</code> y predice qué ocurre si el archivo no existe.</li>
 <li>Explica qué pasaría si no se guardara el fd en <code>x19</code>.</li>
 <li>Explica por qué el bloque <code>error</code> escribe a fd <code>2</code>.</li>
+<li>Explica qué retorno esperas de <code>close</code> si funciona.</li>
 </ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo leer el bloque <code>openat</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué se revisa <code>x0</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué se guarda fd.</label></li>
+<li><label><input type="checkbox">Puedo leer el bloque <code>write</code>.</label></li>
+<li><label><input type="checkbox">Puedo leer el bloque <code>close</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar el bloque <code>error</code>.</label></li>
+</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Este programa muestra la idea central de la unidad: Linux es una API de kernel. Tu programa prepara registros, entra con <code>svc #0</code>, lee retorno y decide el siguiente paso.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html"><code>openat(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/write.2.html"><code>write(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/close.2.html"><code>close(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/exit.2.html"><code>exit(2)</code></a>.</li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man3/errno.3.html"><code>errno(3)</code></a>.</li>
+</ul>
 
 
 </section>

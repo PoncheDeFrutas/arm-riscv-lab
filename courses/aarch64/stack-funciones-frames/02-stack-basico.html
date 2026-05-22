@@ -1318,12 +1318,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#lifo" id="toc-lifo" class="nav-link active" data-scroll-target="#lifo">LIFO</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#lifo" id="toc-lifo" class="nav-link" data-scroll-target="#lifo">LIFO</a></li>
+  <li><a href="#stack-como-memoria-normal" id="toc-stack-como-memoria-normal" class="nav-link" data-scroll-target="#stack-como-memoria-normal">Stack como memoria normal</a></li>
   <li><a href="#sp" id="toc-sp" class="nav-link" data-scroll-target="#sp"><code>SP</code></a></li>
   <li><a href="#crecimiento-hacia-abajo" id="toc-crecimiento-hacia-abajo" class="nav-link" data-scroll-target="#crecimiento-hacia-abajo">Crecimiento hacia abajo</a></li>
   <li><a href="#alineación-de-16-bytes" id="toc-alineación-de-16-bytes" class="nav-link" data-scroll-target="#alineación-de-16-bytes">Alineación de 16 bytes</a></li>
+  <li><a href="#reservar-y-escribir-son-pasos-distintos" id="toc-reservar-y-escribir-son-pasos-distintos" class="nav-link" data-scroll-target="#reservar-y-escribir-son-pasos-distintos">Reservar y escribir son pasos distintos</a></li>
   <li><a href="#guardar-un-valor-local" id="toc-guardar-un-valor-local" class="nav-link" data-scroll-target="#guardar-un-valor-local">Guardar un valor local</a></li>
   <li><a href="#reservar-no-inicializa" id="toc-reservar-no-inicializa" class="nav-link" data-scroll-target="#reservar-no-inicializa">Reservar no inicializa</a></li>
+  <li><a href="#diagnóstico-rápido-con-gdb" id="toc-diagnóstico-rápido-con-gdb" class="nav-link" data-scroll-target="#diagnóstico-rápido-con-gdb">Diagnóstico rápido con GDB</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1364,6 +1368,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>El stack es una región de memoria usada para guardar contexto temporal: retornos, registros preservados, variables locales y datos extra. Su regla principal es disciplina: lo último que reservas debe ser lo primero que liberas.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer el stack como memoria normal controlada por una regla estricta: <code>sp</code> marca el tope, las reservas se deshacen en orden inverso y la alineación importa para que las llamadas funcionen bien.</p>
+</section>
 <section id="lifo" class="level2">
 <h2 class="anchored" data-anchor-id="lifo">LIFO</h2>
 <p>LIFO significa last in, first out: último en entrar, primero en salir.</p>
@@ -1372,6 +1380,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pop</span>  B</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pop</span>  A</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En AArch64 no usamos una instrucción <code>push</code> universal como concepto principal. Usamos instrucciones de memoria y actualizamos <code>sp</code>.</p>
+</section>
+<section id="stack-como-memoria-normal" class="level2">
+<h2 class="anchored" data-anchor-id="stack-como-memoria-normal">Stack como memoria normal</h2>
+<p>El stack no es un lugar especial separado del resto de la memoria. Es una región de direcciones que el programa usa con disciplina. Puedes guardar con <code>str</code>, cargar con <code>ldr</code>, guardar pares con <code>stp</code> y recuperar pares con <code>ldp</code>.</p>
+<p>La diferencia está en el contrato: si reservas espacio moviendo <code>sp</code>, también eres responsable de liberarlo antes de retornar o antes de que otro código espere ver el stack como estaba.</p>
 </section>
 <section id="sp" class="level2">
 <h2 class="anchored" data-anchor-id="sp"><code>SP</code></h2>
@@ -1419,23 +1432,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="reservar-y-escribir-son-pasos-distintos" class="level2">
+<h2 class="anchored" data-anchor-id="reservar-y-escribir-son-pasos-distintos">Reservar y escribir son pasos distintos</h2>
+<p>Esta instrucción abre espacio:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">sub</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pero todavía no guardó ningún dato. Para usar ese espacio necesitas una instrucción de memoria:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">str</span> x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Separar estos dos pasos ayuda a depurar. Si el valor esperado no aparece en el stack, primero pregunta si reservaste espacio y luego si escribiste en la dirección correcta.</p>
+</section>
 <section id="guardar-un-valor-local" class="level2">
 <h2 class="anchored" data-anchor-id="guardar-un-valor-local">Guardar un valor local</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">sub</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">123</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">sub</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">123</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">str</span> x0<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">]</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> <span class="kw">sp</span><span class="op">,</span> <span class="kw">sp</span><span class="op">,</span> <span class="op">#</span><span class="dv">16</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura:</p>
 <table class="caption-top table">
 <thead>
@@ -1467,8 +1488,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reservar-no-inicializa" class="level2">
 <h2 class="anchored" data-anchor-id="reservar-no-inicializa">Reservar no inicializa</h2>
 <p>Reservar stack solo cambia <code>sp</code>. No limpia memoria.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sub</span> sp, sp, <span class="co">#16</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sub</span> sp, sp, <span class="co">#16</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Después de reservar, tú decides qué escribir. No asumas que el espacio contiene cero.</p>
+</section>
+<section id="diagnóstico-rápido-con-gdb" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-rápido-con-gdb">Diagnóstico rápido con GDB</h2>
+<p>Si estás detenido dentro de una función, estas preguntas ayudan:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Comando útil</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿dónde apunta el stack?</td>
+<td><code>info registers sp</code></td>
+</tr>
+<tr class="even">
+<td>¿qué hay en el tope?</td>
+<td><code>x/4gx $sp</code></td>
+</tr>
+<tr class="odd">
+<td>¿el stack parece alineado?</td>
+<td>revisar que <code>sp</code> termine en múltiplo de <code>0x10</code></td>
+</tr>
+<tr class="even">
+<td>¿liberé lo mismo que reservé?</td>
+<td>comparar prólogo y epílogo</td>
+</tr>
+</tbody>
+</table>
+<p>No necesitas memorizar direcciones exactas. Necesitas reconocer si <code>sp</code> baja al reservar, sube al liberar y termina donde debía.</p>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1478,11 +1534,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué instrucción libera esos 16 bytes?</li>
 <li>¿Por qué no conviene dejar <code>sp</code> modificado al salir?</li>
 <li>¿Reservar stack escribe ceros automáticamente?</li>
+<li>¿Qué comando de GDB usarías para ver palabras desde <code>$sp</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>El stack no es una pila abstracta separada de la memoria. Es memoria normal con una regla fuerte: <code>sp</code> marca el tope y tu código debe dejarlo como lo encontró.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

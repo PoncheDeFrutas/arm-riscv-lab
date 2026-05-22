@@ -1323,6 +1323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#contrato-de-mprotect" id="toc-contrato-de-mprotect" class="nav-link" data-scroll-target="#contrato-de-mprotect">Contrato de <code>mprotect</code></a></li>
   <li><a href="#qué-cambia-y-qué-no-cambia" id="toc-qué-cambia-y-qué-no-cambia" class="nav-link" data-scroll-target="#qué-cambia-y-qué-no-cambia">Qué cambia y qué no cambia</a></li>
   <li><a href="#transiciones-comunes" id="toc-transiciones-comunes" class="nav-link" data-scroll-target="#transiciones-comunes">Transiciones comunes</a></li>
+  <li><a href="#diagnóstico-de-permisos" id="toc-diagnóstico-de-permisos" class="nav-link" data-scroll-target="#diagnóstico-de-permisos">Diagnóstico de permisos</a></li>
   <li><a href="#wx" id="toc-wx" class="nav-link" data-scroll-target="#wx">W^X</a></li>
   <li><a href="#prot_exec-no-es-default" id="toc-prot_exec-no-es-default" class="nav-link" data-scroll-target="#prot_exec-no-es-default"><code>PROT_EXEC</code> no es default</a></li>
   <li><a href="#error-al-escribir-sin-prot_write" id="toc-error-al-escribir-sin-prot_write" class="nav-link" data-scroll-target="#error-al-escribir-sin-prot_write">Error al escribir sin <code>PROT_WRITE</code></a></li>
@@ -1518,6 +1519,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>En esta unidad usaremos <code>RW -&gt; R</code> porque es fácil de leer: primero escribimos un byte, luego quitamos escritura. No hace falta ejecutar nada para entender que el permiso cambió.</p>
 </section>
+<section id="diagnóstico-de-permisos" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-permisos">Diagnóstico de permisos</h2>
+<p>Si un acceso falla después de <code>mprotect</code>, revisa:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Lectura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿<code>mprotect</code> retornó negativo?</td>
+<td>si falló, no asumas permisos nuevos</td>
+</tr>
+<tr class="even">
+<td>¿la región sigue viva?</td>
+<td>no debe haberse llamado <code>munmap</code></td>
+</tr>
+<tr class="odd">
+<td>¿la dirección es la base correcta?</td>
+<td><code>addr</code> debe describir el rango correcto</td>
+</tr>
+<tr class="even">
+<td>¿el permiso permite la operación?</td>
+<td><code>str</code> necesita <code>PROT_WRITE</code></td>
+</tr>
+<tr class="odd">
+<td>¿el tamaño cubre el acceso?</td>
+<td><code>length</code> debe incluir la dirección usada</td>
+</tr>
+</tbody>
+</table>
+<p>La clave es separar dos fallos: <code>mprotect</code> puede fallar al cambiar permisos, o una instrucción posterior puede fallar porque los permisos sí cambiaron y ya no permiten esa operación.</p>
+</section>
 <section id="wx" class="level2">
 <h2 class="anchored" data-anchor-id="wx">W^X</h2>
 <p>W^X significa write xor execute: una región no debería ser escribible y ejecutable al mismo tiempo.</p>
@@ -1607,11 +1647,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿<code>mprotect</code> cambia bytes existentes?</li>
 <li>¿Qué significa W^X?</li>
 <li>¿Por qué <code>PROT_EXEC</code> no debe usarse por defecto?</li>
+<li>Si una región quedó <code>R</code>, ¿qué esperas de un <code>strb</code> sobre esa región?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p><code>mprotect</code> enseña que memoria no es solo dirección. También es política de acceso. Esa idea será clave para seguridad, loaders, JIT y MMU futura.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>mprotect(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mprotect.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mprotect.2.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+</ul>
 
 
 </section>

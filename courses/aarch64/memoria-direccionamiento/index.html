@@ -1318,10 +1318,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link active" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
   <li><a href="#viene-de-unidades-anteriores" id="toc-viene-de-unidades-anteriores" class="nav-link" data-scroll-target="#viene-de-unidades-anteriores">Viene de unidades anteriores</a></li>
   <li><a href="#idea-de-trabajo" id="toc-idea-de-trabajo" class="nav-link" data-scroll-target="#idea-de-trabajo">Idea de trabajo</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#diagnóstico-básico-de-memoria" id="toc-diagnóstico-básico-de-memoria" class="nav-link" data-scroll-target="#diagnóstico-básico-de-memoria">Diagnóstico básico de memoria</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1378,6 +1380,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../slides/aarch64/06-memoria-direccionamiento/" class="lab-button">Ver presentación Slidev</a></p>
 </div>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer y escribir memoria de forma explícita. La unidad conecta cuatro ideas: dirección, tamaño, contenido y modo de direccionamiento. Si una de esas cuatro falla, el acceso a memoria puede leer el dato equivocado, escribir donde no debe o producir un fallo.</p>
+<p>Al terminar, debes poder mirar una instrucción como <code>ldr x1, [x0, #8]</code> y decir: qué registro tiene la base, cuántos bytes se leen, qué dirección efectiva se usa y qué registro recibe el resultado.</p>
+</section>
 <section id="mapa-rápido" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-rápido">Mapa rápido</h2>
 <div class="lab-flow">
@@ -1424,6 +1431,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Unidad 05: <code>_start</code> y syscalls</td>
 <td>Cerrar programas con <code>exit</code> mientras pruebas memoria</td>
 </tr>
+<tr class="even">
+<td>Unidad 09: <code>read</code>, <code>write</code> y buffers</td>
+<td>Entender por qué syscalls reciben direcciones</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -1456,8 +1467,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><code>ldrb</code>, <code>ldrh</code>, <code>ldr w</code>, <code>ldr x</code> leen tamaños distintos</td>
 </tr>
 <tr class="even">
-<td>¿Avanzo?</td>
-<td><code>[x0], #8</code> lee y luego actualiza el puntero</td>
+<td>¿Cómo llego?</td>
+<td><code>[x0, #8]</code>, <code>[x0, x1, lsl #3]</code>, <code>[x0], #8</code> calculan direcciones</td>
 </tr>
 </tbody>
 </table>
@@ -1514,6 +1525,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../courses/aarch64/memoria-direccionamiento/07-lectura-guiada-memoria.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="diagnóstico-básico-de-memoria" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-básico-de-memoria">Diagnóstico básico de memoria</h2>
+<p>Cuando un acceso a memoria no hace lo esperado, revisa:</p>
+<ol type="1">
+<li>qué registro contiene la dirección base;</li>
+<li>si estás cargando dirección o contenido;</li>
+<li>qué tamaño lee o escribe la instrucción;</li>
+<li>si el offset está en bytes o en índice escalado;</li>
+<li>si el puntero cambia con pre-index o post-index;</li>
+<li>si la sección permite el uso esperado del dato.</li>
+</ol>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
@@ -1573,6 +1596,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/memoria-direccionamiento/01-memoria-direccion-contenido.html">Dirección y contenido</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/as/">Using as</a>.</li>
+<li>GNU Binutils, <a href="https://sourceware.org/binutils/docs/binutils/objdump.html">objdump</a>.</li>
+</ul>
 
 
 </section>

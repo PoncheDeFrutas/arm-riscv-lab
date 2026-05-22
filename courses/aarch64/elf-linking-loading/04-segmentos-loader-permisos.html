@@ -1321,12 +1321,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#leer-program-headers" id="toc-leer-program-headers" class="nav-link active" data-scroll-target="#leer-program-headers">Leer program headers</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#leer-program-headers" id="toc-leer-program-headers" class="nav-link" data-scroll-target="#leer-program-headers">Leer program headers</a></li>
   <li><a href="#segmento-no-es-sección" id="toc-segmento-no-es-sección" class="nav-link" data-scroll-target="#segmento-no-es-sección">Segmento no es sección</a></li>
   <li><a href="#permisos" id="toc-permisos" class="nav-link" data-scroll-target="#permisos">Permisos</a></li>
   <li><a href="#filesiz-y-memsiz" id="toc-filesiz-y-memsiz" class="nav-link" data-scroll-target="#filesiz-y-memsiz"><code>FileSiz</code> y <code>MemSiz</code></a></li>
   <li><a href="#qué-hace-el-loader" id="toc-qué-hace-el-loader" class="nav-link" data-scroll-target="#qué-hace-el-loader">Qué hace el loader</a></li>
+  <li><a href="#de-program-header-a-memoria" id="toc-de-program-header-a-memoria" class="nav-link" data-scroll-target="#de-program-header-a-memoria">De program header a memoria</a></li>
   <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-de-lectura" id="toc-errores-de-lectura" class="nav-link" data-scroll-target="#errores-de-lectura">Errores de lectura</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1366,6 +1369,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Las secciones ayudan a construir y analizar. Los segmentos ayudan a ejecutar. Cuando Linux crea el proceso, lo que importa para mapear memoria son los program headers.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a cambiar de la vista del linker a la vista del loader. Las secciones explican organización; los segmentos <code>LOAD</code> explican qué rangos del archivo se convierten en memoria del proceso y con qué permisos.</p>
+</section>
 <section id="leer-program-headers" class="level2">
 <h2 class="anchored" data-anchor-id="leer-program-headers">Leer program headers</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-l</span> min</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1503,9 +1510,52 @@ Figura&nbsp;1: Relación conceptual entre secciones y segmentos.
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">6.</span> salta al entry point</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si el binario es dinámico, también participa el dynamic loader. Eso viene en la siguiente lección.</p>
 </section>
+<section id="de-program-header-a-memoria" class="level2">
+<h2 class="anchored" data-anchor-id="de-program-header-a-memoria">De program header a memoria</h2>
+<p>Lee cada <code>LOAD</code> como una instrucción de carga para el sistema:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tomar</span> bytes desde Offset</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mapearlos</span> cerca de VirtAddr</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usar</span> FileSiz como contenido inicial</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">reservar</span> MemSiz en memoria</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">aplicar</span> Flags</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>No es una llamada literal a <code>mmap</code> escrita en tu programa, pero conceptualmente conecta con permisos de memoria: rangos legibles, ejecutables o escribibles. Cuando <code>MemSiz</code> es mayor que <code>FileSiz</code>, el espacio adicional pertenece al proceso aunque no esté almacenado byte por byte en el archivo.</p>
+</section>
 <section id="error-común" class="level2">
 <h2 class="anchored" data-anchor-id="error-común">Error común</h2>
 <p>Creer que section headers son el mapa principal de ejecución. Para cargar el proceso, los program headers son el mapa crítico. Las secciones siguen siendo útiles para herramientas, linker y debugging, pero no son la guía principal del loader.</p>
+</section>
+<section id="errores-de-lectura" class="level2">
+<h2 class="anchored" data-anchor-id="errores-de-lectura">Errores de lectura</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>buscar permisos en <code>readelf -S</code> primero</td>
+<td>usar <code>readelf -l</code> para mapa de carga</td>
+</tr>
+<tr class="even">
+<td>creer que cada sección se mapea sola</td>
+<td>un segmento puede agrupar varias secciones</td>
+</tr>
+<tr class="odd">
+<td>interpretar <code>FileSiz &lt; MemSiz</code> como corrupción</td>
+<td>suele indicar memoria cero como <code>.bss</code></td>
+</tr>
+<tr class="even">
+<td>asumir que <code>RX</code> y <code>RW</code> son decorativos</td>
+<td>son permisos reales del proceso</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1522,6 +1572,15 @@ Figura&nbsp;1: Relación conceptual entre secciones y segmentos.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/elf-linking-loading/05-linking-estatico-dinamico.html">Linking estático y dinámico</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils, <em>readelf</em>: <a href="https://sourceware.org/binutils/docs/binutils/readelf.html" class="uri">https://sourceware.org/binutils/docs/binutils/readelf.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+</ul>
 
 
 </section>

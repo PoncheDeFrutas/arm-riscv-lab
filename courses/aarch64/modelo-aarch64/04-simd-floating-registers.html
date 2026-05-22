@@ -1318,14 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#registros-v0-a-v31" id="toc-registros-v0-a-v31" class="nav-link active" data-scroll-target="#registros-v0-a-v31">Registros <code>V0</code> a <code>V31</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#registros-v0-a-v31" id="toc-registros-v0-a-v31" class="nav-link" data-scroll-target="#registros-v0-a-v31">Registros <code>V0</code> a <code>V31</code></a></li>
   <li><a href="#vistas-por-tamaño" id="toc-vistas-por-tamaño" class="nav-link" data-scroll-target="#vistas-por-tamaño">Vistas por tamaño</a></li>
   <li><a href="#ejemplo-floating-point-mínimo" id="toc-ejemplo-floating-point-mínimo" class="nav-link" data-scroll-target="#ejemplo-floating-point-mínimo">Ejemplo floating point mínimo</a></li>
   <li><a href="#enteros-vs-simdfp" id="toc-enteros-vs-simdfp" class="nav-link" data-scroll-target="#enteros-vs-simdfp">Enteros vs SIMD/FP</a></li>
   <li><a href="#por-qué-aparece-ahora" id="toc-por-qué-aparece-ahora" class="nav-link" data-scroll-target="#por-qué-aparece-ahora">Por qué aparece ahora</a></li>
   <li><a href="#límite-de-esta-unidad" id="toc-límite-de-esta-unidad" class="nav-link" data-scroll-target="#límite-de-esta-unidad">Límite de esta unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1364,6 +1367,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>No todo valor vive en <code>x0</code> o <code>w0</code>. AArch64 también tiene registros para datos floating point y vectoriales. En esta unidad solo los ubicamos en el mapa; NEON, SIMD y floating point vendrán después.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a reconocer el banco de registros SIMD/Floating Point. No estudiarás todavía NEON ni IEEE 754 a fondo; solo aprenderás a no confundir <code>v0</code>, <code>d0</code> o <code>q0</code> con <code>x0</code>.</p>
+<p>Esto ayuda cuando GDB, objdump o documentación muestren registros vectoriales.</p>
+</section>
 <section id="registros-v0-a-v31" class="level2">
 <h2 class="anchored" data-anchor-id="registros-v0-a-v31">Registros <code>V0</code> a <code>V31</code></h2>
 <p>AArch64 define 32 registros SIMD/Floating Point de 128 bits: <code>v0</code> a <code>v31</code>.</p>
@@ -1536,6 +1544,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="por-qué-aparece-ahora" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-aparece-ahora">Por qué aparece ahora</h2>
 <p>Aunque no estudiaremos NEON todavía, GDB, objdump o documentación pueden mostrar registros <code>v0</code>-<code>v31</code>. Conviene reconocerlos para no confundirlos con registros generales.</p>
+<p>Además, AAPCS64 también define reglas para argumentos y retornos floating point. Eso se estudiará más adelante; aquí basta saber que existe otro banco.</p>
 </section>
 <section id="límite-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="límite-de-esta-unidad">Límite de esta unidad</h2>
@@ -1553,6 +1562,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Pensar que <code>x0</code> y <code>d0</code> son el mismo registro</td>
+<td>son bancos distintos</td>
+</tr>
+<tr class="even">
+<td>Creer que <code>d0</code> es registro completo</td>
+<td><code>d0</code> es vista de 64 bits de <code>v0</code></td>
+</tr>
+<tr class="odd">
+<td>Confundir SIMD con enteros generales</td>
+<td>usa registros <code>Vn</code> para SIMD/FP</td>
+</tr>
+<tr class="even">
+<td>Interpretar GDB sin contexto</td>
+<td>pregunta si el programa usa FP/SIMD</td>
+</tr>
+<tr class="odd">
+<td>Adelantar NEON avanzado</td>
+<td>aquí solo mapa de registros</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1560,6 +1606,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica qué tamaño máximo tiene <code>v0</code>.</li>
 <li>Di si <code>x0</code> y <code>d0</code> son el mismo registro.</li>
 <li>Ordena <code>b0</code>, <code>h0</code>, <code>s0</code>, <code>d0</code>, <code>q0</code> por tamaño.</li>
+<li>Explica por qué <code>q0</code> y <code>v0</code> están relacionados.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1571,7 +1618,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo reconocer vistas <code>Bn</code>, <code>Hn</code>, <code>Sn</code>, <code>Dn</code>, <code>Qn</code>.</label></li>
 <li><label><input type="checkbox">Sé que NEON y floating point quedan para después.</label></li>
 </ul>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Los registros SIMD/Floating Point son parte del estado visible de AArch64, aunque no se usen en los primeros programas enteros. Reconocerlos evita confusiones al depurar o leer documentación.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/modelo-aarch64/05-exception-levels.html">Exception levels</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+<li>Arm, <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst">Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</a>.</li>
+</ul>
 
 
 </section>

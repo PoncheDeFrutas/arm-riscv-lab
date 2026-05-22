@@ -1318,10 +1318,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#abi-no-es-isa" id="toc-abi-no-es-isa" class="nav-link active" data-scroll-target="#abi-no-es-isa">ABI no es ISA</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#abi-no-es-isa" id="toc-abi-no-es-isa" class="nav-link" data-scroll-target="#abi-no-es-isa">ABI no es ISA</a></li>
   <li><a href="#qué-es-aapcs64" id="toc-qué-es-aapcs64" class="nav-link" data-scroll-target="#qué-es-aapcs64">Qué es AAPCS64</a></li>
   <li><a href="#registro-como-responsabilidad" id="toc-registro-como-responsabilidad" class="nav-link" data-scroll-target="#registro-como-responsabilidad">Registro como responsabilidad</a></li>
   <li><a href="#mapa-de-registros-generales" id="toc-mapa-de-registros-generales" class="nav-link" data-scroll-target="#mapa-de-registros-generales">Mapa de registros generales</a></li>
+  <li><a href="#grupos-por-responsabilidad" id="toc-grupos-por-responsabilidad" class="nav-link" data-scroll-target="#grupos-por-responsabilidad">Grupos por responsabilidad</a></li>
   <li><a href="#x8-no-significa-lo-mismo-siempre" id="toc-x8-no-significa-lo-mismo-siempre" class="nav-link" data-scroll-target="#x8-no-significa-lo-mismo-siempre"><code>x8</code> no significa lo mismo siempre</a></li>
   <li><a href="#mapa-de-floatingsimd" id="toc-mapa-de-floatingsimd" class="nav-link" data-scroll-target="#mapa-de-floatingsimd">Mapa de floating/SIMD</a></li>
   <li><a href="#comparación-rápida-syscall-vs-función-c" id="toc-comparación-rápida-syscall-vs-función-c" class="nav-link" data-scroll-target="#comparación-rápida-syscall-vs-función-c">Comparación rápida: syscall vs función C</a></li>
@@ -1366,6 +1368,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Una función assembly puede ser correcta para sí misma y mala para el resto del programa. La ABI define qué debe esperar el caller y qué debe respetar el callee.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a leer los registros como parte de un contrato, no solo como lugares para guardar números. La lección conecta tres niveles:</p>
+<ul>
+<li>ISA: instrucciones que el procesador ejecuta;</li>
+<li>ABI: reglas que hacen compatible una llamada;</li>
+<li>herramientas: assembler, linker, C y depurador leyendo el mismo contrato.</li>
+</ul>
+</section>
 <section id="abi-no-es-isa" class="level2">
 <h2 class="anchored" data-anchor-id="abi-no-es-isa">ABI no es ISA</h2>
 <p>La ISA te dice qué instrucciones existen:</p>
@@ -1397,6 +1408,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Ejemplo:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x19<span class="op">,</span> x0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La instrucción es válida. Pero <code>x19</code> es callee-saved. Si una función modifica <code>x19</code>, debe devolverlo como estaba antes de retornar.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>// válido para la ISA<span class="op">,</span> incorrecto para la ABI <span class="kw">si</span> no restauras x19</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rompe_abi:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x19<span class="op">,</span> x0</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x19<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El procesador no sabe que <code>x19</code> debía conservarse. Esa responsabilidad pertenece al programa que decidió hablar AAPCS64.</p>
 </section>
 <section id="mapa-de-registros-generales" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-de-registros-generales">Mapa de registros generales</h2>
@@ -1462,18 +1479,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="grupos-por-responsabilidad" class="level2">
+<h2 class="anchored" data-anchor-id="grupos-por-responsabilidad">Grupos por responsabilidad</h2>
+<p>Una tabla de registros sirve más cuando se lee por responsabilidad:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Registros relevantes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿por dónde entran enteros y punteros?</td>
+<td><code>x0</code>-<code>x7</code></td>
+</tr>
+<tr class="even">
+<td>¿dónde queda un retorno entero simple?</td>
+<td><code>x0</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué puedo usar como temporal entre instrucciones?</td>
+<td><code>x9</code>-<code>x15</code>, con cuidado antes de llamadas</td>
+</tr>
+<tr class="even">
+<td>¿qué debo restaurar si lo modifico?</td>
+<td><code>x19</code>-<code>x28</code></td>
+</tr>
+<tr class="odd">
+<td>¿qué sostiene el retorno de <code>bl</code>?</td>
+<td><code>x30</code></td>
+</tr>
+<tr class="even">
+<td>¿qué no debo desalinear?</td>
+<td><code>sp</code></td>
+</tr>
+</tbody>
+</table>
+<p>Esta lectura evita memorizar la ABI como lista suelta. Cada registro se entiende por quién puede confiar en él.</p>
+</section>
 <section id="x8-no-significa-lo-mismo-siempre" class="level2">
 <h2 class="anchored" data-anchor-id="x8-no-significa-lo-mismo-siempre"><code>x8</code> no significa lo mismo siempre</h2>
 <p>En syscalls Linux AArch64, <code>x8</code> llevaba el número de syscall:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En llamadas C normales, no usas <code>x8</code> para decir “quiero llamar <code>printf</code>”. Una llamada C usa <code>bl printf</code>, argumentos en <code>x0</code>-<code>x7</code> y retorno en <code>x0</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syscall</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x8</span> = número de servicio del kernel</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">función</span> C</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">símbolo</span> + bl</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x0-x7</span> = argumentos</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">syscall</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x8</span> = número de servicio del kernel</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">función</span> C</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">símbolo</span> + bl</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">x0-x7</span> = argumentos</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esta separación evita uno de los errores más comunes de la unidad.</p>
 </section>
 <section id="mapa-de-floatingsimd" class="level2">
@@ -1541,31 +1601,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="mini-ejemplo-mental" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejemplo-mental">Mini ejemplo mental</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>.global sumar</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>.type sumar<span class="op">,</span> <span class="op">%</span>function</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar:</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x1</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>.size sumar<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> sumar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>.global sumar</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>.type sumar<span class="op">,</span> <span class="op">%</span>function</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sumar:</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">add</span> x0<span class="op">,</span> x0<span class="op">,</span> x1</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>.size sumar<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> sumar</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Lectura ABI:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = primer argumento</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> = segundo argumento</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">add</span> deja resultado en x0</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ret</span> vuelve al caller</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span> = primer argumento</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> = segundo argumento</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">add</span> deja resultado en x0</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ret</span> vuelve al caller</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La función no necesita stack porque es hoja y no usa registros callee-saved.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Creer que AAPCS64 es una instrucción.</li>
-<li>Creer que todos los registros son temporales libres.</li>
-<li>Usar <code>x8</code> como si llamar C fuera igual que llamar syscall.</li>
-<li>Tratar <code>x18</code> como registro normal.</li>
-<li>Modificar <code>x19</code> sin restaurarlo.</li>
-<li>Olvidar que <code>v0</code>-<code>v7</code> participan en argumentos floating/SIMD.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Diagnóstico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que AAPCS64 es una instrucción</td>
+<td>buscar una instrucción inexistente en lugar de revisar contrato</td>
+</tr>
+<tr class="even">
+<td>tratar todos los registros como temporales libres</td>
+<td>valores del caller cambian después de <code>ret</code></td>
+</tr>
+<tr class="odd">
+<td>usar <code>x8</code> como si llamar C fuera syscall</td>
+<td><code>printf</code> o funciones C no se ejecutan como se esperaba</td>
+</tr>
+<tr class="even">
+<td>tratar <code>x18</code> como registro normal</td>
+<td>código no portable o dependiente de plataforma</td>
+</tr>
+<tr class="odd">
+<td>modificar <code>x19</code> sin restaurarlo</td>
+<td>el caller falla lejos del punto del bug</td>
+</tr>
+<tr class="even">
+<td>olvidar <code>v0</code>-<code>v7</code></td>
+<td>funciones con <code>float</code>/<code>double</code> reciben valores incorrectos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1578,6 +1668,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo diferenciar syscall convention de calling convention C.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/abi-aapcs64-c/02-argumentos-retornos-stack.html">Argumentos, retornos y stack</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>ABI for the Arm Architecture</em>: <a href="https://github.com/ARM-software/abi-aa" class="uri">https://github.com/ARM-software/abi-aa</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+</ul>
 
 
 </section>

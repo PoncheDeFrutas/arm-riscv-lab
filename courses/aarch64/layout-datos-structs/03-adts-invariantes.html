@@ -1326,6 +1326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#operación-push_byte" id="toc-operación-push_byte" class="nav-link" data-scroll-target="#operación-push_byte">Operación <code>push_byte</code></a></li>
   <li><a href="#funciones-que-reciben-puntero" id="toc-funciones-que-reciben-puntero" class="nav-link" data-scroll-target="#funciones-que-reciben-puntero">Funciones que reciben puntero</a></li>
   <li><a href="#invariante-antes-y-después" id="toc-invariante-antes-y-después" class="nav-link" data-scroll-target="#invariante-antes-y-después">Invariante antes y después</a></li>
+  <li><a href="#checklist-de-operación" id="toc-checklist-de-operación" class="nav-link" data-scroll-target="#checklist-de-operación">Checklist de operación</a></li>
   <li><a href="#operaciones-públicas-y-acceso-directo" id="toc-operaciones-públicas-y-acceso-directo" class="nav-link" data-scroll-target="#operaciones-públicas-y-acceso-directo">Operaciones públicas y acceso directo</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
@@ -1578,6 +1579,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">len</span> = len + 1</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">después:</span> len <span class="op">&lt;</span>= cap</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
+<section id="checklist-de-operación" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-de-operación">Checklist de operación</h2>
+<p>Para revisar una operación de ADT, usa esta tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Momento</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>entrada</td>
+<td>¿<code>x0</code> apunta al descriptor correcto?</td>
+</tr>
+<tr class="even">
+<td>entrada</td>
+<td>¿las invariantes ya son verdaderas?</td>
+</tr>
+<tr class="odd">
+<td>antes de escribir</td>
+<td>¿se validó límite o estado necesario?</td>
+</tr>
+<tr class="even">
+<td>modificación</td>
+<td>¿se actualizan juntos los campos relacionados?</td>
+</tr>
+<tr class="odd">
+<td>salida</td>
+<td>¿el objeto sigue en estado válido?</td>
+</tr>
+<tr class="even">
+<td>salida</td>
+<td>¿<code>x0</code> contiene el código de resultado esperado?</td>
+</tr>
+</tbody>
+</table>
+<p>En <code>buffer_push_byte</code>, el byte y <code>len</code> pertenecen a la misma operación. Escribir el byte sin actualizar <code>len</code>, o actualizar <code>len</code> sin escribir el byte, deja una historia incoherente para el resto del ADT.</p>
+</section>
 <section id="operaciones-públicas-y-acceso-directo" class="level2">
 <h2 class="anchored" data-anchor-id="operaciones-públicas-y-acceso-directo">Operaciones públicas y acceso directo</h2>
 <p>En un lenguaje de alto nivel, podrías ocultar campos. En assembly no hay privacidad automática. Cualquier parte del programa puede hacer:</p>
@@ -1631,11 +1671,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Por qué <code>push_byte</code> revisa <code>len</code> contra <code>cap</code>?</li>
 <li>¿Qué pasa si escribes byte pero no actualizas <code>len</code>?</li>
 <li>¿Por qué <code>x0</code> puede servir como puntero al ADT?</li>
+<li>¿Qué debe ser verdadero antes y después de <code>buffer_push_byte</code>?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Un ADT en assembly es disciplina. Layout define dónde están los datos; operaciones definen cómo cambiarlos; invariantes definen qué estados son válidos.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

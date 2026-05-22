@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#relación-con-wn-y-xn" id="toc-relación-con-wn-y-xn" class="nav-link" data-scroll-target="#relación-con-wn-y-xn">Relación con <code>Wn</code> y <code>Xn</code></a></li>
   <li><a href="#extensiones-dentro-de-operaciones" id="toc-extensiones-dentro-de-operaciones" class="nav-link" data-scroll-target="#extensiones-dentro-de-operaciones">Extensiones dentro de operaciones</a></li>
   <li><a href="#cuándo-usar-cada-forma" id="toc-cuándo-usar-cada-forma" class="nav-link" data-scroll-target="#cuándo-usar-cada-forma">Cuándo usar cada forma</a></li>
+  <li><a href="#diagnóstico-de-extensión" id="toc-diagnóstico-de-extensión" class="nav-link" data-scroll-target="#diagnóstico-de-extensión">Diagnóstico de extensión</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1536,6 +1537,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="diagnóstico-de-extensión" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-extensión">Diagnóstico de extensión</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Síntoma</th>
+<th>Revisión</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>0xFF</code> se vuelve <code>255</code> pero esperabas <code>-1</code></td>
+<td>usaste zero extension</td>
+</tr>
+<tr class="even">
+<td>valor de 32 bits pierde signo al pasar a <code>xN</code></td>
+<td>faltó <code>sxtw</code></td>
+</tr>
+<tr class="odd">
+<td>índice pequeño se vuelve negativo</td>
+<td>usaste sign extension sin querer</td>
+</tr>
+<tr class="even">
+<td>escribir en <code>wN</code> limpió parte alta</td>
+<td>comportamiento normal de vista <code>Wn</code></td>
+</tr>
+</tbody>
+</table>
+<p>La extensión no cambia los bits originales de bajo ancho. Cambia cómo llenas los bits nuevos y, por lo tanto, cómo leerás el resultado.</p>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1559,10 +1594,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué queda en <code>x2</code>?</li>
 <li>¿Por qué los bits originales no cambiaron?</li>
 </ul>
+<ol start="3" type="1">
+<li>¿Qué extensión elegirías para un byte que representa longitud?</li>
+</ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Extender es declarar intención. Si el dato pequeño representa cantidad, usa ceros. Si representa signed, conserva signo. Esa decisión aparece todo el tiempo al mezclar <code>Wn</code>, <code>Xn</code>, bytes y palabras.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

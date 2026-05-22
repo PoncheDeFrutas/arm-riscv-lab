@@ -1290,6 +1290,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#viene-de-unidades-anteriores" id="toc-viene-de-unidades-anteriores" class="nav-link" data-scroll-target="#viene-de-unidades-anteriores">Viene de unidades anteriores</a></li>
   <li><a href="#idea-de-trabajo" id="toc-idea-de-trabajo" class="nav-link" data-scroll-target="#idea-de-trabajo">Idea de trabajo</a></li>
   <li><a href="#cómo-estudiar-esta-unidad" id="toc-cómo-estudiar-esta-unidad" class="nav-link" data-scroll-target="#cómo-estudiar-esta-unidad">Cómo estudiar esta unidad</a></li>
+  <li><a href="#mapa-de-diagnóstico" id="toc-mapa-de-diagnóstico" class="nav-link" data-scroll-target="#mapa-de-diagnóstico">Mapa de diagnóstico</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
@@ -1517,6 +1518,49 @@ Figura&nbsp;1: Flujo básico de operación sobre registros en AArch64.
 </table>
 <p>Cada página termina con ejercicios pequeños porque la meta es leer registros y bits con seguridad antes de escribir branches y loops.</p>
 </section>
+<section id="mapa-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="mapa-de-diagnóstico">Mapa de diagnóstico</h2>
+<p>Cuando una operación no da lo esperado, revisa estos datos antes de cambiar instrucciones al azar:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Qué confirma</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿uso <code>wN</code> o <code>xN</code>?</td>
+<td>ancho de 32 o 64 bits</td>
+</tr>
+<tr class="even">
+<td>¿la instrucción actualiza flags?</td>
+<td><code>add</code> no, <code>adds</code> sí</td>
+</tr>
+<tr class="odd">
+<td>¿leo signed o unsigned?</td>
+<td>decide entre <code>C</code>/<code>V</code>, <code>sdiv</code>/<code>udiv</code>, <code>sxt</code>/<code>uxt</code></td>
+</tr>
+<tr class="even">
+<td>¿la máscara tiene bits en la posición correcta?</td>
+<td><code>and</code>, <code>orr</code>, <code>bic</code>, <code>tst</code></td>
+</tr>
+<tr class="odd">
+<td>¿el shift descarta o conserva signo?</td>
+<td><code>lsr</code> vs <code>asr</code></td>
+</tr>
+<tr class="even">
+<td>¿es offset de memoria o posición de bit?</td>
+<td><code>ldr [base,#off]</code> vs <code>ubfx #lsb,#width</code></td>
+</tr>
+</tbody>
+</table>
+<p>La mayoría de bugs en esta unidad no vienen de que la CPU “calcule mal”. Vienen de elegir una interpretación o un ancho que no coincide con el dato.</p>
+</section>
 <section id="lecciones-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="lecciones-de-esta-unidad">Lecciones de esta unidad</h2>
 <div class="resource-grid">
@@ -1620,6 +1664,14 @@ Figura&nbsp;1: Flujo básico de operación sobre registros en AArch64.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/aritmetica-logica-bits/01-movimiento-constantes.html">Movimiento de constantes</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

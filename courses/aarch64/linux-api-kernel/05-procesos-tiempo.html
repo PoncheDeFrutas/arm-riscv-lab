@@ -1318,12 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#misma-forma-otro-servicio" id="toc-misma-forma-otro-servicio" class="nav-link active" data-scroll-target="#misma-forma-otro-servicio">Misma forma, otro servicio</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#misma-forma-otro-servicio" id="toc-misma-forma-otro-servicio" class="nav-link" data-scroll-target="#misma-forma-otro-servicio">Misma forma, otro servicio</a></li>
   <li><a href="#getpid" id="toc-getpid" class="nav-link" data-scroll-target="#getpid"><code>getpid</code></a></li>
   <li><a href="#nanosleep" id="toc-nanosleep" class="nav-link" data-scroll-target="#nanosleep"><code>nanosleep</code></a></li>
   <li><a href="#clock_gettime" id="toc-clock_gettime" class="nav-link" data-scroll-target="#clock_gettime"><code>clock_gettime</code></a></li>
   <li><a href="#execve-conceptual" id="toc-execve-conceptual" class="nav-link" data-scroll-target="#execve-conceptual"><code>execve</code> conceptual</a></li>
   <li><a href="#wait4-conceptual" id="toc-wait4-conceptual" class="nav-link" data-scroll-target="#wait4-conceptual"><code>wait4</code> conceptual</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#lectura-paso-a-paso-clock_gettime" id="toc-lectura-paso-a-paso-clock_gettime" class="nav-link" data-scroll-target="#lectura-paso-a-paso-clock_gettime">Lectura paso a paso: <code>clock_gettime</code></a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1364,6 +1369,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Linux como API del kernel no termina en archivos. También ofrece información del proceso, ejecución de programas y servicios de tiempo. Aquí solo construiremos un mapa inicial para reconocer estas syscalls cuando aparezcan después.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Cómo obtener el PID del proceso con <code>getpid</code>.</li>
+<li>Cómo pausar la ejecución con <code>nanosleep</code>.</li>
+<li>Cómo obtener tiempo con <code>clock_gettime</code>.</li>
+<li>Qué hacen <code>execve</code> y <code>wait4</code> a nivel conceptual.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender el contrato de syscall y cómo pasar punteros a estructuras. Revisa <a href="../../../courses/aarch64/linux-api-kernel/04-posicion-metadatos.html">Posición y metadatos</a> para el patrón de buffer.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>El mismo mecanismo de syscall sirve para servicios muy distintos: identidad del proceso (<code>getpid</code>), tiempo (<code>nanosleep</code>, <code>clock_gettime</code>) y gestión de procesos (<code>execve</code>, <code>wait4</code>). La diferencia está en qué registros preparar y si el kernel lee o escribe en memoria.</p>
+<p><code>nanosleep</code> y <code>clock_gettime</code> usan <code>struct timespec</code>: dos <code>quad</code> consecutivos (16 bytes total) con <code>tv_sec</code> y <code>tv_nsec</code>.</p>
+</section>
 <section id="misma-forma-otro-servicio" class="level2">
 <h2 class="anchored" data-anchor-id="misma-forma-otro-servicio">Misma forma, otro servicio</h2>
 <p>El contrato no cambia:</p>
@@ -1484,19 +1507,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong><code>timespec</code> mal alineado</strong>: <code>tv_sec</code> y <code>tv_nsec</code> deben ser <code>quad</code> (8 bytes cada uno). Usar <code>.word</code> (4 bytes) produce un buffer de tamaño incorrecto.</li>
+<li><strong>No poner <code>tv_nsec</code> en rango válido</strong>: <code>tv_nsec</code> debe estar entre <code>0</code> y <code>999999999</code>. Valores fuera de rango causan <code>EINVAL</code>.</li>
+<li><strong>Confundir <code>nanosleep</code> con <code>sleep</code> de libc</strong>: <code>nanosleep</code> es la syscall directa. No tiene buffered I/O ni wrappers. Recibe puntero a <code>timespec</code>.</li>
+<li><strong>Asumir que <code>execve</code> funciona sin <code>argv</code> y <code>envp</code> terminados en NULL</strong>: el kernel espera arreglos de punteros donde el último elemento es <code>0</code>.</li>
+</ul>
+</section>
+<section id="lectura-paso-a-paso-clock_gettime" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-paso-a-paso-clock_gettime">Lectura paso a paso: <code>clock_gettime</code></h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Registro</th>
+<th>Antes de <code>svc</code></th>
+<th>Después de <code>svc</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>x0</code></td>
+<td>reloj (<code>1</code> = MONOTONIC)</td>
+<td>sin cambio</td>
+</tr>
+<tr class="even">
+<td><code>x1</code></td>
+<td>puntero a buffer 16 bytes</td>
+<td>kernel escribe <code>tv_sec</code> + <code>tv_nsec</code></td>
+</tr>
+<tr class="odd">
+<td><code>x8</code></td>
+<td><code>113</code></td>
+<td>sin cambio</td>
+</tr>
+<tr class="even">
+<td>retorno <code>x0</code></td>
+<td>-</td>
+<td><code>0</code> = éxito, negativo = error</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Predice el resultado antes de verificar.</p>
 <ol type="1">
 <li>¿Qué syscall no necesita argumentos para devolver el PID?</li>
 <li>¿Por qué <code>nanosleep</code> necesita una dirección?</li>
 <li>¿Qué escribe <code>clock_gettime</code> en memoria?</li>
 <li>¿Por qué <code>execve</code> no se desarrolla completo todavía?</li>
 <li>¿Qué tienen en común archivos, tiempo y procesos a nivel de syscall?</li>
+<li>¿Cuántos bytes ocupa <code>struct timespec</code>? ¿Qué directiva usar para reservarlo?</li>
+<li>¿Qué retorna <code>getpid</code> si el proceso tiene PID 42?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de syscall, <code>svc #0</code>, retorno. Esta unidad no busca cubrir todo Linux; busca que reconozcas el patrón cuando el servicio cambia.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>getpid(2)</code>, <code>nanosleep(2)</code>, <code>clock_gettime(2)</code>. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>execve(2)</code>, <code>wait4(2)</code>: gestión de procesos. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Linux man-pages: <code>timespec(2type)</code>: estructura de tiempo. <a href="https://www.man7.org/linux/man-pages/man2/timespec.2type.html" class="uri">https://www.man7.org/linux/man-pages/man2/timespec.2type.html</a></li>
+</ul>
 
 
 </section>

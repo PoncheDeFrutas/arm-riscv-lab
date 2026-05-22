@@ -1324,6 +1324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-debe-quedar-claro" id="toc-qué-debe-quedar-claro" class="nav-link active" data-scroll-target="#qué-debe-quedar-claro">Qué debe quedar claro</a></li>
   <li><a href="#mapa-rápido" id="toc-mapa-rápido" class="nav-link" data-scroll-target="#mapa-rápido">Mapa rápido</a></li>
   <li><a href="#flujo-completo" id="toc-flujo-completo" class="nav-link" data-scroll-target="#flujo-completo">Flujo completo</a></li>
+  <li><a href="#capas-que-no-debes-mezclar" id="toc-capas-que-no-debes-mezclar" class="nav-link" data-scroll-target="#capas-que-no-debes-mezclar">Capas que no debes mezclar</a></li>
   <li><a href="#sección-no-es-segmento" id="toc-sección-no-es-segmento" class="nav-link" data-scroll-target="#sección-no-es-segmento">Sección no es segmento</a></li>
   <li><a href="#herramientas-de-la-unidad" id="toc-herramientas-de-la-unidad" class="nav-link" data-scroll-target="#herramientas-de-la-unidad">Herramientas de la unidad</a></li>
   <li><a href="#viene-de-unidades-anteriores" id="toc-viene-de-unidades-anteriores" class="nav-link" data-scroll-target="#viene-de-unidades-anteriores">Viene de unidades anteriores</a></li>
@@ -1496,6 +1497,51 @@ Figura&nbsp;1: Flujo mínimo desde fuente assembly hasta proceso en memoria.
 </div>
 <p>Cada flecha resuelve un problema distinto. El assembler traduce líneas y crea relocations cuando todavía faltan direcciones. El linker combina objetos, resuelve símbolos y produce un archivo ejecutable. El loader usa program headers para crear el proceso en memoria.</p>
 <p>La flecha más importante para esta unidad es la que va de <code>ELF executable</code> a <code>proceso</code>. Un archivo en disco no ejecuta nada por sí mismo. Linux debe leer su estructura, mapear partes del archivo en memoria, asignar permisos, preparar el estado inicial y transferir control al entry point. Ese paso explica por qué no basta con saber escribir instrucciones A64: también debes saber cómo esas instrucciones quedan empaquetadas y cargadas.</p>
+</section>
+<section id="capas-que-no-debes-mezclar" class="level2">
+<h2 class="anchored" data-anchor-id="capas-que-no-debes-mezclar">Capas que no debes mezclar</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Capa</th>
+<th>Pregunta principal</th>
+<th>Herramientas o actores</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>assembler</td>
+<td>¿qué bytes y símbolos salen del <code>.s</code>?</td>
+<td><code>as</code>, secciones, relocations</td>
+</tr>
+<tr class="even">
+<td>linker</td>
+<td>¿cómo se combinan objetos y símbolos?</td>
+<td><code>ld</code>, <code>gcc</code>, symbol table, layout</td>
+</tr>
+<tr class="odd">
+<td>loader/kernel</td>
+<td>¿qué rangos se mapean como proceso?</td>
+<td>ELF header, program headers</td>
+</tr>
+<tr class="even">
+<td>dynamic loader</td>
+<td>¿qué falta resolver al cargar?</td>
+<td><code>INTERP</code>, <code>NEEDED</code>, GOT/PLT</td>
+</tr>
+<tr class="odd">
+<td>proceso</td>
+<td>¿qué memoria ejecuta el CPU?</td>
+<td>segmentos, permisos, entry point</td>
+</tr>
+</tbody>
+</table>
+<p>La misma dirección puede aparecer en varias capas, pero no significa lo mismo en todas. Una dirección en <code>objdump</code> sirve para inspección del archivo; una dirección en GDB pertenece al proceso cargado; un offset en <code>readelf</code> apunta a bytes dentro del archivo.</p>
 </section>
 <section id="sección-no-es-segmento" class="level2">
 <h2 class="anchored" data-anchor-id="sección-no-es-segmento">Sección no es segmento</h2>
@@ -1765,6 +1811,16 @@ Figura&nbsp;1: Flujo mínimo desde fuente assembly hasta proceso en memoria.
 </tr>
 </tbody>
 </table>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>ELF for the Arm 64-bit Architecture (AAELF64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst</a></li>
+<li>Arm, <em>ABI for the Arm Architecture</em>: <a href="https://github.com/ARM-software/abi-aa" class="uri">https://github.com/ARM-software/abi-aa</a></li>
+<li>System V ABI, <em>Generic ABI</em>: <a href="https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html" class="uri">https://refspecs.linuxfoundation.org/elf/gabi4+/contents.html</a></li>
+<li>GNU Binutils documentation: <a href="https://sourceware.org/binutils/docs/" class="uri">https://sourceware.org/binutils/docs/</a></li>
+<li>Linux man-pages, <code>ld.so(8)</code>: <a href="https://www.man7.org/linux/man-pages/man8/ld.so.8.html" class="uri">https://www.man7.org/linux/man-pages/man8/ld.so.8.html</a></li>
+</ul>
 </section>
 <section id="checklist-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="checklist-de-cierre">Checklist de cierre</h2>

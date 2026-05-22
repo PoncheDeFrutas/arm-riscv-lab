@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tabla-mínima-de-syscalls" id="toc-tabla-mínima-de-syscalls" class="nav-link" data-scroll-target="#tabla-mínima-de-syscalls">Tabla mínima de syscalls</a></li>
   <li><a href="#permisos-y-flags-básicos" id="toc-permisos-y-flags-básicos" class="nav-link" data-scroll-target="#permisos-y-flags-básicos">Permisos y flags básicos</a></li>
   <li><a href="#tres-estados-que-no-son-lo-mismo" id="toc-tres-estados-que-no-son-lo-mismo" class="nav-link" data-scroll-target="#tres-estados-que-no-son-lo-mismo">Tres estados que no son lo mismo</a></li>
+  <li><a href="#mapa-de-diagnóstico" id="toc-mapa-de-diagnóstico" class="nav-link" data-scroll-target="#mapa-de-diagnóstico">Mapa de diagnóstico</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
@@ -1656,6 +1657,49 @@ Figura&nbsp;1: Ciclo de vida conceptual de una región virtual creada con mmap.
 </table>
 <p>Esta diferencia evita confusiones. Pedir 4096 bytes no significa que tengas una estructura de 4096 bytes “llena”. Igual que en Unidad 12, capacidad y uso siguen separados.</p>
 </section>
+<section id="mapa-de-diagnóstico" class="level2">
+<h2 class="anchored" data-anchor-id="mapa-de-diagnóstico">Mapa de diagnóstico</h2>
+<p>Cuando algo falla en esta unidad, revisa la región como recurso:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Dato que debes conservar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿existe la región?</td>
+<td>retorno no negativo de <code>mmap</code></td>
+</tr>
+<tr class="even">
+<td>¿cuál es la base original?</td>
+<td>dirección guardada, por ejemplo en <code>x19</code></td>
+</tr>
+<tr class="odd">
+<td>¿cuánto mide?</td>
+<td><code>length</code>, normalmente <code>4096</code> en ejemplos</td>
+</tr>
+<tr class="even">
+<td>¿qué permisos tiene ahora?</td>
+<td><code>PROT_READ</code>, <code>PROT_WRITE</code>, <code>PROT_EXEC</code></td>
+</tr>
+<tr class="odd">
+<td>¿sigue viva?</td>
+<td>no se ha llamado <code>munmap</code> con ese rango</td>
+</tr>
+<tr class="even">
+<td>¿hay cleanup si algo falla?</td>
+<td>etiqueta que libera antes de salir</td>
+</tr>
+</tbody>
+</table>
+<p>Este mapa evita dos errores frecuentes: tratar un retorno negativo como puntero y llamar <code>munmap</code> con un cursor movido en vez de la base original.</p>
+</section>
 <section id="lecciones-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="lecciones-de-esta-unidad">Lecciones de esta unidad</h2>
 <div class="resource-grid">
@@ -1756,6 +1800,16 @@ Figura&nbsp;1: Ciclo de vida conceptual de una región virtual creada con mmap.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/mmap-paginas-permisos/01-paginas-memoria-virtual.html">Páginas y memoria virtual</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+<li>Linux man-pages, <code>mprotect(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mprotect.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mprotect.2.html</a></li>
+<li>Linux man-pages, <code>openat(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/openat.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/openat.2.html</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+</ul>
 
 
 </section>

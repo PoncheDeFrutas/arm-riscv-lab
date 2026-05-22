@@ -1318,10 +1318,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#main-escrito-en-assembly" id="toc-main-escrito-en-assembly" class="nav-link active" data-scroll-target="#main-escrito-en-assembly"><code>main</code> escrito en assembly</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#main-escrito-en-assembly" id="toc-main-escrito-en-assembly" class="nav-link" data-scroll-target="#main-escrito-en-assembly"><code>main</code> escrito en assembly</a></li>
+  <li><a href="#por-qué-guardar-lr-en-main" id="toc-por-qué-guardar-lr-en-main" class="nav-link" data-scroll-target="#por-qué-guardar-lr-en-main">Por qué guardar <code>LR</code> en <code>main</code></a></li>
   <li><a href="#llamar-una-función-c" id="toc-llamar-una-función-c" class="nav-link" data-scroll-target="#llamar-una-función-c">Llamar una función C</a></li>
   <li><a href="#llamar-printf" id="toc-llamar-printf" class="nav-link" data-scroll-target="#llamar-printf">Llamar <code>printf</code></a></li>
   <li><a href="#por-qué-printf-necesita-cuidado" id="toc-por-qué-printf-necesita-cuidado" class="nav-link" data-scroll-target="#por-qué-printf-necesita-cuidado">Por qué <code>printf</code> necesita cuidado</a></li>
+  <li><a href="#checklist-antes-de-bl-printf" id="toc-checklist-antes-de-bl-printf" class="nav-link" data-scroll-target="#checklist-antes-de-bl-printf">Checklist antes de <code>bl printf</code></a></li>
   <li><a href="#scanf-conceptual" id="toc-scanf-conceptual" class="nav-link" data-scroll-target="#scanf-conceptual"><code>scanf</code> conceptual</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1363,6 +1366,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Ahora assembly será el caller. Eso significa preparar argumentos, mantener <code>sp</code> alineado y llamar funciones C con <code>bl</code>, no con <code>svc</code>.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Ahora la responsabilidad cambia de lado. Tu código assembly prepara la llamada, respeta alineación, protege <code>LR</code> si llama a otra función y deja un valor de retorno válido para el runtime de C.</p>
+</section>
 <section id="main-escrito-en-assembly" class="level2">
 <h2 class="anchored" data-anchor-id="main-escrito-en-assembly"><code>main</code> escrito en assembly</h2>
 <p>Si compilas con GCC, puedes escribir <code>main</code> en assembly. El runtime de C llamará tu símbolo <code>main</code> igual que si viniera de C.</p>
@@ -1380,6 +1387,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>.size main<span class="op">,</span> <span class="op">.</span> <span class="op">-</span> main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No usas syscall <code>exit</code>. Retornar de <code>main</code> entrega el código de salida al runtime.</p>
+</section>
+<section id="por-qué-guardar-lr-en-main" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-guardar-lr-en-main">Por qué guardar <code>LR</code> en <code>main</code></h2>
+<p>Aunque <code>main</code> sea tu función, sigue siendo llamada por el runtime. Si dentro de <code>main</code> ejecutas <code>bl printf</code> o <code>bl funcion_c</code>, ese <code>bl</code> sobrescribe <code>x30</code>. Por eso el prólogo guarda <code>x30</code> antes de llamar a otra función y el epílogo lo restaura antes de <code>ret</code>.</p>
 </section>
 <section id="llamar-una-función-c" class="level2">
 <h2 class="anchored" data-anchor-id="llamar-una-función-c">Llamar una función C</h2>
@@ -1456,6 +1467,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x1</span> = entero long para %ld</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si el formato pide dos valores y solo preparas uno, <code>printf</code> leerá basura desde la convención de llamada.</p>
 </section>
+<section id="checklist-antes-de-bl-printf" class="level2">
+<h2 class="anchored" data-anchor-id="checklist-antes-de-bl-printf">Checklist antes de <code>bl printf</code></h2>
+<p>Antes de llamar <code>printf</code>, revisa:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿<code>x0</code> apunta al formato?</td>
+<td><code>adrp/add</code> o carga de dirección válida</td>
+</tr>
+<tr class="even">
+<td>¿los argumentos coinciden con el formato?</td>
+<td><code>%ld</code> necesita un <code>long</code> en <code>x1</code></td>
+</tr>
+<tr class="odd">
+<td>¿<code>sp</code> está alineado a 16 bytes?</td>
+<td>prólogo reserva múltiplos de 16</td>
+</tr>
+<tr class="even">
+<td>¿<code>LR</code> está protegido?</td>
+<td>función no hoja guarda <code>x30</code></td>
+</tr>
+<tr class="odd">
+<td>¿el retorno de <code>main</code> queda en <code>x0</code>?</td>
+<td><code>mov x0, #0</code> si todo salió bien</td>
+</tr>
+</tbody>
+</table>
+<p>Esto no hace a <code>printf</code> especial como instrucción. Solo recuerda que es una función C variadic y exige que el caller sea disciplinado.</p>
+</section>
 <section id="scanf-conceptual" class="level2">
 <h2 class="anchored" data-anchor-id="scanf-conceptual"><code>scanf</code> conceptual</h2>
 <p><code>scanf</code> también es variadic, pero además escribe resultados en direcciones:</p>
@@ -1464,14 +1514,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
-<ul>
-<li>Llamar <code>printf</code> con <code>svc #0</code>.</li>
-<li>Pasar valor directo donde <code>printf</code> espera puntero a formato.</li>
-<li>Romper alineación de <code>sp</code> antes de <code>bl printf</code>.</li>
-<li>Olvidar guardar <code>LR</code> en <code>main</code> assembly antes de llamar otra función.</li>
-<li>Retornar de <code>main</code> sin código claro en <code>x0</code>.</li>
-<li>Usar formato <code>%ld</code> pero preparar un argumento incorrecto.</li>
-</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Consecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>llamar <code>printf</code> con <code>svc #0</code></td>
+<td>no se llama a <code>libc</code></td>
+</tr>
+<tr class="even">
+<td>pasar valor donde se espera formato</td>
+<td><code>printf</code> interpreta una dirección inválida</td>
+</tr>
+<tr class="odd">
+<td>romper alineación de <code>sp</code></td>
+<td>llamada ABI-incorrecta</td>
+</tr>
+<tr class="even">
+<td>no guardar <code>LR</code> en función no hoja</td>
+<td><code>ret</code> vuelve mal</td>
+</tr>
+<tr class="odd">
+<td>retornar de <code>main</code> sin <code>x0</code> claro</td>
+<td>código de salida indeterminado</td>
+</tr>
+<tr class="even">
+<td>usar <code>%ld</code> con argumento incorrecto</td>
+<td>salida basura o lectura inválida</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1484,6 +1564,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo explicar por qué <code>scanf</code> requiere punteros.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/abi-aapcs64-c/07-librerias-y-lectura-guiada.html">Librerías y lectura guiada</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>GNU Binutils, <em>GNU assembler manual</em>: <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GCC documentation: <a href="https://gcc.gnu.org/onlinedocs/" class="uri">https://gcc.gnu.org/onlinedocs/</a></li>
+<li>Linux man-pages, <code>printf(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/printf.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/printf.3.html</a></li>
+<li>Linux man-pages, <code>scanf(3)</code>: <a href="https://www.man7.org/linux/man-pages/man3/scanf.3.html" class="uri">https://www.man7.org/linux/man-pages/man3/scanf.3.html</a></li>
+</ul>
 
 
 </section>

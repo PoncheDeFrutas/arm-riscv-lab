@@ -1318,14 +1318,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#preparación" id="toc-preparación" class="nav-link active" data-scroll-target="#preparación">Preparación</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#preparación" id="toc-preparación" class="nav-link" data-scroll-target="#preparación">Preparación</a></li>
   <li><a href="#ver-registros-generales" id="toc-ver-registros-generales" class="nav-link" data-scroll-target="#ver-registros-generales">Ver registros generales</a></li>
   <li><a href="#ver-sp-y-pc" id="toc-ver-sp-y-pc" class="nav-link" data-scroll-target="#ver-sp-y-pc">Ver <code>sp</code> y <code>pc</code></a></li>
   <li><a href="#ver-fp-y-lr" id="toc-ver-fp-y-lr" class="nav-link" data-scroll-target="#ver-fp-y-lr">Ver <code>fp</code> y <code>lr</code></a></li>
   <li><a href="#ver-estado-de-flags" id="toc-ver-estado-de-flags" class="nav-link" data-scroll-target="#ver-estado-de-flags">Ver estado de flags</a></li>
   <li><a href="#leer-sin-sobreinterpretar" id="toc-leer-sin-sobreinterpretar" class="nav-link" data-scroll-target="#leer-sin-sobreinterpretar">Leer sin sobreinterpretar</a></li>
+  <li><a href="#flujo-mínimo-de-lectura" id="toc-flujo-mínimo-de-lectura" class="nav-link" data-scroll-target="#flujo-mínimo-de-lectura">Flujo mínimo de lectura</a></li>
   <li><a href="#salir" id="toc-salir" class="nav-link" data-scroll-target="#salir">Salir</a></li>
   <li><a href="#límite-de-esta-página" id="toc-límite-de-esta-página" class="nav-link" data-scroll-target="#límite-de-esta-página">Límite de esta página</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre-de-la-unidad" id="toc-cierre-de-la-unidad" class="nav-link" data-scroll-target="#cierre-de-la-unidad">Cierre de la unidad</a></li>
@@ -1367,6 +1370,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Esta página no reemplaza una unidad de debugging. Solo conecta el modelo de registros con una herramienta real: detener el programa y mirar estado visible.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a mirar registros con GDB y hacer preguntas correctas. GDB muestra números; el trabajo del programador es interpretarlos según instrucción, tamaño y rol.</p>
+<p>Esta lección prepara debugging futuro sin entrar todavía en watchpoints, stack frames ni core dumps.</p>
+</section>
 <section id="preparación" class="level2">
 <h2 class="anchored" data-anchor-id="preparación">Preparación</h2>
 <p>Usa el ejemplo mínimo de la Unidad 01.</p>
@@ -1459,21 +1467,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>x0 = 0x1</code></td>
-<td>¿Es entero, dirección o argumento?</td>
+<td>¿Es entero, dirección, argumento o retorno?</td>
 </tr>
 <tr class="even">
+<td><code>w0 = 0x1</code></td>
+<td>¿Estoy mirando solo 32 bits bajos?</td>
+</tr>
+<tr class="odd">
 <td><code>sp = 0x...</code></td>
 <td>¿A qué región de stack apunta?</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>pc = 0x...</code></td>
 <td>¿Qué instrucción está por ejecutarse?</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>x30 = 0x...</code></td>
 <td>¿Podría ser dirección de retorno?</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>flags</td>
 <td>¿Qué instrucción los actualizó antes?</td>
 </tr>
@@ -1492,6 +1504,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>GDB muestra valores. El curso te enseña a interpretarlos con contexto: registro, tamaño, instrucción actual y memoria asociada.</p>
 </div>
 </div>
+</section>
+<section id="flujo-mínimo-de-lectura" class="level2">
+<h2 class="anchored" data-anchor-id="flujo-mínimo-de-lectura">Flujo mínimo de lectura</h2>
+<p>Cuando te detengas en <code>_start</code>:</p>
+<ol type="1">
+<li>mira <code>pc</code>;</li>
+<li>desensambla cerca de <code>pc</code>;</li>
+<li>identifica la instrucción actual;</li>
+<li>mira registros que esa instrucción usa;</li>
+<li>ejecuta un paso;</li>
+<li>vuelve a mirar qué cambió.</li>
+</ol>
+<p>Este flujo enseña más que imprimir todos los registros sin contexto.</p>
 </section>
 <section id="salir" class="level2">
 <h2 class="anchored" data-anchor-id="salir">Salir</h2>
@@ -1514,6 +1539,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Interpretar <code>x0</code> siempre igual</td>
+<td>depende de instrucción y syscall/función</td>
+</tr>
+<tr class="even">
+<td>Mirar <code>pc</code> como dato normal</td>
+<td><code>pc</code> es posición de ejecución</td>
+</tr>
+<tr class="odd">
+<td>No desensamblar cerca de <code>pc</code></td>
+<td>usa <code>x/4i $pc</code></td>
+</tr>
+<tr class="even">
+<td>Leer flags sin saber instrucción previa</td>
+<td>busca qué actualizó <code>NZCV</code></td>
+</tr>
+<tr class="odd">
+<td>Dejar QEMU esperando</td>
+<td>cierra sesión remota y terminal de QEMU</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
@@ -1522,6 +1584,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Usa <code>x/4i $pc</code>.</li>
 <li>Explica por qué <code>x0</code> podría ser valor o dirección.</li>
 <li>Explica por qué <code>pc</code> no debe interpretarse como dato normal.</li>
+<li>Mira una instrucción, ejecuta un paso y anota qué registro cambió.</li>
 </ol>
 </section>
 <section id="checklist" class="level2">
@@ -1532,12 +1595,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo mostrar registros generales.</label></li>
 <li><label><input type="checkbox">Puedo mostrar <code>sp</code> y <code>pc</code>.</label></li>
 <li><label><input type="checkbox">Puedo mirar instrucciones cerca de <code>pc</code>.</label></li>
+<li><label><input type="checkbox">Puedo interpretar un registro con contexto.</label></li>
 <li><label><input type="checkbox">Puedo salir de GDB sin dejar QEMU esperando.</label></li>
 </ul>
 </section>
 <section id="cierre-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="cierre-de-la-unidad">Cierre de la unidad</h2>
 <p>Si puedes mirar <code>x0</code>, <code>w0</code>, <code>sp</code>, <code>pc</code>, <code>x29</code>, <code>x30</code>, <code>NZCV</code> y saber qué pregunta hacer, ya tienes el mapa básico del estado visible de AArch64.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB, <a href="https://sourceware.org/gdb/documentation/">Debugging with GDB</a>.</li>
+<li>QEMU, <a href="https://www.qemu.org/docs/master/user/">User-mode emulation</a>.</li>
+<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
+<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
+</ul>
 
 
 </section>

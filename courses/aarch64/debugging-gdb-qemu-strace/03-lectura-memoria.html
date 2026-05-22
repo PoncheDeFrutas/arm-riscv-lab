@@ -1321,13 +1321,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link active" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#qué-problema-resuelve" id="toc-qué-problema-resuelve" class="nav-link" data-scroll-target="#qué-problema-resuelve">Qué problema resuelve</a></li>
   <li><a href="#datos-de-ejemplo" id="toc-datos-de-ejemplo" class="nav-link" data-scroll-target="#datos-de-ejemplo">Datos de ejemplo</a></li>
   <li><a href="#inspeccionar-string" id="toc-inspeccionar-string" class="nav-link" data-scroll-target="#inspeccionar-string">Inspeccionar string</a></li>
   <li><a href="#inspeccionar-.data" id="toc-inspeccionar-.data" class="nav-link" data-scroll-target="#inspeccionar-.data">Inspeccionar <code>.data</code></a></li>
   <li><a href="#inspeccionar-.bss" id="toc-inspeccionar-.bss" class="nav-link" data-scroll-target="#inspeccionar-.bss">Inspeccionar <code>.bss</code></a></li>
   <li><a href="#dirección-vs-contenido" id="toc-dirección-vs-contenido" class="nav-link" data-scroll-target="#dirección-vs-contenido">Dirección vs contenido</a></li>
   <li><a href="#heap-y-mmap" id="toc-heap-y-mmap" class="nav-link" data-scroll-target="#heap-y-mmap">Heap y mmap</a></li>
+  <li><a href="#elegir-formato-de-x" id="toc-elegir-formato-de-x" class="nav-link" data-scroll-target="#elegir-formato-de-x">Elegir formato de <code>x</code></a></li>
+  <li><a href="#diagnóstico-de-punteros" id="toc-diagnóstico-de-punteros" class="nav-link" data-scroll-target="#diagnóstico-de-punteros">Diagnóstico de punteros</a></li>
   <li><a href="#mapa-visual" id="toc-mapa-visual" class="nav-link" data-scroll-target="#mapa-visual">Mapa visual</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1369,6 +1372,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Leer memoria con GDB exige separar dos ideas: dirección y contenido. Un registro puede guardar una dirección; <code>x/x</code> te deja mirar qué bytes viven en esa dirección.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<p>Vas a convertir punteros y símbolos en lecturas concretas de memoria. La meta es responder si una dirección es válida, qué tamaño estás leyendo y si el contenido coincide con el tipo de dato esperado.</p>
+</section>
 <section id="qué-problema-resuelve" class="level2">
 <h2 class="anchored" data-anchor-id="qué-problema-resuelve">Qué problema resuelve</h2>
 <p>Muchos bugs de bajo nivel no están en una instrucción aislada. Están en una dirección equivocada, un buffer no inicializado, un string sin byte cero, una región <code>mmap</code> usada después de <code>munmap</code> o una escritura que cayó donde no debía.</p>
@@ -1462,6 +1469,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">p/x</span> <span class="va">$x0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En <code>mmap</code>, una región válida se puede inspeccionar. Después de <code>munmap</code>, esa dirección deja de estar disponible; leerla puede fallar o producir una señal.</p>
 </section>
+<section id="elegir-formato-de-x" class="level2">
+<h2 class="anchored" data-anchor-id="elegir-formato-de-x">Elegir formato de <code>x</code></h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Dato esperado</th>
+<th>Comando inicial</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bytes crudos</td>
+<td><code>x/16xb dirección</code></td>
+</tr>
+<tr class="even">
+<td>palabra de 64 bits</td>
+<td><code>x/gx dirección</code></td>
+</tr>
+<tr class="odd">
+<td>varias palabras de stack</td>
+<td><code>x/8gx dirección</code></td>
+</tr>
+<tr class="even">
+<td>string C</td>
+<td><code>x/s dirección</code></td>
+</tr>
+<tr class="odd">
+<td>instrucción</td>
+<td><code>x/i dirección</code></td>
+</tr>
+</tbody>
+</table>
+<p>Si no sabes qué hay en la dirección, empieza por bytes. <code>x/s</code> es cómodo, pero solo tiene sentido si esperas un string terminado en cero.</p>
+</section>
+<section id="diagnóstico-de-punteros" class="level2">
+<h2 class="anchored" data-anchor-id="diagnóstico-de-punteros">Diagnóstico de punteros</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Observación</th>
+<th>Hipótesis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>registro vale <code>0x0</code></td>
+<td>puntero nulo</td>
+</tr>
+<tr class="even">
+<td>dirección cambia antes de usarla</td>
+<td>registro sobrescrito</td>
+</tr>
+<tr class="odd">
+<td><code>x/s</code> imprime basura</td>
+<td>falta terminador cero o dirección incorrecta</td>
+</tr>
+<tr class="even">
+<td><code>x/xb</code> falla</td>
+<td>región no mapeada o sin permisos</td>
+</tr>
+<tr class="odd">
+<td><code>mmap</code> retorna valor negativo</td>
+<td>error, no dirección válida</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mapa-visual" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-visual">Mapa visual</h2>
 <div class="cell" data-layout-align="default">
@@ -1539,6 +1613,15 @@ Figura&nbsp;1: Regiones típicas que GDB puede inspeccionar en un proceso.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Abre <a href="../../../courses/aarch64/debugging-gdb-qemu-strace/04-stack-frames-gdb.html">Stack frames en GDB</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GDB documentation: <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>GDB manual, <em>Examining Memory</em>: <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Memory.html" class="uri">https://sourceware.org/gdb/current/onlinedocs/gdb.html/Memory.html</a></li>
+<li>Linux man-pages, <code>mmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/mmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/mmap.2.html</a></li>
+<li>Linux man-pages, <code>munmap(2)</code>: <a href="https://www.man7.org/linux/man-pages/man2/munmap.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/munmap.2.html</a></li>
+</ul>
 
 
 </section>
