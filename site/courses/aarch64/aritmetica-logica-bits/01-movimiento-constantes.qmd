@@ -215,6 +215,19 @@ Esto viene de Unidad 03: `Wn` no es otro registro separado; es la vista baja de
 | Obtener dirección de símbolo | `ldr x0, =simbolo` o `adr` |
 | Leer contenido desde memoria | `ldr x0, [x1]` |
 
+## Diagnóstico de constantes
+
+| Síntoma | Revisión |
+|---|---|
+| valor grande no cabe como inmediato | construir con `movz`/`movk` |
+| valor tiene muchos bits en `1` | considerar `movn` |
+| esperabas contenido y obtuviste dirección | falta `ldr xN, [xM]` |
+| escribiste en `w0` y se borró parte alta | recordar que `Wn` limpia bits 63..32 |
+| `movk` no dio el valor esperado | revisar bloque de 16 bits y `lsl` usado |
+
+Antes de culpar al assembler, escribe la constante en bloques de 16 bits. Ese
+paso casi siempre muestra qué parte falta o qué bloque fue reemplazado.
+
 ## Mini ejercicios
 
 1. Construye mentalmente:
@@ -244,3 +257,9 @@ ldr x1, [x0]
 Movimiento de constantes es preparación de operandos. Si la constante es simple,
 `mov` basta como forma legible. Si el valor es grande, piensa en bloques de 16
 bits con `movz` y `movk`. Si hay muchos `1`, `movn` puede ser más directo.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

@@ -168,6 +168,21 @@ En load/store, offsets mueven direcciones. En bitfield, posiciones mueven la
 mirada dentro de un registro.
 :::
 
+## Checklist de bitfield
+
+Antes de usar `ubfx`, `sbfx`, `bfi` o `bfxil`, define:
+
+| Pregunta | Ejemplo |
+|---|---|
+| ¿registro fuente? | `x0` |
+| ¿bit inicial? | `#8` |
+| ¿ancho del campo? | `#4` |
+| ¿interpretación signed o unsigned? | `sbfx` vs `ubfx` |
+| ¿quiero extraer o insertar? | `ubfx/sbfx` vs `bfi/bfxil` |
+
+Si no sabes posición y ancho, todavía no tienes un campo de bits; solo tienes un
+registro con muchos bits.
+
 ## Mini ejercicios
 
 1. Lee:
@@ -185,8 +200,16 @@ ubfx x1, x0, #10, #4
 
 3. Explica por qué `rev` no cambia cómo el sistema guarda memoria.
 
+4. ¿Por qué `#8` en `ubfx` no significa ocho bytes?
+
 ## Cierre
 
 Bit manipulation prepara lectura de formatos compactos, permisos, headers
 binarios y registros de hardware. La idea central: no estás leyendo memoria,
 estás reorganizando bits dentro de registros.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

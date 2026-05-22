@@ -154,6 +154,34 @@ tienen la misma intención.
 | Alternar bit 3 | `eor x0, x0, #0b1000` |
 | Conservar byte bajo | `and x1, x0, #0xFF` |
 
+## Posición del bit
+
+Para construir una máscara de un solo bit:
+
+```bash
+bit n -> 1 << n
+```
+
+| Bit | Máscara |
+|---:|---:|
+| 0 | `0b0001` |
+| 1 | `0b0010` |
+| 2 | `0b0100` |
+| 3 | `0b1000` |
+
+El error de off-by-one también existe en bits: bit 3 no es la tercera posición
+si empiezas a contar en 1; es la posición con valor `8`.
+
+## `and` vs `tst`
+
+| Necesidad | Instrucción |
+|---|---|
+| guardar bits filtrados | `and destino, valor, máscara` |
+| preguntar si algún bit está activo | `tst valor, máscara` |
+
+`tst` no conserva el valor filtrado. Solo actualiza flags. Si necesitas usar el
+resultado después, usa `and`.
+
 ## Mini ejercicios
 
 Partiendo de:
@@ -166,9 +194,17 @@ mov x0, #0b0101
 - ¿Qué instrucción apaga el bit 2?
 - ¿Qué instrucción alterna el bit 0?
 - ¿Qué instrucción prueba si el bit 0 está encendido sin cambiar `x0`?
+- ¿Qué máscara representa el bit 3?
+- ¿Cuándo usarías `and` en vez de `tst`?
 
 ## Cierre
 
 Máscaras son vocabulario básico de bajo nivel. Aparecen en permisos, parsing,
 formatos binarios, flags compactos y registros de hardware. No memorices solo
 el mnemónico: aprende la intención de cada máscara.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

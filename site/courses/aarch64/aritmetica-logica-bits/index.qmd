@@ -116,6 +116,23 @@ una pregunta práctica:
 Cada página termina con ejercicios pequeños porque la meta es leer registros y
 bits con seguridad antes de escribir branches y loops.
 
+## Mapa de diagnóstico
+
+Cuando una operación no da lo esperado, revisa estos datos antes de cambiar
+instrucciones al azar:
+
+| Pregunta | Qué confirma |
+|---|---|
+| ¿uso `wN` o `xN`? | ancho de 32 o 64 bits |
+| ¿la instrucción actualiza flags? | `add` no, `adds` sí |
+| ¿leo signed o unsigned? | decide entre `C`/`V`, `sdiv`/`udiv`, `sxt`/`uxt` |
+| ¿la máscara tiene bits en la posición correcta? | `and`, `orr`, `bic`, `tst` |
+| ¿el shift descarta o conserva signo? | `lsr` vs `asr` |
+| ¿es offset de memoria o posición de bit? | `ldr [base,#off]` vs `ubfx #lsb,#width` |
+
+La mayoría de bugs en esta unidad no vienen de que la CPU “calcule mal”. Vienen
+de elegir una interpretación o un ancho que no coincide con el dato.
+
 ## Lecciones de esta unidad
 
 ::: {.resource-grid}
@@ -212,3 +229,9 @@ campos de bits.
 ## Siguiente paso
 
 Empieza por [Movimiento de constantes](01-movimiento-constantes.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

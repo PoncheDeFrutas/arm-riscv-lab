@@ -144,6 +144,18 @@ interpretación.
 | Pasar signed de 32 a 64 bits | `sxtw` |
 | Pasar unsigned de 32 a 64 bits | `uxtw` o escritura en `Wn` según caso |
 
+## Diagnóstico de extensión
+
+| Síntoma | Revisión |
+|---|---|
+| `0xFF` se vuelve `255` pero esperabas `-1` | usaste zero extension |
+| valor de 32 bits pierde signo al pasar a `xN` | faltó `sxtw` |
+| índice pequeño se vuelve negativo | usaste sign extension sin querer |
+| escribir en `wN` limpió parte alta | comportamiento normal de vista `Wn` |
+
+La extensión no cambia los bits originales de bajo ancho. Cambia cómo llenas los
+bits nuevos y, por lo tanto, cómo leerás el resultado.
+
 ## Mini ejercicios
 
 1. Lee:
@@ -169,8 +181,16 @@ uxtw x2, w0
 - ¿Qué queda en `x2`?
 - ¿Por qué los bits originales no cambiaron?
 
+3. ¿Qué extensión elegirías para un byte que representa longitud?
+
 ## Cierre
 
 Extender es declarar intención. Si el dato pequeño representa cantidad, usa
 ceros. Si representa signed, conserva signo. Esa decisión aparece todo el tiempo
 al mezclar `Wn`, `Xn`, bytes y palabras.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

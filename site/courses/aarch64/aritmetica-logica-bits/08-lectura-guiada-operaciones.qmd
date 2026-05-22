@@ -28,6 +28,21 @@ No lo leas como una lista de líneas. Léelo en bloques:
 | Extensiones | ¿El valor pequeño se lee signed o unsigned? |
 | Bitfields | ¿Qué campo se extrae del registro? |
 
+## Método de predicción
+
+Antes de avanzar en GDB o leer la siguiente línea, completa mentalmente:
+
+| Pregunta | Ejemplo |
+|---|---|
+| ¿qué registros son entrada? | `x1` antes de `add` |
+| ¿qué registro se escribe? | `x2` en `add x2, x1, #5` |
+| ¿se actualizan flags? | sí en `subs`, no en `add` |
+| ¿la lectura es signed o unsigned? | `sxtb` vs `uxtb` |
+| ¿se toca memoria? | no en `ubfx`, sí solo en `svc` por efecto kernel |
+
+La práctica es predecir y luego verificar. Si no puedes predecir una línea,
+vuelve a la lección de esa familia.
+
 ## Programa completo
 
 Guarda este archivo como `operaciones.s`.
@@ -203,6 +218,18 @@ memoria = no se toca
 | `w10` | `0xFF` extendido con signo |
 | `x12` | campo extraído con `ubfx` |
 
+## Flags en la lectura guiada
+
+| Línea | Qué pasa con `NZCV` |
+|---|---|
+| `add x2, x1, #5` | no actualiza flags |
+| `subs x3, x2, x1` | actualiza flags según `15 - 10` |
+| `cmp x2, x3` | reemplaza flags según `15 - 5` |
+| `tst x5, #1` | reemplaza flags según `x5 AND 1` |
+
+El último consumidor de flags verá el estado dejado por `tst`, no por `cmp` ni
+por `subs`.
+
 ## Preguntas de cierre
 
 - ¿Qué instrucciones construyen una constante grande?
@@ -211,9 +238,17 @@ memoria = no se toca
 - ¿Qué instrucción apaga bits?
 - ¿Qué diferencia hay entre `uxtb` y `sxtb`?
 - ¿Por qué `ubfx` no usa offset de memoria?
+- ¿Qué instrucción dejó los flags más recientes antes de `svc #0`?
 
 ## Cierre
 
 Después de esta unidad, los flags ya no son una idea aislada. Son consecuencia
 de operaciones sobre registros. Las máscaras, shifts, extensiones y bitfields
 son formas distintas de mirar y transformar esos mismos bits.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GDB documentation: <https://sourceware.org/gdb/documentation/>

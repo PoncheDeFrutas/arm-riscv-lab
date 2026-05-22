@@ -156,6 +156,21 @@ a memoria y que trabaja con bits de registros.
 | Reacomodar bits sin perderlos | `ror` |
 | Tomar bits desde dos registros concatenados | `extr` |
 
+## Shifts y límites
+
+Un shift no sabe si tu cálculo tenía sentido lógico. Solo mueve bits:
+
+| Caso | Riesgo |
+|---|---|
+| `lsl` con valor grande | bits altos pueden perderse |
+| `lsr` sobre signed negativo | entra cero y cambia interpretación |
+| `asr` sobre campo unsigned | conserva signo que quizá no existe |
+| usar shift como multiplicación | solo es equivalente si no importan bits perdidos |
+
+Para offsets de arrays, `lsl #3` suele ser correcto cuando cada elemento mide 8
+bytes. Para valores signed, decide primero si el desplazamiento representa
+aritmética o manipulación de bits.
+
 ## Mini ejercicios
 
 1. Lee:
@@ -179,8 +194,17 @@ asr x2, x0, #1
 - ¿Cuál conserva signo?
 - ¿Cuál usarías para campos de bits?
 
+3. Si `x1` es índice de elementos de 8 bytes, ¿por qué `lsl x2, x1, #3` produce
+offset en bytes?
+
 ## Cierre
 
 Shifts son herramientas de escala y selección. Rotates son herramientas de
 reordenamiento sin pérdida. En ambos casos, sigues trabajando dentro de
 registros.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

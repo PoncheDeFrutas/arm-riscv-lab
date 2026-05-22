@@ -176,6 +176,28 @@ eso representa overflow signed
 aritmética unsigned. `V` ayuda en aritmética signed.
 :::
 
+## Flags se reemplazan
+
+`NZCV` describe la última instrucción que actualizó flags. No guarda historial.
+
+```asm
+subs x2, x0, x1    // NZCV describe x0 - x1
+cmp  x3, x4        // NZCV ahora describe x3 - x4
+```
+
+Si un branch debía depender del `subs`, debe aparecer antes de otro `cmp`,
+`cmn`, `adds`, `subs` o `tst` que reemplace los flags.
+
+## Checklist de flags
+
+| Pregunta | Lectura |
+|---|---|
+| ¿necesito resultado? | usa `adds/subs` si también quieres flags |
+| ¿solo necesito comparar? | usa `cmp` o `cmn` |
+| ¿la lectura es unsigned? | mira `C` y condiciones unsigned |
+| ¿la lectura es signed? | mira `N`/`V` y condiciones signed |
+| ¿otra instrucción actualizó flags después? | el branch verá los flags más recientes |
+
 ## Preparación para control de flujo
 
 ```asm
@@ -215,3 +237,9 @@ cmp x0, x1
 La pregunta no es solo “cuánto da”. También es “quiero flags o no”. Esa
 decisión separa `add/sub` de `adds/subs`, y convierte `cmp` en una herramienta
 central para la unidad de control de flujo.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
