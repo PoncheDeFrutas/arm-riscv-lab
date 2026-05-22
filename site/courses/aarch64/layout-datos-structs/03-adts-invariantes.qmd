@@ -190,6 +190,23 @@ si len < cap:
 después: len <= cap
 ```
 
+## Checklist de operación
+
+Para revisar una operación de ADT, usa esta tabla:
+
+| Momento | Pregunta |
+|---|---|
+| entrada | ¿`x0` apunta al descriptor correcto? |
+| entrada | ¿las invariantes ya son verdaderas? |
+| antes de escribir | ¿se validó límite o estado necesario? |
+| modificación | ¿se actualizan juntos los campos relacionados? |
+| salida | ¿el objeto sigue en estado válido? |
+| salida | ¿`x0` contiene el código de resultado esperado? |
+
+En `buffer_push_byte`, el byte y `len` pertenecen a la misma operación. Escribir
+el byte sin actualizar `len`, o actualizar `len` sin escribir el byte, deja una
+historia incoherente para el resto del ADT.
+
 ## Operaciones públicas y acceso directo
 
 En un lenguaje de alto nivel, podrías ocultar campos. En assembly no hay
@@ -230,8 +247,15 @@ entiendes todas las reglas.
 3. ¿Por qué `push_byte` revisa `len` contra `cap`?
 4. ¿Qué pasa si escribes byte pero no actualizas `len`?
 5. ¿Por qué `x0` puede servir como puntero al ADT?
+6. ¿Qué debe ser verdadero antes y después de `buffer_push_byte`?
 
 ## Cierre
 
 Un ADT en assembly es disciplina. Layout define dónde están los datos;
 operaciones definen cómo cambiarlos; invariantes definen qué estados son válidos.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

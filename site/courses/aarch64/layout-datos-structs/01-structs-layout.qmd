@@ -221,6 +221,31 @@ padding final
 No optimices antes de entender. Primero diseña layout correcto y fácil de leer.
 Luego puedes pensar en compactar.
 
+## Ejercicio de offset manual
+
+Diseña este layout antes de escribir código:
+
+```bash
+flag   1 byte
+value  8 bytes
+mode   1 byte
+```
+
+Una forma clara, con alignment de 8 para `value`, es:
+
+| Campo | Offset | Tamaño | Nota |
+|---|---:|---:|---|
+| `flag` | `0` | `1` | byte |
+| padding | `1` | `7` | alinear `value` |
+| `value` | `8` | `8` | doubleword |
+| `mode` | `16` | `1` | byte |
+| padding final | `17` | `7` | alinear siguiente elemento |
+| `SIZE` | `24` | - | tamaño total |
+
+Este ejercicio muestra por qué `SIZE` no siempre es la suma simple de tamaños
+útiles. Si haces un array de estos objetos, el segundo elemento debe empezar en
+una base alineada.
+
 ## Errores comunes
 
 | Error | Consecuencia |
@@ -238,8 +263,15 @@ Luego puedes pensar en compactar.
 3. ¿Por qué `POINT_Y` no es “el valor de y”?
 4. ¿Qué problema resuelve `.equ`?
 5. ¿Por qué aparece padding?
+6. En el layout `flag/value/mode`, ¿por qué `SIZE` termina en 24?
 
 ## Cierre
 
 Un struct manual es un contrato. Si el contrato dice `x` en offset 0 y `y` en
 offset 8, todo el código debe respetarlo.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>

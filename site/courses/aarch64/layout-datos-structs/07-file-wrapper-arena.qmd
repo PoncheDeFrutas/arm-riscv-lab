@@ -339,6 +339,17 @@ resetear o liberar arena completa
 
 No reemplaza `malloc`. Es patrón simple para entender ownership grupal.
 
+## Ownership y cleanup
+
+| Objeto | Posee | Cleanup esperado |
+|---|---|---|
+| File wrapper | fd abierto si `fd >= 0` | `close`, luego `fd = -1` |
+| Arena | bloque completo de almacenamiento | reset o liberación completa |
+| Puntero entregado por arena | no posee la arena | no se libera individualmente |
+
+El error común es tratar cada puntero de arena como si tuviera destructor propio.
+En este modelo, la arena administra el grupo completo.
+
 ## Reset de arena
 
 Reset conceptual:
@@ -481,8 +492,17 @@ $ echo $?
 3. ¿Qué campos necesita una arena?
 4. ¿Qué invariante protege `arena_alloc`?
 5. ¿Por qué arena no libera objetos individuales?
+6. ¿Qué debe hacer `file_close` después de cerrar exitosamente?
 
 ## Cierre
 
 File wrapper y arena muestran que layout manual no es solo para datos bonitos.
 También organiza recursos, ownership y cleanup.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `openat(2)`: <https://www.man7.org/linux/man-pages/man2/openat.2.html>
+- Linux man-pages, `write(2)`: <https://www.man7.org/linux/man-pages/man2/write.2.html>
+- Linux man-pages, `close(2)`: <https://www.man7.org/linux/man-pages/man2/close.2.html>
+- Linux man-pages, `mmap(2)`: <https://www.man7.org/linux/man-pages/man2/mmap.2.html>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

@@ -428,6 +428,18 @@ $ echo $?
 
 Los tres tienen algo en común: descriptor pequeño + bloque de datos separado.
 
+## Diagnóstico por diseño
+
+| Diseño | Revisa primero | Error típico |
+|---|---|---|
+| Buffer | `len <= cap` | escribir sin espacio |
+| String | `len` antes de imprimir | leer basura después del texto |
+| Matrix | `row < rows` y `col < cols` | calcular offset fuera del bloque |
+| Matrix | multiplicar por tamaño de elemento | leer dirección equivocada |
+
+La técnica base no cambia: cargar descriptor, validar invariante, calcular
+offset y acceder con el tamaño correcto.
+
 ## Errores comunes
 
 | Error | Consecuencia |
@@ -446,8 +458,16 @@ Los tres tienen algo en común: descriptor pequeño + bloque de datos separado.
 3. ¿Cómo se calcula índice row-major?
 4. ¿Por qué `lsl #3` equivale a multiplicar por 8?
 5. ¿Qué comparación evita acceso fuera de matriz?
+6. ¿Qué campo consultarías antes de imprimir un string con descriptor?
 
 ## Cierre
 
 Buffer, String y Matrix muestran misma técnica en tres formas: descriptor,
 puntero a datos, tamaños, reglas y acceso con offsets.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- Linux man-pages, `write(2)`: <https://www.man7.org/linux/man-pages/man2/write.2.html>

@@ -298,6 +298,16 @@ La función retorna `-1` y no escribe fuera de storage.
 Cuando la función retorna, `x0` ya no es `self`: es código de resultado. Por eso
 el llamador vuelve a cargar `buffer_desc` antes de cada llamada.
 
+## Precondiciones y postcondiciones
+
+| Operación | Antes | Después si funciona | Después si falla |
+|---|---|---|---|
+| `buffer_push_byte` | `len <= cap` | byte escrito, `len = len + 1`, `x0 = 0` | no escribe, `x0 = -1` |
+| `buffer_clear` | descriptor válido | `len = 0`, `data` y `cap` no cambian | no tiene ruta de fallo aquí |
+
+Leer así evita pensar en funciones como bloques aislados. Cada operación recibe
+un estado, intenta transformarlo y debe dejar el ADT en un estado explicable.
+
 ## Por qué el llamador recarga `x0`
 
 Después de:
@@ -329,6 +339,16 @@ Puntos útiles:
 No es obligatorio para completar la unidad, pero ayuda a ver descriptor y bytes
 separados.
 
+## Rutas de diagnóstico
+
+| Síntoma | Revisión |
+|---|---|
+| `push_byte` retorna `-1` | comparar `len` y `cap` |
+| storage no cambia | revisar si se tomó `buffer_full` |
+| `len` no cambia | revisar `str x3, [x0, #BUF_LEN]` |
+| se escribió más de un byte | buscar `str xN` donde debía ser `strb` |
+| siguiente llamada falla | recordar que `x0` fue retorno y hay que recargar `self` |
+
 ## Errores comunes
 
 | Error | Consecuencia |
@@ -346,8 +366,17 @@ separados.
 3. ¿Por qué `buffer_clear` solo modifica `len`?
 4. ¿Qué pasa cuando `len == cap`?
 5. ¿Qué diferencia hay entre `buffer_desc` y `storage`?
+6. ¿Por qué el llamador recarga `x0` antes de cada llamada?
+7. ¿Qué postcondición debe cumplir `buffer_push_byte` si retorna `0`?
 
 ## Cierre
 
 Este `Buffer` es pequeño, pero contiene toda la idea de la unidad: layout,
 offsets, descriptor, función con `self`, invariante y manejo de error.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- GDB documentation: <https://sourceware.org/gdb/documentation/>

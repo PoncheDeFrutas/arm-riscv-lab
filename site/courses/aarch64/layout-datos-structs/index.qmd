@@ -195,6 +195,23 @@ Ejemplo de invariante de buffer:
 data apunta a bloque válido si cap > 0
 ```
 
+## Mapa de diagnóstico
+
+Cuando un objeto manual falla, revisa el contrato completo:
+
+| Pregunta | Dato que debes confirmar |
+|---|---|
+| ¿cuál es la base? | puntero al objeto, normalmente `x0` al entrar |
+| ¿qué campo se accede? | offset definido con `.equ` |
+| ¿cuánto mide el campo? | byte, word o doubleword |
+| ¿hay padding? | bytes sin significado entre campos |
+| ¿cuál es `SIZE`? | tamaño total, incluido padding final |
+| ¿qué invariante protege el ADT? | regla como `len <= cap` |
+| ¿qué función puede cambiarlo? | operación pública acordada |
+
+Esta tabla evita el bug típico: mirar solo la instrucción `ldr` o `str` sin
+confirmar si el offset, el tamaño y el estado del objeto eran correctos.
+
 ## Lecciones de esta unidad
 
 ::: {.resource-grid}
@@ -316,3 +333,11 @@ $ echo $?
 ## Siguiente paso
 
 Empieza por [Structs y layout](01-structs-layout.qmd).
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- Arm, *Learn the Architecture: A-profile*: <https://www.arm.com/architecture/learn-the-architecture/a-profile>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- Linux man-pages, `openat(2)`: <https://www.man7.org/linux/man-pages/man2/openat.2.html>
+- Linux man-pages, `close(2)`: <https://www.man7.org/linux/man-pages/man2/close.2.html>

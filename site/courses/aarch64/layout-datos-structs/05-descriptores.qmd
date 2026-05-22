@@ -186,6 +186,21 @@ Un descriptor bien diseñado responde:
 
 Si el descriptor no responde esas preguntas, todavía no está completo.
 
+## Checklist de descriptor
+
+| Revisión | Pregunta |
+|---|---|
+| identidad | ¿este valor es handle, puntero o metadata? |
+| recurso | ¿qué cosa real describe? |
+| ownership | ¿quién debe cerrarlo o liberarlo? |
+| validez | ¿qué valor significa “vacío” o “cerrado”? |
+| límites | ¿hay `len`, `cap`, `rows` o `cols` suficientes? |
+| cleanup | ¿qué función deja el descriptor en estado seguro? |
+
+Un descriptor pequeño puede evitar pasar muchos argumentos sueltos, pero solo si
+su estado cuenta la verdad. Un fd cerrado guardado como si siguiera abierto es
+un descriptor mentiroso.
+
 ## Errores comunes
 
 | Error | Consecuencia |
@@ -204,8 +219,17 @@ Si el descriptor no responde esas preguntas, todavía no está completo.
 3. ¿Qué diferencia hay entre `len` y `cap`?
 4. ¿Qué describe `Matrix` además de `data`?
 5. ¿Por qué file wrapper necesita destructor?
+6. ¿Qué valor podría representar “sin fd abierto”?
 
 ## Cierre
 
 Descriptores hacen programas de bajo nivel más legibles. En vez de pasar cinco
 valores sueltos, guardas estado en un layout y operas con reglas.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Linux man-pages, `openat(2)`: <https://www.man7.org/linux/man-pages/man2/openat.2.html>
+- Linux man-pages, `read(2)`: <https://www.man7.org/linux/man-pages/man2/read.2.html>
+- Linux man-pages, `write(2)`: <https://www.man7.org/linux/man-pages/man2/write.2.html>
+- Linux man-pages, `close(2)`: <https://www.man7.org/linux/man-pages/man2/close.2.html>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>

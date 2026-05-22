@@ -185,6 +185,20 @@ memoria del objeto deja de usarse o se reutiliza
 Separar memoria del objeto y recursos internos evita confusión. Un descriptor
 puede vivir en `.data`, pero su campo `data` puede apuntar a bloque dinámico.
 
+## Checklist de ciclo de vida
+
+| Etapa | Pregunta |
+|---|---|
+| antes de `init` | ¿la memoria del descriptor existe? |
+| `init` | ¿todos los campos quedan definidos? |
+| operación | ¿recibe `self` correcto en `x0`? |
+| operación no hoja | ¿conserva `self` si ejecuta `bl`? |
+| destructor | ¿libera solo recursos que posee? |
+| después de destruir | ¿el objeto queda marcado como cerrado o inválido? |
+
+Un objeto manual correcto no depende de que el programa “se acuerde” de no usar
+basura. Sus funciones deben dejar estados fáciles de razonar.
+
 ## Función no hoja y `self`
 
 Si un método llama otra función:
@@ -246,8 +260,16 @@ solo un valor en un registro y puede perderse.
 3. ¿Qué debe hacer un destructor?
 4. ¿Por qué `buffer_clear` no necesita borrar todos los bytes?
 5. ¿Por qué conviene guardar `self` si llamas otra función?
+6. ¿Qué diferencia hay entre memoria del descriptor y recurso interno?
 
 ## Cierre
 
 Objetos manuales no agregan instrucciones nuevas. Agregan disciplina: layout,
 constructor, operaciones, destructor y manejo correcto de `self`.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
+- Linux man-pages, `close(2)`: <https://www.man7.org/linux/man-pages/man2/close.2.html>
+- Linux man-pages, `munmap(2)`: <https://www.man7.org/linux/man-pages/man2/munmap.2.html>

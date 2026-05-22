@@ -237,6 +237,21 @@ point_clear:
 `point_clear` no necesita saber dónde vive el objeto: `.data`, stack, heap o
 `mmap`. Solo necesita un puntero válido a un bloque con layout `Point`.
 
+## Checklist antes de acceder un campo
+
+Antes de cada `ldr` o `str` sobre un objeto, confirma:
+
+| Pregunta | Ejemplo |
+|---|---|
+| ¿qué registro tiene la base? | `x0 = Point*` |
+| ¿qué offset voy a usar? | `POINT_Y` |
+| ¿qué tamaño tiene el campo? | 8 bytes para `.quad` |
+| ¿qué instrucción coincide? | `ldr xN` o `str xN` |
+| ¿el offset queda dentro de `SIZE`? | `POINT_Y + 8 <= POINT_SIZE` |
+
+Si una de estas preguntas falla, el acceso puede leer otro campo, pisar padding
+o escribir fuera del objeto.
+
 ## Errores comunes
 
 | Error | Consecuencia |
@@ -254,8 +269,15 @@ point_clear:
 3. ¿Por qué `str x1` escribe 8 bytes?
 4. ¿Qué instrucción usarías para un campo byte?
 5. ¿Por qué `point_clear` sirve para objetos en heap también?
+6. ¿Qué condición debe cumplir `offset + tamaño` respecto a `POINT_SIZE`?
 
 ## Cierre
 
 Acceder a campos no es magia. Es dirección base, offset y tamaño correcto de
 carga o almacenamiento.
+
+## Fuentes {.unlisted .unnumbered}
+
+- Arm, *Arm Architecture Reference Manual for A-profile architecture*: <https://developer.arm.com/documentation/ddi0487/latest>
+- Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*: <https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst>
+- GNU Binutils, *GNU assembler manual*: <https://sourceware.org/binutils/docs/as/>
