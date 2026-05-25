@@ -1,35 +1,58 @@
 ---
 title: "Makefiles ARM64"
-description: "Elige, copia y usa el Makefile correcto para QEMU o Raspberry Pi sin cambiar comandos."
+description: "Usa los Makefiles compartidos de ejemplos o las plantillas para proyectos aislados."
 ---
 
-El Makefile existe para evitar confusiones entre entornos. El estudiante no debe
-recordar comandos distintos para QEMU y Raspberry Pi. Debe elegir el Makefile
-correcto, guardarlo como `src/Makefile` y usar siempre los mismos comandos.
+El Makefile existe para evitar confusiones entre entornos. En los ejemplos
+AArch64 del curso no se copia un Makefile por lección: se abre
+`examples/aarch64` como workspace y se usan dos Makefiles compartidos.
 
-## Regla principal
+## Regla principal para ejemplos
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
-make run
-make gdb
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb
+```
+
+En ARM64 nativo:
+
+```bash
+make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
 El binario queda en:
 
 ```bash
-build/main
+01_laboratorio/03_primer_programa/src/build/main
 ```
 
-Si abres el proyecto desde VS Code, esa misma ruta se ve como:
+## Makefiles compartidos
 
-```bash
-src/build/main
-```
+| Caso | Usa |
+|---|---|
+| Laptop/PC x86_64 con QEMU | `examples/aarch64/Makefile.qemu` |
+| Raspberry Pi / ARM64 real | `examples/aarch64/Makefile.native` |
 
-## Qué Makefile copio
+::: {.callout-tip title="Idea clave"}
+Cada ejemplo mantiene `src/main.s`. El Makefile compartido recibe
+`EXAMPLE=<unidad>/<ejemplo>` o `SRC_DIR=<ruta>/src`.
+:::
+
+## Comandos disponibles
+
+| Comando | Qué hace |
+|---|---|
+| `make -f Makefile.qemu EXAMPLE=...` | Ensambla y enlaza para QEMU |
+| `make -f Makefile.qemu EXAMPLE=... run` | Ejecuta con QEMU |
+| `make -f Makefile.qemu EXAMPLE=... gdb` | QEMU espera GDB en `localhost:1234` |
+| `make -f Makefile.native EXAMPLE=... run` | Ejecuta directo en ARM64 |
+| `make -f Makefile.qemu EXAMPLE=... clean` | Borra `src/build/` |
+
+## Plantillas para proyectos aislados
+
+Si una práctica necesita ser autocontenida fuera de `examples/aarch64`, puedes
+copiar una plantilla desde `tooling/make/makefile-templates/`.
 
 | Caso | Copia como `src/Makefile` |
 |---|---|
@@ -37,21 +60,6 @@ src/build/main
 | Laptop/PC x86_64 con QEMU, varios `.s` | `Makefile.qemu.multi` |
 | Raspberry Pi / ARM64 real, un archivo `main.s` | `Makefile.arm64.single` |
 | Raspberry Pi / ARM64 real, varios `.s` | `Makefile.arm64.multi` |
-
-::: {.callout-tip title="Idea clave"}
-No uses banderas especiales de `make`. Si cambias de QEMU a Raspberry Pi,
-cambia el contenido de `src/Makefile`. Los comandos siguen iguales.
-:::
-
-## Comandos disponibles
-
-| Comando | Qué hace |
-|---|---|
-| `make` | Ensambla y enlaza |
-| `make run` | Ejecuta el programa |
-| `make gdb` | Abre depuración según el entorno |
-| `make clean` | Borra `build/` |
-| `make info` | Muestra ayuda corta |
 
 ## QEMU, un solo archivo
 
@@ -259,8 +267,8 @@ info:
 
 ## Checklist
 
-- [ ] Elegí un template según mi máquina.
-- [ ] Lo guardé como `src/Makefile`.
-- [ ] Puedo ejecutar `make`.
-- [ ] Puedo ejecutar `make run`.
-- [ ] El binario aparece como `build/main` dentro de `src/`.
+- [ ] Abrí `examples/aarch64` para trabajar ejemplos del curso.
+- [ ] Elegí `Makefile.qemu` o `Makefile.native` según mi máquina.
+- [ ] Puedo ejecutar `make -f Makefile.qemu EXAMPLE=... run`.
+- [ ] El binario aparece como `src/build/main` dentro del ejemplo.
+- [ ] Solo uso templates copiados cuando necesito un proyecto aislado.

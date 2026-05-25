@@ -17,9 +17,8 @@ quedan para guías y unidades posteriores.
 ## Prepara binario
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa
 ```
 
 ## Ruta x86_64 con QEMU
@@ -27,7 +26,7 @@ make
 Terminal 1:
 
 ```bash
-make gdb
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb
 ```
 
 La terminal queda esperando conexión en `localhost:1234`.
@@ -35,7 +34,7 @@ La terminal queda esperando conexión en `localhost:1234`.
 Terminal 2:
 
 ```bash
-gdb-multiarch build/main
+gdb-multiarch 01_laboratorio/03_primer_programa/src/build/main
 ```
 
 Dentro de GDB:
@@ -54,7 +53,7 @@ info registers x0 x1 x2 x8 pc
 ## Ruta Raspberry Pi ARM64 real
 
 ```bash
-make gdb
+make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa gdb
 ```
 
 Dentro de GDB:
@@ -118,27 +117,25 @@ Para usar debugging visual instala:
 | ARM64 Assembly (GNU AS) | `Felipenguim.vscode-arm64-assembly` |
 | StackScope | `EightLayerStudio.StackScope` |
 
-El repo trae `.vscode/launch.json`, pero conviene que puedas copiar la
-configuración completa desde esta página. Esta versión fuerza vista de
-instrucciones y reduce errores visuales al depurar assembly.
+Para los ejemplos del curso, abre `examples/aarch64` como workspace y abre el
+`src/main.s` que quieres depurar. La configuración usa `${fileDirname}`, por lo
+que no hay que escoger una carpeta en una lista.
 
 ```json
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug ARM64 (QEMU)",
+      "name": "Debug ARM64 QEMU - archivo activo",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/build/main",
-      "cwd": "${workspaceFolder}/src",
+      "program": "${fileDirname}/build/main",
+      "cwd": "${fileDirname}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb-multiarch",
       "miDebuggerServerAddress": "localhost:1234",
+      "preLaunchTask": "QEMU: build + gdb archivo activo",
       "stopAtEntry": true,
-      "sourceFileMap": {
-        "${workspaceFolder}/src": "${workspaceFolder}/src"
-      },
       "setupCommands": [
         { "text": "-enable-pretty-printing" },
         { "text": "set architecture aarch64" },
@@ -149,13 +146,14 @@ instrucciones y reduce errores visuales al depurar assembly.
       ]
     },
     {
-      "name": "Debug ARM64 (nativo)",
+      "name": "Debug ARM64 nativo - archivo activo",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/build/main",
-      "cwd": "${workspaceFolder}/src",
+      "program": "${fileDirname}/build/main",
+      "cwd": "${fileDirname}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "Native: build archivo activo",
       "stopAtEntry": true,
       "setupCommands": [
         { "text": "-enable-pretty-printing" },
@@ -169,9 +167,9 @@ instrucciones y reduce errores visuales al depurar assembly.
 }
 ```
 
-::: {.callout-note title="Si tu repo se abre en otra carpeta"}
-La configuración anterior asume que VS Code abre `00-hello-minimo/` como
-workspace. Así el código queda corto y portable: `src/build/main`.
+::: {.callout-note title="Archivo activo"}
+Antes de presionar F5, el archivo activo debe ser el `src/main.s` del ejemplo.
+VS Code calcula el binario como `${fileDirname}/build/main`.
 :::
 
 ## Errores visuales al avanzar

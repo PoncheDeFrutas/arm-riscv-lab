@@ -31,10 +31,8 @@ docker run --rm -it -v "$PWD":/workspace -w /workspace arm-riscv-lab
 Dentro del contenedor:
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
-make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
 ## Depurar desde VS Code
@@ -48,9 +46,8 @@ docker run --rm -it -p 1234:1234 -v "$PWD":/workspace -w /workspace arm-riscv-la
 Dentro del contenedor:
 
 ```bash
-cd 00-hello-minimo
-cd src
-make gdb
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb
 ```
 
 En el host, conecta VS Code a `localhost:1234`.

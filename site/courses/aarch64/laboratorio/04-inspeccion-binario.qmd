@@ -21,8 +21,9 @@ arquitectura, símbolos, instrucciones, bytes y syscalls observables.
 
 ## Antes de empezar
 
-Tener el ejemplo `00-hello-minimo` compilado. Si no lo has hecho, ve a
-[Primer programa](03-primer-programa.qmd) y ejecuta `make`.
+Tener compilado el ejemplo
+`examples/aarch64/01_laboratorio/03_primer_programa`. Si no lo has
+hecho, ve a [Primer programa](03-primer-programa.qmd).
 
 ## Idea central
 
@@ -36,9 +37,9 @@ distinta.
 ## Prepara el ejemplo
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa
+cd 01_laboratorio/03_primer_programa/src
 ```
 
 Debes tener `build/main` como resultado. Si `make` falla, revisa que las

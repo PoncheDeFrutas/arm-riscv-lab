@@ -13,21 +13,24 @@ Verifica con `uname -m`. Si reporta `x86_64`, vuelve a
 [Depuración: QEMU y VS Code](qemu-vscode.qmd).
 :::
 
-## Compila
+## Abre el workspace de ejemplos
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
+cd examples/aarch64
+code .
 ```
 
-## Lanza GDB
+Abre el `src/main.s` del ejemplo que quieres estudiar. La configuración nativa
+usa `${fileDirname}`, así que el binario esperado será `src/build/main` junto al
+archivo abierto.
+
+## Compila y ejecuta
 
 ```bash
-make gdb
+make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
-En VS Code usa la configuración `Debug ARM64 (nativo)`.
+En VS Code usa la configuración `Debug ARM64 nativo - archivo activo`.
 
 Instala estas extensiones:
 
@@ -38,20 +41,21 @@ Instala estas extensiones:
 | ARM64 Assembly (GNU AS) | `Felipenguim.vscode-arm64-assembly` |
 | StackScope | `EightLayerStudio.StackScope` |
 
-Config completa para copiar en `.vscode/launch.json`:
+Fragmento principal de `.vscode/launch.json`:
 
 ```json
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug ARM64 (nativo)",
+      "name": "Debug ARM64 nativo - archivo activo",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/build/main",
-      "cwd": "${workspaceFolder}/src",
+      "program": "${fileDirname}/build/main",
+      "cwd": "${fileDirname}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "Native: build archivo activo",
       "stopAtEntry": true,
       "setupCommands": [
         { "text": "-enable-pretty-printing" },
@@ -72,7 +76,7 @@ Config completa para copiar en `.vscode/launch.json`:
 | Ejecución | `qemu-aarch64` | Directa |
 | Debugger | `gdb-multiarch` | `gdb` |
 | Conexión | `localhost:1234` | Launch local |
-| Makefile activo | Template QEMU copiado como `Makefile` | Template ARM64 copiado como `Makefile` |
+| Makefile activo | `examples/aarch64/Makefile.qemu` | `examples/aarch64/Makefile.native` |
 
 ::: {.callout-tip}
 ## Misma idea, menos capas

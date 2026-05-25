@@ -42,10 +42,8 @@ reportando `x86_64`; QEMU ejecutará el binario ARM64.
 ## Primer programa
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
-make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
 Salida esperada:
@@ -59,10 +57,11 @@ Hola ARM64
 Arranca QEMU con GDB server:
 
 ```bash
-make gdb
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb
 ```
 
-Luego conecta VS Code con la configuración `Debug ARM64 (QEMU)`.
+Luego conecta VS Code con la configuración `Debug ARM64 QEMU - archivo activo`,
+o abre el `src/main.s` del ejemplo y presiona F5 desde `examples/aarch64`.
 
 ::: {.callout-warning}
 ## Terminal bloqueada es normal

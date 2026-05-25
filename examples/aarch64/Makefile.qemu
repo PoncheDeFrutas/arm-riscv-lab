@@ -1,0 +1,82 @@
+# Makefile compartido para ejemplos AArch64 ejecutados con QEMU user mode.
+#
+# Uso recomendado desde examples/aarch64:
+#   make -f Makefile.qemu EXAMPLE=05_primeros_programas/01_programa_minimo_exit run
+#   make -f Makefile.qemu SRC_DIR=05_primeros_programas/01_programa_minimo_exit/src gdb
+#
+# VS Code pasa SRC_DIR=${fileDirname} cuando el archivo abierto es src/main.s.
+
+AS      = aarch64-linux-gnu-as
+LD      = aarch64-linux-gnu-ld
+QEMU    ?= qemu-aarch64
+PORT    ?= 1234
+
+ifndef SRC_DIR
+ifdef SRC
+SRC_DIR := $(patsubst %/,%,$(dir $(SRC)))
+MAIN_SRC ?= $(SRC)
+else ifdef EXAMPLE
+EXAMPLE_DIR := $(patsubst %/,%,$(EXAMPLE))
+ifneq (,$(filter %/src,$(EXAMPLE_DIR)))
+SRC_DIR := $(EXAMPLE_DIR)
+else
+SRC_DIR := $(EXAMPLE_DIR)/src
+endif
+else
+$(error Debes definir SRC_DIR, EXAMPLE o SRC. Ejemplo: make -f Makefile.qemu EXAMPLE=05_primeros_programas/01_programa_minimo_exit run)
+endif
+endif
+
+SRC_DIR := $(patsubst %/,%,$(SRC_DIR))
+BUILD   ?= $(SRC_DIR)/build
+TARGET  ?= $(BUILD)/main
+
+MAIN_SRC ?= $(SRC_DIR)/main.s
+ASFLAGS  ?= -g
+LDFLAGS  ?=
+SRCS     ?= $(MAIN_SRC) $(filter-out $(MAIN_SRC),$(wildcard $(SRC_DIR)/*.s))
+
+-include $(SRC_DIR)/example.mk
+
+OBJS := $(patsubst $(SRC_DIR)/%.s,$(BUILD)/%.o,$(SRCS))
+
+.PHONY: all run gdb gdb-vscode clean info check
+
+all: $(TARGET)
+
+check:
+	@test -f "$(MAIN_SRC)" || { echo "ERROR: no existe $(MAIN_SRC)"; exit 1; }
+
+$(BUILD):
+	mkdir -p "$(BUILD)"
+
+$(BUILD)/%.o: $(SRC_DIR)/%.s | $(BUILD)
+	$(AS) $(ASFLAGS) -o "$@" "$<"
+
+$(TARGET): check $(OBJS)
+	$(LD) $(LDFLAGS) -o "$@" $(OBJS)
+
+run: $(TARGET)
+	$(QEMU) "$(TARGET)"
+
+gdb: $(TARGET)
+	@echo "Starting QEMU and waiting for GDB on port $(PORT)..."
+	$(QEMU) -g $(PORT) -singlestep "$(TARGET)"
+
+gdb-vscode: $(TARGET)
+	@echo "Starting QEMU and waiting for VS Code on port $(PORT)..."
+	@$(QEMU) -g $(PORT) -singlestep "$(TARGET)" & \
+	pid=$$!; \
+	sleep 0.2; \
+	echo "QEMU_GDB_READY"; \
+	wait $$pid
+
+clean:
+	rm -rf "$(BUILD)"
+
+info:
+	@echo "SRC_DIR  = $(SRC_DIR)"
+	@echo "MAIN_SRC = $(MAIN_SRC)"
+	@echo "TARGET   = $(TARGET)"
+	@echo "SRCS     = $(SRCS)"
+	@echo "Targets: all, run, gdb, gdb-vscode, clean, info"

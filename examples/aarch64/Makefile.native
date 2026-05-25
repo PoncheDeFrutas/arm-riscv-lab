@@ -1,0 +1,71 @@
+# Makefile compartido para ejemplos AArch64 ejecutados en Linux ARM64 nativo.
+#
+# Uso recomendado desde examples/aarch64:
+#   make -f Makefile.native EXAMPLE=05_primeros_programas/01_programa_minimo_exit run
+#   make -f Makefile.native SRC_DIR=05_primeros_programas/01_programa_minimo_exit/src gdb
+#
+# VS Code pasa SRC_DIR=${fileDirname} cuando el archivo abierto es src/main.s.
+
+AS = as
+LD = ld
+
+ifndef SRC_DIR
+ifdef SRC
+SRC_DIR := $(patsubst %/,%,$(dir $(SRC)))
+MAIN_SRC ?= $(SRC)
+else ifdef EXAMPLE
+EXAMPLE_DIR := $(patsubst %/,%,$(EXAMPLE))
+ifneq (,$(filter %/src,$(EXAMPLE_DIR)))
+SRC_DIR := $(EXAMPLE_DIR)
+else
+SRC_DIR := $(EXAMPLE_DIR)/src
+endif
+else
+$(error Debes definir SRC_DIR, EXAMPLE o SRC. Ejemplo: make -f Makefile.native EXAMPLE=05_primeros_programas/01_programa_minimo_exit run)
+endif
+endif
+
+SRC_DIR := $(patsubst %/,%,$(SRC_DIR))
+BUILD   ?= $(SRC_DIR)/build
+TARGET  ?= $(BUILD)/main
+
+MAIN_SRC ?= $(SRC_DIR)/main.s
+ASFLAGS  ?= -g
+LDFLAGS  ?=
+SRCS     ?= $(MAIN_SRC) $(filter-out $(MAIN_SRC),$(wildcard $(SRC_DIR)/*.s))
+
+-include $(SRC_DIR)/example.mk
+
+OBJS := $(patsubst $(SRC_DIR)/%.s,$(BUILD)/%.o,$(SRCS))
+
+.PHONY: all run gdb clean info check
+
+all: $(TARGET)
+
+check:
+	@test -f "$(MAIN_SRC)" || { echo "ERROR: no existe $(MAIN_SRC)"; exit 1; }
+
+$(BUILD):
+	mkdir -p "$(BUILD)"
+
+$(BUILD)/%.o: $(SRC_DIR)/%.s | $(BUILD)
+	$(AS) $(ASFLAGS) -o "$@" "$<"
+
+$(TARGET): check $(OBJS)
+	$(LD) $(LDFLAGS) -o "$@" $(OBJS)
+
+run: $(TARGET)
+	"$(TARGET)"
+
+gdb: $(TARGET)
+	gdb "$(TARGET)"
+
+clean:
+	rm -rf "$(BUILD)"
+
+info:
+	@echo "SRC_DIR  = $(SRC_DIR)"
+	@echo "MAIN_SRC = $(MAIN_SRC)"
+	@echo "TARGET   = $(TARGET)"
+	@echo "SRCS     = $(SRCS)"
+	@echo "Targets: all, run, gdb, clean, info"

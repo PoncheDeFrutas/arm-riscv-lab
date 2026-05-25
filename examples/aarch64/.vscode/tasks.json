@@ -1,0 +1,91 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "QEMU: build archivo activo",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "${workspaceFolder}/Makefile.qemu",
+        "SRC_DIR=${fileDirname}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "QEMU: run archivo activo",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "${workspaceFolder}/Makefile.qemu",
+        "SRC_DIR=${fileDirname}",
+        "run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "QEMU: build + gdb archivo activo",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "${workspaceFolder}/Makefile.qemu",
+        "SRC_DIR=${fileDirname}",
+        "gdb-vscode"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "arm64-qemu",
+        "pattern": {
+          "regexp": "a^"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Starting QEMU",
+          "endsPattern": "^QEMU_GDB_READY$"
+        }
+      }
+    },
+    {
+      "label": "Native: build archivo activo",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "${workspaceFolder}/Makefile.native",
+        "SRC_DIR=${fileDirname}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Native: run archivo activo",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "-f",
+        "${workspaceFolder}/Makefile.native",
+        "SRC_DIR=${fileDirname}",
+        "run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

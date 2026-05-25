@@ -5,19 +5,27 @@
 Cuando los ejemplos ejecutables estén disponibles, el flujo recomendado será:
 
 ```bash
-cd <carpeta-del-ejemplo>/src
-make
-make run
-make gdb
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb
 ```
 
-Cada ejemplo deberá incluir instrucciones propias. Si un ejemplo no tiene `Makefile`, se podrán usar las plantillas de `tooling/make/makefile-templates/`.
+Cada ejemplo AArch64 debe tener `README.md` y `src/main.s`. Los Makefiles y la
+configuración de VS Code se comparten desde `examples/aarch64`.
 
-Este flujo todavía depende de que los ejemplos se vayan agregando a `examples/` o `projects/`.
+Para ARM64 nativo:
+
+```bash
+cd examples/aarch64
+make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run
+```
+
+Las plantillas de `tooling/make/makefile-templates/` quedan para proyectos
+aislados o prácticas que necesiten una estructura propia.
 
 ## Qué debe incluir cada ejemplo
 
-Cada ejemplo en `examples/` o `projects/` deberá indicar:
+Cada ejemplo en `examples/aarch64` o `projects/` deberá indicar:
 
 - Qué hace el programa
 - Cómo compilarlo

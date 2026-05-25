@@ -13,29 +13,49 @@ QEMU ejecuta el programa y abre un GDB server en `localhost:1234`. VS Code no
 lanza el programa directamente; se conecta a ese proceso.
 :::
 
-## 1. Compila el ejemplo
+## 1. Abre el workspace de ejemplos
+
+Para los ejemplos AArch64 del curso, abre `examples/aarch64` en VS Code y luego
+abre el archivo `src/main.s` del ejemplo que quieres depurar.
+
+Ejemplo:
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
+cd examples/aarch64
+code .
 ```
 
-## 2. Arranca QEMU con GDB server
+## 2. Compila o ejecuta desde terminal
 
 ```bash
-make gdb
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
-Deja esa terminal abierta. El programa está esperando al debugger. En el
-Makefile de QEMU, este target usa `-singlestep` para reducir saltos visuales:
+## 3. Depura con QEMU
+
+La configuración `Debug ARM64 QEMU - archivo activo` usa `${fileDirname}`. Si el
+archivo abierto es `01_laboratorio/03_primer_programa/src/main.s`,
+VS Code busca el binario en:
+
+```bash
+01_laboratorio/03_primer_programa/src/build/main
+```
+
+Al presionar F5, la task previa ejecuta:
+
+```bash
+make -f Makefile.qemu SRC_DIR=${fileDirname} gdb-vscode
+```
+
+Ese target compila el ejemplo, arranca QEMU con GDB server y espera la conexión
+en `localhost:1234`.
 
 ```make
-gdb: $(TARGET)
-	$(QEMU) -g 1234 -singlestep $(TARGET)
+gdb-vscode: $(TARGET)
+	$(QEMU) -g 1234 -singlestep "$(TARGET)"
 ```
 
-## 3. Conecta VS Code
+## 4. Extensiones
 
 Instala estas extensiones:
 
@@ -46,27 +66,25 @@ Instala estas extensiones:
 | ARM64 Assembly (GNU AS) | `Felipenguim.vscode-arm64-assembly` |
 | StackScope | `EightLayerStudio.StackScope` |
 
-En VS Code usa la configuración `Debug ARM64 (QEMU)`.
+En VS Code usa la configuración `Debug ARM64 QEMU - archivo activo`.
 
-Config completa para copiar en `.vscode/launch.json`:
+Fragmento principal de `.vscode/launch.json`:
 
 ```json
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug ARM64 (QEMU)",
+      "name": "Debug ARM64 QEMU - archivo activo",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/build/main",
-      "cwd": "${workspaceFolder}/src",
+      "program": "${fileDirname}/build/main",
+      "cwd": "${fileDirname}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb-multiarch",
       "miDebuggerServerAddress": "localhost:1234",
+      "preLaunchTask": "QEMU: build + gdb archivo activo",
       "stopAtEntry": true,
-      "sourceFileMap": {
-        "${workspaceFolder}/src": "${workspaceFolder}/src"
-      },
       "setupCommands": [
         { "text": "-enable-pretty-printing" },
         { "text": "set architecture aarch64" },
@@ -80,12 +98,13 @@ Config completa para copiar en `.vscode/launch.json`:
 }
 ```
 
-::: {.callout-note title="Si usas otra carpeta"}
-Abre `00-hello-minimo/` como workspace. Así VS Code encuentra
-`${workspaceFolder}/src/build/main`.
+::: {.callout-note title="Archivo activo"}
+Antes de presionar F5, asegúrate de que el archivo activo sea el `src/main.s`
+del ejemplo. Si está abierto un README u otro archivo, `${fileDirname}` apuntará
+a otra carpeta.
 :::
 
-## 4. Debug Console
+## 5. Debug Console
 
 En la Debug Console de VS Code puedes forzar depuración por instrucción:
 
@@ -133,8 +152,8 @@ Dirección del mensaje apuntada por `x1`.
 ::: {.callout-warning}
 ## Error común
 
-Si VS Code dice que no puede conectar, casi siempre `make gdb` no está corriendo
-o el puerto `1234` ya está ocupado.
+Si VS Code dice que no puede conectar, revisa que el puerto `1234` no esté
+ocupado y que el archivo activo sea `src/main.s`.
 :::
 
 ::: {.callout-tip title="Breakpoints por etiqueta"}

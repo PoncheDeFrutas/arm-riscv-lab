@@ -14,7 +14,7 @@ También hay guías prácticas en `site/guides/` para preparar el entorno, traba
 
 - **AArch64**: ruta principal y en desarrollo activo.
 - **RISC-V**: existe una página inicial en `site/courses/riscv/`, pero el contenido todavía está en planificación.
-- **Ejemplos y proyectos**: `examples/` y `projects/` están reservados para programas ejecutables y prácticas; aún faltan ejemplos completos.
+- **Ejemplos y proyectos**: `examples/aarch64` contiene el workspace compartido de ejemplos ARM64; `projects/` queda para prácticas más grandes.
 - **Tooling**: `tooling/` contiene plantillas de Makefile y soporte para entornos reproducibles.
 
 ## Para quién es
@@ -52,7 +52,7 @@ No hace falta leer todo de una vez. La idea es avanzar por unidad: leer, ejecuta
 | `site/courses/riscv/` | Ruta RISC-V planificada |
 | `site/guides/` | Setup, debugging y troubleshooting |
 | `site/slides/` | Presentaciones Slidev y componentes Vue |
-| `examples/` | Ejemplos autocontenidos, pendientes de poblar |
+| `examples/aarch64/` | Workspace de ejemplos AArch64 con Makefiles y VS Code compartidos |
 | `projects/` | Prácticas o proyectos más grandes, pendientes de poblar |
 | `tooling/docker/` | Dockerfile del laboratorio |
 | `tooling/make/makefile-templates/` | Plantillas para compilar en QEMU o ARM64 nativo |
@@ -109,6 +109,13 @@ Para una presentación específica:
 make slides SLIDES=site/slides/aarch64/05-primeros-programas.md
 ```
 
+Para ejecutar un ejemplo AArch64:
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
+```
+
 ## Flujo recomendado de estudio
 
 1. Lee una unidad del curso.
@@ -131,7 +138,7 @@ Al agregar una unidad nueva, intenta mantener esta estructura:
 - una actividad o pregunta de práctica;
 - conexión clara con la unidad anterior y la siguiente.
 
-Si agregas ejemplos ejecutables, ubícalos en `examples/` o `projects/` y usa las plantillas de `tooling/make/makefile-templates/` cuando sea posible.
+Si agregas ejemplos AArch64 pequeños, ubícalos en `examples/aarch64/<unidad>/<ejemplo>/src/main.s` y reutiliza los Makefiles compartidos de `examples/aarch64`. Usa `projects/` o las plantillas de `tooling/make/makefile-templates/` cuando necesites una práctica aislada con estructura propia.
 
 ## Licencia
 

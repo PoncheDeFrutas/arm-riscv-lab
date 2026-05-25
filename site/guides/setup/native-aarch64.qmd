@@ -40,18 +40,15 @@ No estás en ARM nativo. Vuelve a [QEMU en x86_64](qemu-x86_64.qmd).
 
 ## Ejecución
 
-Antes de compilar, usa el template ARM64 nativo como `src/Makefile`. Después los
-comandos son iguales que en QEMU.
+Desde el workspace de ejemplos:
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
-make run
-make gdb
+cd examples/aarch64
+make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
 ## Debugging
 
-Para VS Code usa `Debug ARM64 (nativo)`. Esa configuración lanza GDB local, sin
+Para VS Code abre `examples/aarch64`, abre el `src/main.s` del ejemplo y usa
+`Debug ARM64 nativo - archivo activo`. Esa configuración lanza GDB local, sin
 conectar a un puerto QEMU.

@@ -9,9 +9,9 @@ Cursos > AArch64 > Laboratorio > Estructura del repositorio
 :::
 
 ::: {.hero-lab}
-La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas.
-Cada ejemplo pequeño puede vivir como una carpeta simple con `.vscode/` y
-`src/`.
+La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas ni
+duplicar configuraciones. Los ejemplos AArch64 comparten `.vscode/` y Makefiles
+desde `examples/aarch64`; cada ejemplo solo agrega su README y `src/main.s`.
 :::
 
 ## Qué vas a aprender
@@ -23,65 +23,73 @@ que el mismo flujo funcione en QEMU o ARM64 nativo.
 El objetivo es que puedas crear una práctica nueva sin inventar rutas ni
 comandos cada vez.
 
-## Proyecto mínimo
+## Workspace de ejemplos
 
 ```bash
-00-hello-minimo/
+examples/aarch64/
 |- .vscode/
-|  |- launch.json
-|  `- settings.json
-`- src/
-   |- Makefile
-   `- main.s
+|- Makefile.qemu
+|- Makefile.native
+`- 05_primeros_programas/
+   `- 01_programa_minimo_exit/
+      |- README.md
+      `- src/
+         `- main.s
 ```
 
-En `src/` solo necesitas dos archivos para empezar:
+En cada ejemplo, `src/` solo necesita un archivo para empezar:
 
 | Archivo | Uso |
 |---|---|
 | `main.s` | Código assembly |
-| `Makefile` | Flujo activo: QEMU o ARM64 nativo |
 
 El binario generado queda en `src/build/main` visto desde VS Code, y en
 `build/main` cuando ya estás dentro de `src/`.
 
-## Por qué separar `.vscode/` y `src/`
+## Por qué compartir `.vscode/` y Makefiles
 
-`.vscode/` guarda configuración de editor y debugging. `src/` guarda el programa
-y su flujo de construcción. Mantenerlos separados evita mezclar configuración de
-herramientas con código fuente.
+`.vscode/` guarda configuración de editor y debugging. Los Makefiles compartidos
+guardan el flujo de construcción para QEMU y ARM64 nativo. Compartirlos evita
+copiar archivos iguales en cada lección.
 
 Para un estudiante, la regla práctica es:
 
 ```bash
-abrir carpeta del ejemplo en VS Code
-trabajar dentro de src/
-ejecutar make desde src/
+abrir examples/aarch64 en VS Code
+abrir el src/main.s del ejemplo
+presionar F5 o ejecutar make desde examples/aarch64
 ```
 
-## Flujo único
+VS Code usa `${fileDirname}`: si el archivo abierto es
+`05_primeros_programas/01_programa_minimo_exit/src/main.s`, entonces depura
+`05_primeros_programas/01_programa_minimo_exit/src/build/main`.
+
+## Flujo con QEMU
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
-make run
-make gdb
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=05_primeros_programas/01_programa_minimo_exit run
+make -f Makefile.qemu EXAMPLE=05_primeros_programas/01_programa_minimo_exit gdb
 ```
 
-QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile
-que copiaste como `src/Makefile`.
+## Flujo en ARM64 nativo
+
+```bash
+cd examples/aarch64
+make -f Makefile.native EXAMPLE=05_primeros_programas/01_programa_minimo_exit run
+```
 
 | Comando | Intención |
 |---|---|
-| `make` | construir el binario |
-| `make run` | ejecutar el binario |
-| `make gdb` | iniciar flujo de depuración |
-| `make clean` | limpiar artefactos generados |
+| `make -f Makefile.qemu EXAMPLE=...` | construir con toolchain cruzada |
+| `make -f Makefile.qemu EXAMPLE=... run` | ejecutar con QEMU |
+| `make -f Makefile.qemu EXAMPLE=... gdb` | iniciar QEMU esperando GDB |
+| `make -f Makefile.native EXAMPLE=... run` | ejecutar directo en ARM64 |
 
 ## Templates disponibles
 
-Los templates viven en:
+Los ejemplos AArch64 usan `examples/aarch64/Makefile.qemu` y
+`examples/aarch64/Makefile.native`. Los templates historicos viven en:
 
 ```bash
 tooling/make/makefile-templates/
@@ -98,19 +106,18 @@ tooling/make/makefile-templates/
 | `Makefile.arm64.single` | Raspberry Pi / ARM64 real, un `main.s` |
 | `Makefile.arm64.multi` | Raspberry Pi / ARM64 real, varios `.s` |
 
-Para copiar y entender cada uno, usa la guía
-[Makefiles ARM64](../../../guides/setup/makefiles.qmd).
+Para entender ambas rutas, usa la guía [Makefiles ARM64](../../../guides/setup/makefiles.qmd).
 
 ::: {.callout-tip title="Regla docente"}
-No uses banderas especiales de `make` en las prácticas iniciales. Cambia el
-contenido de `src/Makefile` y conserva los comandos.
+En ejemplos AArch64 pequeños, no copies Makefiles por lección. Usa los
+compartidos y pasa `EXAMPLE=<unidad>/<ejemplo>` o abre `src/main.s` en VS Code.
 :::
 
 ## Cuándo usar `examples/` y `projects/`
 
 | Carpeta | Úsala para |
 |---|---|
-| `examples/` | programas pequeños que muestran una idea concreta |
+| `examples/aarch64` | programas pequeños que muestran una idea concreta |
 | `projects/` | prácticas más largas con varias partes o estructura propia |
 | `tooling/` | plantillas, Dockerfile y soporte reusable |
 
@@ -124,14 +131,14 @@ Una práctica mínima debería incluir:
 
 - carpeta clara con nombre numerado;
 - `src/main.s`;
-- `src/Makefile` copiado desde un template;
+- README del ejemplo;
 - salida esperada;
-- instrucciones para `make`, `make run` y `make clean`;
+- instrucciones para `Makefile.qemu` y `Makefile.native`;
 - pasos de depuración si aplica;
 - explicación breve del concepto que practica.
 
-Si la práctica necesita varios archivos `.s`, usa un template `multi`. Si solo
-tiene `main.s`, usa uno `single`.
+Si la práctica necesita varios archivos `.s`, colócalos en el mismo `src/`; el
+Makefile compartido los enlaza junto a `main.s`.
 
 ## Carpetas del curso
 
@@ -148,25 +155,26 @@ tiene `main.s`, usa uno `single`.
 
 | Error | Consecuencia | Corrección |
 |---|---|---|
-| Ejecutar `make` desde carpeta equivocada | Makefile no encontrado | entra a `src/` |
-| Copiar template ARM64 en host x86_64 | ejecución falla o no usa QEMU | usa template `qemu` |
-| Copiar template `single` para varios `.s` | faltan objetos en enlace | usa template `multi` |
+| Ejecutar `make` desde carpeta equivocada | Makefile no encontrado | entra a `examples/aarch64` |
+| Usar `Makefile.native` en host x86_64 | ejecución falla | usa `Makefile.qemu` |
+| Abrir otro archivo y presionar F5 | VS Code calcula otra carpeta | abre el `src/main.s` del ejemplo |
 | Guardar binarios fuera de `build/` | repo queda desordenado | mantener artefactos en `build/` |
 
 ## Checklist
 
-- [ ] Mi ejemplo tiene `.vscode/` y `src/`.
-- [ ] `src/` solo necesita `Makefile` y `main.s` para empezar.
-- [ ] Uso `make`, `make run` y `make gdb`.
-- [ ] Si cambio de entorno, reemplazo `src/Makefile`.
-- [ ] VS Code apunta a `src/build/main`.
+- [ ] Mi ejemplo está bajo `examples/aarch64/<unidad>/<ejemplo>/`.
+- [ ] `src/` tiene `main.s`.
+- [ ] Uso `Makefile.qemu` o `Makefile.native` desde `examples/aarch64`.
+- [ ] VS Code abre `examples/aarch64` y el archivo activo es `src/main.s`.
+- [ ] VS Code apunta a `${fileDirname}/build/main`.
 - [ ] Sé cuándo usar `examples/`, `projects/` y `tooling/`.
 
 ## Cierre
 
 Una estructura estable hace que el estudiante se concentre en el programa, no en
-adivinar comandos. En este repositorio, el Makefile define el entorno y la
-carpeta `src/` concentra el trabajo práctico.
+adivinar comandos ni copiar configuración. En este repositorio, los Makefiles
+compartidos definen el entorno y cada carpeta `src/` concentra el código del
+ejemplo.
 
 ## Fuentes {.unlisted .unnumbered}
 

@@ -155,10 +155,8 @@ Cómo organizar teoría, ejemplos, ejercicios, slides y Makefiles.
 Al terminar la unidad debes poder ejecutar:
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
-make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
 Salida esperada:
@@ -174,9 +172,9 @@ qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.
 
 - [ ] Sé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.
 - [ ] Instalé las herramientas mínimas de mi ruta.
-- [ ] `make` genera `build/main` si estoy dentro de `src/`.
-- [ ] `make run` imprime `Hola ARM64`.
-- [ ] `file build/main` identifica un binario AArch64.
+- [ ] `Makefile.qemu` o `Makefile.native` genera `src/build/main`.
+- [ ] Puedo ejecutar un ejemplo desde `examples/aarch64`.
+- [ ] `file src/build/main` identifica un binario AArch64.
 - [ ] Puedo ver símbolos con `nm` o instrucciones con `objdump`.
 - [ ] Puedo detenerme en `_start` con GDB.
 - [ ] Sé dónde van teoría, ejemplo, ejercicio y presentación.

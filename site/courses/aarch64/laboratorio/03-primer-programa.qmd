@@ -27,24 +27,25 @@ terminal.
 ## Carpeta del ejemplo
 
 ```bash
-00-hello-minimo/
+examples/aarch64/
+|- Makefile.qemu
+|- Makefile.native
 |- .vscode/
-|  |- launch.json
-|  `- settings.json
-`- src/
-   |- Makefile
-   `- main.s
+`- 05_primeros_programas/
+   `- 01_programa_minimo_exit/
+      |- README.md
+      `- src/
+         `- main.s
 ```
 
-Entra a la carpeta:
+Entra al workspace de ejemplos:
 
 ```bash
-cd 00-hello-minimo
-cd src
+cd examples/aarch64
 ```
 
-Durante las primeras prácticas, `src/` será el lugar de trabajo. Ahí está el
-código fuente y ahí se ejecutan los comandos del Makefile.
+Durante las primeras prácticas, cada ejemplo tendrá su propio `src/main.s`. Los
+Makefiles se comparten desde `examples/aarch64` para no duplicar configuración.
 
 ## Flujo de construcción
 
@@ -112,13 +113,13 @@ detalle.
 Usa el Makefile correcto para tu entorno y compila:
 
 ```bash
-make
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa
 ```
 
 Resultado esperado:
 
 ```bash
-build/main
+01_laboratorio/03_primer_programa/src/build/main
 ```
 
 Si ese archivo existe, el ciclo de construcción funcionó: el código fuente se
@@ -127,7 +128,7 @@ transformó en un ejecutable.
 ## Ejecutar
 
 ```bash
-make run
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
 Salida esperada:
@@ -136,21 +137,19 @@ Salida esperada:
 Hola ARM64
 ```
 
-En x86_64, `make run` normalmente ejecuta el binario con QEMU. En ARM64 nativo,
-lo ejecuta directamente. Esa diferencia vive dentro del Makefile; por eso el
-comando externo se mantiene igual.
+En x86_64 usa `Makefile.qemu`. En ARM64 nativo usa `Makefile.native`.
 
 ::: {.callout-tip title="Por qué usamos make"}
-`make` evita escribir comandos largos y reduce errores de copia. QEMU y
-Raspberry Pi usan comandos iguales; lo que cambia es el contenido de
-`src/Makefile`.
+`make` evita escribir comandos largos y reduce errores de copia. En los ejemplos
+del curso, lo que cambia entre QEMU y Raspberry Pi es el Makefile compartido que
+eliges desde `examples/aarch64`.
 :::
 
 ## Comandos útiles
 
 ```bash
-make info
-make clean
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa info
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa clean
 ```
 
 `make info` muestra ayuda del Makefile actual. `make clean` borra `build/` para
@@ -166,8 +165,8 @@ desde el código actual, no desde un resultado anterior.
 | `compiler not found` | faltan paquetes de la ruta elegida |
 | `Exec format error` | intentaste ejecutar directo un binario AArch64 en x86_64 |
 | No imprime nada | revisa longitud del mensaje y syscall `write` |
-| Copiaste template equivocado | revisa guía de Makefiles según tu máquina |
-| `make` no encuentra reglas | confirma que estás dentro de `src/` |
+| Usaste el Makefile equivocado | revisa si estás en QEMU o ARM64 nativo |
+| `make` no encuentra reglas | confirma que estás dentro de `examples/aarch64` |
 | Cambiaste `main.s` y no ves cambios | ejecuta `make clean` y vuelve a compilar |
 
 ## Mini ejercicios

@@ -2,18 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug ARM64 (QEMU)",
+      "name": "Debug ARM64 QEMU - archivo activo",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/build/main",
-      "cwd": "${workspaceFolder}/src",
+      "program": "${fileDirname}/build/main",
+      "cwd": "${fileDirname}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb-multiarch",
       "miDebuggerServerAddress": "localhost:1234",
+      "preLaunchTask": "QEMU: build + gdb archivo activo",
       "stopAtEntry": true,
-      "sourceFileMap": {
-        "${workspaceFolder}/src": "${workspaceFolder}/src"
-      },
       "setupCommands": [
         {
           "text": "-enable-pretty-printing"
@@ -36,13 +34,14 @@
       ]
     },
     {
-      "name": "Debug ARM64 (nativo)",
+      "name": "Debug ARM64 nativo - archivo activo",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/src/build/main",
-      "cwd": "${workspaceFolder}/src",
+      "program": "${fileDirname}/build/main",
+      "cwd": "${fileDirname}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "Native: build archivo activo",
       "stopAtEntry": true,
       "setupCommands": [
         {
