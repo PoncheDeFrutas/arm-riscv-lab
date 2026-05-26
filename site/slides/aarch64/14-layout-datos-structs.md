@@ -368,6 +368,178 @@ layout: aarch64-two-cols
 - Si el objeto solo tenía un puntero prestado, no lo libera
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con structs
+
+---
+
+# Struct layout
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/01_structs_layout run
+```
+
+<InfoBox type="note" title="Lectura">
+La CPU no sabe qué es `Point`. Solo ve dirección base, offsets y tamaños.
+</InfoBox>
+
+---
+
+# Acceso a campos con punteros
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/02_acceso_campos_punteros run
+```
+
+| Expresión | Significa |
+|---|---|
+| `x0` | dirección del objeto |
+| `[x0, #POINT_X]` | campo `x` |
+| `points + POINT_SIZE` | siguiente objeto |
+
+---
+
+# ADT e invariantes
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/03_adts_invariantes run
+```
+
+| Condición | Lectura |
+|---|---|
+| `b.cs buffer_full` | unsigned: `len >= cap` |
+| `b.ne error` | resultado no esperado |
+| retorno `-1` | error controlado por ADT |
+
+---
+
+# Objetos manuales
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/04_objetos_manuales run
+```
+
+`self` no es palabra mágica: es un puntero pasado en `x0`. Constructor, método
+y destructor acuerdan el mismo layout.
+
+---
+
+# Descriptores
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/05_descriptores run
+```
+
+Descriptor = datos para operar sobre otro recurso.
+
+- fd del kernel;
+- puntero a mensaje;
+- longitud;
+- ownership o préstamo.
+
+---
+
+# Buffer, String y Matrix
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/06_buffer_string_matrix run
+```
+
+Tres layouts, misma disciplina:
+
+1. campos nombrados;
+2. offsets estables;
+3. invariantes antes de escribir;
+4. validación al final.
+
+---
+
+# File wrapper y arena
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/07_file_wrapper_arena run
+```
+
+| Patrón | Recurso |
+|---|---|
+| wrapper | fd + cleanup |
+| arena | base + used + cap |
+| cleanup | cerrar/liberar según ownership |
+
+---
+
+# Lectura guiada Buffer ADT
+
+```bash
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/08_lectura_guiada_buffer_adt run
+```
+
+Antes de leer código, marca:
+
+- descriptor;
+- storage;
+- `push_byte`;
+- `clear`;
+- condición de lleno.
+
+---
+
+# Error típico: offset sin contrato
+
+```asm
+ldr x1, [x0, #8]
+```
+
+¿Qué es `#8`? Si no puedes nombrarlo como `FIELD_LEN` o similar, el código ya
+perdió intención docente.
+
+---
+
+# Checklist para diseñar struct
+
+| Paso | Pregunta |
+|---|---|
+| campos | ¿qué dato guarda? |
+| tamaño | ¿cuántos bytes? |
+| alignment | ¿requiere padding? |
+| offsets | ¿qué `.equ` lo nombra? |
+| invariantes | ¿qué siempre debe cumplirse? |
+
+---
+
+# Dinámica: revisar un objeto
+
+En parejas:
+
+1. dibujar layout;
+2. nombrar offsets;
+3. decir quién posee recursos;
+4. proponer destructor;
+5. listar dos errores comunes.
+
+---
+
+# Puente hacia ABI
+
+Cuando estos objetos se pasan a funciones C:
+
+- puntero del objeto va en `x0`;
+- función debe respetar AAPCS64;
+- callee-saved importa si guardas estado en `x19`-`x28`.
+
+---
+
+# Señales de diseño correcto
+
+- no hay números mágicos de offsets;
+- `len <= cap` se revisa antes de escribir;
+- destructor solo libera recursos propios;
+- cada función documenta qué espera en `x0`.
+
+---
 layout: aarch64-checklist
 ---
 
@@ -448,7 +620,7 @@ punto_get_x:
 
 - Página Quarto: `site/courses/aarch64/layout-datos-structs/`
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
-- Slidev, documentación oficial
+-
 
 ---
 

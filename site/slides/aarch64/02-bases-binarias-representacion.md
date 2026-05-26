@@ -735,7 +735,7 @@ Verificar interpretaciones con herramientas de terminal y con registros.
 - William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques*
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
 - `man ascii`, `man xxd`, `man hexdump`
-- Slidev, documentación oficial
+-
 
 ---
 

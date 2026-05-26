@@ -532,6 +532,107 @@ Varios puntos del programa pueden saltar a la misma etiqueta `error`. Esto evita
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con ejemplos
+
+---
+
+# Contrato syscall en vivo
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/01_contrato_syscall run
+```
+
+<InfoBox type="note" title="Lectura">
+Antes de `svc #0`, `x8` selecciona servicio y `x0`-`x5` llevan argumentos. Después, `x0` es retorno.
+</InfoBox>
+
+---
+
+# `exit` y `write`: mismo registro, otro significado
+
+```bash
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/02_exit_write run
+```
+
+| Momento | `x0` significa |
+|---|---|
+| antes de `write` | file descriptor |
+| después de `write` | bytes escritos o error |
+| antes de `exit` | código de salida |
+
+---
+
+# `read`: memoria escribible
+
+```bash
+printf 'abc\n' | make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/03_read_buffers run
+```
+
+1. `.bss` reserva buffer.
+2. `x1` apunta al buffer.
+3. `x2` limita bytes.
+4. retorno en `x0` dice cuántos bytes llegaron.
+
+---
+
+# `openat` y `close`: fd como recurso
+
+```bash
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/04_openat_close run
+```
+
+<InfoBox type="warning" title="Regla">
+Si `openat` retorna fd válido, debe existir ruta de `close`. Si retorna negativo, no cierres fd inexistente.
+</InfoBox>
+
+---
+
+# Errores mínimos
+
+```bash
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/05_errores_minimos run
+```
+
+| Condición | Lectura |
+|---|---|
+| `cmp x0, #0` | revisar retorno |
+| `b.lt error` | signed menor que cero: syscall falló |
+| `stderr = 2` | diagnóstico, no salida normal |
+
+---
+
+# Programa guiado
+
+```bash
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/06_programa_guiado run
+```
+
+```mermaid {theme: 'default', scale: 0.90}
+flowchart LR
+  openat --> savefd["guardar fd"]
+  savefd --> write
+  write --> close
+  close --> exit0["exit 0"]
+  openat --> error
+  write --> error
+```
+
+---
+
+# Dinámica de clase
+
+Cada equipo toma una syscall y responde:
+
+- ¿qué número va en `x8`?
+- ¿qué argumentos usa?
+- ¿qué significa `x0` después?
+- ¿cuál sería el primer error común?
+
+---
 layout: aarch64-checklist
 ---
 
@@ -594,7 +695,7 @@ Crear un archivo con `openat`, escribir un mensaje con `write`, cerrar con `clos
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
 - Linux kernel, *syscall table for AArch64*
 - `man 2 write`, `man 2 read`, `man 2 openat`, `man 2 close`
-- Slidev, documentación oficial
+-
 
 ---
 

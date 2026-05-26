@@ -470,6 +470,172 @@ end note
 </v-clicks>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con memoria virtual
+
+---
+
+# Páginas y memoria virtual
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/01_paginas_memoria_virtual run
+```
+
+Modelo: el programa ve direcciones virtuales; el kernel decide qué regiones
+existen y con qué permisos.
+
+---
+
+# `mmap` anónimo privado
+
+```bash
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/02_mmap_anonimo_privado run
+```
+
+| Registro | Argumento |
+|---|---|
+| `x0` | dirección sugerida o `0` |
+| `x1` | longitud |
+| `x2` | permisos |
+| `x3` | flags |
+| `x4` | fd |
+| `x5` | offset |
+
+---
+
+# Ciclo de vida con `munmap`
+
+```bash
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/03_munmap_ciclo_vida run
+```
+
+Después de `munmap`, la dirección puede seguir como número en un registro, pero
+ya no es puntero válido.
+
+---
+
+# `mprotect`: cambiar permisos
+
+```bash
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/04_mprotect_permisos run
+```
+
+<InfoBox type="warning" title="Regla">
+Permisos pertenecen a regiones/páginas. Si quitas escritura, `str` deja de ser operación válida.
+</InfoBox>
+
+---
+
+# `mmap` con archivo
+
+```bash
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/05_mmap_con_archivo run
+```
+
+```mermaid {theme: 'default', scale: 1}
+flowchart LR
+  openat --> fd
+  fd --> mmap
+  mmap --> close
+  mmap --> readmem["leer región"]
+  readmem --> munmap
+```
+
+---
+
+# Errores y diagnóstico
+
+```bash
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/06_errores_diagnostico run
+```
+
+Preguntas:
+
+- ¿`mmap` retornó negativo?
+- ¿guardaste base original?
+- ¿permisos permiten esa instrucción?
+- ¿la región sigue viva?
+
+---
+
+# Programa guiado completo
+
+```bash
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/07_programa_guiado run
+```
+
+Fases: pedir región → escribir → proteger → liberar → salir.
+
+---
+
+# Condiciones frecuentes
+
+| Condición | Lectura |
+|---|---|
+| `b.lt error` | syscall retornó negativo |
+| `cbz x0, error` | puntero o resultado cero |
+| `b.ne error` | resultado no coincide con esperado |
+
+---
+
+# Base vs cursor
+
+```bash
+x19 = base original para munmap
+x20 = cursor para recorrer
+```
+
+No liberes con cursor avanzado. `munmap` necesita dirección base y longitud
+correctas.
+
+---
+
+# Cleanup correcto
+
+| Punto de fallo | Región viva | Ruta |
+|---|---|---|
+| falla `mmap` | no | `error_sin_region` |
+| falla `mprotect` | sí | `cleanup` |
+| falla uso posterior | sí | `cleanup` |
+| termina ok | sí | `munmap` |
+
+---
+
+# GDB vs strace
+
+| Herramienta | Responde |
+|---|---|
+| GDB | registros, punteros, instrucción actual |
+| `strace` | argumentos y retorno de syscalls |
+| `readelf` | permisos/segmentos del binario |
+
+---
+
+# Dinámica de clase
+
+Marcar en el código:
+
+1. dónde nace la región;
+2. dónde se guarda base;
+3. dónde cambian permisos;
+4. dónde muere;
+5. qué saltos van a cleanup.
+
+---
+
+# Puente hacia ELF
+
+El loader también trabaja con regiones:
+
+- segmentos `LOAD`;
+- permisos `R/W/X`;
+- memoria de `.bss`;
+- dynamic loader y relocations.
+
+---
 layout: aarch64-checklist
 ---
 
@@ -531,7 +697,7 @@ Crear una región dinámica para un mensaje, escribirlo, cambiarlo a solo-lectur
 - Página Quarto: `site/courses/aarch64/mmap-paginas-permisos/`
 - Linux man pages: `man 2 mmap`, `man 2 mprotect`, `man 2 munmap`
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
-- Slidev, documentación oficial
+-
 
 ---
 

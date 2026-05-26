@@ -415,6 +415,154 @@ Confundir estas capas causa errores de lectura. El Heap no es una instrucción.
 </v-clicks>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con heap
+
+---
+
+# Stack vs heap
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/01_stack_vs_heap run
+```
+
+Pregunta guía: ¿cuánto debe vivir el dato?
+
+---
+
+# Bloques y ownership
+
+```bash
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/02_bloques_ownership run
+```
+
+| Dato | Pregunta |
+|---|---|
+| puntero | ¿dónde empieza el bloque? |
+| capacidad | ¿cuánto cabe? |
+| usados | ¿cuánto es válido? |
+| dueño | ¿quién libera? |
+
+---
+
+# Allocation y cleanup
+
+```bash
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/03_allocation_deallocation run
+```
+
+```mermaid {theme: 'default', scale: 1}
+flowchart LR
+  alloc -->|ok| use
+  alloc -->|fail| error0["error_sin_bloque"]
+  use -->|ok| free
+  use -->|fail| cleanup
+  cleanup --> free
+```
+
+---
+
+# Buffer dinámico
+
+```bash
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/04_buffer_dinamico run
+```
+
+Antes de escribir:
+
+- base válida
+- capacidad conocida
+- bytes usados conocidos
+- espacio para dato nuevo
+- espacio para `\0` si es string
+
+---
+
+# Errores de memoria
+
+```bash
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/05_errores_memoria run
+```
+
+| Error | Pregunta rota |
+|---|---|
+| leak | ¿quién liberaba? |
+| use-after-free | ¿sigue vivo? |
+| double free | ¿quién era dueño? |
+
+---
+
+# `brk`, `malloc`, `mmap`
+
+```bash
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/06_brk_malloc_mmap run
+```
+
+<InfoBox type="note" title="Capas">
+`malloc` es libc. `mmap` es syscall. `ldr`/`str` son instrucciones. No mezcles contratos.
+</InfoBox>
+
+---
+
+# Error típico: borrar no libera
+
+```asm
+mov x19, #0
+```
+
+Eso borra una copia local del puntero. No llama `free`, no llama `munmap`, no
+devuelve memoria al allocator.
+
+---
+
+# Dinámica: mapa de ownership
+
+Para cada bloque, escribir:
+
+1. quién lo creó;
+2. qué registro guarda base;
+3. qué tamaño tiene;
+4. quién lo libera;
+5. qué ruta de error lo limpia.
+
+---
+
+# Puente hacia `mmap`
+
+La Unidad 13 baja una capa:
+
+```bash
+malloc/free conceptual
+        ↓
+mmap/munmap como syscalls reales
+```
+
+---
+
+# Pregunta de cierre práctica
+
+Si un buffer crece:
+
+- ¿copias capacidad completa o bytes usados?
+- ¿quién libera bloque anterior?
+- ¿qué pasa si falla la nueva reserva?
+
+---
+
+# Checklist de debugging
+
+Cuando algo huele a heap:
+
+- buscar puntero base;
+- buscar capacidad;
+- buscar ownership;
+- buscar ruta de cleanup;
+- buscar acceso después de liberar.
+
+---
 layout: aarch64-checklist
 ---
 
@@ -469,7 +617,7 @@ Antes de usar `mmap`, simularemos el comportamiento de un bloque dinámico usand
   { num: '4', text: 'Invalidación defensiva: simulación de free' }
 ]">
 
-```asm {1-2|4-6|8|10-15}
+```asm {1-2|4-6|8|10-16}
 .bss
 buffer: .skip 64            // Simulamos el "Heap"
 
@@ -480,7 +628,8 @@ _start:
     mov x20, #64            // 2. Capacidad máxima reservada
     mov x21, #0             // 3. Bytes usados (vacío al inicio)
 
-    // Aquí iría la lógica de leer o escribir y actualizar x21
+    // Aquí iría la lógica de
+    // leer o escribir y actualizar x21
 
     mov x19, #0             // 4. Invalidación defensiva (simulación de 'free')
 
@@ -499,7 +648,7 @@ _start:
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
 - Linux man pages: `man mmap`, `man brk`
 - Documentación de Glibc: *Memory Allocation*
-- Slidev, documentación oficial
+-
 
 ---
 

@@ -476,7 +476,7 @@ Observar registros, flags y estado del procesador con GDB en un programa mínimo
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
 - William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques*
 - `gdb` / `gdb-multiarch` — lectura básica de estado
-- Slidev, documentación oficial
+-
 
 ---
 

@@ -457,6 +457,134 @@ Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de sysca
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con recursos
+
+---
+
+# File descriptor como recurso vivo
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/01_file_descriptors run
+```
+
+| Estado | Pregunta |
+|---|---|
+| fd recibido | ¿quién debe cerrarlo? |
+| fd guardado | ¿qué registro lo conserva? |
+| fd cerrado | ¿se vuelve a usar? |
+
+---
+
+# Abrir, leer, escribir, cerrar
+
+```bash
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/02_archivos_open_read_write_close run
+```
+
+<StepList :steps="[
+  'openat: obtener fd o error',
+  'read: llenar buffer y usar retorno real',
+  'write: escribir bytes válidos',
+  'close: liberar recurso'
+]" />
+
+---
+
+# Cleanup no es opcional
+
+```bash
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/03_errores_cleanup run
+```
+
+```mermaid {theme: 'default', scale: 0.55}
+flowchart LR
+  start --> openat
+  openat -->|fd válido| work["trabajo"]
+  openat -->|error| nofd["error_sin_fd"]
+  work -->|error| cleanup
+  work -->|ok| close
+  cleanup --> close
+```
+
+---
+
+# Posición y metadatos
+
+```bash
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/04_posicion_metadatos run
+```
+
+- `lseek` cambia o consulta posición.
+- `fstat` escribe metadatos en buffer.
+- ambos necesitan interpretar memoria, no solo registros.
+
+---
+
+# Procesos y tiempo
+
+```bash
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/05_procesos_tiempo run
+```
+
+| Syscall | Qué observa |
+|---|---|
+| `getpid` | identidad del proceso |
+| `clock_gettime` | kernel escribe `timespec` |
+| `nanosleep` | kernel lee `timespec` |
+
+---
+
+# Programa de recursos
+
+```bash
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/06_programa_recursos run
+```
+
+Regla de lectura:
+
+> cada recurso adquirido necesita ruta de éxito y ruta de error.
+
+---
+
+# Error típico: perder fd
+
+```asm
+svc #0          // openat retorna fd en x0
+mov x8, #64     // prepara write
+svc #0          // x0 ya no es fd, ahora es retorno
+```
+
+<InfoBox type="warning" title="Solución">
+Guarda el fd en un registro estable antes de otra syscall, por ejemplo `mov x19, x0`.
+</InfoBox>
+
+---
+
+# Dinámica de clase: tabla de recursos
+
+Completar para cada ejemplo:
+
+| Recurso | Se adquiere en | Se guarda en | Se libera en |
+|---|---|---|---|
+| fd | `openat` | `x19` | `close` |
+| buffer | `.bss` / stack | dirección | no aplica o cleanup |
+
+---
+
+# Pregunta guía
+
+Si el programa falla a mitad:
+
+1. ¿qué recursos ya existían?
+2. ¿qué registros los guardaban?
+3. ¿qué cleanup falta?
+4. ¿qué salida debe usar: stdout o stderr?
+
+---
 layout: aarch64-checklist
 ---
 
@@ -520,7 +648,7 @@ Programa que abre `entrada.txt`, lee un bloque, escribe en stdout, cierra fd y m
 - Linux kernel, *syscall table for AArch64*
 - `man 2 openat`, `man 2 read`, `man 2 write`, `man 2 close`
 - `man 2 lseek`, `man 2 fstat`, `man 2 statx`, `man 2 nanosleep`
-- Slidev, documentación oficial
+-
 
 ---
 

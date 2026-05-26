@@ -714,7 +714,7 @@ Abrir terminal, entrar al ejemplo, compilar, ejecutar e inspeccionar.
 - GDB, *Debugging with GDB — Remote Debugging*
 - GNU Binutils, *as, ld, objdump, readelf, nm*
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
-- Slidev, documentación oficial
+-
 
 ---
 

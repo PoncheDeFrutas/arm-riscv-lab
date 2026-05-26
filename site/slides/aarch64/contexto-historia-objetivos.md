@@ -1052,7 +1052,7 @@ layout: aarch64-question
 - Arm, *Armv8-A Instruction Set Architecture*
 - Arm, *Arm Architecture Reference Manual Supplement: Armv8, for R-profile AArch64 architecture*
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
-- Slidev, documentación oficial
+-
 
 ---
 

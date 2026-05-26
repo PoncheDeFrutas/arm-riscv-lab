@@ -212,7 +212,7 @@ El programa no siempre empieza directo en `_start`.
 
 ---
 
-# main vs _start
+###### main vs _start
 
 <div v-click class="w-full flex justify-center mt-4">
 
@@ -220,7 +220,7 @@ El programa no siempre empieza directo en `_start`.
 
 ```plantuml
 @startuml
-scale 0.82
+scale 0.50
 
 title _start, CRT, main y funciones assembly
 
@@ -310,6 +310,212 @@ end note
 - **`printf` no es syscall** — Se llama como función normal con `bl printf`; los argumentos siguen la convención AAPCS64, por ejemplo `x0` para el formato y `x1`, `x2`, etc. para valores adicionales.
 
 </v-clicks>
+
+---
+layout: aarch64-section
+---
+
+# Práctica guiada ABI
+
+---
+
+# Mapa de registros ABI
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/01_abi_aapcs64_registros run
+```
+
+| Registro | Rol AAPCS64 inicial |
+|---|---|
+| `x0`-`x7` | argumentos / retorno |
+| `x9`-`x15` | temporales caller-saved |
+| `x19`-`x28` | callee-saved |
+| `sp` | alineado a 16 bytes |
+
+---
+
+# Argumentos y retornos
+
+```bash
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/02_argumentos_retornos_stack run
+```
+
+Los primeros 8 argumentos enteros/punteros van en `x0`-`x7`. Argumentos extra
+usan stack según contrato de llamada.
+
+---
+
+# Stack arguments
+
+```asm
+x0 = a
+x1 = b
+...
+x7 = h
+stack = i, j, ...
+```
+
+<InfoBox type="warning" title="Cuidado">
+Si la función mueve `sp`, primero entiende su frame antes de calcular dónde están argumentos extra.
+</InfoBox>
+
+---
+
+# Caller-saved vs callee-saved
+
+```bash
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/03_caller_callee_saved run
+```
+
+| Grupo | Quién protege |
+|---|---|
+| caller-saved | quien llama, si necesita el valor después |
+| callee-saved | la función llamada, si los usa |
+
+---
+
+# Preservar `x19`
+
+```asm
+stp x19, x30, [sp, #-16]!
+...
+ldp x19, x30, [sp], #16
+ret
+```
+
+No basta retornar valor correcto en `x0`. También debes devolver el entorno que
+prometiste preservar.
+
+---
+
+# `main`, `_start` y runtime C
+
+```bash
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/04_main_start_libc_runtime run
+```
+
+Con C, normalmente no escribes `_start`. El runtime prepara entorno y llama
+`main`.
+
+---
+
+# Assembly llamado desde C
+
+```bash
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/05_assembly_desde_c run
+```
+
+Contrato:
+
+1. prototipo C declara forma;
+2. símbolo assembly debe llamarse igual;
+3. argumentos llegan en `x0`, `x1`, ...;
+4. retorno sale en `x0`.
+
+---
+
+# `main` en assembly llamando `printf`
+
+```bash
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/06_c_desde_assembly_printf run
+```
+
+`printf` recibe formato en `x0`. Siguiente entero en `x1`. `main` debe proteger
+`x30` porque llama otra función.
+
+---
+
+# Checklist antes de `bl printf`
+
+- `sp` alineado a 16 bytes;
+- formato en `x0`;
+- argumentos en `x1`, `x2`, ...;
+- `x30` guardado si necesitas retornar;
+- enlazar con GCC/libc.
+
+---
+
+# Librerías y lectura guiada
+
+```bash
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/07_librerias_lectura_guiada run
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/07_librerias_lectura_guiada nm
+```
+
+La ABI sigue igual aunque la función venga de `.o`, `.a` o `.so`.
+
+---
+
+# `.type` y `.size`
+
+```asm
+.global sumar
+.type sumar, %function
+sumar:
+    add x0, x0, x1
+    ret
+.size sumar, . - sumar
+```
+
+Úsalas donde enseñas funciones exportadas, debugging, objdump o interoperabilidad.
+
+---
+
+# Syscall convention ≠ function convention
+
+| Tema | Syscall | Función AAPCS64 |
+|---|---|---|
+| selector | `x8` | símbolo + `bl` |
+| entrada | `svc #0` | `bl funcion` |
+| retorno | `x0` | `x0` |
+| preservación | kernel boundary | caller/callee-saved |
+
+---
+
+# Error típico: romper `sp`
+
+```asm
+str x30, [sp, #-8]!
+```
+
+Problema: reserva 8 bytes y puede romper alineación ABI. Prefiere pares de 16
+bytes cuando construyes frame.
+
+---
+
+# Dinámica: auditar una función
+
+Cada grupo revisa:
+
+1. argumentos esperados;
+2. retorno;
+3. registros callee-saved usados;
+4. alineación de `sp`;
+5. llamadas internas con `bl`;
+6. símbolos exportados.
+
+---
+
+# Ruta mental completa
+
+```mermaid {theme: 'default', scale: 0.55}
+flowchart LR
+  C["main.c"] --> proto["prototipo"]
+  proto --> asm["función assembly"]
+  asm --> abi["AAPCS64"]
+  abi --> ret["retorno x0"]
+```
+
+---
+
+# Errores que debes poder explicar
+
+- nombre C no coincide con símbolo assembly;
+- `x19` modificado sin restaurar;
+- `sp` desalineado antes de `bl`;
+- `printf` llamado sin formato válido;
+- usar `x8` como si fuera selector de función.
 
 ---
 layout: aarch64-checklist
@@ -403,7 +609,7 @@ asm_procesar:
 - Página Quarto: `site/courses/aarch64/abi-aapcs64-c/`
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
 - Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)
-- Slidev, documentación oficial
+-
 
 ---
 

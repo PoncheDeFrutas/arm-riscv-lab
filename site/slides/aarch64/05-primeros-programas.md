@@ -726,7 +726,7 @@ Escribir, ensamblar, ejecutar y modificar programas con exit y write.
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
 - Linux, *syscall(2)* — convención de llamada AArch64
 - `man strace` — observar syscalls en ejecución
-- Slidev, documentación oficial
+-
 
 ---
 

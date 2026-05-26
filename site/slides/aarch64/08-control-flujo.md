@@ -580,7 +580,7 @@ Escribir un programa con if/else y un loop que recorra un array sumando elemento
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
 - William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques*
 - Arm, *Arm Architecture Reference Manual for A-profile architecture*
-- Slidev, documentación oficial
+-
 
 ---
 

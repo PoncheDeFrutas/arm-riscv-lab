@@ -276,7 +276,7 @@ funcion:
 
 <StackFrame :rows="[
   { label: 'Frame del caller', color: 'gray' },
-  { split: true, leftLabel: 'x29 guardado', leftSublabel: '[x29]', leftPointer: '← x29 / FP', rightLabel: 'x30 guardado', rightSublabel: '[x29 + 8]', color: 'blue' },
+  { split: true, leftLabel: 'x29 guardado', leftSublabel: '[x29]', rightLabel: 'x30 guardado', rightSublabel: '[x29 + 8]', color: 'blue' },
   { label: 'Variables locales', sublabel: '[sp]', color: 'purple', pointer: '← sp', pointerColor: '#9333ea' },
 ]" />
 
@@ -423,6 +423,77 @@ GDB convierte el stack en evidencia visible. Gracias al uso disciplinado de `x29
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con frames
+
+---
+
+# Llamadas y retorno
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/01_llamadas_retorno run
+```
+
+Lectura mínima: `bl` guarda retorno en `x30`; `ret` usa `x30` para volver.
+
+---
+
+# Stack básico
+
+```bash
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/02_stack_basico run
+```
+
+| Instrucción | Lectura |
+|---|---|
+| `sub sp, sp, #16` | reservar |
+| `str x0, [sp]` | guardar |
+| `ldr x1, [sp]` | recuperar |
+| `add sp, sp, #16` | liberar |
+
+---
+
+# Frame con variable local
+
+```bash
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/03_stack_frames run
+```
+
+<InfoBox type="note" title="Orden">
+Prólogo crea frame. Cuerpo usa offsets. Epílogo deshace todo en orden inverso.
+</InfoBox>
+
+---
+
+# Función no hoja y recursión
+
+```bash
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/04_funciones_no_hoja run
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/05_recursion_basica run
+```
+
+Cada llamada necesita conservar su retorno. Recursión repite el mismo patrón
+varias veces.
+
+---
+
+# Debugging de frames
+
+```bash
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/06_debugging_frames_gdb gdb
+```
+
+Comandos de lectura:
+
+- `info registers sp x29 x30`
+- `x/6gx $sp`
+- `bt`
+- `frame 1`
+
+---
 layout: aarch64-checklist
 ---
 
@@ -485,7 +556,7 @@ Escribir un programa con una función `calcular` (no hoja) que llame a `duplicar
 - Arm, *Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)*
 - Larry D. Pyeatt y William Ughetta, *ARM 64-Bit Assembly Language*
 - GDB documentation
-- Slidev, documentación oficial
+-
 
 ---
 

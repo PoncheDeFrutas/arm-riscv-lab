@@ -307,6 +307,205 @@ La combinación PLT + GOT permite que `libc` se comparta entre múltiples proces
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada ELF
+
+---
+
+# Fuente, objeto, ejecutable
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable run
+```
+
+| Archivo | Contrato |
+|---|---|
+| `main.s` | fuente |
+| `main.o` | relocatable |
+| `main` | ejecutable ELF |
+
+---
+
+# Header y entry point
+
+```bash
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point readelf-header
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point nm
+```
+
+Busca `Class`, `Machine`, `Type` y `Entry point address`. Luego compáralo con
+símbolo `_start`.
+
+---
+
+# Entry point no es siempre `main`
+
+```mermaid {theme: 'default', scale: 0.55}
+flowchart LR
+  loader --> entry["ELF entry point"]
+  entry --> runtime["runtime C si existe"]
+  runtime --> main
+```
+
+En assembly mínimo puede apuntar a `_start`. En C normalmente pasa por runtime.
+
+---
+
+# Secciones y símbolos
+
+```bash
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/03_secciones_simbolos_relocations readelf-sections
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/03_secciones_simbolos_relocations nm
+```
+
+| Herramienta | Pregunta |
+|---|---|
+| `readelf -S` | ¿qué secciones existen? |
+| `nm` | ¿qué nombres define o necesita? |
+| `objdump -dr` | ¿qué instrucción referencia símbolo? |
+
+---
+
+# Relocations
+
+Relocation = trabajo pendiente para linker o dynamic loader.
+
+No es instrucción. No es bug automático. Es evidencia de que una dirección aún
+depende del layout final.
+
+---
+
+# Segmentos y loader
+
+```bash
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/04_segmentos_loader_permisos readelf-programs
+```
+
+Lee `LOAD` como mapa de carga: offset de archivo, dirección virtual, tamaño en
+archivo, tamaño en memoria y permisos.
+
+---
+
+# Sección vs segmento
+
+| Pregunta | Sección | Segmento |
+|---|---|---|
+| ¿quién la usa? | assembler/linker/tools | loader/kernel |
+| ¿qué organiza? | contenido por tipo | regiones cargables |
+| comando | `readelf -S` | `readelf -l` |
+
+---
+
+# Linking estático y dinámico
+
+```bash
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/05_linking_estatico_dinamico readelf-dynamic
+```
+
+Busca:
+
+- `INTERP`: dynamic loader;
+- `NEEDED`: dependencias;
+- ausencia de dynamic section en binarios estáticos.
+
+---
+
+# Dynamic loader
+
+```mermaid {theme: 'default', scale: 0.55}
+flowchart LR
+  kernel --> interp["INTERP"]
+  interp --> ldso["ld-linux-aarch64.so"]
+  ldso --> libc["libc.so.6"]
+  ldso --> reloc["relocations dinámicas"]
+  reloc --> program["programa listo"]
+```
+
+---
+
+# GOT, PLT y PIE
+
+```bash
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/06_got_plt_pie objdump
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/06_got_plt_pie readelf-header
+```
+
+Señales: `printf@plt`, `.got.plt`, `Type: DYN`, `NEEDED`.
+
+---
+
+# PIE: base + offset
+
+En PIE, dirección final puede cambiar:
+
+```bash
+dirección real = base de carga + offset dentro del binario
+```
+
+No memorices dirección absoluta vista en `objdump` como si fuera eterna.
+
+---
+
+# Herramientas y lectura guiada
+
+```bash
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/07_herramientas_lectura_guiada readelf-header
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/07_herramientas_lectura_guiada objdump
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/07_herramientas_lectura_guiada nm
+```
+
+Una herramienta, una pregunta. Después cruzas respuestas.
+
+---
+
+# Errores comunes de análisis
+
+| Error | Corrección |
+|---|---|
+| correr `.o` con QEMU | enlaza primero |
+| usar `ldd` en host cruzado | prefiere `readelf -d` |
+| creer que `strip` borra código | borra símbolos, no instrucciones |
+| leer `DYN` sin contexto | puede ser PIE |
+
+---
+
+# Dinámica: autopsia de binario
+
+Cada equipo responde:
+
+1. ¿qué tipo ELF es?
+2. ¿dónde inicia?
+3. ¿qué segmentos se cargan?
+4. ¿qué símbolos quedan?
+5. ¿qué dependencias dinámicas hay?
+
+---
+
+# Puente hacia debugging
+
+Debugging necesita ELF:
+
+- símbolos para breakpoints por nombre;
+- direcciones para `pc`;
+- segmentos para permisos;
+- stack y loader para backtrace.
+
+---
+
+# Checklist de herramientas
+
+| Pregunta | Comando |
+|---|---|
+| tipo y arquitectura | `readelf -h` |
+| mapa de carga | `readelf -l` |
+| secciones | `readelf -S` |
+| símbolos | `nm` |
+| instrucciones | `objdump -d` |
+
+---
 layout: aarch64-checklist
 ---
 
@@ -386,7 +585,7 @@ Program Headers:
 - Página Quarto: `site/courses/aarch64/elf-linking-loading/`
 - Toolchain GNU: `readelf`, `objdump`, `nm`
 - Linux System API and Executable and Linkable Format (ELF) Standard
-- Slidev, documentación oficial
+-
 
 ---
 

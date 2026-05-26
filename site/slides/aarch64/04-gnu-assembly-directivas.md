@@ -619,7 +619,7 @@ Ensamblar, inspeccionar y clasificar líneas de un archivo .s real.
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
 - William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques*
 - `man as`, `info as` — GNU assembler
-- Slidev, documentación oficial
+-
 
 ---
 

@@ -627,7 +627,7 @@ Declarar datos, cargar, modificar, guardar y recorrer un array en AArch64.
 - Arm, *Learn the Architecture - A64 Instruction Set Architecture Guide*
 - William Hohl y Christopher Hinds, *ARM Assembly Language: Fundamentals and Techniques*
 - `man objdump`, `man readelf` — inspección de secciones y datos
-- Slidev, documentación oficial
+-
 
 ---
 
