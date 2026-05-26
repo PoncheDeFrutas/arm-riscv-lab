@@ -1,0 +1,3 @@
+USE_LIBC = 1
+CFLAGS += -fPIE
+LDFLAGS += -pie
