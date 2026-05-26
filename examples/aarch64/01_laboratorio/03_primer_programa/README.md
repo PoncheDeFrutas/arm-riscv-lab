@@ -8,6 +8,12 @@ Compilar y ejecutar un programa AArch64 minimo que escribe `Hola ARM64` en
 Este ejemplo acompana la leccion `01.3 · Primer programa` de la unidad de
 laboratorio.
 
+## Antes De Empezar
+
+- Abre `examples/aarch64` en VS Code si vas a depurar.
+- Abre `01_laboratorio/03_primer_programa/src/main.s` antes de presionar F5.
+- Desde terminal, ejecuta los comandos siempre desde `examples/aarch64`.
+
 ## Idea Del Programa
 
 El programa hace dos syscalls directas de Linux:
@@ -18,6 +24,13 @@ El programa hace dos syscalls directas de Linux:
 | `exit` | `93` | `x0=0` |
 
 No usa `printf`, `main` ni libc. El proceso empieza en `_start`.
+
+## Pasos De Estudio
+
+1. Lee los comentarios de `src/main.s` y ubica las dos partes: `write` y `exit`.
+2. Ejecuta el programa con QEMU y confirma la salida.
+3. Depura desde `_start` y mira como cambian `x0`, `x1`, `x2` y `x8`.
+4. Cambia una sola cosa, por ejemplo el mensaje, y vuelve a ejecutar.
 
 ## Ejecutar Con QEMU
 
@@ -49,6 +62,9 @@ info registers x0 x1 x2 x8 pc
 x/s $x1
 stepi
 ```
+
+Ejecuta `stepi` varias veces antes de `svc #0`. La meta es ver que primero se
+preparan registros y despues se entra al kernel.
 
 ## Salida Esperada
 

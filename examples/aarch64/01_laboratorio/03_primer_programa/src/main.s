@@ -28,4 +28,4 @@ _start:
     // exit(0)
     mov x0, #0              // codigo de salida exitoso
     mov x8, #93             // syscall exit
-    svc #0
+    svc #0                  // terminar el proceso
