@@ -8,9 +8,8 @@
 //   x8 = numero de syscall Linux AArch64.
 
 .global _start
-.type _start, %function
 
-.text
+.section .text
 _start:
     // exit(0)
     //
@@ -19,5 +18,3 @@ _start:
     mov x0, #0      // codigo de salida que vera el shell con echo $?
     mov x8, #93     // syscall exit en Linux AArch64
     svc #0          // entrar al kernel
-
-.size _start, . - _start
