@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#manejo-de-error-compartido" id="toc-manejo-de-error-compartido" class="nav-link" data-scroll-target="#manejo-de-error-compartido">Manejo de error compartido</a></li>
   <li><a href="#qué-no-hace-este-programa" id="toc-qué-no-hace-este-programa" class="nav-link" data-scroll-target="#qué-no-hace-este-programa">Qué no hace este programa</a></li>
   <li><a href="#diagnóstico-guiado" id="toc-diagnóstico-guiado" class="nav-link" data-scroll-target="#diagnóstico-guiado">Diagnóstico guiado</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1577,6 +1578,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>revisa que <code>write</code> use <code>x0 = x19</code>;</li>
 <li>revisa que el bloque de error escriba a fd <code>2</code>.</li>
 </ol>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>no guardar fd después de <code>openat</code></td>
+<td><code>x0</code> será sobrescrito por otras syscalls</td>
+</tr>
+<tr class="even">
+<td>saltar a error sin cerrar recurso vivo</td>
+<td>diferencia error antes/después de tener fd</td>
+</tr>
+<tr class="odd">
+<td>usar longitud fija incorrecta</td>
+<td>calcula o actualiza <code>len</code> al cambiar mensaje</td>
+</tr>
+<tr class="even">
+<td>escribir error en stdout</td>
+<td>para diagnóstico usa fd <code>2</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

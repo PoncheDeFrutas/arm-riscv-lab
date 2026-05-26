@@ -1331,6 +1331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ciclo-completo" id="toc-ciclo-completo" class="nav-link" data-scroll-target="#ciclo-completo">Ciclo completo</a></li>
   <li><a href="#errores-que-esta-unidad-prepara" id="toc-errores-que-esta-unidad-prepara" class="nav-link" data-scroll-target="#errores-que-esta-unidad-prepara">Errores que esta unidad prepara</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1836,6 +1837,58 @@ Figura&nbsp;2: Ciclo de vida conceptual de un bloque dinámico.
 <p><a href="../../../courses/aarch64/heap-memoria-dinamica/06-brk-malloc-mmap.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Lee cada ejemplo preguntando quién posee el bloque, cuándo se libera y qué pasa si el puntero o tamaño deja de ser válido.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stack vs heap</td>
+<td><code>examples/aarch64/12_heap_memoria_dinamica/01_stack_vs_heap</code></td>
+<td>vida automática contra vida dinámica</td>
+</tr>
+<tr class="even">
+<td>Bloques y ownership</td>
+<td><code>examples/aarch64/12_heap_memoria_dinamica/02_bloques_ownership</code></td>
+<td>dueño, préstamo y transferencia</td>
+</tr>
+<tr class="odd">
+<td>Allocation/deallocation</td>
+<td><code>examples/aarch64/12_heap_memoria_dinamica/03_allocation_deallocation</code></td>
+<td>pedir y liberar memoria</td>
+</tr>
+<tr class="even">
+<td>Buffer dinámico</td>
+<td><code>examples/aarch64/12_heap_memoria_dinamica/04_buffer_dinamico</code></td>
+<td>capacidad, longitud y crecimiento</td>
+</tr>
+<tr class="odd">
+<td>Errores de memoria</td>
+<td><code>examples/aarch64/12_heap_memoria_dinamica/05_errores_memoria</code></td>
+<td>use-after-free conceptual, leak, doble liberación</td>
+</tr>
+<tr class="even">
+<td><code>brk</code>, <code>malloc</code>, <code>mmap</code></td>
+<td><code>examples/aarch64/12_heap_memoria_dinamica/06_brk_malloc_mmap</code></td>
+<td>tres formas de obtener memoria</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/04_buffer_dinamico run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

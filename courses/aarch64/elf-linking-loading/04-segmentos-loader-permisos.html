@@ -1328,8 +1328,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#filesiz-y-memsiz" id="toc-filesiz-y-memsiz" class="nav-link" data-scroll-target="#filesiz-y-memsiz"><code>FileSiz</code> y <code>MemSiz</code></a></li>
   <li><a href="#qué-hace-el-loader" id="toc-qué-hace-el-loader" class="nav-link" data-scroll-target="#qué-hace-el-loader">Qué hace el loader</a></li>
   <li><a href="#de-program-header-a-memoria" id="toc-de-program-header-a-memoria" class="nav-link" data-scroll-target="#de-program-header-a-memoria">De program header a memoria</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
-  <li><a href="#errores-de-lectura" id="toc-errores-de-lectura" class="nav-link" data-scroll-target="#errores-de-lectura">Errores de lectura</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1520,12 +1521,14 @@ Figura&nbsp;1: Relación conceptual entre secciones y segmentos.
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">aplicar</span> Flags</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No es una llamada literal a <code>mmap</code> escrita en tu programa, pero conceptualmente conecta con permisos de memoria: rangos legibles, ejecutables o escribibles. Cuando <code>MemSiz</code> es mayor que <code>FileSiz</code>, el espacio adicional pertenece al proceso aunque no esté almacenado byte por byte en el archivo.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<p>Creer que section headers son el mapa principal de ejecución. Para cargar el proceso, los program headers son el mapa crítico. Las secciones siguen siendo útiles para herramientas, linker y debugging, pero no son la guía principal del loader.</p>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/04_segmentos_loader_permisos readelf-programs</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee los segmentos <code>LOAD</code> como mapa de carga: origen en archivo, destino virtual, tamaño en archivo, tamaño en memoria y permisos.</p>
 </section>
-<section id="errores-de-lectura" class="level2">
-<h2 class="anchored" data-anchor-id="errores-de-lectura">Errores de lectura</h2>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -1539,23 +1542,38 @@ Figura&nbsp;1: Relación conceptual entre secciones y segmentos.
 </thead>
 <tbody>
 <tr class="odd">
+<td>creer que section headers son el mapa principal de ejecución</td>
+<td>para cargar el proceso, los program headers son críticos</td>
+</tr>
+<tr class="even">
 <td>buscar permisos en <code>readelf -S</code> primero</td>
 <td>usar <code>readelf -l</code> para mapa de carga</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>creer que cada sección se mapea sola</td>
 <td>un segmento puede agrupar varias secciones</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>interpretar <code>FileSiz &lt; MemSiz</code> como corrupción</td>
 <td>suele indicar memoria cero como <code>.bss</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>asumir que <code>RX</code> y <code>RW</code> son decorativos</td>
 <td>son permisos reales del proceso</td>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Practica con un binario real.</p>
+<ol type="1">
+<li>Ejecuta <code>readelf -l</code> en un binario AArch64. ¿Cuántos segmentos <code>LOAD</code> ves?</li>
+<li>Identifica el segmento con permisos <code>R E</code>. ¿Qué secciones incluye?</li>
+<li>Identifica el segmento con permisos <code>RW</code>. ¿Qué secciones incluye?</li>
+<li>Compara <code>FileSiz</code> y <code>MemSiz</code> del segundo <code>LOAD</code>. ¿Son iguales? Si no, ¿por qué?</li>
+<li>Ejecuta <code>readelf -S</code> y confirma que las secciones del primer <code>LOAD</code> coinciden con lo que ves en <code>readelf -l</code>.</li>
+</ol>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>

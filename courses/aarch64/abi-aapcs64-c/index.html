@@ -1674,48 +1674,86 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>C llama assembly</td>
-<td><code>examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src</code></td>
+<td>Mapa de registros ABI</td>
+<td><code>examples/aarch64/15_abi_aapcs64/01_abi_aapcs64_registros</code></td>
 <td>argumentos en <code>x0</code>, <code>x1</code> y retorno en <code>x0</code></td>
 </tr>
 <tr class="even">
-<td>Preservar <code>x19</code></td>
-<td><code>examples/aarch64/15-abi-aapcs64/01-preservar-x19/src</code></td>
-<td>callee-saved restaurado</td>
+<td>Argumentos y stack</td>
+<td><code>examples/aarch64/15_abi_aapcs64/02_argumentos_retornos_stack</code></td>
+<td>argumentos extras fuera de <code>x0</code>-<code>x7</code></td>
 </tr>
 <tr class="odd">
-<td><code>printf</code> desde assembly</td>
-<td><code>examples/aarch64/15-abi-aapcs64/02-printf-desde-assembly/src</code></td>
+<td>Caller/callee-saved</td>
+<td><code>examples/aarch64/15_abi_aapcs64/03_caller_callee_saved</code></td>
+<td>preservar <code>x19</code> antes de retornar</td>
+</tr>
+<tr class="even">
+<td><code>main</code>, <code>_start</code> y libc</td>
+<td><code>examples/aarch64/15_abi_aapcs64/04_main_start_libc_runtime</code></td>
+<td>runtime de C llama <code>main</code></td>
+</tr>
+<tr class="odd">
+<td>Assembly desde C</td>
+<td><code>examples/aarch64/15_abi_aapcs64/05_assembly_desde_c</code></td>
+<td>C llama símbolo assembly exportado</td>
+</tr>
+<tr class="even">
+<td>C desde assembly y <code>printf</code></td>
+<td><code>examples/aarch64/15_abi_aapcs64/06_c_desde_assembly_printf</code></td>
 <td><code>main</code> assembly llama <code>libc</code></td>
 </tr>
-<tr class="even">
-<td>C desde assembly</td>
-<td><code>examples/aarch64/15-abi-aapcs64/03-c-desde-assembly/src</code></td>
-<td><code>bl funcion_c</code> desde assembly</td>
-</tr>
 <tr class="odd">
-<td>Argumentos por stack</td>
-<td><code>examples/aarch64/15-abi-aapcs64/04-argumentos-stack/src</code></td>
-<td>noveno argumento fuera de <code>x0</code>-<code>x7</code></td>
-</tr>
-<tr class="even">
-<td>Librería estática</td>
-<td><code>examples/aarch64/15-abi-aapcs64/05-libreria-estatica/src</code></td>
-<td><code>.a</code> con función assembly</td>
-</tr>
-<tr class="odd">
-<td>Librería compartida</td>
-<td><code>examples/aarch64/15-abi-aapcs64/06-libreria-compartida/src</code></td>
-<td><code>.so</code> con función assembly</td>
+<td>Librerías y lectura guiada</td>
+<td><code>examples/aarch64/15_abi_aapcs64/07_librerias_lectura_guiada</code></td>
+<td>función assembly empaquetada como librería</td>
 </tr>
 </tbody>
 </table>
 <p>Flujo común:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=15_abi_aapcs64/05_assembly_desde_c run</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Guía de lectura:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Si ves…</th>
+<th>Significa…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>x0</code>-<code>x7</code> antes de <code>bl</code></td>
+<td>argumentos de función normal según AAPCS64</td>
+</tr>
+<tr class="even">
+<td><code>x0</code> después de <code>ret</code></td>
+<td>retorno entero o puntero</td>
+</tr>
+<tr class="odd">
+<td><code>x19</code>-<code>x28</code></td>
+<td>registros callee-saved: si los usas, restáuralos</td>
+</tr>
+<tr class="even">
+<td><code>stp x29, x30, [sp, #-16]!</code></td>
+<td>prólogo que guarda frame pointer y link register</td>
+</tr>
+<tr class="odd">
+<td><code>.type nombre, %function</code></td>
+<td>marca el símbolo como función para herramientas</td>
+</tr>
+<tr class="even">
+<td><code>.size nombre, . - nombre</code></td>
+<td>tamaño de función; útil aquí por interoperabilidad y debugging</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="checklist-de-cierre">Checklist de cierre</h2>

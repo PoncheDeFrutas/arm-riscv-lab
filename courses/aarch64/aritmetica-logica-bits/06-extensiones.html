@@ -1326,6 +1326,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#extensiones-dentro-de-operaciones" id="toc-extensiones-dentro-de-operaciones" class="nav-link" data-scroll-target="#extensiones-dentro-de-operaciones">Extensiones dentro de operaciones</a></li>
   <li><a href="#cuándo-usar-cada-forma" id="toc-cuándo-usar-cada-forma" class="nav-link" data-scroll-target="#cuándo-usar-cada-forma">Cuándo usar cada forma</a></li>
   <li><a href="#diagnóstico-de-extensión" id="toc-diagnóstico-de-extensión" class="nav-link" data-scroll-target="#diagnóstico-de-extensión">Diagnóstico de extensión</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1571,14 +1573,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>La extensión no cambia los bits originales de bajo ancho. Cambia cómo llenas los bits nuevos y, por lo tanto, cómo leerás el resultado.</p>
 </section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/06_extensiones run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compara <code>uxtb</code>, <code>sxtb</code>, <code>uxtw</code> y <code>sxtw</code>. El mismo patrón de bits puede producir lecturas distintas si llenas bits altos con ceros o con signo.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>extender con ceros un dato signed</td>
+<td>usa <code>sxtb</code>, <code>sxth</code> o <code>sxtw</code></td>
+</tr>
+<tr class="even">
+<td>extender con signo una longitud</td>
+<td>usa extensión unsigned</td>
+</tr>
+<tr class="odd">
+<td>olvidar que <code>Wn</code> limpia parte alta</td>
+<td>si escribes en <code>wN</code>, <code>xN</code> queda zero-extended</td>
+</tr>
+<tr class="even">
+<td>mirar solo hexadecimal</td>
+<td>decide si el dato representa signed o unsigned</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
 <li>Lee:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  w0<span class="op">,</span> <span class="op">#</span><span class="bn">0x80</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>uxtb w1<span class="op">,</span> w0</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>sxtb w2<span class="op">,</span> w0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  w0<span class="op">,</span> <span class="op">#</span><span class="bn">0x80</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>uxtb w1<span class="op">,</span> w0</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>sxtb w2<span class="op">,</span> w0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Qué valor unsigned representa <code>w1</code>?</li>
 <li>¿Qué valor signed representa <code>w2</code>?</li>
@@ -1586,9 +1627,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="2" type="1">
 <li>Lee:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  w0<span class="op">,</span> <span class="op">#</span><span class="bn">0xFFFFFFFF</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>sxtw x1<span class="op">,</span> w0</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>uxtw x2<span class="op">,</span> w0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span>  w0<span class="op">,</span> <span class="op">#</span><span class="bn">0xFFFFFFFF</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sxtw x1<span class="op">,</span> w0</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>uxtw x2<span class="op">,</span> w0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Qué queda en <code>x1</code>?</li>
 <li>¿Qué queda en <code>x2</code>?</li>

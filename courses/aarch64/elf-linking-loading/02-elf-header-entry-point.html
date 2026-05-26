@@ -1325,8 +1325,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#start-main-y-runtime" id="toc-start-main-y-runtime" class="nav-link" data-scroll-target="#start-main-y-runtime"><code>_start</code>, <code>main</code> y runtime</a></li>
   <li><a href="#comparar-.o-y-ejecutable" id="toc-comparar-.o-y-ejecutable" class="nav-link" data-scroll-target="#comparar-.o-y-ejecutable">Comparar <code>.o</code> y ejecutable</a></li>
   <li><a href="#qué-usa-esta-información" id="toc-qué-usa-esta-información" class="nav-link" data-scroll-target="#qué-usa-esta-información">Qué usa esta información</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#lectura-rápida-del-header" id="toc-lectura-rápida-del-header" class="nav-link" data-scroll-target="#lectura-rápida-del-header">Lectura rápida del header</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1554,9 +1555,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>El header no contiene “todo el programa”. Contiene metadatos para interpretar el resto del archivo.</p>
 <p>La analogía correcta no es “el header es el programa”, sino “el header es la portada técnica”. Te dice cómo leer lo que sigue: arquitectura, tipo, offsets de tablas, tamaños de entradas y dirección de entrada. Las instrucciones reales están en otra parte; los segmentos y secciones se describen mediante tablas separadas.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<p>Ver <code>Entry point address</code> y asumir que es dirección fija en todos los sistemas. Con PIE y ASLR, la dirección efectiva de carga puede cambiar. Esta unidad lo prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo.</p>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>asumir que <code>Entry point address</code> es dirección fija universal</td>
+<td>PIE y ASLR pueden cambiar dirección efectiva</td>
+</tr>
+<tr class="even">
+<td>creer que entry point siempre es <code>main</code></td>
+<td><code>main</code> pertenece al runtime C; ELF usa dirección de entrada</td>
+</tr>
+<tr class="odd">
+<td>analizar instrucciones antes de confirmar arquitectura</td>
+<td>primero revisa <code>Machine</code></td>
+</tr>
+<tr class="even">
+<td>leer <code>Type: DYN</code> como “solo librería”</td>
+<td>puede ser shared object o ejecutable PIE</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="lectura-rápida-del-header" class="level2">
 <h2 class="anchored" data-anchor-id="lectura-rápida-del-header">Lectura rápida del header</h2>
@@ -1568,6 +1598,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>Entry point address</code> solo si el tipo puede ejecutarse.</li>
 <li>offsets de program/section headers para saber qué otras tablas existen.</li>
 </ol>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>16_elf_linking_loading/02_elf_header_entry_point</code> imprime una marca pequeña y luego permite inspeccionar el mismo binario con herramientas. No lo leas solo como programa que corre; léelo como archivo que el loader puede interpretar.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point run</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point readelf-header</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point nm</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Guía de lectura:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Salida</th>
+<th>Qué buscar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>readelf -h</code></td>
+<td><code>Class</code>, <code>Machine</code>, <code>Type</code>, <code>Entry point address</code></td>
+</tr>
+<tr class="even">
+<td><code>nm</code></td>
+<td>símbolo <code>_start</code> y dirección asociada</td>
+</tr>
+<tr class="odd">
+<td>ejecución</td>
+<td>confirma que el archivo no solo enlazó, también carga y corre</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>

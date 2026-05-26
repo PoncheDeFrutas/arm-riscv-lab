@@ -1323,6 +1323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#flujo-de-trabajo" id="toc-flujo-de-trabajo" class="nav-link" data-scroll-target="#flujo-de-trabajo">Flujo de trabajo</a></li>
   <li><a href="#syscalls-de-esta-unidad" id="toc-syscalls-de-esta-unidad" class="nav-link" data-scroll-target="#syscalls-de-esta-unidad">Syscalls de esta unidad</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1530,6 +1531,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </div>
 </section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Estos ejemplos repiten pocas instrucciones a propósito. La meta es que el estudiante pueda explicar cada registro antes de avanzar a memoria y control.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Programa mínimo</td>
+<td><code>examples/aarch64/05_primeros_programas/01_programa_minimo_exit</code></td>
+<td><code>exit</code> y código de salida</td>
+</tr>
+<tr class="even">
+<td>Hello World</td>
+<td><code>examples/aarch64/05_primeros_programas/02_hello_world_write</code></td>
+<td><code>write</code> con dirección y longitud</td>
+</tr>
+<tr class="odd">
+<td>stdout/stderr/exit codes</td>
+<td><code>examples/aarch64/05_primeros_programas/03_stdout_stderr_exit_codes</code></td>
+<td>fd <code>1</code>, fd <code>2</code> y retorno del proceso</td>
+</tr>
+<tr class="even">
+<td><code>_start</code>, <code>main</code>, libc</td>
+<td><code>examples/aarch64/05_primeros_programas/04_start_main_libc</code></td>
+<td>capas entre entrada ELF y C</td>
+</tr>
+<tr class="odd">
+<td>Lectura guiada</td>
+<td><code>examples/aarch64/05_primeros_programas/05_lectura_guiada_syscalls</code></td>
+<td>flujo completo de syscalls</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=05_primeros_programas/02_hello_world_write run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
 <table class="caption-top table">
@@ -1587,6 +1635,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/primeros-programas/01-programa-minimo-exit.html">Programa mínimo con <code>exit</code></a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linux man-pages: <code>syscall(2)</code>, <code>exit(2)</code>, <code>write(2)</code>: contrato de syscalls AArch64. <a href="https://www.man7.org/linux/man-pages/man2/" class="uri">https://www.man7.org/linux/man-pages/man2/</a></li>
+<li>Arm, <em>A64 Instruction Set Architecture Guide</em>: instrucción <code>svc #0</code>, registros de argumentos. <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): exception handling y <code>svc</code>. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: <code>as</code>, <code>ld</code> para ensamblar y enlazar. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+</ul>
 
 
 </section>

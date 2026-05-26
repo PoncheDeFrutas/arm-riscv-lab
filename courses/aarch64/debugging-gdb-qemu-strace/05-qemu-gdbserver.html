@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#por-qué-no-empezar-con-run" id="toc-por-qué-no-empezar-con-run" class="nav-link" data-scroll-target="#por-qué-no-empezar-con-run">Por qué no empezar con run</a></li>
   <li><a href="#con-libc" id="toc-con-libc" class="nav-link" data-scroll-target="#con-libc">Con libc</a></li>
   <li><a href="#diagnóstico-de-conexión" id="toc-diagnóstico-de-conexión" class="nav-link" data-scroll-target="#diagnóstico-de-conexión">Diagnóstico de conexión</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#diagrama" id="toc-diagrama" class="nav-link" data-scroll-target="#diagrama">Diagrama</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1478,6 +1479,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Si cambias de puerto, cámbialo en ambos lados. <code>qemu-aarch64 -g 2345</code> requiere <code>target remote :2345</code>.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>17_debugging_gdb_qemu_strace/05_qemu_gdbserver</code> está hecho para practicar el flujo remoto sin mezclarlo con otros temas.</p>
+<p>Terminal 1:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/05_qemu_gdbserver gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Terminal 2:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> 17_debugging_gdb_qemu_strace/05_qemu_gdbserver/src/build/main</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">target</span> remote :1234</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">_start</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">continue</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura del flujo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Paso</th>
+<th>Quién trabaja</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>make ... gdb</code></td>
+<td>inicia QEMU y deja el binario esperando</td>
+</tr>
+<tr class="even">
+<td><code>target remote :1234</code></td>
+<td>GDB se conecta al servidor de QEMU</td>
+</tr>
+<tr class="odd">
+<td><code>continue</code></td>
+<td>QEMU ejecuta instrucciones controladas por GDB</td>
+</tr>
+<tr class="even">
+<td><code>run</code></td>
+<td>no corresponde aquí porque GDB no creó el proceso</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="diagrama" class="level2">
 <h2 class="anchored" data-anchor-id="diagrama">Diagrama</h2>

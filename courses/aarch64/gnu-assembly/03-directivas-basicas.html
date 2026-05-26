@@ -1324,7 +1324,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#align-y-.balign" id="toc-align-y-.balign" class="nav-link" data-scroll-target="#align-y-.balign"><code>.align</code> y <code>.balign</code></a></li>
   <li><a href="#equ-y-.set" id="toc-equ-y-.set" class="nav-link" data-scroll-target="#equ-y-.set"><code>.equ</code> y <code>.set</code></a></li>
   <li><a href="#directiva-vs-instrucción" id="toc-directiva-vs-instrucción" class="nav-link" data-scroll-target="#directiva-vs-instrucción">Directiva vs instrucción</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
@@ -1511,21 +1512,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="callout callout-style-simple callout-warning callout-titled" title="Directiva no se ejecuta">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Directiva no se ejecuta
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>.global</code>, <code>.type</code>, <code>.size</code> y <code>.equ</code> no son instrucciones que el CPU ejecuta. El assembler las usa antes de crear el objeto.</p>
-</div>
-</div>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=04_gnu_assembly/03_directivas_basicas run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa qué líneas empiezan con punto y cuáles son instrucciones reales. Las directivas preparan el objeto; la CPU solo ejecuta instrucciones A64.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que <code>.global</code> se ejecuta</td>
+<td>es información para assembler/linker</td>
+</tr>
+<tr class="even">
+<td>usar <code>.size</code> en ejemplos que no enseñan funciones</td>
+<td>reservarlo para páginas donde aporta a herramientas/ABI</td>
+</tr>
+<tr class="odd">
+<td>escribir números mágicos sin nombre</td>
+<td>usar <code>.equ</code> para syscalls, flags y tamaños</td>
+</tr>
+<tr class="even">
+<td>confundir <code>.balign</code> con una instrucción</td>
+<td>alinea datos/código al ensamblar</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1546,6 +1570,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo usar <code>.equ</code> o <code>.set</code> para nombres simbólicos.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/gnu-assembly/04-definicion-datos.html">Definición de datos</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: directivas <code>.global</code>, <code>.type</code>, <code>.size</code>, <code>.balign</code>, <code>.equ</code>, <code>.set</code>. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): formato de símbolos y secciones en objetos ELF AArch64. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+</ul>
 
 
 </section>

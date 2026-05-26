@@ -1321,6 +1321,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
   <li><a href="#qué-es-pstate" id="toc-qué-es-pstate" class="nav-link" data-scroll-target="#qué-es-pstate">Qué es PSTATE</a></li>
   <li><a href="#comparar-y-saltar" id="toc-comparar-y-saltar" class="nav-link" data-scroll-target="#comparar-y-saltar">Comparar y saltar</a></li>
+  <li><a href="#primeros-sufijos-de-condición" id="toc-primeros-sufijos-de-condición" class="nav-link" data-scroll-target="#primeros-sufijos-de-condición">Primeros sufijos de condición</a></li>
   <li><a href="#flag-z" id="toc-flag-z" class="nav-link" data-scroll-target="#flag-z">Flag <code>Z</code></a></li>
   <li><a href="#flags-c-y-v" id="toc-flags-c-y-v" class="nav-link" data-scroll-target="#flags-c-y-v">Flags <code>C</code> y <code>V</code></a></li>
   <li><a href="#instrucciones-que-actualizan-flags" id="toc-instrucciones-que-actualizan-flags" class="nav-link" data-scroll-target="#instrucciones-que-actualizan-flags">Instrucciones que actualizan flags</a></li>
@@ -1446,13 +1447,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="primeros-sufijos-de-condición" class="level2">
+<h2 class="anchored" data-anchor-id="primeros-sufijos-de-condición">Primeros sufijos de condición</h2>
+<p>Los sufijos como <code>eq</code>, <code>ne</code>, <code>cs</code> o <code>lt</code> no son etiquetas ni variables. Son condiciones que leen <code>NZCV</code>. El mismo sufijo puede aparecer en una rama (<code>b.eq</code>), en <code>cset</code> o en <code>csel</code>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Condición</th>
+<th>Lectura práctica</th>
+<th>Flags consultados</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>eq</code></td>
+<td>equal / igual</td>
+<td><code>Z = 1</code></td>
+</tr>
+<tr class="even">
+<td><code>ne</code></td>
+<td>not equal / distinto</td>
+<td><code>Z = 0</code></td>
+</tr>
+<tr class="odd">
+<td><code>cs</code></td>
+<td>carry set</td>
+<td><code>C = 1</code></td>
+</tr>
+<tr class="even">
+<td><code>lt</code></td>
+<td>menor signed</td>
+<td><code>N != V</code></td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span>  x0<span class="op">,</span> x1</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cset x2<span class="op">,</span> eq      <span class="op">//</span> x2 <span class="op">=</span> <span class="dv">1</span> <span class="kw">si</span> Z <span class="op">=</span> <span class="dv">1</span><span class="co">; si no, x2 = 0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-note callout-titled" title="Regla de lectura">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Regla de lectura
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando veas una condición, busca hacia arriba qué instrucción preparó <code>NZCV</code>. Sin esa instrucción anterior, el sufijo no se puede interpretar correctamente.</p>
+</div>
+</div>
+</section>
 <section id="flag-z" class="level2">
 <h2 class="anchored" data-anchor-id="flag-z">Flag <code>Z</code></h2>
 <p><code>Z</code> se activa cuando el resultado de una operación o comparación es cero.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> x1</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq iguales</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> x1</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>eq iguales</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Como <code>5 - 5</code> da <code>0</code>, la comparación activa condición de igualdad.</p>
 </section>
 <section id="flags-c-y-v" class="level2">
@@ -1511,22 +1562,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>adds x2<span class="op">,</span> x0<span class="op">,</span> x1</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>vs overflow_signed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>adds x2<span class="op">,</span> x0<span class="op">,</span> x1</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>vs overflow_signed</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Este ejemplo prepara una unidad futura de aritmética y saltos. Aquí no se desarrollan todas las condiciones.</p>
 </section>
 <section id="flags-sobrescritos" class="level2">
 <h2 class="anchored" data-anchor-id="flags-sobrescritos">Flags sobrescritos</h2>
 <p>Los flags no duran como una variable protegida. Si otra instrucción actualiza <code>NZCV</code>, la rama posterior usará los flags nuevos.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">10</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>subs x2<span class="op">,</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt menor</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">10</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>subs x2<span class="op">,</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt menor</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>b.lt</code> ya no corresponde a <code>cmp x0, #10</code>; corresponde a <code>subs x2, x2, #1</code>.</p>
 </section>
 <section id="qué-verá-gdb" class="level2">
 <h2 class="anchored" data-anchor-id="qué-verá-gdb">Qué verá GDB</h2>
 <p>GDB puede mostrar flags dentro de registros de estado como <code>cpsr</code> o mediante vista de registros.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">info</span> registers cpsr</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">info</span> registers cpsr</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La forma exacta de presentación puede variar por GDB y entorno. Lo importante es que el depurador permite observar el estado de condición.</p>
 </section>
 <section id="errores-comunes" class="level2">

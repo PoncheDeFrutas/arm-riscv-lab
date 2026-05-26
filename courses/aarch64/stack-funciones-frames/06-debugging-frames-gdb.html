@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#por-qué-x29-ayuda" id="toc-por-qué-x29-ayuda" class="nav-link" data-scroll-target="#por-qué-x29-ayuda">Por qué <code>x29</code> ayuda</a></li>
   <li><a href="#stack-corruption-conceptual" id="toc-stack-corruption-conceptual" class="nav-link" data-scroll-target="#stack-corruption-conceptual">Stack corruption conceptual</a></li>
   <li><a href="#cómo-diagnosticar-un-retorno-roto" id="toc-cómo-diagnosticar-un-retorno-roto" class="nav-link" data-scroll-target="#cómo-diagnosticar-un-retorno-roto">Cómo diagnosticar un retorno roto</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1572,6 +1573,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Backtrace no es ejecución paso a paso. Es una reconstrucción de la cadena de llamadas activa cuando el programa está detenido.</p>
 </div>
 </div>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>confiar en <code>bt</code> sin mirar registros</td>
+<td>revisa <code>sp</code>, <code>x29</code>, <code>x30</code> también</td>
+</tr>
+<tr class="even">
+<td>interpretar stack como variables tipadas automáticamente</td>
+<td>GDB muestra bytes/palabras; tú das contexto</td>
+</tr>
+<tr class="odd">
+<td>pisar <code>[sp, #8]</code> en frame mínimo</td>
+<td>ese offset puede guardar <code>x30</code></td>
+</tr>
+<tr class="even">
+<td>depurar retorno roto mirando solo <code>ret</code></td>
+<td>busca daño anterior en prólogo, locales o epílogo</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

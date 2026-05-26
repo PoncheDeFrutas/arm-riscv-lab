@@ -1327,6 +1327,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#mapa-visual" id="toc-mapa-visual" class="nav-link" data-scroll-target="#mapa-visual">Mapa visual</a></li>
   <li><a href="#comparación-práctica" id="toc-comparación-práctica" class="nav-link" data-scroll-target="#comparación-práctica">Comparación práctica</a></li>
   <li><a href="#pregunta-de-vida-útil" id="toc-pregunta-de-vida-útil" class="nav-link" data-scroll-target="#pregunta-de-vida-útil">Pregunta de vida útil</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1588,6 +1590,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>La decisión no es “stack rápido, heap lento”. La decisión correcta empieza por vida útil y ownership.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/01_stack_vs_heap run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa qué datos viven por llamada y qué datos necesitan vida más larga. No elijas región por costumbre; elige por duración y dueño.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>elegir heap solo porque “es más grande”</td>
+<td>decide por vida útil y tamaño dinámico</td>
+</tr>
+<tr class="even">
+<td>devolver dirección de stack</td>
+<td>el frame deja de existir al retornar</td>
+</tr>
+<tr class="odd">
+<td>usar <code>.bss</code> para dato por llamada</td>
+<td><code>.bss</code> vive todo el proceso</td>
+</tr>
+<tr class="even">
+<td>creer que heap se limpia solo</td>
+<td>necesita ownership y cleanup</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

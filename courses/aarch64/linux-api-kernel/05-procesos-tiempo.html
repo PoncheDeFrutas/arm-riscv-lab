@@ -1329,8 +1329,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#wait4-conceptual" id="toc-wait4-conceptual" class="nav-link" data-scroll-target="#wait4-conceptual"><code>wait4</code> conceptual</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#lectura-paso-a-paso-clock_gettime" id="toc-lectura-paso-a-paso-clock_gettime" class="nav-link" data-scroll-target="#lectura-paso-a-paso-clock_gettime">Lectura paso a paso: <code>clock_gettime</code></a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
     </div>
@@ -1555,6 +1557,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>10_linux_api_kernel/05_procesos_tiempo</code> permite ver que el mismo contrato sirve para syscalls sin argumentos y para syscalls con punteros a estructuras.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=10_linux_api_kernel/05_procesos_tiempo run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Qué observar:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Syscall</th>
+<th>Lectura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>getpid</code></td>
+<td>no necesita argumentos y devuelve PID en <code>x0</code></td>
+</tr>
+<tr class="even">
+<td><code>clock_gettime</code></td>
+<td>recibe puntero a <code>timespec</code> escribible</td>
+</tr>
+<tr class="odd">
+<td><code>nanosleep</code></td>
+<td>lee una estructura <code>timespec</code> preparada por el programa</td>
+</tr>
+<tr class="even">
+<td>error</td>
+<td>se detecta como retorno negativo en <code>x0</code></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <p>Predice el resultado antes de verificar.</p>
@@ -1570,7 +1609,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de syscall, <code>svc #0</code>, retorno. Esta unidad no busca cubrir todo Linux; busca que reconozcas el patrón cuando el servicio cambia.</p>
+<p>Archivos, procesos y tiempo usan el mismo mecanismo: registros, número de syscall, <code>svc #0</code>, retorno. <code>struct timespec</code> son siempre 16 bytes (dos <code>quad</code>). Esta unidad no busca cubrir todo Linux; busca que reconozcas el patrón.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Obtengo el PID con <code>getpid</code> sin argumentos.</label></li>
+<li><label><input type="checkbox">Preparo <code>struct timespec</code> de 16 bytes para <code>nanosleep</code> o <code>clock_gettime</code>.</label></li>
+<li><label><input type="checkbox">Reconozco que <code>execve</code> y <code>wait4</code> requieren preparación avanzada.</label></li>
+</ul>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

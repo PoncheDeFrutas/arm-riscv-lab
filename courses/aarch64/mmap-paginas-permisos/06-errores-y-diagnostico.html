@@ -1329,6 +1329,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#checklist-mental-de-diagnóstico" id="toc-checklist-mental-de-diagnóstico" class="nav-link" data-scroll-target="#checklist-mental-de-diagnóstico">Checklist mental de diagnóstico</a></li>
   <li><a href="#apoyo-con-herramientas" id="toc-apoyo-con-herramientas" class="nav-link" data-scroll-target="#apoyo-con-herramientas">Apoyo con herramientas</a></li>
   <li><a href="#tabla-de-cleanup" id="toc-tabla-de-cleanup" class="nav-link" data-scroll-target="#tabla-de-cleanup">Tabla de cleanup</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1692,6 +1694,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>falla <code>mmap</code> con fd abierto</td>
 <td>no hay región, sí hay fd</td>
 <td>cerrar fd antes de salir</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/06_errores_diagnostico run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa cada fallo como pregunta concreta: retorno negativo, permisos, base perdida, región ya liberada o cleanup incompleto.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>diagnosticar permisos sin mirar retorno de <code>mmap</code></td>
+<td>primero confirma base válida</td>
+</tr>
+<tr class="even">
+<td>usar cursor como base para <code>munmap</code></td>
+<td>conserva base original</td>
+</tr>
+<tr class="odd">
+<td>confiar solo en <code>strace</code> bajo QEMU</td>
+<td>combina con GDB y registros</td>
+</tr>
+<tr class="even">
+<td>tratar retorno negativo como puntero</td>
+<td>revisa <code>x0</code> antes de guardar dirección</td>
 </tr>
 </tbody>
 </table>

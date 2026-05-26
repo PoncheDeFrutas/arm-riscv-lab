@@ -467,8 +467,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#compila" id="toc-compila" class="nav-link active" data-scroll-target="#compila">Compila</a></li>
-  <li><a href="#lanza-gdb" id="toc-lanza-gdb" class="nav-link" data-scroll-target="#lanza-gdb">Lanza GDB</a></li>
+  <li><a href="#abre-el-workspace-de-ejemplos" id="toc-abre-el-workspace-de-ejemplos" class="nav-link active" data-scroll-target="#abre-el-workspace-de-ejemplos">Abre el workspace de ejemplos</a></li>
+  <li><a href="#compila-y-ejecuta" id="toc-compila-y-ejecuta" class="nav-link" data-scroll-target="#compila-y-ejecuta">Compila y ejecuta</a></li>
   <li><a href="#qué-cambia-frente-a-qemu" id="toc-qué-cambia-frente-a-qemu" class="nav-link" data-scroll-target="#qué-cambia-frente-a-qemu">Qué cambia frente a QEMU</a></li>
   <li><a href="#errores-visuales-comunes" id="toc-errores-visuales-comunes" class="nav-link" data-scroll-target="#errores-visuales-comunes">Errores visuales comunes</a></li>
   </ul>
@@ -516,16 +516,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Verifica con <code>uname -m</code>. Si reporta <code>x86_64</code>, vuelve a <a href="../../guides/debugging/qemu-vscode.html">Depuración: QEMU y VS Code</a>.</p>
 </div>
 </div>
-<section id="compila" class="level2">
-<h2 class="anchored" data-anchor-id="compila">Compila</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="abre-el-workspace-de-ejemplos" class="level2">
+<h2 class="anchored" data-anchor-id="abre-el-workspace-de-ejemplos">Abre el workspace de ejemplos</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">code</span> .</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Abre el <code>src/main.s</code> del ejemplo que quieres estudiar. La configuración nativa usa <code>${fileDirname}</code>, así que el binario esperado será <code>src/build/main</code> junto al archivo abierto.</p>
 </section>
-<section id="lanza-gdb" class="level2">
-<h2 class="anchored" data-anchor-id="lanza-gdb">Lanza GDB</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En VS Code usa la configuración <code>Debug ARM64 (nativo)</code>.</p>
+<section id="compila-y-ejecuta" class="level2">
+<h2 class="anchored" data-anchor-id="compila-y-ejecuta">Compila y ejecuta</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En VS Code usa la configuración <code>Debug ARM64 nativo - archivo activo</code>.</p>
 <p>Instala estas extensiones:</p>
 <table class="caption-top table">
 <thead>
@@ -553,29 +553,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>Config completa para copiar en <code>.vscode/launch.json</code>:</p>
+<p>Fragmento principal de <code>.vscode/launch.json</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"0.2.0"</span><span class="fu">,</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"configurations"</span><span class="fu">:</span> <span class="ot">[</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 (nativo)"</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 nativo - archivo activo"</span><span class="fu">,</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"cppdbg"</span><span class="fu">,</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src/build/main"</span><span class="fu">,</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src"</span><span class="fu">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${fileDirname}/build/main"</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${fileDirname}"</span><span class="fu">,</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"/usr/bin/gdb"</span><span class="fu">,</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"preLaunchTask"</span><span class="fu">:</span> <span class="st">"Native: build archivo activo"</span><span class="fu">,</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-cambia-frente-a-qemu" class="level2">
 <h2 class="anchored" data-anchor-id="qué-cambia-frente-a-qemu">Qué cambia frente a QEMU</h2>
@@ -610,8 +611,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td>Makefile activo</td>
-<td>Template QEMU copiado como <code>Makefile</code></td>
-<td>Template ARM64 copiado como <code>Makefile</code></td>
+<td><code>examples/aarch64/Makefile.qemu</code></td>
+<td><code>examples/aarch64/Makefile.native</code></td>
 </tr>
 </tbody>
 </table>

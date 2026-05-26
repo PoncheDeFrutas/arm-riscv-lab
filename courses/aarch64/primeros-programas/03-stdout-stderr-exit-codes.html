@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#no-confundas-destinos-con-códigos" id="toc-no-confundas-destinos-con-códigos" class="nav-link" data-scroll-target="#no-confundas-destinos-con-códigos">No confundas destinos con códigos</a></li>
   <li><a href="#separar-stdout-y-stderr" id="toc-separar-stdout-y-stderr" class="nav-link" data-scroll-target="#separar-stdout-y-stderr">Separar stdout y stderr</a></li>
   <li><a href="#códigos-de-salida" id="toc-códigos-de-salida" class="nav-link" data-scroll-target="#códigos-de-salida">Códigos de salida</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1507,6 +1508,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>El kernel no decide por ti si <code>7</code> significa error grave o caso de prueba. Tu programa elige ese código.</p>
 <p>Los códigos de salida son importantes porque otros programas pueden leerlos. Un script, <code>make</code> o un sistema de CI decide qué hacer según ese resultado.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>05_primeros_programas/03_stdout_stderr_exit_codes</code> muestra los tres conceptos juntos: salida normal, salida de error y código final del proceso.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=05_primeros_programas/03_stdout_stderr_exit_codes run</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Qué observar:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Elemento</th>
+<th>Cómo comprobarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>stdout</td>
+<td>redirige con <code>&gt;</code></td>
+</tr>
+<tr class="even">
+<td>stderr</td>
+<td>redirige con <code>2&gt;</code></td>
+</tr>
+<tr class="odd">
+<td>exit code</td>
+<td>ejecuta <code>echo $?</code> inmediatamente después</td>
+</tr>
+<tr class="even">
+<td><code>x0</code></td>
+<td>interpreta según <code>x8</code>: fd para <code>write</code>, código para <code>exit</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>

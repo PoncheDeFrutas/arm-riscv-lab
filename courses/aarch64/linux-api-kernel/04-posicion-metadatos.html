@@ -1330,6 +1330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#lectura-paso-a-paso-lseek" id="toc-lectura-paso-a-paso-lseek" class="nav-link" data-scroll-target="#lectura-paso-a-paso-lseek">Lectura paso a paso: <code>lseek</code></a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
     </div>
@@ -1586,7 +1587,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Un fd no solo sirve para leer y escribir. También puede tener posición y metadatos asociados. La regla sigue siendo la misma: preparar registros, pasar punteros válidos cuando hagan falta, ejecutar <code>svc #0</code> y revisar retorno.</p>
+<p>Un fd no solo sirve para leer y escribir. También puede tener posición y metadatos asociados. <code>lseek</code> mueve la posición, <code>fstat</code> y <code>statx</code> consultan información del archivo. La regla sigue siendo la misma: preparar registros, pasar punteros válidos, ejecutar <code>svc #0</code> y revisar retorno.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Muevo la posición de un archivo con <code>lseek</code> y los orígenes correctos.</label></li>
+<li><label><input type="checkbox">Reservo buffer del tamaño correcto para <code>fstat</code> o <code>statx</code>.</label></li>
+<li><label><input type="checkbox">Sé que <code>lseek</code> falla en pipes y terminales.</label></li>
+</ul>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

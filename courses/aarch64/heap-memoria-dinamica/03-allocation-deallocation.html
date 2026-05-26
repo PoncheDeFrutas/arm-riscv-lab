@@ -1327,6 +1327,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#rutas-de-cleanup" id="toc-rutas-de-cleanup" class="nav-link" data-scroll-target="#rutas-de-cleanup">Rutas de cleanup</a></li>
   <li><a href="#tabla-de-rutas" id="toc-tabla-de-rutas" class="nav-link" data-scroll-target="#tabla-de-rutas">Tabla de rutas</a></li>
   <li><a href="#diferencia-con-closefd" id="toc-diferencia-con-closefd" class="nav-link" data-scroll-target="#diferencia-con-closefd">Diferencia con <code>close(fd)</code></a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1551,6 +1553,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Ambos requieren ownership y cleanup. No se liberan igual.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/03_allocation_deallocation run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa rutas de éxito y error. La pregunta clave es si el bloque existe en esa ruta; de eso depende si debe liberarse.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>reservar sin plan de salida</td>
+<td>dibuja rutas <code>ok</code>, <code>error_sin_bloque</code>, <code>cleanup_con_bloque</code></td>
+</tr>
+<tr class="even">
+<td>liberar si la reserva falló</td>
+<td>solo libera recursos adquiridos</td>
+</tr>
+<tr class="odd">
+<td>poner puntero en cero como si liberara</td>
+<td>primero llama mecanismo correcto de liberación</td>
+</tr>
+<tr class="even">
+<td>mezclar <code>close</code> y <code>free</code></td>
+<td>cada recurso tiene su propia liberación</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

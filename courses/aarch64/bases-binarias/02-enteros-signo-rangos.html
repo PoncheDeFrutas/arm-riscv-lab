@@ -1727,16 +1727,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Debes poder mirar cualquier byte y decir su valor unsigned y signed de 8 bits sin calculadora. Esa habilidad es clave para leer registros en GDB y diagnosticar errores de interpretación.</p>
+<p>Los bits no cambian; cambia la regla con la que los interpretas. <code>0xFF</code> como 8 bits signed es <code>-1</code>, como 32 bits signed es <code>255</code>. Esa diferencia de tamaño es la fuente de errores más común en debugging.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo escribir el rango unsigned de n bits.</label></li>
-<li><label><input type="checkbox">Puedo escribir el rango signed de n bits.</label></li>
-<li><label><input type="checkbox">Puedo explicar por qué <code>0xFF</code> puede ser <code>255</code> o <code>-1</code>.</label></li>
-<li><label><input type="checkbox">Puedo construir un negativo pequeño con complemento a dos.</label></li>
-<li><label><input type="checkbox">Puedo explicar por qué el tamaño cambia la interpretación.</label></li>
+<li><label><input type="checkbox">Calculo el rango unsigned y signed de n bits sin mirar tabla.</label></li>
+<li><label><input type="checkbox">Construyo un negativo pequeño con complemento a dos paso a paso.</label></li>
+<li><label><input type="checkbox">Uso el truco de resta para convertir nibble con bit de signo a signed.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/03-overflow-extensiones.html">Overflow y extensiones</a>.</p>
 </section>

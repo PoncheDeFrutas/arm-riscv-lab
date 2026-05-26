@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#write-no-es-printf" id="toc-write-no-es-printf" class="nav-link" data-scroll-target="#write-no-es-printf"><code>write</code> no es <code>printf</code></a></li>
   <li><a href="#stdout-y-stderr" id="toc-stdout-y-stderr" class="nav-link" data-scroll-target="#stdout-y-stderr">stdout y stderr</a></li>
   <li><a href="#resultado-de-write" id="toc-resultado-de-write" class="nav-link" data-scroll-target="#resultado-de-write">Resultado de <code>write</code></a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1523,6 +1524,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Revisa retorno antes de sobrescribir <code>x0</code>. Si haces <code>mov x0, #0</code> para preparar <code>exit</code>, ya perdiste la información devuelta por <code>write</code>.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>09_syscalls_esenciales/02_exit_write</code> es la versión de práctica para esta página. Debes leerlo como dos bloques: primero <code>write</code>, después <code>exit</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=09_syscalls_esenciales/02_exit_write run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura guiada:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bloque</th>
+<th>Regla</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>write(stdout, msg, len)</code></td>
+<td><code>x0</code>, <code>x1</code>, <code>x2</code> son argumentos; <code>x8 = 64</code></td>
+</tr>
+<tr class="even">
+<td>retorno de <code>write</code></td>
+<td><code>x0</code> cambia y ya no es fd</td>
+</tr>
+<tr class="odd">
+<td><code>exit(0)</code></td>
+<td><code>x0</code> vuelve a prepararse, ahora como código de salida</td>
+</tr>
+<tr class="even">
+<td><code>svc #0</code></td>
+<td>entra al kernel con el contrato actual de registros</td>
+</tr>
+</tbody>
+</table>
+<p>Esta separación evita una confusión frecuente: <code>x0</code> no “siempre es stdout”. Antes de <code>write</code> es fd; después de <code>write</code> es retorno; antes de <code>exit</code> es código de salida.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>

@@ -1330,6 +1330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#lectura-del-frame" id="toc-lectura-del-frame" class="nav-link" data-scroll-target="#lectura-del-frame">Lectura del frame</a></li>
   <li><a href="#checklist-para-leer-un-frame" id="toc-checklist-para-leer-un-frame" class="nav-link" data-scroll-target="#checklist-para-leer-un-frame">Checklist para leer un frame</a></li>
   <li><a href="#orden-correcto-al-salir" id="toc-orden-correcto-al-salir" class="nav-link" data-scroll-target="#orden-correcto-al-salir">Orden correcto al salir</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#sec-stack-frame-ejercicios" id="toc-sec-stack-frame-ejercicios" class="nav-link" data-scroll-target="#sec-stack-frame-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#recursos" id="toc-recursos" class="nav-link" data-scroll-target="#recursos">Recursos</a></li>
@@ -1565,6 +1566,39 @@ Figura&nbsp;1: Stack frame didáctico en AArch64 con frame pointer, link registe
 <p>Reservar espacio y olvidar liberarlo cambia dónde <code>ldp</code> busca <code>x29</code> y <code>x30</code>. Eso puede destruir el retorno.</p>
 </div>
 </div>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>restaurar <code>x29/x30</code> desde offset incorrecto</td>
+<td>libera locales antes del <code>ldp</code> final</td>
+</tr>
+<tr class="even">
+<td>guardar variable local sobre retorno</td>
+<td>calcula layout del frame antes de escribir</td>
+</tr>
+<tr class="odd">
+<td>creer que <code>x29</code> es obligatorio en todo código</td>
+<td>aquí se usa para aprender y depurar frames</td>
+</tr>
+<tr class="even">
+<td>cambiar prólogo sin ajustar epílogo</td>
+<td>ambos deben ser simétricos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="sec-stack-frame-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="sec-stack-frame-ejercicios">Mini ejercicios</h2>

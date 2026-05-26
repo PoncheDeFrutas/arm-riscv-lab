@@ -1578,16 +1578,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Debes poder mirar 4 bytes en memoria little endian y reconstruir el valor de 32 bits mentalmente. Esa habilidad es esencial para debugging con GDB y lectura de dumps de memoria.</p>
+<p>Little endian invierte el orden de bytes, no de bits. <code>0x12345678</code> en memoria se ve como <code>78 56 34 12</code>. La CPU reconstruye el valor correctamente con <code>ldr</code>, pero al leer byte a byte con <code>ldrb</code> ves el orden real. Alinear datos en direcciones múltiples de su tamaño evita penalizaciones.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo explicar big endian.</label></li>
-<li><label><input type="checkbox">Puedo explicar little endian.</label></li>
-<li><label><input type="checkbox">Puedo leer un <code>word</code> little endian desde bytes en memoria.</label></li>
-<li><label><input type="checkbox">Sé que AArch64 Linux normalmente se estudia aquí como little endian.</label></li>
-<li><label><input type="checkbox">Puedo explicar alineación sin entrar todavía en ABI o rendimiento.</label></li>
+<li><label><input type="checkbox">Reconstruyo un <code>word</code> little endian desde 4 bytes en memoria.</label></li>
+<li><label><input type="checkbox">Digo si una dirección está alineada para un tamaño dado.</label></li>
+<li><label><input type="checkbox">Explico por qué <code>ldrb</code> byte a byte muestra orden distinto a <code>ldr w0</code>.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/06-direcciones-punteros-memoria.html">Direcciones, punteros y memoria</a>.</p>
 </section>

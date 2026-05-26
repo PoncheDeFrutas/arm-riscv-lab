@@ -1327,6 +1327,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#cleanup-con-región-mapeada" id="toc-cleanup-con-región-mapeada" class="nav-link" data-scroll-target="#cleanup-con-región-mapeada">Cleanup con región mapeada</a></li>
   <li><a href="#dos-rutas-de-error" id="toc-dos-rutas-de-error" class="nav-link" data-scroll-target="#dos-rutas-de-error">Dos rutas de error</a></li>
   <li><a href="#munmap-también-puede-fallar" id="toc-munmap-también-puede-fallar" class="nav-link" data-scroll-target="#munmap-también-puede-fallar"><code>munmap</code> también puede fallar</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#relación-con-unidad-12" id="toc-relación-con-unidad-12" class="nav-link" data-scroll-target="#relación-con-unidad-12">Relación con Unidad 12</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1537,6 +1539,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Un fallo de <code>munmap</code> suele indicar que el rango no era válido: dirección incorrecta, longitud incoherente o región ya no existente. La solución no es ignorar el retorno; es revisar qué rango estás entregando al kernel.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/03_munmap_ciclo_vida run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee el ejemplo como ciclo de vida: <code>mmap</code> crea región, el programa la usa y <code>munmap</code> la cierra. Después de cerrar, la base ya no debe usarse como puntero.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>llamar <code>munmap</code> si <code>mmap</code> falló</td>
+<td>no hay región que liberar</td>
+</tr>
+<tr class="even">
+<td>perder la base original</td>
+<td>guarda base en registro estable antes de usar cursor</td>
+</tr>
+<tr class="odd">
+<td>usar región después de <code>munmap</code></td>
+<td>la dirección ya no pertenece al proceso</td>
+</tr>
+<tr class="even">
+<td>ignorar retorno de <code>munmap</code></td>
+<td>retorno negativo indica rango inválido o problema real</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="relación-con-unidad-12" class="level2">
 <h2 class="anchored" data-anchor-id="relación-con-unidad-12">Relación con Unidad 12</h2>

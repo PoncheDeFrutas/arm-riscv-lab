@@ -1329,8 +1329,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#pie" id="toc-pie" class="nav-link" data-scroll-target="#pie">PIE</a></li>
   <li><a href="#qué-cambia-con-pie" id="toc-qué-cambia-con-pie" class="nav-link" data-scroll-target="#qué-cambia-con-pie">Qué cambia con PIE</a></li>
   <li><a href="#señales-en-herramientas" id="toc-señales-en-herramientas" class="nav-link" data-scroll-target="#señales-en-herramientas">Señales en herramientas</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#límites-de-esta-lección" id="toc-límites-de-esta-lección" class="nav-link" data-scroll-target="#límites-de-esta-lección">Límites de esta lección</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1539,13 +1541,60 @@ Figura&nbsp;1: Modelo conceptual de llamada dinámica con PLT y GOT.
 </table>
 <p>Ninguna señal aislada cuenta toda la historia. La lectura correcta cruza header, program headers, dynamic section y desensamblado.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<p>Intentar explicar GOT/PLT como si ya estuviéramos escribiendo dynamic linker. No hace falta. En esta unidad basta con entender que son estructuras para conectar código propio con direcciones que pueden resolverse al cargar.</p>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/06_got_plt_pie readelf-header</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/06_got_plt_pie objdump</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Busca <code>Type: DYN</code>, referencias a <code>@plt</code> y dependencias dinámicas. La meta es reconocer el modelo, no implementar el loader.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>explicar GOT/PLT como si escribieras el dynamic linker</td>
+<td>aquí basta el modelo mental de tablas y stubs</td>
+</tr>
+<tr class="even">
+<td>creer que <code>printf@plt</code> es la función final</td>
+<td>es un puente hacia resolución dinámica</td>
+</tr>
+<tr class="odd">
+<td>leer <code>Type: DYN</code> sin contexto</td>
+<td>puede ser PIE o shared object</td>
+</tr>
+<tr class="even">
+<td>comparar direcciones de PIE como absolutas eternas</td>
+<td>piensa en base de carga + offset</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="límites-de-esta-lección" class="level2">
 <h2 class="anchored" data-anchor-id="límites-de-esta-lección">Límites de esta lección</h2>
 <p>Quedan fuera lazy binding detallado, relocations dinámicas campo por campo, symbol versioning, RELRO, exploits y resolución manual. Se mencionan solo para no confundirlos con la meta actual: entender el modelo mental.</p>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Practica con un binario enlazado dinámicamente (usa <code>gcc</code> con libc).</p>
+<ol type="1">
+<li>Ejecuta <code>objdump -d</code> y busca <code>@plt</code>. ¿Cuántas entradas PLT encuentras?</li>
+<li>Ejecuta <code>readelf -d</code> y busca <code>NEEDED</code>. ¿Qué bibliotecas necesita?</li>
+<li>Ejecuta <code>readelf -h</code> y revisa <code>Type</code>. ¿Es <code>EXEC</code> o <code>DYN</code>?</li>
+<li>Ejecuta <code>readelf -l</code> y busca <code>INTERP</code>. ¿Qué loader usa?</li>
+<li>Compara un binario compilado con <code>gcc</code> vs enlazado con <code>ld</code> directo: ¿cuál tiene GOT/PLT?</li>
+</ol>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>

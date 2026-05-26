@@ -1641,16 +1641,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Debes poder mirar una suma o resta de 8 bits y decir si hay carry (unsigned) y si hay overflow (signed) sin calculadora. Esa habilidad es esencial para entender flags <code>NZCV</code> y branches condicionales.</p>
+<p>Carry y overflow son señales distintas: carry para unsigned, overflow para signed. Escribir en <code>Wn</code> siempre limpia los bits altos de <code>Xn</code> — esa es zero extension automática. La tabla comparativa de carry vs overflow es la referencia más útil de esta lección.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo explicar carry en suma unsigned.</label></li>
-<li><label><input type="checkbox">Puedo explicar borrow en resta unsigned.</label></li>
-<li><label><input type="checkbox">Puedo explicar overflow en signed.</label></li>
-<li><label><input type="checkbox">Puedo distinguir zero extension de sign extension.</label></li>
-<li><label><input type="checkbox">Sé que escribir en <code>Wn</code> limpia los bits altos de <code>Xn</code>.</label></li>
+<li><label><input type="checkbox">Distingo carry de overflow mirando una suma de 8 bits.</label></li>
+<li><label><input type="checkbox">Aplico zero extension y sign extension correctamente.</label></li>
+<li><label><input type="checkbox">Predigo el efecto de escribir en <code>Wn</code> sobre <code>Xn</code>.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/04-bytes-texto.html">Bytes y texto</a>.</p>
 </section>

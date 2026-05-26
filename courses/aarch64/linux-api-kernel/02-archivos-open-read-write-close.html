@@ -1332,6 +1332,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#write-también-retorna-cantidad" id="toc-write-también-retorna-cantidad" class="nav-link" data-scroll-target="#write-también-retorna-cantidad"><code>write</code> también retorna cantidad</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
     </div>
@@ -1612,7 +1613,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Un archivo en Linux se trabaja como recurso: abrir produce <code>fd</code>, leer o escribir usa ese <code>fd</code>, y cerrar termina el ciclo.</p>
+<p>Un archivo en Linux se trabaja como recurso: abrir produce <code>fd</code>, leer o escribir usa ese <code>fd</code>, y cerrar termina el ciclo. La clave es guardar cada valor que produce una syscall antes de llamar la siguiente.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Paso el fd correcto a cada syscall sin perderlo en <code>x0</code>.</label></li>
+<li><label><input type="checkbox">Uso la cantidad real leída por <code>read</code> en <code>write</code>, no el tamaño del buffer.</label></li>
+<li><label><input type="checkbox">Cierro el fd tanto en ruta de éxito como en ruta de error.</label></li>
+</ul>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

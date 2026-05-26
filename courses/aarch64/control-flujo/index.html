@@ -1325,6 +1325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#diagnóstico-básico-de-control-de-flujo" id="toc-diagnóstico-básico-de-control-de-flujo" class="nav-link" data-scroll-target="#diagnóstico-básico-de-control-de-flujo">Diagnóstico básico de control de flujo</a></li>
   <li><a href="#aarch64-y-ejecución-condicional" id="toc-aarch64-y-ejecución-condicional" class="nav-link" data-scroll-target="#aarch64-y-ejecución-condicional">AArch64 y ejecución condicional</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1539,6 +1540,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../courses/aarch64/control-flujo/06-branch-link-register.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Antes de leer cada salto, identifica qué instrucción preparó los flags o qué registro/bit se está probando.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Branching y etiquetas</td>
+<td><code>examples/aarch64/08_control_flujo/01_branching_etiquetas</code></td>
+<td>salto directo y caída de flujo</td>
+</tr>
+<tr class="even">
+<td>Condiciones y flags</td>
+<td><code>examples/aarch64/08_control_flujo/02_condiciones_flags</code></td>
+<td><code>eq</code>, <code>ne</code>, signed y unsigned</td>
+</tr>
+<tr class="odd">
+<td><code>if</code> / <code>else</code></td>
+<td><code>examples/aarch64/08_control_flujo/03_if_else</code></td>
+<td>etiqueta de rama y salida común</td>
+</tr>
+<tr class="even">
+<td>Loops</td>
+<td><code>examples/aarch64/08_control_flujo/04_loops_recorrido</code></td>
+<td>salto hacia atrás</td>
+</tr>
+<tr class="odd">
+<td><code>csel</code> y branches especializados</td>
+<td><code>examples/aarch64/08_control_flujo/05_csel_branches</code></td>
+<td><code>cbz</code>, <code>tbz</code>, <code>csel</code>, <code>cset</code></td>
+</tr>
+<tr class="even">
+<td>Link y registro</td>
+<td><code>examples/aarch64/08_control_flujo/06_branch_link_register</code></td>
+<td><code>bl</code>, <code>x30/LR</code>, <code>ret</code></td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=08_control_flujo/05_csel_branches run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

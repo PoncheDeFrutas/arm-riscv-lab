@@ -1326,6 +1326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#convención-visual-de-la-unidad" id="toc-convención-visual-de-la-unidad" class="nav-link" data-scroll-target="#convención-visual-de-la-unidad">Convención visual de la unidad</a></li>
   <li><a href="#cómo-leer-una-función-en-esta-unidad" id="toc-cómo-leer-una-función-en-esta-unidad" class="nav-link" data-scroll-target="#cómo-leer-una-función-en-esta-unidad">Cómo leer una función en esta unidad</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1587,6 +1588,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../courses/aarch64/stack-funciones-frames/06-debugging-frames-gdb.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>La regla de lectura es seguir <code>bl</code>, <code>x30/LR</code>, <code>sp</code>, <code>x29/FP</code> y el epílogo. Si una función llama a otra, revisa dónde guarda su retorno.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Llamadas y retorno</td>
+<td><code>examples/aarch64/11_stack_funciones_frames/01_llamadas_retorno</code></td>
+<td><code>bl</code>, <code>ret</code>, <code>x30</code></td>
+</tr>
+<tr class="even">
+<td>Stack básico</td>
+<td><code>examples/aarch64/11_stack_funciones_frames/02_stack_basico</code></td>
+<td>reserva y liberación</td>
+</tr>
+<tr class="odd">
+<td>Stack frames</td>
+<td><code>examples/aarch64/11_stack_funciones_frames/03_stack_frames</code></td>
+<td><code>x29</code>, <code>x30</code>, variable local</td>
+</tr>
+<tr class="even">
+<td>Funciones no hoja</td>
+<td><code>examples/aarch64/11_stack_funciones_frames/04_funciones_no_hoja</code></td>
+<td>guardar <code>LR</code> antes de otro <code>bl</code></td>
+</tr>
+<tr class="odd">
+<td>Recursión básica</td>
+<td><code>examples/aarch64/11_stack_funciones_frames/05_recursion_basica</code></td>
+<td>frame por llamada</td>
+</tr>
+<tr class="even">
+<td>Debugging de frames</td>
+<td><code>examples/aarch64/11_stack_funciones_frames/06_debugging_frames_gdb</code></td>
+<td><code>bt</code>, <code>info registers</code>, stack</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=11_stack_funciones_frames/06_debugging_frames_gdb gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

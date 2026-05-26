@@ -1327,6 +1327,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#transferir-ownership" id="toc-transferir-ownership" class="nav-link" data-scroll-target="#transferir-ownership">Transferir ownership</a></li>
   <li><a href="#checklist-de-ownership" id="toc-checklist-de-ownership" class="nav-link" data-scroll-target="#checklist-de-ownership">Checklist de ownership</a></li>
   <li><a href="#perder-puntero" id="toc-perder-puntero" class="nav-link" data-scroll-target="#perder-puntero">Perder puntero</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1565,6 +1567,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ldr x19<span class="op">,</span> <span class="op">=</span>buffer    <span class="op">//</span> x19 apunta <span class="kw">al</span> bloque</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x19<span class="op">,</span> <span class="op">#</span><span class="dv">0</span>         <span class="op">//</span> referencia perdida</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En <code>.bss</code> todavía existe el símbolo <code>buffer</code>, pero en heap real perder el último puntero al bloque puede impedir liberarlo.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/02_bloques_ownership run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee el ejemplo buscando tres datos: puntero base, capacidad y bytes usados. El puntero no basta para entender ownership.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>confundir tener puntero con ser dueño</td>
+<td>define si es préstamo o transferencia</td>
+</tr>
+<tr class="even">
+<td>liberar desde una función que solo recibió préstamo</td>
+<td>solo libera el dueño actual</td>
+</tr>
+<tr class="odd">
+<td>perder puntero principal</td>
+<td>guarda ownership en un lugar claro</td>
+</tr>
+<tr class="even">
+<td>guardar capacidad pero no usados</td>
+<td>capacidad no dice cuántos bytes son válidos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

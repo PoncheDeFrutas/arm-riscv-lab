@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#errores-visuales-al-avanzar" id="toc-errores-visuales-al-avanzar" class="nav-link" data-scroll-target="#errores-visuales-al-avanzar">Errores visuales al avanzar</a></li>
   <li><a href="#debug-console-de-vs-code" id="toc-debug-console-de-vs-code" class="nav-link" data-scroll-target="#debug-console-de-vs-code">Debug Console de VS Code</a></li>
   <li><a href="#guías-ampliadas" id="toc-guías-ampliadas" class="nav-link" data-scroll-target="#guías-ampliadas">Guías ampliadas</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1368,17 +1369,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="prepara-binario" class="level2">
 <h2 class="anchored" data-anchor-id="prepara-binario">Prepara binario</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="ruta-x86_64-con-qemu" class="level2">
 <h2 class="anchored" data-anchor-id="ruta-x86_64-con-qemu">Ruta x86_64 con QEMU</h2>
 <p>Terminal 1:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La terminal queda esperando conexión en <code>localhost:1234</code>.</p>
 <p>Terminal 2:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> 01_laboratorio/03_primer_programa/src/build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Dentro de GDB:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> architecture aarch64</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">target</span> remote localhost:1234</span>
@@ -1391,7 +1391,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ruta-raspberry-pi-arm64-real" class="level2">
 <h2 class="anchored" data-anchor-id="ruta-raspberry-pi-arm64-real">Ruta Raspberry Pi ARM64 real</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.native EXAMPLE=01_laboratorio/03_primer_programa gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Dentro de GDB:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">_start</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span></span>
@@ -1455,62 +1455,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>El repo trae <code>.vscode/launch.json</code>, pero conviene que puedas copiar la configuración completa desde esta página. Esta versión fuerza vista de instrucciones y reduce errores visuales al depurar assembly.</p>
+<p>Para los ejemplos del curso, abre <code>examples/aarch64</code> como workspace y abre el <code>src/main.s</code> que quieres depurar. La configuración usa <code>${fileDirname}</code>, por lo que no hay que escoger una carpeta en una lista.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"0.2.0"</span><span class="fu">,</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"configurations"</span><span class="fu">:</span> <span class="ot">[</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 (QEMU)"</span><span class="fu">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 QEMU - archivo activo"</span><span class="fu">,</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"cppdbg"</span><span class="fu">,</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src/build/main"</span><span class="fu">,</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src"</span><span class="fu">,</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${fileDirname}/build/main"</span><span class="fu">,</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${fileDirname}"</span><span class="fu">,</span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"/usr/bin/gdb-multiarch"</span><span class="fu">,</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerServerAddress"</span><span class="fu">:</span> <span class="st">"localhost:1234"</span><span class="fu">,</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"sourceFileMap"</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">"${workspaceFolder}/src"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src"</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set breakpoint auto-hw on"</span> <span class="fu">}</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 (nativo)"</span><span class="fu">,</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"cppdbg"</span><span class="fu">,</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src/build/main"</span><span class="fu">,</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${workspaceFolder}/src"</span><span class="fu">,</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"/usr/bin/gdb"</span><span class="fu">,</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-style-simple callout-note callout-titled" title="Si tu repo se abre en otra carpeta">
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"preLaunchTask"</span><span class="fu">:</span> <span class="st">"QEMU: build + gdb archivo activo"</span><span class="fu">,</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set breakpoint auto-hw on"</span> <span class="fu">}</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Debug ARM64 nativo - archivo activo"</span><span class="fu">,</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"cppdbg"</span><span class="fu">,</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"${fileDirname}/build/main"</span><span class="fu">,</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"cwd"</span><span class="fu">:</span> <span class="st">"${fileDirname}"</span><span class="fu">,</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"/usr/bin/gdb"</span><span class="fu">,</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"preLaunchTask"</span><span class="fu">:</span> <span class="st">"Native: build archivo activo"</span><span class="fu">,</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"stopAtEntry"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set architecture aarch64"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set disassemble-next-line on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set step-mode on"</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span> <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"set pagination off"</span> <span class="fu">}</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-simple callout-note callout-titled" title="Archivo activo">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>Si tu repo se abre en otra carpeta
+<span class="screen-reader-only">Nota</span>Archivo activo
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>La configuración anterior asume que VS Code abre <code>00-hello-minimo/</code> como workspace. Así el código queda corto y portable: <code>src/build/main</code>.</p>
+<p>Antes de presionar F5, el archivo activo debe ser el <code>src/main.s</code> del ejemplo. VS Code calcula el binario como <code>${fileDirname}/build/main</code>.</p>
 </div>
 </div>
 </section>
@@ -1588,6 +1587,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="../../../guides/debugging/native-vscode.html">Depuración nativa ARM</a></li>
 </ul>
 </section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>usar <code>run</code> dentro de GDB remoto</td>
+<td>conecta con <code>target remote</code> y continúa</td>
+</tr>
+<tr class="even">
+<td>cerrar GDB y dejar QEMU esperando</td>
+<td>cierra o interrumpe la terminal de QEMU</td>
+</tr>
+<tr class="odd">
+<td>avanzar por líneas fuente esperando precisión perfecta</td>
+<td>usa <code>stepi</code> para instrucciones</td>
+</tr>
+<tr class="even">
+<td>poner breakpoint en símbolo no visible</td>
+<td>revisa etiqueta/exportación y binario correcto</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
@@ -1596,6 +1628,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Puedo ver <code>pc</code>, <code>x0</code>, <code>x1</code>, <code>x2</code> y <code>x8</code>.</label></li>
 <li><label><input type="checkbox">Puedo ejecutar <code>stepi</code>.</label></li>
 <li><label><input type="checkbox">Puedo salir de GDB y cerrar QEMU si aplica.</label></li>
+</ul>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Sourceware, <em>GDB Documentation</em>: comandos <code>break</code>, <code>stepi</code>, <code>nexti</code>, <code>info registers</code>, <code>x/i</code>. <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>QEMU, <em>User-mode documentation</em>: opción <code>-g</code> para GDB server, <code>-singlestep</code>. <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): registros AArch64 (<code>X0</code>-<code>X30</code>, <code>PC</code>, <code>SP</code>). <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
 </ul>
 
 

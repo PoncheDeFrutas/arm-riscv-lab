@@ -1328,6 +1328,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#crecimiento-conceptual" id="toc-crecimiento-conceptual" class="nav-link" data-scroll-target="#crecimiento-conceptual">Crecimiento conceptual</a></li>
   <li><a href="#copiar-al-crecer" id="toc-copiar-al-crecer" class="nav-link" data-scroll-target="#copiar-al-crecer">Copiar al crecer</a></li>
   <li><a href="#checklist-antes-de-escribir" id="toc-checklist-antes-de-escribir" class="nav-link" data-scroll-target="#checklist-antes-de-escribir">Checklist antes de escribir</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1590,6 +1592,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>No escribas en <code>buffer[capacidad]</code>. Índices válidos van de <code>0</code> a <code>capacidad - 1</code>.</p>
 </div>
 </div>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/04_buffer_dinamico run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa que un buffer dinámico necesita puntero, capacidad y longitud usada. Para string, reserva también espacio para terminador cero.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>no reservar espacio para <code>\\0</code></td>
+<td>string C necesita byte extra de terminación</td>
+</tr>
+<tr class="even">
+<td>actualizar <code>usados</code> antes de escribir</td>
+<td>actualiza estado después de operación exitosa</td>
+</tr>
+<tr class="odd">
+<td>copiar capacidad completa al crecer</td>
+<td>copia bytes usados salvo que tengas razón explícita</td>
+</tr>
+<tr class="even">
+<td>olvidar comparar unsigned</td>
+<td>tamaños y capacidades no son signed</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

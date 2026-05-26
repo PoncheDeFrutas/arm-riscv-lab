@@ -1330,6 +1330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#método-seguro-de-inspección" id="toc-método-seguro-de-inspección" class="nav-link" data-scroll-target="#método-seguro-de-inspección">Método seguro de inspección</a></li>
   <li><a href="#qué-hace-el-dynamic-loader" id="toc-qué-hace-el-dynamic-loader" class="nav-link" data-scroll-target="#qué-hace-el-dynamic-loader">Qué hace el dynamic loader</a></li>
   <li><a href="#static-linking" id="toc-static-linking" class="nav-link" data-scroll-target="#static-linking">Static linking</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1510,6 +1511,13 @@ Figura&nbsp;1: Papel del dynamic loader en un ejecutable enlazado dinámicamente
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> aarch64-linux-gnu-readelf <span class="at">-d</span> hello_static</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Un binario estático puede no tener dynamic section útil ni <code>NEEDED</code> para <code>libc</code>. Suele ser mucho más grande.</p>
 <p>El aumento de tamaño tiene sentido: si más código queda dentro del ejecutable, el archivo crece. A cambio, reduce dependencia de librerías externas compatibles en el sistema destino. En laboratorios cruzados esto puede simplificar algunas ejecuciones, pero también oculta el comportamiento real de dynamic loader que queremos estudiar en esta unidad.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/05_linking_estatico_dinamico run</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/05_linking_estatico_dinamico readelf-dynamic</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Busca <code>INTERP</code> y <code>NEEDED</code>. Si aparecen, hay trabajo para dynamic loader; si no, pregunta si estás viendo un binario estático o un ejemplo mínimo.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>

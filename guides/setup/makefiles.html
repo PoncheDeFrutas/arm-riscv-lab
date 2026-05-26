@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Elige, copia y usa el Makefile correcto para QEMU o Raspberry Pi sin cambiar comandos.">
+<meta name="description" content="Usa los Makefiles compartidos de ejemplos o las plantillas para proyectos aislados.">
 
 <title>Makefiles ARM64 – ARM RISC-V Lab</title>
 <style>
@@ -467,9 +467,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#regla-principal" id="toc-regla-principal" class="nav-link active" data-scroll-target="#regla-principal">Regla principal</a></li>
-  <li><a href="#qué-makefile-copio" id="toc-qué-makefile-copio" class="nav-link" data-scroll-target="#qué-makefile-copio">Qué Makefile copio</a></li>
+  <li><a href="#regla-principal-para-ejemplos" id="toc-regla-principal-para-ejemplos" class="nav-link active" data-scroll-target="#regla-principal-para-ejemplos">Regla principal para ejemplos</a></li>
+  <li><a href="#makefiles-compartidos" id="toc-makefiles-compartidos" class="nav-link" data-scroll-target="#makefiles-compartidos">Makefiles compartidos</a></li>
   <li><a href="#comandos-disponibles" id="toc-comandos-disponibles" class="nav-link" data-scroll-target="#comandos-disponibles">Comandos disponibles</a></li>
+  <li><a href="#plantillas-para-proyectos-aislados" id="toc-plantillas-para-proyectos-aislados" class="nav-link" data-scroll-target="#plantillas-para-proyectos-aislados">Plantillas para proyectos aislados</a></li>
   <li><a href="#qemu-un-solo-archivo" id="toc-qemu-un-solo-archivo" class="nav-link" data-scroll-target="#qemu-un-solo-archivo">QEMU, un solo archivo</a></li>
   <li><a href="#qemu-varios-archivos" id="toc-qemu-varios-archivos" class="nav-link" data-scroll-target="#qemu-varios-archivos">QEMU, varios archivos</a></li>
   <li><a href="#arm64-nativo-un-solo-archivo" id="toc-arm64-nativo-un-solo-archivo" class="nav-link" data-scroll-target="#arm64-nativo-un-solo-archivo">ARM64 nativo, un solo archivo</a></li>
@@ -489,7 +490,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    Elige, copia y usa el Makefile correcto para QEMU o Raspberry Pi sin cambiar comandos.
+    Usa los Makefiles compartidos de ejemplos o las plantillas para proyectos aislados.
   </div>
 </div>
 
@@ -506,21 +507,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>El Makefile existe para evitar confusiones entre entornos. El estudiante no debe recordar comandos distintos para QEMU y Raspberry Pi. Debe elegir el Makefile correcto, guardarlo como <code>src/Makefile</code> y usar siempre los mismos comandos.</p>
-<section id="regla-principal" class="level2">
-<h2 class="anchored" data-anchor-id="regla-principal">Regla principal</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El Makefile existe para evitar confusiones entre entornos. En los ejemplos AArch64 del curso no se copia un Makefile por lección: se abre <code>examples/aarch64</code> como workspace y se usan dos Makefiles compartidos.</p>
+<section id="regla-principal-para-ejemplos" class="level2">
+<h2 class="anchored" data-anchor-id="regla-principal-para-ejemplos">Regla principal para ejemplos</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En ARM64 nativo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El binario queda en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Si abres el proyecto desde VS Code, esa misma ruta se ve como:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">src/build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">01_laboratorio/03_primer_programa/src/build/main</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="qué-makefile-copio" class="level2">
-<h2 class="anchored" data-anchor-id="qué-makefile-copio">Qué Makefile copio</h2>
+<section id="makefiles-compartidos" class="level2">
+<h2 class="anchored" data-anchor-id="makefiles-compartidos">Makefiles compartidos</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Caso</th>
+<th>Usa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Laptop/PC x86_64 con QEMU</td>
+<td><code>examples/aarch64/Makefile.qemu</code></td>
+</tr>
+<tr class="even">
+<td>Raspberry Pi / ARM64 real</td>
+<td><code>examples/aarch64/Makefile.native</code></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-simple callout-tip callout-titled" title="Idea clave">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cada ejemplo mantiene <code>src/main.s</code>. El Makefile compartido recibe <code>EXAMPLE=&lt;unidad&gt;/&lt;ejemplo&gt;</code> o <code>SRC_DIR=&lt;ruta&gt;/src</code>.</p>
+</div>
+</div>
+</section>
+<section id="comandos-disponibles" class="level2">
+<h2 class="anchored" data-anchor-id="comandos-disponibles">Comandos disponibles</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Comando</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>make -f Makefile.qemu EXAMPLE=...</code></td>
+<td>Ensambla y enlaza para QEMU</td>
+</tr>
+<tr class="even">
+<td><code>make -f Makefile.qemu EXAMPLE=... run</code></td>
+<td>Ejecuta con QEMU</td>
+</tr>
+<tr class="odd">
+<td><code>make -f Makefile.qemu EXAMPLE=... gdb</code></td>
+<td>QEMU espera GDB en <code>localhost:1234</code></td>
+</tr>
+<tr class="even">
+<td><code>make -f Makefile.native EXAMPLE=... run</code></td>
+<td>Ejecuta directo en ARM64</td>
+</tr>
+<tr class="odd">
+<td><code>make -f Makefile.qemu EXAMPLE=... clean</code></td>
+<td>Borra <code>src/build/</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="plantillas-para-proyectos-aislados" class="level2">
+<h2 class="anchored" data-anchor-id="plantillas-para-proyectos-aislados">Plantillas para proyectos aislados</h2>
+<p>Si una práctica necesita ser autocontenida fuera de <code>examples/aarch64</code>, puedes copiar una plantilla desde <code>tooling/make/makefile-templates/</code>.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -548,52 +619,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td>Raspberry Pi / ARM64 real, varios <code>.s</code></td>
 <td><code>Makefile.arm64.multi</code></td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-simple callout-tip callout-titled" title="Idea clave">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Idea clave
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>No uses banderas especiales de <code>make</code>. Si cambias de QEMU a Raspberry Pi, cambia el contenido de <code>src/Makefile</code>. Los comandos siguen iguales.</p>
-</div>
-</div>
-</section>
-<section id="comandos-disponibles" class="level2">
-<h2 class="anchored" data-anchor-id="comandos-disponibles">Comandos disponibles</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Comando</th>
-<th>Qué hace</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>make</code></td>
-<td>Ensambla y enlaza</td>
-</tr>
-<tr class="even">
-<td><code>make run</code></td>
-<td>Ejecuta el programa</td>
-</tr>
-<tr class="odd">
-<td><code>make gdb</code></td>
-<td>Abre depuración según el entorno</td>
-</tr>
-<tr class="even">
-<td><code>make clean</code></td>
-<td>Borra <code>build/</code></td>
-</tr>
-<tr class="odd">
-<td><code>make info</code></td>
-<td>Muestra ayuda corta</td>
 </tr>
 </tbody>
 </table>
@@ -791,11 +816,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Elegí un template según mi máquina.</label></li>
-<li><label><input type="checkbox">Lo guardé como <code>src/Makefile</code>.</label></li>
-<li><label><input type="checkbox">Puedo ejecutar <code>make</code>.</label></li>
-<li><label><input type="checkbox">Puedo ejecutar <code>make run</code>.</label></li>
-<li><label><input type="checkbox">El binario aparece como <code>build/main</code> dentro de <code>src/</code>.</label></li>
+<li><label><input type="checkbox">Abrí <code>examples/aarch64</code> para trabajar ejemplos del curso.</label></li>
+<li><label><input type="checkbox">Elegí <code>Makefile.qemu</code> o <code>Makefile.native</code> según mi máquina.</label></li>
+<li><label><input type="checkbox">Puedo ejecutar <code>make -f Makefile.qemu EXAMPLE=... run</code>.</label></li>
+<li><label><input type="checkbox">El binario aparece como <code>src/build/main</code> dentro del ejemplo.</label></li>
+<li><label><input type="checkbox">Solo uso templates copiados cuando necesito un proyecto aislado.</label></li>
 </ul>
 
 

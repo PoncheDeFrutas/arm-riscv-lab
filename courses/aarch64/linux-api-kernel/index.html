@@ -1324,6 +1324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ciclo-mínimo-de-recurso" id="toc-ciclo-mínimo-de-recurso" class="nav-link" data-scroll-target="#ciclo-mínimo-de-recurso">Ciclo mínimo de recurso</a></li>
   <li><a href="#errores-sin-libc" id="toc-errores-sin-libc" class="nav-link" data-scroll-target="#errores-sin-libc">Errores sin libc</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1559,6 +1560,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="../../../courses/aarch64/linux-api-kernel/06-programa-guiado-recursos.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Estos ejemplos tratan Linux como API: cada recurso obtenido debe tener regla de uso, error y cierre.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>File descriptors</td>
+<td><code>examples/aarch64/10_linux_api_kernel/01_file_descriptors</code></td>
+<td>fd como recurso</td>
+</tr>
+<tr class="even">
+<td>Archivos</td>
+<td><code>examples/aarch64/10_linux_api_kernel/02_archivos_open_read_write_close</code></td>
+<td>abrir, leer, escribir, cerrar</td>
+</tr>
+<tr class="odd">
+<td>Errores y cleanup</td>
+<td><code>examples/aarch64/10_linux_api_kernel/03_errores_cleanup</code></td>
+<td>salida ordenada ante fallo</td>
+</tr>
+<tr class="even">
+<td>Posición y metadatos</td>
+<td><code>examples/aarch64/10_linux_api_kernel/04_posicion_metadatos</code></td>
+<td>posición de archivo y datos asociados</td>
+</tr>
+<tr class="odd">
+<td>Procesos y tiempo</td>
+<td><code>examples/aarch64/10_linux_api_kernel/05_procesos_tiempo</code></td>
+<td>llamadas de proceso/tiempo</td>
+</tr>
+<tr class="even">
+<td>Programa de recursos</td>
+<td><code>examples/aarch64/10_linux_api_kernel/06_programa_recursos</code></td>
+<td>recurso vivo, uso, cleanup</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=10_linux_api_kernel/03_errores_cleanup run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

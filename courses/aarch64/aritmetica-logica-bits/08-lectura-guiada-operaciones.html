@@ -1330,7 +1330,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sexta-lectura-campo-de-bits" id="toc-sexta-lectura-campo-de-bits" class="nav-link" data-scroll-target="#sexta-lectura-campo-de-bits">Sexta lectura: campo de bits</a></li>
   <li><a href="#mapa-final-de-registros" id="toc-mapa-final-de-registros" class="nav-link" data-scroll-target="#mapa-final-de-registros">Mapa final de registros</a></li>
   <li><a href="#flags-en-la-lectura-guiada" id="toc-flags-en-la-lectura-guiada" class="nav-link" data-scroll-target="#flags-en-la-lectura-guiada">Flags en la lectura guiada</a></li>
-  <li><a href="#preguntas-de-cierre" id="toc-preguntas-de-cierre" class="nav-link" data-scroll-target="#preguntas-de-cierre">Preguntas de cierre</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1686,8 +1689,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>El último consumidor de flags verá el estado dejado por <code>tst</code>, no por <code>cmp</code> ni por <code>subs</code>.</p>
 </section>
-<section id="preguntas-de-cierre" class="level2">
-<h2 class="anchored" data-anchor-id="preguntas-de-cierre">Preguntas de cierre</h2>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/08_lectura_guiada run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Usa este ejemplo como repaso integrado. Antes de cada instrucción, predice si cambia registro, flags o solo interpreta bits existentes.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Leer el archivo como lista suelta</td>
+<td>agrupa por constantes, flags, máscaras, shifts y extensiones</td>
+</tr>
+<tr class="even">
+<td>Creer que <code>add</code> actualiza flags</td>
+<td>solo las variantes con <code>s</code> o instrucciones como <code>cmp</code>/<code>tst</code> cambian <code>NZCV</code></td>
+</tr>
+<tr class="odd">
+<td>Confundir extensión con cambio del byte original</td>
+<td>la extensión decide cómo llenar bits nuevos</td>
+</tr>
+<tr class="even">
+<td>Leer <code>ubfx</code> como acceso a memoria</td>
+<td><code>ubfx</code> extrae bits dentro de un registro</td>
+</tr>
+<tr class="odd">
+<td>Olvidar qué instrucción dejó los flags finales</td>
+<td>busca la última que actualizó <code>NZCV</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ul>
 <li>¿Qué instrucciones construyen una constante grande?</li>
 <li>¿Cuál operación actualiza flags: <code>add</code> o <code>subs</code>?</li>
@@ -1696,6 +1742,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿Qué diferencia hay entre <code>uxtb</code> y <code>sxtb</code>?</li>
 <li>¿Por qué <code>ubfx</code> no usa offset de memoria?</li>
 <li>¿Qué instrucción dejó los flags más recientes antes de <code>svc #0</code>?</li>
+</ul>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Puedo separar el archivo por bloques de intención.</label></li>
+<li><label><input type="checkbox">Puedo predecir qué registro cambia en cada bloque.</label></li>
+<li><label><input type="checkbox">Puedo decir qué instrucciones actualizan <code>NZCV</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar una máscara sin convertirla en dirección.</label></li>
+<li><label><input type="checkbox">Puedo distinguir <code>uxtb</code>, <code>sxtb</code> y <code>ubfx</code>.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">

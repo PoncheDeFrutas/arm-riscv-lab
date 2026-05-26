@@ -1329,6 +1329,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#filtros-útiles" id="toc-filtros-útiles" class="nav-link" data-scroll-target="#filtros-útiles">Filtros útiles</a></li>
   <li><a href="#strace-con-qemu" id="toc-strace-con-qemu" class="nav-link" data-scroll-target="#strace-con-qemu">strace con QEMU</a></li>
   <li><a href="#syscalls-a-verificar" id="toc-syscalls-a-verificar" class="nav-link" data-scroll-target="#syscalls-a-verificar">Syscalls a verificar</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1515,6 +1516,33 @@ Figura&nbsp;1: Con QEMU, strace puede observar la capa del emulador y no solo el
 </tr>
 </tbody>
 </table>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>17_debugging_gdb_qemu_strace/06_strace_syscalls</code> produce una traza pequeña para leer syscalls de archivos y errores esperados.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/06_strace_syscalls run</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/06_strace_syscalls strace</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Condiciones que verás en el código:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Condición</th>
+<th>Lectura</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>b.lt error</code></td>
+<td>salto si retorno signed fue negativo</td>
+</tr>
+<tr class="even">
+<td><code>b.lt error_esperado</code></td>
+<td>un fallo de syscall era parte de la prueba</td>
+</tr>
+</tbody>
+</table>
+<p>Esto enseña una regla importante: un retorno negativo no siempre significa que la práctica falló. A veces el programa prueba que el error esperado se detecta.</p>
 </section>
 <section id="método-de-lectura" class="level2">
 <h2 class="anchored" data-anchor-id="método-de-lectura">Método de lectura</h2>

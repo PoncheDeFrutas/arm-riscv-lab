@@ -1324,6 +1324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#idea-de-trabajo" id="toc-idea-de-trabajo" class="nav-link" data-scroll-target="#idea-de-trabajo">Idea de trabajo</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#diagnóstico-básico-de-memoria" id="toc-diagnóstico-básico-de-memoria" class="nav-link" data-scroll-target="#diagnóstico-básico-de-memoria">Diagnóstico básico de memoria</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1537,6 +1538,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>si el puntero cambia con pre-index o post-index;</li>
 <li>si la sección permite el uso esperado del dato.</li>
 </ol>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>La lectura recomendada siempre separa tres cosas: dirección, tamaño de acceso y valor interpretado.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dirección y contenido</td>
+<td><code>examples/aarch64/06_memoria_direccionamiento/01_direccion_contenido</code></td>
+<td>puntero base y dato cargado</td>
+</tr>
+<tr class="even">
+<td>Secciones y mapa</td>
+<td><code>examples/aarch64/06_memoria_direccionamiento/02_secciones_mapa</code></td>
+<td>dónde vive cada dato</td>
+</tr>
+<tr class="odd">
+<td>Load/store básico</td>
+<td><code>examples/aarch64/06_memoria_direccionamiento/03_load_store_basico</code></td>
+<td><code>ldr</code> y <code>str</code></td>
+</tr>
+<tr class="even">
+<td>Tamaños de acceso</td>
+<td><code>examples/aarch64/06_memoria_direccionamiento/04_tamanos_acceso</code></td>
+<td><code>ldrb</code>, <code>ldrh</code>, <code>ldr</code></td>
+</tr>
+<tr class="odd">
+<td>Modos de direccionamiento</td>
+<td><code>examples/aarch64/06_memoria_direccionamiento/05_modos_direccionamiento</code></td>
+<td>offset, pre-index y post-index</td>
+</tr>
+<tr class="even">
+<td>Arrays y recorrido</td>
+<td><code>examples/aarch64/06_memoria_direccionamiento/06_arrays_recorrido</code></td>
+<td>índice, puntero y suma</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=06_memoria_direccionamiento/06_arrays_recorrido run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

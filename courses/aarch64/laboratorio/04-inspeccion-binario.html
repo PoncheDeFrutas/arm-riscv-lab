@@ -1318,7 +1318,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#prepara-el-ejemplo" id="toc-prepara-el-ejemplo" class="nav-link active" data-scroll-target="#prepara-el-ejemplo">Prepara el ejemplo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#prepara-el-ejemplo" id="toc-prepara-el-ejemplo" class="nav-link" data-scroll-target="#prepara-el-ejemplo">Prepara el ejemplo</a></li>
   <li><a href="#identificar-el-archivo" id="toc-identificar-el-archivo" class="nav-link" data-scroll-target="#identificar-el-archivo">Identificar el archivo</a></li>
   <li><a href="#ver-encabezado-elf" id="toc-ver-encabezado-elf" class="nav-link" data-scroll-target="#ver-encabezado-elf">Ver encabezado ELF</a></li>
   <li><a href="#ver-instrucciones" id="toc-ver-instrucciones" class="nav-link" data-scroll-target="#ver-instrucciones">Ver instrucciones</a></li>
@@ -1327,6 +1330,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#ver-bibliotecas-dinámicas" id="toc-ver-bibliotecas-dinámicas" class="nav-link" data-scroll-target="#ver-bibliotecas-dinámicas">Ver bibliotecas dinámicas</a></li>
   <li><a href="#observar-syscalls" id="toc-observar-syscalls" class="nav-link" data-scroll-target="#observar-syscalls">Observar syscalls</a></li>
   <li><a href="#perf-como-herramienta-futura" id="toc-perf-como-herramienta-futura" class="nav-link" data-scroll-target="#perf-como-herramienta-futura"><code>perf</code> como herramienta futura</a></li>
+  <li><a href="#qué-herramienta-usar-para-qué-pregunta" id="toc-qué-herramienta-usar-para-qué-pregunta" class="nav-link" data-scroll-target="#qué-herramienta-usar-para-qué-pregunta">Qué herramienta usar para qué pregunta</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1366,16 +1371,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Un binario no es una caja negra. En esta página solo haremos una primera mirada: arquitectura, símbolos, instrucciones, bytes y syscalls observables.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué herramienta usar para cada pregunta sobre un binario.</li>
+<li>Qué salida esperar de <code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code>, <code>hexdump</code>, <code>xxd</code>, <code>ldd</code> y <code>strace</code>.</li>
+<li>Que todas estas herramientas dan vistas distintas del mismo archivo.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Tener compilado el ejemplo <code>examples/aarch64/01_laboratorio/03_primer_programa</code>. Si no lo has hecho, ve a <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html">Primer programa</a>.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Un archivo ELF es un solo archivo que varias herramientas pueden leer de formas distintas. <code>file</code> dice qué tipo de archivo es. <code>readelf</code> lee headers. <code>objdump</code> desensambla instrucciones. <code>nm</code> lista símbolos. <code>hexdump</code> y <code>xxd</code> muestran bytes crudos. <code>ldd</code> muestra dependencias dinámicas. <code>strace</code> observa las syscalls que ejecuta. Ninguna herramienta es “la correcta”; cada una responde una pregunta distinta.</p>
+</section>
 <section id="prepara-el-ejemplo" class="level2">
 <h2 class="anchored" data-anchor-id="prepara-el-ejemplo">Prepara el ejemplo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 01_laboratorio/03_primer_programa/src</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Debes tener <code>build/main</code> como resultado. Si <code>make</code> falla, revisa que las herramientas estén instaladas en <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html">Instalación toolchain</a>.</p>
 </section>
 <section id="identificar-el-archivo" class="level2">
 <h2 class="anchored" data-anchor-id="identificar-el-archivo">Identificar el archivo</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">file</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Debes ver que es un ejecutable ELF de AArch64 o ARM aarch64.</p>
+<p>Salida esperada:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">build/main:</span> ELF 64-bit LSB executable, ARM aarch64, version 1 <span class="er">(</span><span class="ex">SYSV</span><span class="kw">)</span><span class="ex">,</span> statically linked, not stripped</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cada parte importa:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Fragmento</th>
+<th>Qué significa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ELF</code></td>
+<td>formato Executable and Linkable Format</td>
+</tr>
+<tr class="even">
+<td><code>64-bit</code></td>
+<td>binario de 64 bits (AArch64)</td>
+</tr>
+<tr class="odd">
+<td><code>LSB</code></td>
+<td>Least Significant Byte primero (little endian)</td>
+</tr>
+<tr class="even">
+<td><code>executable</code></td>
+<td>es un ejecutable, no un objeto ni shared library</td>
+</tr>
+<tr class="odd">
+<td><code>ARM aarch64</code></td>
+<td>arquitectura destino</td>
+</tr>
+<tr class="even">
+<td><code>statically linked</code></td>
+<td>no depende de bibliotecas dinámicas</td>
+</tr>
+<tr class="odd">
+<td><code>not stripped</code></td>
+<td>todavía tiene símbolos de depuración</td>
+</tr>
+</tbody>
+</table>
 <div class="callout callout-style-simple callout-note callout-titled" title="No estudiar ELF todavía">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1392,7 +1454,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ver-encabezado-elf" class="level2">
 <h2 class="anchored" data-anchor-id="ver-encabezado-elf">Ver encabezado ELF</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">readelf</span> <span class="at">-h</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">readelf</span> <span class="at">-h</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada (fragmento):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ELF</span> Header:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Magic:</span>   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Class:</span>                             ELF64</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Data:</span>                              2<span class="st">'s complement, little endian</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">  Machine:                           AArch64</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">  Entry point address:               0x400080</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Busca tres datos:</p>
 <table class="caption-top table">
 <thead>
@@ -1404,79 +1473,282 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>Class</code></td>
-<td><code>ELF64</code></td>
+<td><code>ELF64</code> — binario de 64 bits</td>
 </tr>
 <tr class="even">
 <td><code>Machine</code></td>
-<td>AArch64</td>
+<td>AArch64 — arquitectura correcta</td>
 </tr>
 <tr class="odd">
 <td><code>Entry point address</code></td>
-<td>Dirección donde inicia el programa</td>
+<td>Dirección donde el loader salta al iniciar</td>
 </tr>
 </tbody>
 </table>
+<p>El entry point normalmente apunta a <code>_start</code>. Si ves <code>0x400080</code> o similar, es la dirección donde comienza tu código en la sección <code>.text</code>.</p>
 </section>
 <section id="ver-instrucciones" class="level2">
 <h2 class="anchored" data-anchor-id="ver-instrucciones">Ver instrucciones</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-d</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-d</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En Raspberry Pi también puede funcionar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">objdump</span> <span class="at">-d</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Busca <code>_start</code> y las instrucciones <code>mov</code>, <code>adr</code> y <code>svc</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">objdump</span> <span class="at">-d</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada (fragmento):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0000000000400080</span> <span class="op">&lt;</span>_start<span class="op">&gt;</span>:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400080:</span>       d2800020        mov     x0, <span class="co">#1</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400084:</span>       d2800021        mov     x1, <span class="co">#1</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400088:</span>       d4000001        svc     <span class="co">#0x0</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">40008c:</span>       d2800000        mov     x0, <span class="co">#0</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400090:</span>       d2800ba8        mov     x8, <span class="co">#93</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400094:</span>       d4000001        svc     <span class="co">#0x0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Busca <code>_start</code> y las instrucciones <code>mov</code>, <code>adr</code> y <code>svc</code>. Cada línea muestra:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Columna</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>400080</code></td>
+<td>dirección de memoria virtual</td>
+</tr>
+<tr class="even">
+<td><code>d2800020</code></td>
+<td>encoding binario de la instrucción en hexadecimal</td>
+</tr>
+<tr class="odd">
+<td><code>mov x0, #1</code></td>
+<td>instrucción desensamblada legible</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-simple callout-note callout-titled" title="El encoding es lo que el CPU ejecuta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>El encoding es lo que el CPU ejecuta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La columna hexadecimal (<code>d2800020</code>) es lo que realmente está en el binario. El texto <code>mov x0, #1</code> es la representación legible que <code>objdump</code> genera para ti.</p>
+</div>
+</div>
 </section>
 <section id="ver-símbolos" class="level2">
 <h2 class="anchored" data-anchor-id="ver-símbolos">Ver símbolos</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-nm</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-nm</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En Raspberry Pi:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nm</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nm</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada (fragmento):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00000000004000b0</span> d msg</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">00000000004000b8</span> d msg_len</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0000000000400080</span> T _start</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Busca:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Símbolo</th>
-<th>Significado mínimo</th>
+<th>Letra</th>
+<th>Significado</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>_start</code></td>
-<td>Entrada del programa</td>
+<td><code>T</code></td>
+<td>código (Text), entrada del programa</td>
 </tr>
 <tr class="even">
 <td><code>msg</code></td>
-<td>Dirección del mensaje</td>
+<td><code>d</code></td>
+<td>datos inicializados (data)</td>
 </tr>
 <tr class="odd">
 <td><code>msg_len</code></td>
-<td>Longitud calculada por assembler</td>
+<td><code>d</code></td>
+<td>datos inicializados, calculado por assembler</td>
+</tr>
+</tbody>
+</table>
+<p>La letra indica la sección donde vive el símbolo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Letra</th>
+<th>Sección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>T</code></td>
+<td><code>.text</code> (código)</td>
+</tr>
+<tr class="even">
+<td><code>D</code></td>
+<td><code>.data</code> (datos inicializados, global)</td>
+</tr>
+<tr class="odd">
+<td><code>d</code></td>
+<td><code>.data</code> (datos inicializados, local)</td>
+</tr>
+<tr class="even">
+<td><code>B</code></td>
+<td><code>.bss</code> (datos no inicializados)</td>
+</tr>
+<tr class="odd">
+<td><code>U</code></td>
+<td>undefined (símbolo que debe resolver el linker)</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="ver-bytes" class="level2">
 <h2 class="anchored" data-anchor-id="ver-bytes">Ver bytes</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hexdump</span> <span class="at">-C</span> build/main <span class="kw">|</span> <span class="fu">head</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">xxd</span> build/main <span class="kw">|</span> <span class="fu">head</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hexdump</span> <span class="at">-C</span> build/main <span class="kw">|</span> <span class="fu">head</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">xxd</span> build/main <span class="kw">|</span> <span class="fu">head</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada (<code>xxd</code>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00000000:</span> 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">00000010:</span> 0200 b700 0100 0000 8000 4000 0000 0000  .........@......</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Los primeros 4 bytes <code>7f 45 4c 46</code> son el magic number de ELF. <code>45 4c 46</code> en ASCII es <code>ELF</code>. El byte <code>7f</code> es un carácter de control que identifica el formato.</p>
 <p>No necesitas interpretar todo. La meta es notar que el archivo final son bytes y que las herramientas dan distintas vistas del mismo binario.</p>
 </section>
 <section id="ver-bibliotecas-dinámicas" class="level2">
 <h2 class="anchored" data-anchor-id="ver-bibliotecas-dinámicas">Ver bibliotecas dinámicas</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ldd</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ldd</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Como este ejemplo se enlaza sin libc y estático, puede aparecer algo como:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">not</span> a dynamic executable</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Eso está bien para este laboratorio.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">not</span> a dynamic executable</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Eso está bien para este laboratorio. Significa que el binario no depende de ninguna shared library. Cuando uses <code>gcc</code> con <code>printf</code>, verás algo como:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">libc.so.6</span> =<span class="op">&gt;</span> /lib/aarch64-linux-gnu/libc.so.6</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ahí el binario necesita <code>libc</code> para funcionar.</p>
 </section>
 <section id="observar-syscalls" class="level2">
 <h2 class="anchored" data-anchor-id="observar-syscalls">Observar syscalls</h2>
 <p>Ruta Raspberry Pi ARM64:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> ./build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> ./build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ruta x86_64 con QEMU:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> qemu-aarch64 ./build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> qemu-aarch64 ./build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada (fragmento):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span><span class="er">(</span><span class="ex">1,</span> <span class="st">"Hola ARM64\n"</span>, 11<span class="kw">)</span>            <span class="ex">=</span> 11</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span>                                 <span class="ex">=</span> <span class="pp">?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>strace</code> muestra cada syscall que el programa ejecuta:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Columna</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>write</code></td>
+<td>nombre de la syscall</td>
+</tr>
+<tr class="even">
+<td><code>1</code></td>
+<td>file descriptor (stdout)</td>
+</tr>
+<tr class="odd">
+<td><code>"Hola ARM64\n"</code></td>
+<td>buffer que se escribió</td>
+</tr>
+<tr class="even">
+<td><code>11</code></td>
+<td>cantidad de bytes</td>
+</tr>
+<tr class="odd">
+<td><code>= 11</code></td>
+<td>retorno de la syscall</td>
+</tr>
+</tbody>
+</table>
 <p>En x86_64, <code>strace</code> observa el proceso QEMU desde el host. No lo uses todavía como explicación completa de syscalls ARM64. Aquí solo sirve para ver que hay interacción con Linux.</p>
 </section>
 <section id="perf-como-herramienta-futura" class="level2">
 <h2 class="anchored" data-anchor-id="perf-como-herramienta-futura"><code>perf</code> como herramienta futura</h2>
 <p><code>perf</code> sirve para medición y rendimiento: ciclos, eventos, hotspots y profiling. En esta unidad solo se menciona. No será práctica central hasta unidades de performance.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">perf</span> stat ./build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esto muestra cuántos ciclos, instrucciones y branches ejecutó el programa. No lo necesitas ahora, pero es bueno saber que existe.</p>
+</section>
+<section id="qué-herramienta-usar-para-qué-pregunta" class="level2">
+<h2 class="anchored" data-anchor-id="qué-herramienta-usar-para-qué-pregunta">Qué herramienta usar para qué pregunta</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pregunta</th>
+<th>Herramienta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿Es ELF? ¿Qué arquitectura?</td>
+<td><code>file</code></td>
+</tr>
+<tr class="even">
+<td>¿Cuál es el entry point?</td>
+<td><code>readelf -h</code></td>
+</tr>
+<tr class="odd">
+<td>¿Qué instrucciones tiene?</td>
+<td><code>objdump -d</code></td>
+</tr>
+<tr class="even">
+<td>¿Qué símbolos exporta?</td>
+<td><code>nm</code></td>
+</tr>
+<tr class="odd">
+<td>¿Cómo se ven los bytes crudos?</td>
+<td><code>hexdump</code> o <code>xxd</code></td>
+</tr>
+<tr class="even">
+<td>¿Depende de bibliotecas?</td>
+<td><code>ldd</code></td>
+</tr>
+<tr class="odd">
+<td>¿Qué syscalls ejecuta?</td>
+<td><code>strace</code></td>
+</tr>
+<tr class="even">
+<td>¿Cuántos ciclos usa?</td>
+<td><code>perf stat</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>usar <code>ldd</code> como prueba universal</td>
+<td>binarios mínimos pueden no ser dinámicos</td>
+</tr>
+<tr class="even">
+<td>leer <code>objdump</code> sin confirmar arquitectura</td>
+<td>primero usa <code>file</code></td>
+</tr>
+<tr class="odd">
+<td>confundir símbolo con instrucción</td>
+<td><code>nm</code> lista nombres; <code>objdump</code> muestra código</td>
+</tr>
+<tr class="even">
+<td>usar <code>strace</code> con QEMU sin cuidado</td>
+<td>puedes estar viendo capa del emulador</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
@@ -1490,6 +1762,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Sé que <code>perf</code> queda para después.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/laboratorio/05-debugging-minimo.html">Debugging mínimo</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <em>GNU Binutils Manual</em>: <code>readelf</code>, <code>objdump</code>, <code>nm</code>, <code>ldd</code>. <a href="https://sourceware.org/binutils/docs/binutils/" class="uri">https://sourceware.org/binutils/docs/binutils/</a></li>
+<li>Linux man-pages: <code>file(1)</code>, <code>hexdump(1)</code>, <code>xxd(1)</code>, <code>strace(1)</code>, <code>perf(1)</code>. <a href="https://www.man7.org/linux/man-pages/" class="uri">https://www.man7.org/linux/man-pages/</a></li>
+<li>QEMU, <em>User-mode documentation</em>: ejecución cruzada de binarios AArch64. <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+</ul>
 
 
 </section>

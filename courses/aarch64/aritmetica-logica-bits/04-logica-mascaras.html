@@ -1328,6 +1328,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#recetas-comunes" id="toc-recetas-comunes" class="nav-link" data-scroll-target="#recetas-comunes">Recetas comunes</a></li>
   <li><a href="#posición-del-bit" id="toc-posición-del-bit" class="nav-link" data-scroll-target="#posición-del-bit">Posición del bit</a></li>
   <li><a href="#and-vs-tst" id="toc-and-vs-tst" class="nav-link" data-scroll-target="#and-vs-tst"><code>and</code> vs <code>tst</code></a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1558,10 +1560,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p><code>tst</code> no conserva el valor filtrado. Solo actualiza flags. Si necesitas usar el resultado después, usa <code>and</code>.</p>
 </section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/04_logica_mascaras run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee cada máscara como intención: conservar, encender, apagar, alternar o probar bits. <code>tst</code> debe explicarse por los flags que deja.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>usar <code>tst</code> esperando guardar el resultado</td>
+<td>usa <code>and</code> si necesitas conservar bits filtrados</td>
+</tr>
+<tr class="even">
+<td>contar bits desde uno</td>
+<td>bit 0 es el primer bit</td>
+</tr>
+<tr class="odd">
+<td>confundir <code>orr</code> y <code>eor</code></td>
+<td><code>orr</code> enciende; <code>eor</code> alterna</td>
+</tr>
+<tr class="even">
+<td>usar máscara sin explicar intención</td>
+<td>escribe qué bits quieres conservar, encender o apagar</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <p>Partiendo de:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="bn">0b</span><span class="er">0101</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="bn">0b</span><span class="er">0101</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Qué instrucción enciende el bit 1?</li>
 <li>¿Qué instrucción apaga el bit 2?</li>

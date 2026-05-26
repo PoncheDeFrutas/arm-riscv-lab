@@ -1330,8 +1330,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-hizo-el-linker" id="toc-qué-hizo-el-linker" class="nav-link" data-scroll-target="#qué-hizo-el-linker">Qué hizo el linker</a></li>
   <li><a href="#inspección-mínima" id="toc-inspección-mínima" class="nav-link" data-scroll-target="#inspección-mínima">Inspección mínima</a></li>
   <li><a href="#relación-con-unidades-anteriores" id="toc-relación-con-unidades-anteriores" class="nav-link" data-scroll-target="#relación-con-unidades-anteriores">Relación con unidades anteriores</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
-  <li><a href="#lectura-rápida-de-fallos" id="toc-lectura-rápida-de-fallos" class="nav-link" data-scroll-target="#lectura-rápida-de-fallos">Lectura rápida de fallos</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1546,13 +1546,17 @@ Figura&nbsp;1: Trabajo mínimo del linker con un objeto AArch64.
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">kernel/loader</span> = producen proceso</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Unidad 04 ya mostró directivas. Ahora vemos qué archivo sale de ellas.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./min.o</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Eso falla porque <code>min.o</code> no es el contrato que Linux espera para ejecutar. Es una pieza de construcción, no el edificio terminado.</p>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable run</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable readelf-header</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compara <code>src/main.s</code>, <code>src/build/main.o</code> y <code>src/build/main</code>. El <code>.o</code> es pieza intermedia; el ejecutable final tiene contrato para el loader.</p>
 </section>
-<section id="lectura-rápida-de-fallos" class="level2">
-<h2 class="anchored" data-anchor-id="lectura-rápida-de-fallos">Lectura rápida de fallos</h2>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> qemu-aarch64 ./min.o</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Eso falla porque <code>min.o</code> no es el contrato que Linux espera para ejecutar. Es una pieza de construcción, no el edificio terminado.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">

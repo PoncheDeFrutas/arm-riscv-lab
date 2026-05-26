@@ -1334,7 +1334,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
-  <li><a href="#cierre-de-la-unidad" id="toc-cierre-de-la-unidad" class="nav-link" data-scroll-target="#cierre-de-la-unidad">Cierre de la unidad</a></li>
+  <li><a href="#siguiente-unidad" id="toc-siguiente-unidad" class="nav-link" data-scroll-target="#siguiente-unidad">Siguiente unidad</a></li>
   </ul>
 </nav>
     </div>
@@ -1653,21 +1653,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Debes poder mirar un registro y preguntarte: ¿es dirección o es dato? Si es dirección, ¿cuántos bytes leo desde ahí? Si es dato, ¿qué tamaño y interpretación aplico? Esa triple pregunta es la base para todo debugging en AArch64.</p>
+<p>Dirección, contenido y valor son tres conceptos distintos. Un puntero es un registro que guarda una dirección; el contenido son los bytes en esa dirección; el valor depende de cómo los interpretes. La triple pregunta — ¿es dirección o dato?, ¿cuántos bytes leo?, ¿qué interpretación aplico? — es la base para todo debugging en AArch64.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo distinguir dirección, contenido y valor.</label></li>
-<li><label><input type="checkbox">Puedo explicar un puntero como dirección guardada en un registro.</label></li>
-<li><label><input type="checkbox">Puedo leer los mismos bytes como texto o entero.</label></li>
-<li><label><input type="checkbox">Puedo explicar por qué el tamaño de lectura importa.</label></li>
-<li><label><input type="checkbox">Puedo conectar registros <code>Xn</code> con direcciones de 64 bits.</label></li>
+<li><label><input type="checkbox">Distingo dirección de contenido al mirar un registro o memoria.</label></li>
+<li><label><input type="checkbox">Leo los mismos bytes como texto, entero o dirección según contexto.</label></li>
+<li><label><input type="checkbox">Uso <code>Xn</code> para direcciones, nunca <code>Wn</code>.</label></li>
 </ul>
 </section>
-<section id="cierre-de-la-unidad" class="level2">
-<h2 class="anchored" data-anchor-id="cierre-de-la-unidad">Cierre de la unidad</h2>
-<p>Si puedes mirar bytes y preguntarte “qué tamaño leo” y “qué interpretación aplico”, ya tienes la base mental para estudiar memoria, registros, punteros, stack y debugging en AArch64.</p>
+<section id="siguiente-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="siguiente-unidad">Siguiente unidad</h2>
+<p>Si puedes aplicar la triple pregunta a cualquier registro o dirección, ya tienes la base mental para estudiar memoria, registros, punteros, stack y debugging.</p>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

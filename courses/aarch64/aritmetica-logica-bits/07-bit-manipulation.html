@@ -1328,6 +1328,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#insertar-con-bfxil" id="toc-insertar-con-bfxil" class="nav-link" data-scroll-target="#insertar-con-bfxil">Insertar con <code>bfxil</code></a></li>
   <li><a href="#campos-de-bits-no-son-offsets-de-memoria" id="toc-campos-de-bits-no-son-offsets-de-memoria" class="nav-link" data-scroll-target="#campos-de-bits-no-son-offsets-de-memoria">Campos de bits no son offsets de memoria</a></li>
   <li><a href="#checklist-de-bitfield" id="toc-checklist-de-bitfield" class="nav-link" data-scroll-target="#checklist-de-bitfield">Checklist de bitfield</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1554,13 +1556,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Si no sabes posición y ancho, todavía no tienes un campo de bits; solo tienes un registro con muchos bits.</p>
 </section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/07_bitfields run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa que posiciones como <code>#8</code> y anchos como <code>#4</code> son coordenadas dentro del registro. No son bytes ni offsets de memoria.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>leer <code>#8</code> como bytes</td>
+<td>en <code>ubfx</code>, <code>#8</code> es posición de bit</td>
+</tr>
+<tr class="even">
+<td>usar <code>ubfx</code> para campo signed</td>
+<td>usa <code>sbfx</code> si el campo tiene signo</td>
+</tr>
+<tr class="odd">
+<td>creer que <code>rev</code> toca memoria</td>
+<td><code>rev</code> reordena bytes dentro de un registro</td>
+</tr>
+<tr class="even">
+<td>insertar sin limpiar destino mentalmente</td>
+<td>define qué bits conserva y qué bits reemplaza</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
 <li>Lee:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="bn">0x0000000000003C00</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ubfx x1<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">10</span><span class="op">,</span> <span class="op">#</span><span class="dv">4</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="bn">0x0000000000003C00</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ubfx x1<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">10</span><span class="op">,</span> <span class="op">#</span><span class="dv">4</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Desde qué bit empieza el campo?</li>
 <li>¿Cuántos bits extrae?</li>

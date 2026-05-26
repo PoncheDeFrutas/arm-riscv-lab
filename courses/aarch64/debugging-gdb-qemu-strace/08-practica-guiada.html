@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#verificar-syscalls" id="toc-verificar-syscalls" class="nav-link" data-scroll-target="#verificar-syscalls">Verificar syscalls</a></li>
   <li><a href="#diagnóstico-breve-de-fallo" id="toc-diagnóstico-breve-de-fallo" class="nav-link" data-scroll-target="#diagnóstico-breve-de-fallo">Diagnóstico breve de fallo</a></li>
   <li><a href="#checklist-de-diagnóstico-rápido" id="toc-checklist-de-diagnóstico-rápido" class="nav-link" data-scroll-target="#checklist-de-diagnóstico-rápido">Checklist de diagnóstico rápido</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#método-visual" id="toc-método-visual" class="nav-link" data-scroll-target="#método-visual">Método visual</a></li>
   <li><a href="#checklist-final-de-unidad" id="toc-checklist-final-de-unidad" class="nav-link" data-scroll-target="#checklist-final-de-unidad">Checklist final de unidad</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1526,6 +1527,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>Usa esta tabla como punto de partida. Si una respuesta no coincide con tu hipótesis, reduce el paso: una instrucción, un registro, una dirección.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ejecutar muchos <code>stepi</code> sin hipótesis</td>
+<td>predice un cambio antes de avanzar</td>
+</tr>
+<tr class="even">
+<td>mirar todos los registros sin objetivo</td>
+<td>elige registros usados por la instrucción actual</td>
+</tr>
+<tr class="odd">
+<td>mezclar fallo de syscall con fallo de memoria</td>
+<td>separa retorno negativo de acceso inválido</td>
+</tr>
+<tr class="even">
+<td>asumir que core dump permite continuar</td>
+<td>core dump solo permite inspección post-mortem</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="método-visual" class="level2">
 <h2 class="anchored" data-anchor-id="método-visual">Método visual</h2>

@@ -1330,6 +1330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#lectura-paso-a-paso" id="toc-lectura-paso-a-paso" class="nav-link" data-scroll-target="#lectura-paso-a-paso">Lectura paso a paso</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
     </div>
@@ -1645,6 +1646,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
 <p>Pensar en Linux como API del kernel empieza por esta idea: el kernel abre un recurso, entrega un número y espera que el proceso use ese número correctamente.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Guardo un fd en registro callee-saved antes de otra syscall.</label></li>
+<li><label><input type="checkbox">Distingo fd de puntero y de dirección de memoria.</label></li>
+<li><label><input type="checkbox">Cierro un fd explícitamente antes de <code>exit</code>.</label></li>
+</ul>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

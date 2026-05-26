@@ -1324,8 +1324,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#símbolos" id="toc-símbolos" class="nav-link" data-scroll-target="#símbolos">Símbolos</a></li>
   <li><a href="#relocation" id="toc-relocation" class="nav-link" data-scroll-target="#relocation">Relocation</a></li>
   <li><a href="#método-de-lectura" id="toc-método-de-lectura" class="nav-link" data-scroll-target="#método-de-lectura">Método de lectura</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
-  <li><a href="#errores-de-diagnóstico" id="toc-errores-de-diagnóstico" class="nav-link" data-scroll-target="#errores-de-diagnóstico">Errores de diagnóstico</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1568,12 +1568,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Después de enlazar, repite parte de la lectura en el ejecutable. Muchas relocations del <code>.o</code> deben desaparecer porque el linker ya conoce el layout final.</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<p>Confundir símbolo con variable. Una variable puede tener un símbolo, pero símbolo es más general: puede nombrar función, etiqueta, objeto, sección o referencia externa.</p>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/03_secciones_simbolos_relocations readelf-sections</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/03_secciones_simbolos_relocations nm</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa qué nombres pertenecen a secciones, cuáles son símbolos definidos y qué queda pendiente antes del link final.</p>
 </section>
-<section id="errores-de-diagnóstico" class="level2">
-<h2 class="anchored" data-anchor-id="errores-de-diagnóstico">Errores de diagnóstico</h2>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -1587,18 +1590,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
+<td>confundir símbolo con variable</td>
+<td>símbolo puede nombrar función, etiqueta, objeto, sección o referencia externa</td>
+</tr>
+<tr class="even">
 <td>creer que <code>.bss</code> ocupa todos sus ceros en disco</td>
 <td>comparar tamaño de sección y tamaño de archivo</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>leer <code>U printf</code> como bug inmediato</td>
 <td>puede ser normal antes de enlazar con <code>libc</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>creer que relocation es instrucción</td>
 <td>verla como trabajo pendiente del linker</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>buscar una variable solo por dirección</td>
 <td>revisar primero símbolo y sección</td>
 </tr>

@@ -1326,6 +1326,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#extr-ventana-entre-dos-registros" id="toc-extr-ventana-entre-dos-registros" class="nav-link" data-scroll-target="#extr-ventana-entre-dos-registros"><code>extr</code>: ventana entre dos registros</a></li>
   <li><a href="#cuándo-usar-cada-uno" id="toc-cuándo-usar-cada-uno" class="nav-link" data-scroll-target="#cuándo-usar-cada-uno">Cuándo usar cada uno</a></li>
   <li><a href="#shifts-y-límites" id="toc-shifts-y-límites" class="nav-link" data-scroll-target="#shifts-y-límites">Shifts y límites</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1534,13 +1536,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Para offsets de arrays, <code>lsl #3</code> suele ser correcto cuando cada elemento mide 8 bytes. Para valores signed, decide primero si el desplazamiento representa aritmética o manipulación de bits.</p>
 </section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/05_shifts_rotates run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa cuándo un shift se usa como escala y cuándo solo mueve bits. Distingue <code>lsr</code> de <code>asr</code> antes de interpretar valores signed.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>usar <code>lsr</code> para signed negativo</td>
+<td>usa <code>asr</code> si necesitas conservar signo</td>
+</tr>
+<tr class="even">
+<td>asumir que <code>lsl</code> nunca pierde información</td>
+<td>bits altos pueden salir del registro</td>
+</tr>
+<tr class="odd">
+<td>confundir rotate con shift</td>
+<td>rotate reintroduce bits; shift rellena</td>
+</tr>
+<tr class="even">
+<td>usar <code>lsl #3</code> sin justificar tamaño</td>
+<td><code>#3</code> equivale a multiplicar por 8 bytes</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
 <ol type="1">
 <li>Lee:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">lsl</span> x1<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">3</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">5</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">lsl</span> x1<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">3</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Qué valor queda en <code>x1</code>?</li>
 <li>¿Por qué <code>lsl #3</code> se relaciona con multiplicar por 8?</li>
@@ -1548,8 +1589,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="2" type="1">
 <li>Explica:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lsr x1<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>asr x2<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lsr x1<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>asr x2<span class="op">,</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>¿Cuál mete ceros?</li>
 <li>¿Cuál conserva signo?</li>

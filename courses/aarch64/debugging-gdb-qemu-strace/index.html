@@ -1703,32 +1703,51 @@ Figura&nbsp;1: Flujo básico de depuración: detener, observar, avanzar e interp
 </thead>
 <tbody>
 <tr class="odd">
-<td>debugging mínimo</td>
-<td><code>examples/aarch64/17-debugging-gdb-qemu-strace/00-debug-minimo/src</code></td>
+<td>Flujo básico de GDB</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/01_gdb_flujo_basico</code></td>
 <td>breakpoints, <code>stepi</code>, registros</td>
 </tr>
 <tr class="even">
-<td>memoria</td>
-<td><code>examples/aarch64/17-debugging-gdb-qemu-strace/01-memoria/src</code></td>
+<td>Registros e instrucciones</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/02_registros_instrucciones</code></td>
+<td><code>pc</code>, <code>objdump</code>, cambios por instrucción</td>
+</tr>
+<tr class="odd">
+<td>Lectura de memoria</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/03_lectura_memoria</code></td>
 <td><code>.rodata</code>, <code>.data</code>, <code>.bss</code>, <code>x/s</code>, <code>x/x</code></td>
 </tr>
-<tr class="odd">
-<td>stack frames</td>
-<td><code>examples/aarch64/17-debugging-gdb-qemu-strace/02-stack/src</code></td>
+<tr class="even">
+<td>Stack frames</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/04_stack_frames_gdb</code></td>
 <td><code>sp</code>, <code>x29</code>, <code>x30</code>, <code>bt</code></td>
 </tr>
+<tr class="odd">
+<td>QEMU y gdbserver</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/05_qemu_gdbserver</code></td>
+<td>puerto remoto, dos terminales</td>
+</tr>
 <tr class="even">
-<td>syscalls</td>
-<td><code>examples/aarch64/17-debugging-gdb-qemu-strace/03-syscalls/src</code></td>
-<td><code>strace</code>, errores y recursos</td>
+<td>strace y syscalls</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/06_strace_syscalls</code></td>
+<td><code>openat</code>, <code>read</code>, <code>write</code>, errores</td>
 </tr>
 <tr class="odd">
-<td>core dump</td>
-<td><code>examples/aarch64/17-debugging-gdb-qemu-strace/04-core-dump/src</code></td>
+<td>Core dumps</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/07_core_dumps</code></td>
 <td>fallo controlado y GDB post-mortem</td>
+</tr>
+<tr class="even">
+<td>Práctica guiada</td>
+<td><code>examples/aarch64/17_debugging_gdb_qemu_strace/08_practica_guiada</code></td>
+<td>recorrido completo</td>
 </tr>
 </tbody>
 </table>
+<p>Flujo recomendado:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/01_gdb_flujo_basico gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cuando depures en QEMU, recuerda el modelo: el proceso ya vive dentro de QEMU. GDB se conecta con <code>target remote</code>; no crea el proceso con <code>run</code>.</p>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

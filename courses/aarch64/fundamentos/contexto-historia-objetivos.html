@@ -1303,6 +1303,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#relación-con-c-linux-hardware-y-sistemas" id="toc-relación-con-c-linux-hardware-y-sistemas" class="nav-link" data-scroll-target="#relación-con-c-linux-hardware-y-sistemas">Relación con C, Linux, hardware y sistemas</a></li>
   <li><a href="#qué-podrás-hacer-al-avanzar-en-la-ruta" id="toc-qué-podrás-hacer-al-avanzar-en-la-ruta" class="nav-link" data-scroll-target="#qué-podrás-hacer-al-avanzar-en-la-ruta">Qué podrás hacer al avanzar en la ruta</a></li>
   <li><a href="#resumen-de-la-unidad" id="toc-resumen-de-la-unidad" class="nav-link" data-scroll-target="#resumen-de-la-unidad">Resumen de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1546,6 +1547,39 @@ ul.task-list li input[type="checkbox"] {
 <section id="resumen-de-la-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="resumen-de-la-unidad">Resumen de la unidad</h2>
 <p>En esta unidad no se busca memorizar instrucciones. El objetivo es ubicar el mapa: ARM64 es una arquitectura moderna, AArch64 es su estado de ejecución de 64 bits, A64 es su conjunto de instrucciones, y assembly será la herramienta para estudiar cómo se conectan software, sistema operativo y hardware.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>confundir ARM64, AArch64 y A64</td>
+<td>ARM64 es nombre común, AArch64 es estado de 64 bits, A64 es ISA</td>
+</tr>
+<tr class="even">
+<td>pensar que assembly es solo memorizar instrucciones</td>
+<td>aquí se usa para observar sistema y hardware</td>
+</tr>
+<tr class="odd">
+<td>mezclar ISA con microarquitectura</td>
+<td>ISA define contrato; implementación define cómo se ejecuta</td>
+</tr>
+<tr class="even">
+<td>esperar bare metal desde el inicio</td>
+<td>primero se trabaja en Linux userland</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>

@@ -1319,13 +1319,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
   <li><a href="#idea-base" id="toc-idea-base" class="nav-link" data-scroll-target="#idea-base">Idea base</a></li>
   <li><a href="#frames-repetidos" id="toc-frames-repetidos" class="nav-link" data-scroll-target="#frames-repetidos">Frames repetidos</a></li>
-  <li><a href="#ejemplo-pequeño-cuenta-regresiva-conceptual" id="toc-ejemplo-pequeño-cuenta-regresiva-conceptual" class="nav-link" data-scroll-target="#ejemplo-pequeño-cuenta-regresiva-conceptual">Ejemplo pequeño: cuenta regresiva conceptual</a></li>
+  <li><a href="#ejemplo-pequeño-cuenta-regresiva" id="toc-ejemplo-pequeño-cuenta-regresiva" class="nav-link" data-scroll-target="#ejemplo-pequeño-cuenta-regresiva">Ejemplo pequeño: cuenta regresiva</a>
+  <ul class="collapse">
   <li><a href="#lectura-del-flujo" id="toc-lectura-del-flujo" class="nav-link" data-scroll-target="#lectura-del-flujo">Lectura del flujo</a></li>
+  <li><a href="#stack-visual-durante-la-recursión" id="toc-stack-visual-durante-la-recursión" class="nav-link" data-scroll-target="#stack-visual-durante-la-recursión">Stack visual durante la recursión</a></li>
+  </ul></li>
   <li><a href="#qué-guarda-cada-llamada" id="toc-qué-guarda-cada-llamada" class="nav-link" data-scroll-target="#qué-guarda-cada-llamada">Qué guarda cada llamada</a></li>
   <li><a href="#por-qué-no-basta-una-sola-copia-de-lr" id="toc-por-qué-no-basta-una-sola-copia-de-lr" class="nav-link" data-scroll-target="#por-qué-no-basta-una-sola-copia-de-lr">Por qué no basta una sola copia de <code>LR</code></a></li>
   <li><a href="#stack-overflow-conceptual" id="toc-stack-overflow-conceptual" class="nav-link" data-scroll-target="#stack-overflow-conceptual">Stack overflow conceptual</a></li>
+  <li><a href="#observar-recursión-con-gdb" id="toc-observar-recursión-con-gdb" class="nav-link" data-scroll-target="#observar-recursión-con-gdb">Observar recursión con GDB</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1369,7 +1374,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="qué-vas-a-aprender" class="level2">
 <h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
-<p>La meta es leer recursión como una serie de llamadas normales. Cada llamada tiene su propio frame, su propio <code>LR</code> guardado y su propio punto de retorno. La diferencia es que el callee tiene el mismo nombre que el caller.</p>
+<ul>
+<li>Cómo se ve la recursión en términos de stack frames.</li>
+<li>Por qué cada llamada necesita su propio <code>LR</code> guardado.</li>
+<li>Qué pasa si no hay caso base.</li>
+<li>Cómo observar recursión con GDB.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender stack frames, <code>bl</code>, <code>ret</code>, <code>LR</code> y el prólogo/epílogo de funciones. Revisa <a href="../../../courses/aarch64/stack-funciones-frames/03-stack-frames.html">Stack frames</a> si necesitas repaso.</p>
 </section>
 <section id="idea-base" class="level2">
 <h2 class="anchored" data-anchor-id="idea-base">Idea base</h2>
@@ -1413,9 +1427,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">contador</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span> <span class="ex">retorna</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">contador</span><span class="er">(</span><span class="ex">2</span><span class="kw">)</span> <span class="ex">retorna</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">contador</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span> <span class="ex">retorna</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cada frame ocupa espacio en el stack. Si la recursión es profunda, el stack puede agotarse.</p>
 </section>
-<section id="ejemplo-pequeño-cuenta-regresiva-conceptual" class="level2">
-<h2 class="anchored" data-anchor-id="ejemplo-pequeño-cuenta-regresiva-conceptual">Ejemplo pequeño: cuenta regresiva conceptual</h2>
+<section id="ejemplo-pequeño-cuenta-regresiva" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-pequeño-cuenta-regresiva">Ejemplo pequeño: cuenta regresiva</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>.text</span>
@@ -1441,15 +1456,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Este ejemplo no imprime nada. Su propósito es mostrar frames. Cada <code>bl cuenta</code> necesita conservar retorno propio.</p>
-</section>
-<section id="lectura-del-flujo" class="level2">
-<h2 class="anchored" data-anchor-id="lectura-del-flujo">Lectura del flujo</h2>
+<section id="lectura-del-flujo" class="level3">
+<h3 class="anchored" data-anchor-id="lectura-del-flujo">Lectura del flujo</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">_start:</span> x0 = 3</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span><span class="bu">:</span> guarda LR, llama cuenta<span class="er">(</span><span class="ex">2</span><span class="kw">)</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">2</span><span class="kw">)</span><span class="bu">:</span> guarda LR, llama cuenta<span class="er">(</span><span class="ex">1</span><span class="kw">)</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span><span class="bu">:</span> guarda LR, llama cuenta<span class="er">(</span><span class="ex">0</span><span class="kw">)</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span><span class="bu">:</span> caso base, retorna</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Cada llamada ejecuta su propio prólogo. Cada retorno ejecuta su propio epílogo.</p>
+</section>
+<section id="stack-visual-durante-la-recursión" class="level3">
+<h3 class="anchored" data-anchor-id="stack-visual-durante-la-recursión">Stack visual durante la recursión</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Dirección</span> alta</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">┌─────────────────────────┐</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span> frame _start            │</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">├─────────────────────────┤</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span> frame cuenta<span class="er">(</span><span class="ex">3</span><span class="kw">)</span>         <span class="ex">│</span> ← x29 apunta aquí</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x29 guardado          │</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x30 <span class="er">(</span><span class="ex">retorno</span> a _start<span class="kw">)</span><span class="ex">│</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">├─────────────────────────┤</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span> frame cuenta<span class="er">(</span><span class="ex">2</span><span class="kw">)</span>         <span class="ex">│</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x29 guardado          │</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x30 <span class="er">(</span><span class="ex">retorno</span> a cuenta<span class="er">(</span><span class="ex">3</span><span class="kw">))</span><span class="ex">│</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ex">├─────────────────────────┤</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span> frame cuenta<span class="er">(</span><span class="ex">1</span><span class="kw">)</span>         <span class="ex">│</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x29 guardado          │</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x30 <span class="er">(</span><span class="ex">retorno</span> a cuenta<span class="er">(</span><span class="ex">2</span><span class="kw">))</span><span class="ex">│</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ex">├─────────────────────────┤</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span> frame cuenta<span class="er">(</span><span class="ex">0</span><span class="kw">)</span>         <span class="ex">│</span> ← x29 apunta aquí <span class="er">(</span><span class="ex">caso</span> base<span class="kw">)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x29 guardado          │</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   x30 <span class="er">(</span><span class="ex">retorno</span> a cuenta<span class="er">(</span><span class="ex">1</span><span class="kw">))</span><span class="ex">│</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="ex">└─────────────────────────┘</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Dirección</span> baja <span class="er">(</span><span class="ex">SP</span> crece hacia aquí<span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cada frame guarda su propio <code>x30</code> (link register). Cuando <code>cuenta(0)</code> retorna, restaura el <code>x30</code> que apunta al cuerpo de <code>cuenta(1)</code>, no a <code>_start</code>.</p>
+</section>
 </section>
 <section id="qué-guarda-cada-llamada" class="level2">
 <h2 class="anchored" data-anchor-id="qué-guarda-cada-llamada">Qué guarda cada llamada</h2>
@@ -1459,24 +1499,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="header">
 <th>Llamada</th>
 <th>Necesita conservar</th>
+<th>Retorno a</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>cuenta(3)</code></td>
 <td>retorno hacia <code>_start</code></td>
+<td><code>_start</code></td>
 </tr>
 <tr class="even">
 <td><code>cuenta(2)</code></td>
 <td>retorno hacia el cuerpo de <code>cuenta(3)</code></td>
+<td><code>cuenta(3)</code></td>
 </tr>
 <tr class="odd">
 <td><code>cuenta(1)</code></td>
 <td>retorno hacia el cuerpo de <code>cuenta(2)</code></td>
+<td><code>cuenta(2)</code></td>
 </tr>
 <tr class="even">
 <td><code>cuenta(0)</code></td>
 <td>retorno hacia el cuerpo de <code>cuenta(1)</code></td>
+<td><code>cuenta(1)</code></td>
 </tr>
 </tbody>
 </table>
@@ -1485,23 +1530,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="por-qué-no-basta-una-sola-copia-de-lr" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-no-basta-una-sola-copia-de-lr">Por qué no basta una sola copia de <code>LR</code></h2>
 <p>Cada llamada tiene una dirección de retorno distinta. Si todos usaran el mismo <code>x30</code> sin guardar, cada llamada recursiva destruiría el retorno anterior.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span> <span class="ex">necesita</span> volver a _start</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">2</span><span class="kw">)</span> <span class="ex">necesita</span> volver dentro de cuenta<span class="er">(</span><span class="ex">3</span><span class="kw">)</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span> <span class="ex">necesita</span> volver dentro de cuenta<span class="er">(</span><span class="ex">2</span><span class="kw">)</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span> <span class="ex">necesita</span> volver dentro de cuenta<span class="er">(</span><span class="ex">1</span><span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span> <span class="ex">necesita</span> volver a _start</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">2</span><span class="kw">)</span> <span class="ex">necesita</span> volver dentro de cuenta<span class="er">(</span><span class="ex">3</span><span class="kw">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span> <span class="ex">necesita</span> volver dentro de cuenta<span class="er">(</span><span class="ex">2</span><span class="kw">)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span> <span class="ex">necesita</span> volver dentro de cuenta<span class="er">(</span><span class="ex">1</span><span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Por eso cada frame guarda su propio <code>x30</code>.</p>
 </section>
 <section id="stack-overflow-conceptual" class="level2">
 <h2 class="anchored" data-anchor-id="stack-overflow-conceptual">Stack overflow conceptual</h2>
 <p>Si la recursión no tiene caso base, o si el caso base nunca se cumple, el stack crece sin límite razonable.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">cuenta</span><span class="er">(</span><span class="ex">2</span><span class="kw">)</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">cuenta</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      <span class="ex">cuenta</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="ex">cuenta</span><span class="er">(</span><span class="ex">-1</span><span class="kw">)</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>          <span class="ex">cuenta</span><span class="er">(</span><span class="ex">-2</span><span class="kw">)</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="ex">...</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cuenta</span><span class="er">(</span><span class="ex">3</span><span class="kw">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">cuenta</span><span class="er">(</span><span class="ex">2</span><span class="kw">)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">cuenta</span><span class="er">(</span><span class="ex">1</span><span class="kw">)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      <span class="ex">cuenta</span><span class="er">(</span><span class="ex">0</span><span class="kw">)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="ex">cuenta</span><span class="er">(</span><span class="ex">-1</span><span class="kw">)</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>          <span class="ex">cuenta</span><span class="er">(</span><span class="ex">-2</span><span class="kw">)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="ex">...</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="ex">segmentation</span> fault</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En un sistema real eso termina fallando. Aquí solo necesitamos la idea: stack es finito.</p>
+</section>
+<section id="observar-recursión-con-gdb" class="level2">
+<h2 class="anchored" data-anchor-id="observar-recursión-con-gdb">Observar recursión con GDB</h2>
+<p>Puedes ver los frames en acción:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> gdb ./recursion</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="cf">break</span> <span class="ex">cuenta</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">run</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">bt</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#0  cuenta () at recursion.s:15</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#1  0x0000000000400090 in cuenta () at recursion.s:22</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#2  0x0000000000400090 in cuenta () at recursion.s:22</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#3  0x0000000000400090 in cuenta () at recursion.s:22</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#4  0x0000000000400078 in _start () at recursion.s:7</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>bt</code> (backtrace) muestra la cadena de llamadas. Cada <code>#N</code> es un frame distinto. El frame <code>#0</code> es el activo; <code>#4</code> es el más antiguo (<code>_start</code>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">info</span> registers x0</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">x0</span>             0x0        0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En el caso base, <code>x0</code> vale <code>0</code>. Si avanzas con <code>continue</code>, verás cómo <code>x0</code> cambia en cada frame.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
@@ -1558,18 +1621,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>¿En qué orden se cierran los frames?</li>
 <li>¿Qué pasa si el caso base nunca se cumple?</li>
 <li>¿Por qué todas las llamadas pueden entrar por la misma etiqueta sin compartir frame?</li>
+<li>Si agregas <code>printf</code> dentro de <code>cuenta</code> para imprimir <code>x0</code>, ¿en qué orden se imprimen los valores?</li>
 </ol>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Recursión convierte stack frames en algo fácil de ver: una llamada encima de otra, cada una con su retorno, hasta que el caso base permite deshacer la pila.</p>
+<p>Recursión convierte stack frames en algo fácil de ver: una llamada encima de otra, cada una con su retorno, hasta que el caso base permite deshacer la pila. GDB muestra esta cadena con <code>bt</code>, y cada frame tiene su propio <code>LR</code> guardado.</p>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
 <ul>
-<li>Arm, <em>Learn the Architecture: A-profile</em>: <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
-<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
-<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Arm, <em>Learn the Architecture: A-profile</em>: stack y llamadas a funciones. <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: link register y stack pointer. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Arm, <em>Procedure Call Standard for the Arm 64-bit Architecture (AAPCS64)</em>: convención de llamadas y preservación de registros. <a href="https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst" class="uri">https://github.com/ARM-software/abi-aa/blob/main/aapcs64/aapcs64.rst</a></li>
+<li>Sourceware, <em>GDB Documentation</em>: comando <code>bt</code> para backtrace. <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
 </ul>
 
 

@@ -1323,6 +1323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#qué-hace-el-linker" id="toc-qué-hace-el-linker" class="nav-link" data-scroll-target="#qué-hace-el-linker">Qué hace el linker</a></li>
   <li><a href="#dónde-aparece-main" id="toc-dónde-aparece-main" class="nav-link" data-scroll-target="#dónde-aparece-main">Dónde aparece <code>main</code></a></li>
   <li><a href="#qué-hace-normalmente-libc" id="toc-qué-hace-normalmente-libc" class="nav-link" data-scroll-target="#qué-hace-normalmente-libc">Qué hace normalmente <code>libc</code></a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#por-qué-no-usamos-printf" id="toc-por-qué-no-usamos-printf" class="nav-link" data-scroll-target="#por-qué-no-usamos-printf">Por qué no usamos <code>printf</code></a></li>
   <li><a href="#relación-con-abi" id="toc-relación-con-abi" class="nav-link" data-scroll-target="#relación-con-abi">Relación con ABI</a></li>
   <li><a href="#límite-práctico" id="toc-límite-práctico" class="nav-link" data-scroll-target="#límite-práctico">Límite práctico</a></li>
@@ -1417,6 +1418,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>En esta unidad no usamos <code>libc</code> para que la relación con Linux sea visible:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registros</span> <span class="at">-</span><span class="op">&gt;</span> svc <span class="co">#0 -&gt; kernel</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto reduce comodidad, pero aumenta claridad. En vez de pedir “imprime este texto” a <code>printf</code>, preparamos directamente <code>write</code>: file descriptor, dirección, longitud y número de syscall.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>05_primeros_programas/04_start_main_libc</code> contrasta el programa de entrada directa con la idea de <code>main</code>. La lectura correcta es comparar capas: en <code>_start</code> tú preparas <code>exit</code>; con <code>main</code>, el runtime de C prepara y termina parte del proceso.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=05_primeros_programas/04_start_main_libc run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee el ejemplo con esta tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Elemento</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>_start</code></td>
+<td>¿quién llama a esta etiqueta?</td>
+</tr>
+<tr class="even">
+<td><code>main</code></td>
+<td>¿quién prepara la llamada a esta función?</td>
+</tr>
+<tr class="odd">
+<td><code>printf</code> o libc</td>
+<td>¿qué capa se está agregando?</td>
+</tr>
+<tr class="even">
+<td><code>svc #0</code></td>
+<td>¿qué contrato directo con Linux queda visible?</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="por-qué-no-usamos-printf" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-no-usamos-printf">Por qué no usamos <code>printf</code></h2>

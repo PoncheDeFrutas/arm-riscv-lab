@@ -1434,6 +1434,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">si</span> x0 <span class="op">&gt;</span> x1 signed, x2 = x0</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">si</span> no, x2 = x1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Esto sirve para decisiones pequeñas, como elegir un valor, sin abrir bloques <code>if/else</code>.</p>
+<p><code>gt</code> aquí es el mismo sufijo de condición que usarías en <code>b.gt</code>: mayor que signed. Para que tenga sentido, antes debe existir una instrucción que preparó <code>NZCV</code>, normalmente <code>cmp</code> o <code>subs</code>.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Sufijo</th>
+<th>Lectura</th>
+<th>Flags</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>eq</code></td>
+<td>igual</td>
+<td><code>Z = 1</code></td>
+</tr>
+<tr class="even">
+<td><code>ne</code></td>
+<td>distinto</td>
+<td><code>Z = 0</code></td>
+</tr>
+<tr class="odd">
+<td><code>gt</code></td>
+<td>mayor signed</td>
+<td><code>Z = 0</code> y <code>N = V</code></td>
+</tr>
+<tr class="even">
+<td><code>lt</code></td>
+<td>menor signed</td>
+<td><code>N != V</code></td>
+</tr>
+<tr class="odd">
+<td><code>hi</code></td>
+<td>mayor unsigned</td>
+<td><code>C = 1</code> y <code>Z = 0</code></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="variantes-útiles" class="level2">
 <h2 class="anchored" data-anchor-id="variantes-útiles">Variantes útiles</h2>
@@ -1483,7 +1520,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Lectura:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">si</span> x0 == x1, x2 = 1</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">si</span> no, x2 = 0</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>cset</code> es útil cuando quieres guardar el resultado de una condición como valor.</p>
+<p><code>cset</code> es útil cuando quieres guardar el resultado de una condición como valor. Igual que <code>csel</code>, no compara por sí solo: usa los flags previos.</p>
 </section>
 <section id="cinc-y-cneg" class="level2">
 <h2 class="anchored" data-anchor-id="cinc-y-cneg"><code>cinc</code> y <code>cneg</code></h2>

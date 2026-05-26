@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -1291,6 +1326,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#tamaños-que-usarás-en-aarch64" id="toc-tamaños-que-usarás-en-aarch64" class="nav-link" data-scroll-target="#tamaños-que-usarás-en-aarch64">Tamaños que usarás en AArch64</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#modelo-mental-de-la-unidad" id="toc-modelo-mental-de-la-unidad" class="nav-link" data-scroll-target="#modelo-mental-de-la-unidad">Modelo mental de la unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#para-investigar-más" id="toc-para-investigar-más" class="nav-link" data-scroll-target="#para-investigar-más">Para investigar más</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
@@ -1536,6 +1572,58 @@ Figura&nbsp;1: Relación entre bytes guardados e interpretación elegida.
 </div>
 </div>
 <p>El depurador y las herramientas muestran registros, direcciones y memoria. El programador debe saber qué tamaño leer y qué interpretación aplicar.</p>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Usa estos ejemplos desde <code>examples/aarch64</code> para convertir la teoría en observación concreta.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bits, bytes y bases</td>
+<td><code>examples/aarch64/02_bases_binarias/01_bits_bytes_bases</code></td>
+<td>valores escritos en registros</td>
+</tr>
+<tr class="even">
+<td>Signo y rangos</td>
+<td><code>examples/aarch64/02_bases_binarias/02_enteros_signo_rangos</code></td>
+<td>misma secuencia de bits leída como signed/unsigned</td>
+</tr>
+<tr class="odd">
+<td>Overflow y extensiones</td>
+<td><code>examples/aarch64/02_bases_binarias/03_overflow_extensiones</code></td>
+<td>carry, overflow, sign-extension y zero-extension</td>
+</tr>
+<tr class="even">
+<td>Bytes y texto</td>
+<td><code>examples/aarch64/02_bases_binarias/04_bytes_texto</code></td>
+<td>bytes ASCII/UTF-8 y longitud explícita</td>
+</tr>
+<tr class="odd">
+<td>Endianness y alineación</td>
+<td><code>examples/aarch64/02_bases_binarias/05_endianness_alineacion</code></td>
+<td>orden de bytes en memoria</td>
+</tr>
+<tr class="even">
+<td>Direcciones y punteros</td>
+<td><code>examples/aarch64/02_bases_binarias/06_direcciones_punteros_memoria</code></td>
+<td>dirección, contenido y valor interpretado</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=02_bases_binarias/05_endianness_alineacion run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -1293,6 +1328,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#modelo-mental-de-la-unidad" id="toc-modelo-mental-de-la-unidad" class="nav-link" data-scroll-target="#modelo-mental-de-la-unidad">Modelo mental de la unidad</a></li>
   <li><a href="#diagnóstico-básico" id="toc-diagnóstico-básico" class="nav-link" data-scroll-target="#diagnóstico-básico">Diagnóstico básico</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1561,6 +1597,48 @@ Figura&nbsp;1: Estado visible inicial de un programa AArch64 en EL0.
 <li>¿<code>sp</code>, <code>pc</code>, <code>fp</code> o <code>lr</code> tienen un rol especial aquí?</li>
 <li>¿estoy mirando estado de userland (<code>EL0</code>) o pensando en kernel (<code>EL1</code>)?</li>
 </ol>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Los ejemplos de esta unidad son cortos para que puedas depurarlos instrucción por instrucción.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Registros generales</td>
+<td><code>examples/aarch64/03_modelo_aarch64/01_registros_generales</code></td>
+<td>diferencia entre <code>xN</code> y <code>wN</code></td>
+</tr>
+<tr class="even">
+<td>Registros especiales</td>
+<td><code>examples/aarch64/03_modelo_aarch64/02_registros_especiales</code></td>
+<td><code>xzr</code>, <code>sp</code>, <code>pc</code>, <code>x29</code>, <code>x30</code></td>
+</tr>
+<tr class="odd">
+<td>Flags NZCV</td>
+<td><code>examples/aarch64/03_modelo_aarch64/03_flags_nzcv</code></td>
+<td>flags después de <code>cmp</code>/<code>subs</code></td>
+</tr>
+<tr class="even">
+<td>Lectura con GDB</td>
+<td><code>examples/aarch64/03_modelo_aarch64/06_lectura_registros_gdb</code></td>
+<td><code>info registers</code>, <code>pc</code>, <code>sp</code></td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

@@ -1323,6 +1323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#herramientas-del-laboratorio" id="toc-herramientas-del-laboratorio" class="nav-link" data-scroll-target="#herramientas-del-laboratorio">Herramientas del laboratorio</a></li>
   <li><a href="#resultado-esperado" id="toc-resultado-esperado" class="nav-link" data-scroll-target="#resultado-esperado">Resultado esperado</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
   </ul>
@@ -1494,22 +1495,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="resultado-esperado" class="level2">
 <h2 class="anchored" data-anchor-id="resultado-esperado">Resultado esperado</h2>
 <p>Al terminar la unidad debes poder ejecutar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Salida esperada:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Hola</span> ARM64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Y debes poder explicar, en una frase corta, qué herramienta genera el binario, qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.</p>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>La unidad tiene tres ejemplos reales. Los dos primeros temas son instalación y entorno, por eso no tienen <code>main.s</code> propio.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Primer programa</td>
+<td><code>examples/aarch64/01_laboratorio/03_primer_programa</code></td>
+<td><code>write</code>, <code>exit</code>, Makefile y salida</td>
+</tr>
+<tr class="even">
+<td>Inspección del binario</td>
+<td><code>examples/aarch64/01_laboratorio/04_inspeccion_binario</code></td>
+<td><code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code></td>
+</tr>
+<tr class="odd">
+<td>Debugging mínimo</td>
+<td><code>examples/aarch64/01_laboratorio/05_debugging_minimo</code></td>
+<td>QEMU/GDB, <code>_start</code>, registros</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=01_laboratorio/04_inspeccion_binario objdump</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="checklist-de-cierre" class="level2">
 <h2 class="anchored" data-anchor-id="checklist-de-cierre">Checklist de cierre</h2>
 <ul class="task-list">
 <li><label><input type="checkbox">Sé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.</label></li>
 <li><label><input type="checkbox">Instalé las herramientas mínimas de mi ruta.</label></li>
-<li><label><input type="checkbox"><code>make</code> genera <code>build/main</code> si estoy dentro de <code>src/</code>.</label></li>
-<li><label><input type="checkbox"><code>make run</code> imprime <code>Hola ARM64</code>.</label></li>
-<li><label><input type="checkbox"><code>file build/main</code> identifica un binario AArch64.</label></li>
+<li><label><input type="checkbox"><code>Makefile.qemu</code> o <code>Makefile.native</code> genera <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox">Puedo ejecutar un ejemplo desde <code>examples/aarch64</code>.</label></li>
+<li><label><input type="checkbox"><code>file src/build/main</code> identifica un binario AArch64.</label></li>
 <li><label><input type="checkbox">Puedo ver símbolos con <code>nm</code> o instrucciones con <code>objdump</code>.</label></li>
 <li><label><input type="checkbox">Puedo detenerme en <code>_start</code> con GDB.</label></li>
 <li><label><input type="checkbox">Sé dónde van teoría, ejemplo, ejercicio y presentación.</label></li>
@@ -1518,6 +1554,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/laboratorio/01-entorno-linux-arm64.html">Entorno Linux ARM64</a>. Si ya sabes tu ruta y tienes paquetes instalados, salta directo a <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html">Primer programa</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <em>GNU Binutils Manual</em>: <code>as</code>, <code>ld</code>, <code>objdump</code>, <code>readelf</code>, <code>nm</code>. <a href="https://sourceware.org/binutils/docs/binutils/" class="uri">https://sourceware.org/binutils/docs/binutils/</a></li>
+<li>QEMU, <em>User-mode documentation</em>: <code>qemu-aarch64</code>, modo GDB server. <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>Sourceware, <em>GDB Documentation</em>: <code>gdb-multiarch</code>, breakpoints, <code>stepi</code>. <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+<li>Linux man-pages: <code>make(1)</code>, <code>file(1)</code>, <code>ldd(1)</code>, <code>strace(1)</code>. <a href="https://www.man7.org/linux/man-pages/" class="uri">https://www.man7.org/linux/man-pages/</a></li>
+</ul>
 
 
 </section>

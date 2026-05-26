@@ -1709,22 +1709,47 @@ Figura&nbsp;1: Flujo mínimo desde fuente assembly hasta proceso en memoria.
 </thead>
 <tbody>
 <tr class="odd">
-<td>mínimo ELF</td>
-<td><code>examples/aarch64/16-elf-linking-loading/00-minimo-elf/src</code></td>
-<td><code>.s -&gt; .o -&gt; ELF</code>, header, segmentos</td>
+<td>Flujo fuente-objeto-ejecutable</td>
+<td><code>examples/aarch64/16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable</code></td>
+<td><code>.s -&gt; .o -&gt; ELF</code></td>
 </tr>
 <tr class="even">
-<td>secciones y símbolos</td>
-<td><code>examples/aarch64/16-elf-linking-loading/01-secciones-simbolos/src</code></td>
-<td><code>.text</code>, <code>.rodata</code>, <code>.data</code>, <code>.bss</code>, <code>nm</code></td>
+<td>ELF header y entry point</td>
+<td><code>examples/aarch64/16_elf_linking_loading/02_elf_header_entry_point</code></td>
+<td><code>readelf -h</code>, <code>_start</code>, punto de entrada</td>
 </tr>
 <tr class="odd">
-<td><code>printf</code> dinámico</td>
-<td><code>examples/aarch64/16-elf-linking-loading/02-dynamic-printf/src</code></td>
-<td><code>libc</code>, dynamic loader, dependencias</td>
+<td>Secciones, símbolos y relocations</td>
+<td><code>examples/aarch64/16_elf_linking_loading/03_secciones_simbolos_relocations</code></td>
+<td><code>.text</code>, <code>.rodata</code>, <code>.data</code>, <code>.bss</code>, <code>nm</code></td>
+</tr>
+<tr class="even">
+<td>Segmentos, loader y permisos</td>
+<td><code>examples/aarch64/16_elf_linking_loading/04_segmentos_loader_permisos</code></td>
+<td>program headers, permisos <code>R/W/E</code></td>
+</tr>
+<tr class="odd">
+<td>Linking estático y dinámico</td>
+<td><code>examples/aarch64/16_elf_linking_loading/05_linking_estatico_dinamico</code></td>
+<td><code>INTERP</code>, <code>NEEDED</code>, dynamic loader</td>
+</tr>
+<tr class="even">
+<td>GOT, PLT y PIE</td>
+<td><code>examples/aarch64/16_elf_linking_loading/06_got_plt_pie</code></td>
+<td><code>Type: DYN</code>, llamadas a <code>printf</code>, direcciones variables</td>
+</tr>
+<tr class="odd">
+<td>Herramientas y lectura guiada</td>
+<td><code>examples/aarch64/16_elf_linking_loading/07_herramientas_lectura_guiada</code></td>
+<td><code>readelf</code>, <code>objdump</code>, <code>nm</code>, <code>strip</code></td>
 </tr>
 </tbody>
 </table>
+<p>Flujo recomendado:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point readelf-header</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point nm</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee primero el header. Después compara con símbolos. Si inviertes el orden, puedes terminar interpretando nombres sin saber si el archivo es <code>REL</code>, <code>EXEC</code> o <code>DYN</code>.</p>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

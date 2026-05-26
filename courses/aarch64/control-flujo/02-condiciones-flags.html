@@ -1543,56 +1543,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="tabla-rápida-de-condiciones-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="tabla-rápida-de-condiciones-de-esta-unidad">Tabla rápida de condiciones de esta unidad</h2>
+<p>Los nombres de condición son los mismos para <code>b.cond</code>, <code>cset</code>, <code>csel</code> y otras instrucciones condicionales. Cambia la instrucción, pero el sufijo consulta los mismos flags.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Branch</th>
+<th>Condición</th>
 <th>Significado práctico</th>
+<th>Flags</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>b.eq</code></td>
+<td><code>eq</code></td>
 <td>igual</td>
+<td><code>Z = 1</code></td>
 </tr>
 <tr class="even">
-<td><code>b.ne</code></td>
+<td><code>ne</code></td>
 <td>distinto</td>
+<td><code>Z = 0</code></td>
 </tr>
 <tr class="odd">
-<td><code>b.gt</code></td>
+<td><code>gt</code></td>
 <td>mayor signed</td>
+<td><code>Z = 0</code> y <code>N = V</code></td>
 </tr>
 <tr class="even">
-<td><code>b.ge</code></td>
+<td><code>ge</code></td>
 <td>mayor o igual signed</td>
+<td><code>N = V</code></td>
 </tr>
 <tr class="odd">
-<td><code>b.lt</code></td>
+<td><code>lt</code></td>
 <td>menor signed</td>
+<td><code>N != V</code></td>
 </tr>
 <tr class="even">
-<td><code>b.le</code></td>
+<td><code>le</code></td>
 <td>menor o igual signed</td>
+<td><code>Z = 1</code> o <code>N != V</code></td>
 </tr>
 <tr class="odd">
-<td><code>b.hi</code></td>
+<td><code>hi</code></td>
 <td>mayor unsigned</td>
+<td><code>C = 1</code> y <code>Z = 0</code></td>
 </tr>
 <tr class="even">
-<td><code>b.hs</code></td>
-<td>mayor o igual unsigned</td>
+<td><code>hs</code> / <code>cs</code></td>
+<td>mayor o igual unsigned / carry set</td>
+<td><code>C = 1</code></td>
 </tr>
 <tr class="odd">
-<td><code>b.lo</code></td>
-<td>menor unsigned</td>
+<td><code>lo</code> / <code>cc</code></td>
+<td>menor unsigned / carry clear</td>
+<td><code>C = 0</code></td>
 </tr>
 <tr class="even">
-<td><code>b.ls</code></td>
+<td><code>ls</code></td>
 <td>menor o igual unsigned</td>
+<td><code>C = 0</code> o <code>Z = 1</code></td>
 </tr>
 </tbody>
 </table>
+<p>Ejemplos de lectura:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt menor       <span class="op">//</span> salta <span class="kw">si</span> la comparación signed indicó menor que</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cset x0<span class="op">,</span> eq      <span class="op">//</span> x0 <span class="op">=</span> <span class="dv">1</span> <span class="kw">si</span> la comparación indicó igualdad</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>csel x0<span class="op">,</span> x1<span class="op">,</span> x2<span class="op">,</span> hi <span class="op">//</span> x0 <span class="op">=</span> x1 <span class="kw">si</span> la comparación unsigned indicó mayor que</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>

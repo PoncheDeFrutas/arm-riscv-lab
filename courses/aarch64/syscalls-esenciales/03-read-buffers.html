@@ -1326,6 +1326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#por-qué-mov-x2-x0" id="toc-por-qué-mov-x2-x0" class="nav-link" data-scroll-target="#por-qué-mov-x2-x0">Por qué <code>mov x2, x0</code></a></li>
   <li><a href="#retorno-0" id="toc-retorno-0" class="nav-link" data-scroll-target="#retorno-0">Retorno <code>0</code></a></li>
   <li><a href="#error-mínimo" id="toc-error-mínimo" class="nav-link" data-scroll-target="#error-mínimo">Error mínimo</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1498,6 +1499,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cmp</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>b<span class="op">.</span>lt error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Importante: revisa <code>x0</code> antes de usarlo como longitud si quieres detectar error. En el eco básico se omite para mantener el ejemplo corto, pero un programa más cuidadoso debe comprobarlo.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>09_syscalls_esenciales/03_read_buffers</code> usa el mismo patrón con los Makefiles compartidos. La práctica correcta es escribir entrada por <code>stdin</code> y ver que <code>write</code> usa exactamente el número de bytes devuelto por <code>read</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'abc\n'</span> <span class="kw">|</span> <span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=09_syscalls_esenciales/03_read_buffers run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura guiada:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Momento</th>
+<th>Qué cambia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>antes de <code>read</code></td>
+<td><code>x0 = 0</code> significa stdin</td>
+</tr>
+<tr class="even">
+<td>después de <code>read</code></td>
+<td><code>x0 = n</code> significa bytes leídos</td>
+</tr>
+<tr class="odd">
+<td>antes de <code>write</code></td>
+<td><code>x2</code> debe tomar <code>n</code>, no el tamaño total del buffer</td>
+</tr>
+<tr class="even">
+<td>salida</td>
+<td>solo deben imprimirse bytes válidos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>

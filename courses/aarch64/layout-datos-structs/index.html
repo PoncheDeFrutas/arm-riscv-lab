@@ -1734,7 +1734,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="programas-de-práctica" class="level2">
 <h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
-<p>Estos programas están completos. Puedes leerlos en la página y también correrlos desde <code>examples/</code>.</p>
+<p>Estos programas están completos. Puedes leerlos en la página y también correrlos desde <code>examples/aarch64</code>. La unidad avanza de “un struct es bytes con offsets” hasta “un objeto manual es descriptor + funciones + reglas de vida”.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -1750,42 +1750,86 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>Point</code></td>
-<td>struct básico y campos <code>x</code>, <code>y</code></td>
-<td><code>examples/aarch64/14-layout-datos-structs/00-point/src</code></td>
+<td>Struct layout</td>
+<td>offsets, tamaño total y suma de campos</td>
+<td><code>examples/aarch64/14_layout_datos_structs/01_structs_layout</code></td>
 </tr>
 <tr class="even">
-<td><code>Buffer ADT</code></td>
-<td>descriptor, <code>push_byte</code>, <code>clear</code></td>
-<td><code>examples/aarch64/14-layout-datos-structs/01-buffer-adt/src</code></td>
+<td>Campos con punteros</td>
+<td>puntero base, <code>POINT_SIZE</code> y segundo elemento</td>
+<td><code>examples/aarch64/14_layout_datos_structs/02_acceso_campos_punteros</code></td>
 </tr>
 <tr class="odd">
-<td><code>String</code></td>
-<td><code>data</code>, <code>len</code>, <code>cap</code> y <code>write</code></td>
-<td><code>examples/aarch64/14-layout-datos-structs/02-string-dinamico/src</code></td>
+<td>ADT e invariantes</td>
+<td><code>len</code>, <code>cap</code>, <code>push_byte</code>, error por capacidad</td>
+<td><code>examples/aarch64/14_layout_datos_structs/03_adts_invariantes</code></td>
 </tr>
 <tr class="even">
-<td><code>Matrix</code></td>
-<td>row-major, límites y elemento <code>u64</code></td>
-<td><code>examples/aarch64/14-layout-datos-structs/03-matrix/src</code></td>
+<td>Objetos manuales</td>
+<td><code>self</code>, constructor, método y destructor</td>
+<td><code>examples/aarch64/14_layout_datos_structs/04_objetos_manuales</code></td>
 </tr>
 <tr class="odd">
-<td><code>File wrapper</code></td>
-<td>fd, wrapper, <code>openat</code>, <code>write</code>, <code>close</code></td>
-<td><code>examples/aarch64/14-layout-datos-structs/04-file-wrapper/src</code></td>
+<td>Descriptores</td>
+<td>descriptor propio con fd, puntero y longitud</td>
+<td><code>examples/aarch64/14_layout_datos_structs/05_descriptores</code></td>
 </tr>
 <tr class="even">
-<td><code>Arena</code></td>
-<td><code>base</code>, <code>used</code>, <code>cap</code>, alloc simple</td>
-<td><code>examples/aarch64/14-layout-datos-structs/05-arena-simple/src</code></td>
+<td>Buffer, String y Matrix</td>
+<td>layouts concretos, límites e índices</td>
+<td><code>examples/aarch64/14_layout_datos_structs/06_buffer_string_matrix</code></td>
+</tr>
+<tr class="odd">
+<td>File wrapper y arena</td>
+<td>recursos, cleanup y asignación lineal</td>
+<td><code>examples/aarch64/14_layout_datos_structs/07_file_wrapper_arena</code></td>
+</tr>
+<tr class="even">
+<td>Lectura guiada Buffer ADT</td>
+<td>programa completo con validaciones</td>
+<td><code>examples/aarch64/14_layout_datos_structs/08_lectura_guiada_buffer_adt</code></td>
 </tr>
 </tbody>
 </table>
 <p>Flujo recomendado:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd examples/aarch64/14-layout-datos-structs/00-point/src</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make run</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=14_layout_datos_structs/01_structs_layout run</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Guía de lectura:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Si ves…</th>
+<th>Interpreta…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.equ POINT_X, 0</code></td>
+<td>nombre simbólico para un offset</td>
+</tr>
+<tr class="even">
+<td><code>ldr xN, [x0, #POINT_X]</code></td>
+<td>carga campo desde dirección base + offset</td>
+</tr>
+<tr class="odd">
+<td><code>cmp len, cap</code> seguido de <code>b.cs</code></td>
+<td>comparación unsigned: si <code>len &gt;= cap</code>, no hay espacio</td>
+</tr>
+<tr class="even">
+<td><code>b.lt error</code></td>
+<td>salto si resultado signed fue negativo, común para errores de syscall</td>
+</tr>
+<tr class="odd">
+<td>descriptor con punteros</td>
+<td>el struct describe datos; no necesariamente contiene todos los bytes</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

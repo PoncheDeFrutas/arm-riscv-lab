@@ -110,6 +110,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Buscar"
   }
 }</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
@@ -1319,15 +1322,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
-  <li><a href="#mapa-de-niveles" id="toc-mapa-de-niveles" class="nav-link" data-scroll-target="#mapa-de-niveles">Mapa de niveles</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#mapa-de-niveles" id="toc-mapa-de-niveles" class="nav-link" data-scroll-target="#mapa-de-niveles">Mapa de niveles</a>
+  <ul class="collapse">
+  <li><a href="#qué-niveles-verás-en-la-práctica" id="toc-qué-niveles-verás-en-la-práctica" class="nav-link" data-scroll-target="#qué-niveles-verás-en-la-práctica">Qué niveles verás en la práctica</a></li>
+  </ul></li>
   <li><a href="#user-mode-vs-kernel-mode" id="toc-user-mode-vs-kernel-mode" class="nav-link" data-scroll-target="#user-mode-vs-kernel-mode">User mode vs kernel mode</a></li>
-  <li><a href="#syscall-como-cambio-de-contexto-conceptual" id="toc-syscall-como-cambio-de-contexto-conceptual" class="nav-link" data-scroll-target="#syscall-como-cambio-de-contexto-conceptual">Syscall como cambio de contexto conceptual</a></li>
-  <li><a href="#qué-no-puede-tocar-libremente-un-programa" id="toc-qué-no-puede-tocar-libremente-un-programa" class="nav-link" data-scroll-target="#qué-no-puede-tocar-libremente-un-programa">Qué no puede tocar libremente un programa</a></li>
+  <li><a href="#syscall-como-cambio-de-contexto-conceptual" id="toc-syscall-como-cambio-de-contexto-conceptual" class="nav-link" data-scroll-target="#syscall-como-cambio-de-contexto-conceptual">Syscall como cambio de contexto conceptual</a>
+  <ul class="collapse">
+  <li><a href="#qué-ocurre-durante-svc-0" id="toc-qué-ocurre-durante-svc-0" class="nav-link" data-scroll-target="#qué-ocurre-durante-svc-0">Qué ocurre durante <code>svc #0</code></a></li>
+  <li><a href="#diagrama-de-transición" id="toc-diagrama-de-transición" class="nav-link" data-scroll-target="#diagrama-de-transición">Diagrama de transición</a></li>
+  </ul></li>
+  <li><a href="#qué-puede-tocar-libremente-un-programa" id="toc-qué-puede-tocar-libremente-un-programa" class="nav-link" data-scroll-target="#qué-puede-tocar-libremente-un-programa">Qué puede tocar libremente un programa</a></li>
+  <li><a href="#qué-pasa-si-intentas-algo-privilegiado" id="toc-qué-pasa-si-intentas-algo-privilegiado" class="nav-link" data-scroll-target="#qué-pasa-si-intentas-algo-privilegiado">Qué pasa si intentas algo privilegiado</a></li>
   <li><a href="#por-qué-esto-importa-para-debugging" id="toc-por-qué-esto-importa-para-debugging" class="nav-link" data-scroll-target="#por-qué-esto-importa-para-debugging">Por qué esto importa para debugging</a></li>
   <li><a href="#límite-de-esta-unidad" id="toc-límite-de-esta-unidad" class="nav-link" data-scroll-target="#límite-de-esta-unidad">Límite de esta unidad</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
-  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
@@ -1369,8 +1381,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="qué-vas-a-aprender" class="level2">
 <h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
-<p>Vas a ubicar <code>EL0</code>, <code>EL1</code>, <code>EL2</code> y <code>EL3</code> como niveles de privilegio. Para esta ruta, lo más importante es distinguir programa de usuario (<code>EL0</code>) y kernel (<code>EL1</code>).</p>
-<p>Esto explica por qué un programa usa syscalls para pedir servicios al sistema operativo.</p>
+<ul>
+<li>Qué son los exception levels y para qué sirven.</li>
+<li>En qué nivel corre tu programa y en cuál corre el kernel.</li>
+<li>Por qué una syscall requiere cambiar de nivel.</li>
+<li>Qué puede y qué no puede hacer un programa en <code>EL0</code>.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender qué es una syscall y por qué un programa pide servicios al kernel. Revisa <a href="../../../courses/aarch64/syscalls-esenciales/01-contrato-syscall.html">Contrato de syscall</a> si necesitas repaso.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>AArch64 define cuatro niveles de privilegio llamados Exception Levels (<code>EL0</code> a <code>EL3</code>). Cada nivel tiene acceso a un conjunto diferente de instrucciones y registros. Un programa de usuario corre en <code>EL0</code> con privilegios mínimos. El kernel corre en <code>EL1</code> con acceso completo al hardware. Para que un programa en <code>EL0</code> pida un servicio al kernel en <code>EL1</code>, usa una syscall (<code>svc #0</code>) que dispara una transición controlada entre niveles.</p>
 </section>
 <section id="mapa-de-niveles" class="level2">
 <h2 class="anchored" data-anchor-id="mapa-de-niveles">Mapa de niveles</h2>
@@ -1380,6 +1404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th>Nivel</th>
 <th>Nombre común</th>
 <th>Uso típico</th>
+<th>Privilegio</th>
 </tr>
 </thead>
 <tbody>
@@ -1387,52 +1412,94 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><code>EL0</code></td>
 <td>User mode</td>
 <td>Programas de usuario</td>
+<td>Mínimo</td>
 </tr>
 <tr class="even">
 <td><code>EL1</code></td>
 <td>Kernel mode</td>
 <td>Kernel del sistema operativo</td>
+<td>Alto</td>
 </tr>
 <tr class="odd">
 <td><code>EL2</code></td>
 <td>Hypervisor</td>
 <td>Virtualización</td>
+<td>Muy alto</td>
 </tr>
 <tr class="even">
 <td><code>EL3</code></td>
 <td>Secure monitor</td>
 <td>Transición secure / non-secure</td>
+<td>Máximo</td>
 </tr>
 </tbody>
 </table>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">EL3</span>  secure monitor</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">EL2</span>  hypervisor</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">EL1</span>  kernel</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">EL0</span>  programa de usuario</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">EL3</span>  secure monitor    ← máximo privilegio <span class="er">(</span><span class="ex">TrustZone</span><span class="kw">)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">EL2</span>  hypervisor        ← virtualización</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">EL1</span>  kernel            ← sistema operativo</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">EL0</span>  programa usuario  ← tu programa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En este curso, los primeros programas corren en <code>EL0</code> sobre Linux.</p>
+<section id="qué-niveles-verás-en-la-práctica" class="level3">
+<h3 class="anchored" data-anchor-id="qué-niveles-verás-en-la-práctica">Qué niveles verás en la práctica</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Nivel</th>
+<th>¿Lo usarás?</th>
+<th>Cuándo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>EL0</code></td>
+<td>Sí</td>
+<td>Siempre: tus programas corren aquí</td>
+</tr>
+<tr class="even">
+<td><code>EL1</code></td>
+<td>Indirectamente</td>
+<td>Cada vez que haces una syscall</td>
+</tr>
+<tr class="odd">
+<td><code>EL2</code></td>
+<td>No en este curso</td>
+<td>Solo si estudias virtualización</td>
+</tr>
+<tr class="even">
+<td><code>EL3</code></td>
+<td>No en este curso</td>
+<td>Solo si estudias TrustZone/bare metal</td>
+</tr>
+</tbody>
+</table>
+</section>
 </section>
 <section id="user-mode-vs-kernel-mode" class="level2">
 <h2 class="anchored" data-anchor-id="user-mode-vs-kernel-mode">User mode vs kernel mode</h2>
 <p>Un programa normal no puede ejecutar instrucciones privilegiadas ni tocar libremente registros de sistema. Eso protege al sistema y separa responsabilidades.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Modo</th>
 <th>Qué puede hacer</th>
+<th>Qué NO puede hacer</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>User mode / <code>EL0</code></td>
 <td>Ejecutar programa, usar registros generales, pedir servicios al kernel</td>
+<td>Acceder a MMU, configurar interrupciones, leer registros privilegiados</td>
 </tr>
 <tr class="even">
 <td>Kernel mode / <code>EL1</code></td>
 <td>Administrar memoria, procesos, dispositivos y privilegios</td>
+<td>Todo lo de EL0 + más</td>
 </tr>
 </tbody>
 </table>
@@ -1452,47 +1519,108 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="syscall-como-cambio-de-contexto-conceptual" class="level2">
 <h2 class="anchored" data-anchor-id="syscall-como-cambio-de-contexto-conceptual">Syscall como cambio de contexto conceptual</h2>
-<p>Cuando un programa necesita un servicio del kernel, usa una syscall. En AArch64 Linux, eso se hará con <code>svc #0</code> en unidades posteriores.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cuando un programa necesita un servicio del kernel, usa una syscall. En AArch64 Linux, eso se hace con <code>svc #0</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span>          <span class="op">//</span> stdout</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ldr x1<span class="op">,</span> <span class="op">=</span>msg        <span class="op">//</span> buffer</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#</span><span class="dv">5</span>          <span class="op">//</span> longitud</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span>         <span class="op">//</span> write</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span>              <span class="op">//</span> ← transición EL0 → EL1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="qué-ocurre-durante-svc-0" class="level3">
+<h3 class="anchored" data-anchor-id="qué-ocurre-durante-svc-0">Qué ocurre durante <code>svc #0</code></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">1.</span> CPU está ejecutando en EL0 <span class="er">(</span><span class="ex">tu</span> programa<span class="kw">)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">2.</span> Instrucción svc <span class="co">#0 dispara una exception</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">3.</span> CPU cambia a EL1 <span class="er">(</span><span class="ex">kernel</span> mode<span class="kw">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">4.</span> Kernel lee x8 para saber qué syscall se pidió</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">5.</span> Kernel ejecuta el servicio <span class="er">(</span><span class="fu">write</span>, exit, etc.<span class="kw">)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">6.</span> Kernel retorna a EL0 con resultado en x0</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">7.</span> Tu programa continúa</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para esta unidad, no estudiaremos números de syscall ni argumentos. Solo importa la idea: programa en <code>EL0</code> pide servicio a kernel en <code>EL1</code>.</p>
 </section>
-<section id="qué-no-puede-tocar-libremente-un-programa" class="level2">
-<h2 class="anchored" data-anchor-id="qué-no-puede-tocar-libremente-un-programa">Qué no puede tocar libremente un programa</h2>
+<section id="diagrama-de-transición" class="level3">
+<h3 class="anchored" data-anchor-id="diagrama-de-transición">Diagrama de transición</h3>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-el-transition" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-el-transition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-el-transition">flowchart LR
+  el0["EL0: tu programa"] --&gt;|svc #0| exception["Exception"]
+  exception --&gt;|cambio de nivel| el1["EL1: kernel"]
+  el1 --&gt;|ejecuta syscall| result["resultado en x0"]
+  result --&gt;|retorno| el0
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-el-transition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;1: Transición EL0 → EL1 durante una syscall.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="qué-puede-tocar-libremente-un-programa" class="level2">
+<h2 class="anchored" data-anchor-id="qué-puede-tocar-libremente-un-programa">Qué puede tocar libremente un programa</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Estado</th>
 <th>Acceso desde programa normal</th>
+<th>Ejemplo</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Registros generales <code>Xn/Wn</code></td>
 <td>Sí</td>
+<td><code>mov x0, #42</code></td>
 </tr>
 <tr class="even">
 <td><code>SP</code>, <code>PC</code>, <code>NZCV</code></td>
-<td>Visible o usable según reglas de instrucciones</td>
+<td>Visible o usable según reglas</td>
+<td><code>cmp x0, #0</code></td>
 </tr>
 <tr class="odd">
 <td>Registros de sistema privilegiados</td>
 <td>No libremente</td>
+<td><code>SCTLR</code>, <code>TTBR0</code></td>
 </tr>
 <tr class="even">
 <td>Configuración de MMU</td>
 <td>No</td>
+<td>Solo el kernel mapea páginas</td>
 </tr>
 <tr class="odd">
 <td>Control de interrupciones</td>
 <td>No</td>
+<td>Solo el kernel habilita/deshabilita</td>
+</tr>
+<tr class="even">
+<td>Exception levels</td>
+<td>No</td>
+<td>Solo EL2/EL3 pueden cambiar EL</td>
 </tr>
 </tbody>
 </table>
 </section>
+<section id="qué-pasa-si-intentas-algo-privilegiado" class="level2">
+<h2 class="anchored" data-anchor-id="qué-pasa-si-intentas-algo-privilegiado">Qué pasa si intentas algo privilegiado</h2>
+<p>Si un programa en <code>EL0</code> intenta ejecutar una instrucción privilegiada, el CPU genera una exception y el kernel decide qué hacer. Normalmente termina el proceso con una señal como <code>SIGILL</code> (illegal instruction).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>// Esto fallaría en EL0<span class="op">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>mrs x0<span class="op">,</span> SCTLR_EL1    <span class="op">//</span> lee registro de sistema privilegiado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El kernel intercepta el intento y envía una señal al proceso. Tu programa no puede leer ni modificar la configuración de la MMU, las tablas de páginas ni los registros de control del sistema.</p>
+</section>
 <section id="por-qué-esto-importa-para-debugging" class="level2">
 <h2 class="anchored" data-anchor-id="por-qué-esto-importa-para-debugging">Por qué esto importa para debugging</h2>
 <p>Si GDB muestra registros de un programa, estás mirando estado de ese proceso en su contexto de usuario. No estás viendo todo el estado interno del kernel ni de hardware privilegiado.</p>
-<p>También explica por qué un fallo de acceso a memoria no permite al programa “arreglar” directamente las tablas de páginas: eso pertenece al sistema.</p>
+<p>También explica por qué un fallo de acceso a memoria no permite al programa “arreglar” directamente las tablas de páginas: eso pertenece al sistema. Cuando un programa accede a memoria no mapeada, el hardware genera una exception, el kernel la recibe en <code>EL1</code> y decide si enviar <code>SIGSEGV</code> al proceso.</p>
 </section>
 <section id="límite-de-esta-unidad" class="level2">
 <h2 class="anchored" data-anchor-id="límite-de-esta-unidad">Límite de esta unidad</h2>
@@ -1544,6 +1672,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Tratar registros de sistema como registros generales</td>
 <td>muchos son privilegiados</td>
 </tr>
+<tr class="even">
+<td>Creer que <code>svc #0</code> es una función</td>
+<td>es una instrucción que cambia de nivel</td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -1555,30 +1687,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Explica por qué un programa de usuario no puede tocar todo el estado.</li>
 <li>Explica qué idea representa <code>svc #0</code> sin entrar en syscalls.</li>
 <li>Explica por qué GDB de usuario no muestra todo el estado del kernel.</li>
+<li>¿Qué pasaría si tu programa intentara ejecutar <code>mrs x0, SCTLR_EL1</code>?</li>
+<li>¿Cuántos exception levels existen en AArch64? ¿Cuáles usa Linux normalmente?</li>
 </ol>
-</section>
-<section id="checklist" class="level2">
-<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
-<ul class="task-list">
-<li><label><input type="checkbox">Puedo ubicar <code>EL0</code>.</label></li>
-<li><label><input type="checkbox">Puedo ubicar <code>EL1</code>.</label></li>
-<li><label><input type="checkbox">Sé que <code>EL2</code> se relaciona con virtualización.</label></li>
-<li><label><input type="checkbox">Sé que <code>EL3</code> se relaciona con secure monitor.</label></li>
-<li><label><input type="checkbox">Puedo explicar user mode vs kernel mode.</label></li>
-<li><label><input type="checkbox">Puedo explicar por qué existen syscalls.</label></li>
-</ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Los exception levels explican el límite entre programa y sistema operativo. Para esta ruta, el punto central es simple: tus programas empiezan en <code>EL0</code> y piden servicios al kernel en <code>EL1</code>.</p>
+<p>Los exception levels explican el límite entre programa y sistema operativo. Para esta ruta, el punto central es simple: tus programas empiezan en <code>EL0</code> y piden servicios al kernel en <code>EL1</code> mediante syscalls. Ese límite de privilegio protege al sistema y es la razón por la que <code>svc #0</code> existe.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/modelo-aarch64/06-lectura-registros-gdb.html">Lectura de registros con GDB</a>.</p>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
 <ul>
-<li>Arm, <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile">Learn the Architecture - A-profile</a>.</li>
-<li>Arm, <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual for A-profile architecture</a>.</li>
-<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>.</li>
+<li>Arm, <em>Learn the Architecture - A-profile</em>: Exception levels y privilegios. <a href="https://www.arm.com/architecture/learn-the-architecture/a-profile" class="uri">https://www.arm.com/architecture/learn-the-architecture/a-profile</a></li>
+<li>Arm, <em>Arm Architecture Reference Manual for A-profile architecture</em>: especificación de EL0-EL3. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Linux man-pages, <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html"><code>syscall(2)</code></a>: mecanismo de syscalls Linux.</li>
 </ul>
 
 

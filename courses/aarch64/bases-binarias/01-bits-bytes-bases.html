@@ -1331,6 +1331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#lectura-paso-a-paso" id="toc-lectura-paso-a-paso" class="nav-link" data-scroll-target="#lectura-paso-a-paso">Lectura paso a paso</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
@@ -1678,20 +1679,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>Escribe <code>15</code> en binario de 8 bits.</li>
 <li>Escribe <code>0b11111111</code> en hexadecimal.</li>
-<li>Explica cuántos bytes ocupa una doubleword.</li>
-<li>Explica qué relación hay entre <code>w3</code> y <code>x3</code>.</li>
 <li>Si <code>x7 = 0xDEADBEEFCAFEBABE</code> y ejecutas <code>mov w7, #0</code>, ¿cuál es el valor de <code>x7</code>?</li>
 <li>Convierte <code>0x3F</code> a binario sin usar calculadora.</li>
+<li>¿Cuántos dígitos hexadecimales necesitas para escribir un <code>word</code>? ¿Y una <code>doubleword</code>?</li>
+<li>Ejecuta <code>printf "%016x\n" 42</code> en tu terminal. ¿Cuántos ceros a la izquierda ves?</li>
 </ol>
+</section>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p>Un byte siempre son 8 bits, sin importar la base en que lo escribas. Hexadecimal es la forma más práctica de trabajar con bajo nivel porque cada dígito corresponde a exactamente 4 bits. En AArch64, escribir en <code>Wn</code> siempre limpia los 32 bits altos de <code>Xn</code>: esa es la regla más importante de esta lección.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo explicar qué es un bit.</label></li>
-<li><label><input type="checkbox">Puedo explicar qué es un byte.</label></li>
-<li><label><input type="checkbox">Sé por qué un byte se escribe con dos dígitos hexadecimales.</label></li>
-<li><label><input type="checkbox">Puedo leer <code>0x2A</code> como <code>00101010</code>.</label></li>
-<li><label><input type="checkbox">Puedo distinguir <code>word</code> de <code>doubleword</code> en AArch64.</label></li>
+<li><label><input type="checkbox">Convierto un valor pequeño entre decimal, binario y hexadecimal sin calculadora.</label></li>
+<li><label><input type="checkbox">Leo un byte hexadecimal como 8 bits mentalmente.</label></li>
+<li><label><input type="checkbox">Predigo el valor de <code>Xn</code> después de escribir en <code>Wn</code>.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/02-enteros-signo-rangos.html">Enteros, signo y rangos</a>.</p>
 </section>

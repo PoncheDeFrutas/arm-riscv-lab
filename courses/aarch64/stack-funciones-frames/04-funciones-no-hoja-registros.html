@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#caller-saved-y-callee-saved-sin-tabla-completa" id="toc-caller-saved-y-callee-saved-sin-tabla-completa" class="nav-link" data-scroll-target="#caller-saved-y-callee-saved-sin-tabla-completa">Caller-saved y callee-saved, sin tabla completa</a></li>
   <li><a href="#guardar-un-valor-temporal" id="toc-guardar-un-valor-temporal" class="nav-link" data-scroll-target="#guardar-un-valor-temporal">Guardar un valor temporal</a></li>
   <li><a href="#error-guiado-perder-un-temporal" id="toc-error-guiado-perder-un-temporal" class="nav-link" data-scroll-target="#error-guiado-perder-un-temporal">Error guiado: perder un temporal</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1596,6 +1597,39 @@ Figura&nbsp;1: Pérdida del retorno cuando una función no hoja no guarda LR.
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ldp x29<span class="op">,</span> x30<span class="op">,</span> <span class="op">[</span><span class="kw">sp</span><span class="op">],</span> <span class="op">#</span><span class="dv">16</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ret</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>El <code>add</code> usa el <code>x0</code> que dejó <code>funcion_b</code>, no necesariamente el original. Si el valor anterior importaba, debió guardarse antes del <code>bl</code>.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>olvidar que cada <code>bl</code> sobrescribe <code>x30</code></td>
+<td>guarda <code>LR</code> en funciones no hoja</td>
+</tr>
+<tr class="even">
+<td>asumir que <code>x0</code> sobrevive a una llamada</td>
+<td>guarda temporales que necesitarás después</td>
+</tr>
+<tr class="odd">
+<td>mezclar caller-saved y callee-saved sin regla</td>
+<td>si dudas, consulta ABI o guarda explícitamente</td>
+</tr>
+<tr class="even">
+<td>retornar sin restaurar frame</td>
+<td>epílogo debe deshacer prólogo</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

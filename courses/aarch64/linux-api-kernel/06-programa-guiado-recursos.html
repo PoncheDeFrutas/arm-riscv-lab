@@ -1330,6 +1330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
     </div>
@@ -1610,7 +1611,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Este programa ya tiene forma de programa Linux real: pide un recurso, lo usa, comprueba retornos y limpia antes de terminar. Todavía es pequeño, pero el modelo mental ya no es “syscalls sueltas”; es manejo de recursos.</p>
+<p>Este programa ya tiene forma de programa Linux real: pide un recurso, lo usa, comprueba retornos y limpia antes de terminar. <code>strace</code> confirma que las syscalls se ejecutan en el orden esperado.</p>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Escribo un programa completo con <code>openat</code> → <code>read</code> → <code>write</code> → <code>close</code>.</label></li>
+<li><label><input type="checkbox">Implemento dos rutas de error: antes y después de tener fd.</label></li>
+<li><label><input type="checkbox">Verifico el flujo con <code>strace</code> y comparo retornos.</label></li>
+</ul>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

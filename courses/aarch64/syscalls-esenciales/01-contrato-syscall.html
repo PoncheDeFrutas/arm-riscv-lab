@@ -1330,6 +1330,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#syscall-vs-función-de-libc" id="toc-syscall-vs-función-de-libc" class="nav-link" data-scroll-target="#syscall-vs-función-de-libc">Syscall vs función de <code>libc</code></a></li>
   <li><a href="#retornos" id="toc-retornos" class="nav-link" data-scroll-target="#retornos">Retornos</a></li>
   <li><a href="#diagnóstico-mínimo" id="toc-diagnóstico-mínimo" class="nav-link" data-scroll-target="#diagnóstico-mínimo">Diagnóstico mínimo</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
@@ -1575,6 +1577,76 @@ Figura&nbsp;1: Contrato conceptual de una syscall Linux en AArch64.
 <li>¿Estoy interpretando <code>x0</code> según la syscall correcta?</li>
 </ol>
 <p>Este orden ayuda a depurar sin adivinar.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>09_syscalls_esenciales/01_contrato_syscall</code> practica el contrato mínimo: argumentos en registros, número en <code>x8</code>, entrada con <code>svc #0</code> y retorno en <code>x0</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=09_syscalls_esenciales/01_contrato_syscall run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Qué observar:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Punto</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>antes de <code>svc #0</code></td>
+<td>¿qué syscall selecciona <code>x8</code>?</td>
+</tr>
+<tr class="even">
+<td>argumentos</td>
+<td>¿cuáles registros usa esta syscall?</td>
+</tr>
+<tr class="odd">
+<td>después de volver</td>
+<td>¿qué significa ahora <code>x0</code>?</td>
+</tr>
+<tr class="even">
+<td>rama de error</td>
+<td>¿el programa revisa retorno negativo antes de seguir?</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>poner número de syscall en <code>x0</code></td>
+<td>Linux espera número en <code>x8</code></td>
+</tr>
+<tr class="even">
+<td>leer <code>x0</code> igual antes y después</td>
+<td>antes es argumento; después es retorno</td>
+</tr>
+<tr class="odd">
+<td>sobrescribir retorno antes de revisarlo</td>
+<td>compara <code>x0</code> justo después de <code>svc #0</code></td>
+</tr>
+<tr class="even">
+<td>confundir syscall con función C</td>
+<td>syscall entra con <code>svc #0</code>; función usa <code>bl</code> y ABI</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

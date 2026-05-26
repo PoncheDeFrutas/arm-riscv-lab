@@ -1326,6 +1326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#x29-fp" id="toc-x29-fp" class="nav-link" data-scroll-target="#x29-fp"><code>X29</code> / <code>FP</code></a></li>
   <li><a href="#x30-lr" id="toc-x30-lr" class="nav-link" data-scroll-target="#x30-lr"><code>X30</code> / <code>LR</code></a></li>
   <li><a href="#qué-registros-tienen-significado-especial" id="toc-qué-registros-tienen-significado-especial" class="nav-link" data-scroll-target="#qué-registros-tienen-significado-especial">Qué registros tienen significado especial</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
@@ -1518,6 +1519,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>03_modelo_aarch64/02_registros_especiales</code> usa nombres especiales sin construir todavía funciones completas. La meta no es memorizar sintaxis, sino reconocer qué nombre tiene regla propia.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=03_modelo_aarch64/02_registros_especiales run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Guía de lectura:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Nombre</th>
+<th>Qué comprobar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>xzr</code></td>
+<td>leer produce cero</td>
+</tr>
+<tr class="even">
+<td><code>sp</code></td>
+<td>contiene una dirección de stack, no un temporal cualquiera</td>
+</tr>
+<tr class="odd">
+<td><code>pc</code></td>
+<td>GDB lo muestra como posición actual de ejecución</td>
+</tr>
+<tr class="even">
+<td><code>x30</code></td>
+<td>aparecerá como registro de retorno cuando uses <code>bl</code></td>
+</tr>
+</tbody>
+</table>
+<p>Cuando avances con GDB, no preguntes solo “qué valor tiene”. Pregunta “qué rol tiene este nombre en esta instrucción”.</p>
 </section>
 <section id="errores-comunes" class="level2">
 <h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>

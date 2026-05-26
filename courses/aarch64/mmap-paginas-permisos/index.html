@@ -1330,6 +1330,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tres-estados-que-no-son-lo-mismo" id="toc-tres-estados-que-no-son-lo-mismo" class="nav-link" data-scroll-target="#tres-estados-que-no-son-lo-mismo">Tres estados que no son lo mismo</a></li>
   <li><a href="#mapa-de-diagnóstico" id="toc-mapa-de-diagnóstico" class="nav-link" data-scroll-target="#mapa-de-diagnóstico">Mapa de diagnóstico</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1739,6 +1740,63 @@ Figura&nbsp;1: Ciclo de vida conceptual de una región virtual creada con mmap.
 <p><a href="../../../courses/aarch64/mmap-paginas-permisos/07-programa-guiado.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Aquí la unidad de razonamiento es página/región: dirección base, tamaño, permisos y ciclo de vida.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Páginas y memoria virtual</td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/01_paginas_memoria_virtual</code></td>
+<td>región y tamaño de página</td>
+</tr>
+<tr class="even">
+<td><code>mmap</code> anónimo privado</td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/02_mmap_anonimo_privado</code></td>
+<td>dirección retornada y permisos</td>
+</tr>
+<tr class="odd">
+<td><code>munmap</code></td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/03_munmap_ciclo_vida</code></td>
+<td>liberar región completa</td>
+</tr>
+<tr class="even">
+<td><code>mprotect</code></td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/04_mprotect_permisos</code></td>
+<td>cambiar permisos</td>
+</tr>
+<tr class="odd">
+<td><code>mmap</code> con archivo</td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/05_mmap_con_archivo</code></td>
+<td>archivo como respaldo</td>
+</tr>
+<tr class="even">
+<td>Errores y diagnóstico</td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/06_errores_diagnostico</code></td>
+<td><code>MAP_FAILED</code>, <code>errno</code> conceptual</td>
+</tr>
+<tr class="odd">
+<td>Programa guiado</td>
+<td><code>examples/aarch64/13_mmap_paginas_permisos/07_programa_guiado</code></td>
+<td>ciclo completo de región</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/07_programa_guiado run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

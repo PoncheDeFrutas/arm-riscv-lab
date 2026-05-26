@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -1292,6 +1327,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#cómo-estudiar-esta-unidad" id="toc-cómo-estudiar-esta-unidad" class="nav-link" data-scroll-target="#cómo-estudiar-esta-unidad">Cómo estudiar esta unidad</a></li>
   <li><a href="#mapa-de-diagnóstico" id="toc-mapa-de-diagnóstico" class="nav-link" data-scroll-target="#mapa-de-diagnóstico">Mapa de diagnóstico</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
   <li><a href="#siguiente-paso" id="toc-siguiente-paso" class="nav-link" data-scroll-target="#siguiente-paso">Siguiente paso</a></li>
@@ -1605,6 +1641,68 @@ Figura&nbsp;1: Flujo básico de operación sobre registros en AArch64.
 <p><a href="../../../courses/aarch64/aritmetica-logica-bits/08-lectura-guiada-operaciones.html" class="resource-action">Abrir</a></p>
 </section>
 </div>
+</section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>En esta unidad conviene depurar con GDB y mirar registros antes/después de cada instrucción. El resultado final no basta; importa explicar qué cambió.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Constantes</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/01_movimiento_constantes</code></td>
+<td>construcción de valores</td>
+</tr>
+<tr class="even">
+<td>Aritmética y flags</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/02_aritmetica_flags</code></td>
+<td><code>N</code>, <code>Z</code>, <code>C</code>, <code>V</code></td>
+</tr>
+<tr class="odd">
+<td>Multiplicación/división</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/03_multiplicacion_division</code></td>
+<td>resultados y restos conceptuales</td>
+</tr>
+<tr class="even">
+<td>Lógica y máscaras</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/04_logica_mascaras</code></td>
+<td>bits encendidos/apagados</td>
+</tr>
+<tr class="odd">
+<td>Shifts y rotates</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/05_shifts_rotates</code></td>
+<td>desplazamiento contra rotación</td>
+</tr>
+<tr class="even">
+<td>Extensiones</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/06_extensiones</code></td>
+<td>signo contra ceros</td>
+</tr>
+<tr class="odd">
+<td>Bitfields</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/07_bitfields</code></td>
+<td>extracción e inserción</td>
+</tr>
+<tr class="even">
+<td>Lectura guiada</td>
+<td><code>examples/aarch64/07_aritmetica_logica_bits/08_lectura_guiada</code></td>
+<td>combinación de operaciones</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/02_aritmetica_flags run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>

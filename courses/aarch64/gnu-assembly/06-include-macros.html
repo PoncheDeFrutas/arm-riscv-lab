@@ -1318,14 +1318,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#include" id="toc-include" class="nav-link active" data-scroll-target="#include"><code>.include</code></a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#include" id="toc-include" class="nav-link" data-scroll-target="#include"><code>.include</code></a>
+  <ul class="collapse">
+  <li><a href="#qué-pasa-durante-ensamblado" id="toc-qué-pasa-durante-ensamblado" class="nav-link" data-scroll-target="#qué-pasa-durante-ensamblado">Qué pasa durante ensamblado</a></li>
+  <li><a href="#organización-de-archivos-incluidos" id="toc-organización-de-archivos-incluidos" class="nav-link" data-scroll-target="#organización-de-archivos-incluidos">Organización de archivos incluidos</a></li>
+  </ul></li>
   <li><a href="#cuándo-usar-include" id="toc-cuándo-usar-include" class="nav-link" data-scroll-target="#cuándo-usar-include">Cuándo usar include</a></li>
-  <li><a href="#macro-simple" id="toc-macro-simple" class="nav-link" data-scroll-target="#macro-simple">Macro simple</a></li>
-  <li><a href="#parámetros-de-macro" id="toc-parámetros-de-macro" class="nav-link" data-scroll-target="#parámetros-de-macro">Parámetros de macro</a></li>
+  <li><a href="#macro-simple" id="toc-macro-simple" class="nav-link" data-scroll-target="#macro-simple">Macro simple</a>
+  <ul class="collapse">
+  <li><a href="#verificar-la-expansión" id="toc-verificar-la-expansión" class="nav-link" data-scroll-target="#verificar-la-expansión">Verificar la expansión</a></li>
+  </ul></li>
+  <li><a href="#parámetros-de-macro" id="toc-parámetros-de-macro" class="nav-link" data-scroll-target="#parámetros-de-macro">Parámetros de macro</a>
+  <ul class="collapse">
+  <li><a href="#macro-con-múltiples-instrucciones" id="toc-macro-con-múltiples-instrucciones" class="nav-link" data-scroll-target="#macro-con-múltiples-instrucciones">Macro con múltiples instrucciones</a></li>
+  </ul></li>
   <li><a href="#uso-responsable" id="toc-uso-responsable" class="nav-link" data-scroll-target="#uso-responsable">Uso responsable</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#macro-vs-función" id="toc-macro-vs-función" class="nav-link" data-scroll-target="#macro-vs-función">Macro vs función</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-comparativo" id="toc-ejemplo-comparativo" class="nav-link" data-scroll-target="#ejemplo-comparativo">Ejemplo comparativo</a></li>
+  </ul></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
-  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
 </nav>
     </div>
@@ -1364,24 +1382,81 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Cuando un archivo empieza a repetir constantes o secuencias cortas, GNU Assembly ofrece dos herramientas útiles: incluir otro archivo y definir macros. La idea es ahorrar repetición sin perder de vista qué instrucciones terminarán en el programa.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Cómo compartir constantes entre archivos con <code>.include</code>.</li>
+<li>Cómo definir y usar macros simples con <code>.macro</code> y <code>.endm</code>.</li>
+<li>La diferencia entre macro y función.</li>
+<li>Cuándo conviene usar macros y cuándo no.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Entender directivas básicas como <code>.equ</code> y <code>.global</code>. Revisa <a href="../../../courses/aarch64/gnu-assembly/03-directivas-basicas.html">Directivas básicas</a> si necesitas repaso.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p><code>.include</code> copia el contenido de otro archivo durante ensamblado. <code>.macro</code> define una plantilla que el assembler expande en el lugar donde aparece. Ambas son herramientas de texto: no generan llamadas, retornos ni stack frames. El binario final contiene las instrucciones expandidas como si las hubieras escrito a mano.</p>
+</section>
 <section id="include" class="level2">
 <h2 class="anchored" data-anchor-id="include"><code>.include</code></h2>
 <p><code>.include</code> inserta otro archivo durante ensamblado. Puedes leerlo como si el assembler copiara el contenido del archivo incluido en ese punto antes de seguir procesando el resto.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">include</span> <span class="st">"constantes.inc"</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>EXIT_OK</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_exit</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Archivo incluido:</p>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>EXIT_OK</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_exit</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Archivo <code>constantes.inc</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_exit<span class="op">,</span> <span class="dv">93</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> EXIT_OK<span class="op">,</span> <span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Después del include, <code>SYS_exit</code> y <code>EXIT_OK</code> ya existen para el resto del archivo. Esto es útil cuando varias prácticas comparten los mismos números de syscall o constantes pequeñas.</p>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> EXIT_OK<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_write<span class="op">,</span> <span class="dv">64</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> STDOUT<span class="op">,</span> <span class="dv">1</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Después del include, <code>SYS_exit</code>, <code>EXIT_OK</code>, <code>SYS_write</code> y <code>STDOUT</code> ya existen para el resto del archivo. Esto es útil cuando varias prácticas comparten los mismos números de syscall o constantes pequeñas.</p>
+<section id="qué-pasa-durante-ensamblado" class="level3">
+<h3 class="anchored" data-anchor-id="qué-pasa-durante-ensamblado">Qué pasa durante ensamblado</h3>
+<p>El assembler procesa <code>.include</code> antes de generar código. Es como si el contenido de <code>constantes.inc</code> estuviera escrito directamente en tu archivo <code>.s</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>// .<span class="bu">include</span> <span class="st">"constantes.inc"</span> se expande a<span class="op">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_exit<span class="op">,</span> <span class="dv">93</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> EXIT_OK<span class="op">,</span> <span class="dv">0</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_write<span class="op">,</span> <span class="dv">64</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> STDOUT<span class="op">,</span> <span class="dv">1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>// luego sigue tu código<span class="op">:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>EXIT_OK     <span class="op">//</span> se convierte en<span class="op">:</span> mov x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_exit    <span class="op">//</span> se convierte en<span class="op">:</span> mov x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="organización-de-archivos-incluidos" class="level3">
+<h3 class="anchored" data-anchor-id="organización-de-archivos-incluidos">Organización de archivos incluidos</h3>
+<p>Puedes tener varios archivos <code>.inc</code> para distintos propósitos:</p>
+<pre><code>src/
+├── main.s
+├── constantes.inc        # números de syscall
+├── macros.inc            # macros reutilizables
+└── datos.inc             # constantes de datos</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">include</span> <span class="st">"constantes.inc"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>.<span class="bu">include</span> <span class="st">"macros.inc"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    salir <span class="dv">0</span>               <span class="op">//</span> macro definida en macros<span class="op">.</span>inc</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 </section>
 <section id="cuándo-usar-include" class="level2">
 <h2 class="anchored" data-anchor-id="cuándo-usar-include">Cuándo usar include</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Conviene para</th>
@@ -1390,7 +1465,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>Constantes compartidas</td>
+<td>Constantes compartidas entre prácticas</td>
 <td>Ocultar el programa principal</td>
 </tr>
 <tr class="even">
@@ -1398,8 +1473,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Crear una capa propia difícil de leer</td>
 </tr>
 <tr class="odd">
-<td>Definiciones comunes</td>
+<td>Definiciones comunes (syscalls, flags)</td>
 <td>Evitar entender instrucciones reales</td>
+</tr>
+<tr class="even">
+<td>Separar datos de código en archivos grandes</td>
+<td>Reemplazar funciones reales</td>
 </tr>
 </tbody>
 </table>
@@ -1407,20 +1486,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="macro-simple" class="level2">
 <h2 class="anchored" data-anchor-id="macro-simple">Macro simple</h2>
 <p>Una macro define una plantilla. Cuando escribes el nombre de la macro, el assembler coloca ahí las líneas de la plantilla con sus parámetros reemplazados.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">macro</span> salir codigo</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#\</span>codigo</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>.endm</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>.text</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    salir <span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">macro</span> salir codigo</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#\</span>codigo</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>.endm</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    salir <span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Al ensamblar, el uso de <code>salir 0</code> se expande como si hubieras escrito:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>La macro evita repetir la secuencia, pero el binario final contiene instrucciones normales.</p>
+<section id="verificar-la-expansión" class="level3">
+<h3 class="anchored" data-anchor-id="verificar-la-expansión">Verificar la expansión</h3>
+<p>Puedes confirmar que la macro se expandió correctamente:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> main.s <span class="at">-o</span> main.o</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-d</span> main.o</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0000000000400080</span> <span class="op">&lt;</span>_start<span class="op">&gt;</span>:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400080:</span>   d2800000    mov x0, <span class="co">#0</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400084:</span>   d2800ba8    mov x8, <span class="co">#93</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400088:</span>   d4000001    svc <span class="co">#0x0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>No hay ninguna “llamada a macro” en el binario. Solo ves las tres instrucciones.</p>
 <div class="callout callout-style-simple callout-note callout-titled" title="Idea clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1435,18 +1525,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+</section>
 <section id="parámetros-de-macro" class="level2">
 <h2 class="anchored" data-anchor-id="parámetros-de-macro">Parámetros de macro</h2>
 <p>Los parámetros se declaran en la línea <code>.macro</code> y se usan dentro con <code>\</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">macro</span> cargar_valor reg<span class="op">,</span> valor</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> <span class="op">\</span>reg<span class="op">,</span> <span class="op">#\</span>valor</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>.endm</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    cargar_valor x0<span class="op">,</span> <span class="dv">42</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En este ejemplo, <code>\reg</code> se reemplaza por <code>x0</code> y <code>\valor</code> por <code>42</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">42</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">macro</span> cargar_valor reg<span class="op">,</span> valor</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> <span class="op">\</span>reg<span class="op">,</span> <span class="op">#\</span>valor</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>.endm</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    cargar_valor x0<span class="op">,</span> <span class="dv">42</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    cargar_valor x1<span class="op">,</span> <span class="dv">100</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En este ejemplo, <code>\reg</code> se reemplaza por <code>x0</code> y <code>\valor</code> por <code>42</code> en la primera llamada, y por <code>x1</code> y <code>100</code> en la segunda.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>// Expansión de cargar_valor x0<span class="op">,</span> <span class="dv">42</span><span class="op">:</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">42</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>// Expansión de cargar_valor x1<span class="op">,</span> <span class="dv">100</span><span class="op">:</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x1<span class="op">,</span> <span class="op">#</span><span class="dv">100</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ese reemplazo ocurre durante ensamblado, no durante ejecución.</p>
+<section id="macro-con-múltiples-instrucciones" class="level3">
+<h3 class="anchored" data-anchor-id="macro-con-múltiples-instrucciones">Macro con múltiples instrucciones</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">macro</span> escribir_stdout msg<span class="op">,</span> len</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    ldr x1<span class="op">,</span> <span class="op">=\</span>msg</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x2<span class="op">,</span> <span class="op">#\</span>len</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">64</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>.endm</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">hola:</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola\n"</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>hola_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> hola</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>.text</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    escribir_stdout hola<span class="op">,</span> hola_len</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esta macro encapsula la secuencia completa de <code>write</code> a stdout. Cada uso genera 5 instrucciones reales.</p>
+</section>
 </section>
 <section id="uso-responsable" class="level2">
 <h2 class="anchored" data-anchor-id="uso-responsable">Uso responsable</h2>
@@ -1484,24 +1607,144 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Compartir syscalls</td>
 <td>archivo <code>constantes.inc</code></td>
 </tr>
+<tr class="even">
+<td>Escribir a stdout</td>
+<td>macro <code>escribir_stdout msg, len</code></td>
+</tr>
+</tbody>
+</table>
+<p>Malos usos para principiantes:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Caso</th>
+<th>Por qué evitarlo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Macro que llama otra macro</td>
+<td>difícil de seguir</td>
+</tr>
+<tr class="even">
+<td>Macro con 20+ instrucciones</td>
+<td>oculta demasiado</td>
+</tr>
+<tr class="odd">
+<td>Macro que reemplaza una función real</td>
+<td>confunde concepto</td>
+</tr>
 </tbody>
 </table>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="callout callout-style-simple callout-warning callout-titled" title="Macro no es función">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>Macro no es función
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Una macro no se ejecuta como subrutina. Se expande en el lugar donde aparece. Eso puede duplicar código.</p>
-</div>
-</div>
+<section id="macro-vs-función" class="level2">
+<h2 class="anchored" data-anchor-id="macro-vs-función">Macro vs función</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Macro</th>
+<th>Función</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cuándo se procesa</td>
+<td>Ensamblado</td>
+<td>Ejecución</td>
+</tr>
+<tr class="even">
+<td>Genera llamada</td>
+<td>No</td>
+<td>Sí (<code>bl</code>)</td>
+</tr>
+<tr class="odd">
+<td>Usa stack</td>
+<td>No</td>
+<td>Sí (guarda <code>LR</code>)</td>
+</tr>
+<tr class="even">
+<td>Duplica código</td>
+<td>Sí (cada uso genera instrucciones)</td>
+<td>No (una copia, múltiples llamadas)</td>
+</tr>
+<tr class="odd">
+<td>Puede tener retorno</td>
+<td>No</td>
+<td>Sí (<code>ret</code>)</td>
+</tr>
+</tbody>
+</table>
+<section id="ejemplo-comparativo" class="level3">
+<h3 class="anchored" data-anchor-id="ejemplo-comparativo">Ejemplo comparativo</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>// <span class="pp">Macro</span><span class="op">:</span> se expande en cada uso</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>.<span class="pp">macro</span> salir codigo</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#\</span>codigo</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>.endm</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    salir <span class="dv">0</span>     <span class="op">//</span> genera <span class="dv">3</span> instrucciones aquí</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    salir <span class="dv">1</span>     <span class="op">//</span> genera <span class="dv">3</span> instrucciones aquí también</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>// Función<span class="op">:</span> una sola copia<span class="op">,</span> múltiples llamadas</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="fu">salir_func:</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span><span class="dv">93</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    svc <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="fu">_start:</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">0</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    bl salir_func   <span class="op">//</span> <span class="dv">1</span> instrucción <span class="op">+</span> llamada</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span><span class="dv">1</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    bl salir_func   <span class="op">//</span> <span class="dv">1</span> instrucción <span class="op">+</span> llamada</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La macro duplica código pero evita la sobrecarga de <code>bl</code>/<code>ret</code>. La función usa menos espacio pero requiere llamada y retorno.</p>
+</section>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=04_gnu_assembly/06_include_macros run</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=04_gnu_assembly/06_include_macros objdump</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Usa <code>objdump</code> para confirmar la expansión. Si una macro aparece dos veces, sus instrucciones también aparecen dos veces.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que macro es función</td>
+<td>macro se expande al ensamblar; función se llama al ejecutar</td>
+</tr>
+<tr class="even">
+<td>ocultar demasiadas instrucciones en macro</td>
+<td>deja visible lo que el alumno aún está aprendiendo</td>
+</tr>
+<tr class="odd">
+<td>olvidar que macro duplica código</td>
+<td>cada uso genera instrucciones nuevas</td>
+</tr>
+<tr class="even">
+<td>usar <code>.include</code> para tapar dependencias</td>
+<td>explica qué símbolos vienen del archivo incluido</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
@@ -1510,18 +1753,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Define <code>SYS_write</code> en un archivo incluido.</li>
 <li>Explica por qué macro no es función.</li>
 <li>Escribe una macro que cargue <code>x0</code> con un código de salida.</li>
+<li>Escribe una macro <code>escribir_stderr msg, len</code> que escriba en stderr (fd 2).</li>
+<li>Ensambla un archivo con una macro y verifica con <code>objdump -d</code> que se expandió.</li>
 </ol>
 </section>
-<section id="checklist" class="level2">
-<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
-<ul class="task-list">
-<li><label><input type="checkbox">Puedo explicar <code>.include</code>.</label></li>
-<li><label><input type="checkbox">Puedo explicar <code>.macro</code>.</label></li>
-<li><label><input type="checkbox">Puedo explicar <code>.endm</code>.</label></li>
-<li><label><input type="checkbox">Puedo usar un parámetro con <code>\</code>.</label></li>
-<li><label><input type="checkbox">Sé que macros avanzadas quedan para después.</label></li>
-</ul>
+<section id="cierre" class="level2">
+<h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
+<p><code>.include</code> y <code>.macro</code> son herramientas de texto que el assembler procesa antes de generar código. No son instrucciones del CPU. Sirven para evitar repetición pero no deben ocultar lo que estás aprendiendo. Siempre verifica con <code>objdump -d</code> que la expansión es la que esperas.</p>
 <p>Siguiente: <a href="../../../courses/aarch64/gnu-assembly/07-lectura-archivo-completo.html">Lectura de archivo completo</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: directivas <code>.include</code>, <code>.macro</code>, <code>.endm</code>, parámetros de macro. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: macros y reutilización de código en GNU assembler.</li>
+</ul>
 
 
 </section>

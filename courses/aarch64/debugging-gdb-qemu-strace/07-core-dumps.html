@@ -1327,6 +1327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#activar-core-dumps" id="toc-activar-core-dumps" class="nav-link" data-scroll-target="#activar-core-dumps">Activar core dumps</a></li>
   <li><a href="#abrir-con-gdb" id="toc-abrir-con-gdb" class="nav-link" data-scroll-target="#abrir-con-gdb">Abrir con GDB</a></li>
   <li><a href="#rutina-post-mortem" id="toc-rutina-post-mortem" class="nav-link" data-scroll-target="#rutina-post-mortem">Rutina post-mortem</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#qué-esperar" id="toc-qué-esperar" class="nav-link" data-scroll-target="#qué-esperar">Qué esperar</a></li>
   <li><a href="#diagrama" id="toc-diagrama" class="nav-link" data-scroll-target="#diagrama">Diagrama</a></li>
   <li><a href="#relación-con-debugging-en-vivo" id="toc-relación-con-debugging-en-vivo" class="nav-link" data-scroll-target="#relación-con-debugging-en-vivo">Relación con debugging en vivo</a></li>
@@ -1441,6 +1442,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/i</span> <span class="va">$pc</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="fu">gdb</span><span class="kw">)</span> <span class="ex">x/8gx</span> <span class="va">$sp</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Con eso separas tres preguntas: dónde falló, con qué estado falló y qué había en la pila alrededor del fallo.</p>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>17_debugging_gdb_qemu_strace/07_core_dumps</code> separa ejecución normal y fallo controlado. La ejecución normal termina bien; el objetivo del fallo es generar material para GDB post-mortem.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/07_core_dumps run</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/07_core_dumps run-fault</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si el sistema genera core, abre binario y core juntos:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> 17_debugging_gdb_qemu_strace/07_core_dumps/src/build/fault core</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lee primero <code>bt</code>, <code>info registers</code> y <code>x/i $pc</code>. No intentes avanzar: un core dump no es una sesión viva.</p>
 </section>
 <section id="qué-esperar" class="level2">
 <h2 class="anchored" data-anchor-id="qué-esperar">Qué esperar</h2>

@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -1287,6 +1322,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#qué-debes-distinguir" id="toc-qué-debes-distinguir" class="nav-link" data-scroll-target="#qué-debes-distinguir">Qué debes distinguir</a></li>
   <li><a href="#lecciones-de-esta-unidad" id="toc-lecciones-de-esta-unidad" class="nav-link" data-scroll-target="#lecciones-de-esta-unidad">Lecciones de esta unidad</a></li>
   <li><a href="#modelo-mental-de-la-unidad" id="toc-modelo-mental-de-la-unidad" class="nav-link" data-scroll-target="#modelo-mental-de-la-unidad">Modelo mental de la unidad</a></li>
+  <li><a href="#programas-de-práctica" id="toc-programas-de-práctica" class="nav-link" data-scroll-target="#programas-de-práctica">Programas de práctica</a></li>
   <li><a href="#qué-no-estudiaremos-todavía" id="toc-qué-no-estudiaremos-todavía" class="nav-link" data-scroll-target="#qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</a></li>
   <li><a href="#para-investigar-más" id="toc-para-investigar-más" class="nav-link" data-scroll-target="#para-investigar-más">Para investigar más</a></li>
   <li><a href="#checklist-de-cierre" id="toc-checklist-de-cierre" class="nav-link" data-scroll-target="#checklist-de-cierre">Checklist de cierre</a></li>
@@ -1601,6 +1637,63 @@ Figura&nbsp;1: Modelo de lectura de un archivo GNU Assembly AArch64.
 </div>
 </div>
 </section>
+<section id="programas-de-práctica" class="level2">
+<h2 class="anchored" data-anchor-id="programas-de-práctica">Programas de práctica</h2>
+<p>Cada ejemplo muestra una pieza del archivo <code>.s</code>. Lee primero la estructura y luego cambia un dato pequeño para confirmar qué parte controla cada directiva.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Ruta</th>
+<th>Qué mirar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Estructura de archivo</td>
+<td><code>examples/aarch64/04_gnu_assembly/01_estructura_archivo_s</code></td>
+<td>secciones, símbolo global y <code>_start</code></td>
+</tr>
+<tr class="even">
+<td>Secciones</td>
+<td><code>examples/aarch64/04_gnu_assembly/02_secciones</code></td>
+<td><code>.text</code>, <code>.data</code>, <code>.rodata</code>, <code>.bss</code></td>
+</tr>
+<tr class="odd">
+<td>Directivas básicas</td>
+<td><code>examples/aarch64/04_gnu_assembly/03_directivas_basicas</code></td>
+<td><code>.global</code>, <code>.equ</code>, etiquetas y tamaños</td>
+</tr>
+<tr class="even">
+<td>Definición de datos</td>
+<td><code>examples/aarch64/04_gnu_assembly/04_definicion_datos</code></td>
+<td><code>.byte</code>, <code>.word</code>, <code>.quad</code>, <code>.ascii</code></td>
+</tr>
+<tr class="odd">
+<td>Pseudo-instrucciones</td>
+<td><code>examples/aarch64/04_gnu_assembly/05_pseudo_instrucciones</code></td>
+<td>carga de constantes y direcciones</td>
+</tr>
+<tr class="even">
+<td>Include y macros</td>
+<td><code>examples/aarch64/04_gnu_assembly/06_include_macros</code></td>
+<td>reutilización controlada</td>
+</tr>
+<tr class="odd">
+<td>Archivo completo</td>
+<td><code>examples/aarch64/04_gnu_assembly/07_archivo_completo</code></td>
+<td>lectura de programa pequeño completo</td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=04_gnu_assembly/07_archivo_completo run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
 <section id="qué-no-estudiaremos-todavía" class="level2">
 <h2 class="anchored" data-anchor-id="qué-no-estudiaremos-todavía">Qué no estudiaremos todavía</h2>
 <table class="caption-top table">
@@ -1695,6 +1788,15 @@ Figura&nbsp;1: Modelo de lectura de un archivo GNU Assembly AArch64.
 <section id="siguiente-paso" class="level2">
 <h2 class="anchored" data-anchor-id="siguiente-paso">Siguiente paso</h2>
 <p>Empieza por <a href="../../../courses/aarch64/gnu-assembly/01-estructura-archivo-s.html">Estructura de archivo <code>.s</code></a>. Si ya entiendes etiquetas y comentarios, avanza a <a href="../../../courses/aarch64/gnu-assembly/02-secciones.html">Secciones</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: sintaxis, directivas, secciones, pseudo-instrucciones. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>Arm, <em>A64 Instruction Set Architecture Guide</em>: instrucciones reales A64 vs pseudo-instrucciones del assembler. <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+<li>Arm, <em>Architecture Reference Manual for A-profile</em> (DDI 0487): formato de instrucciones y encoding AArch64. <a href="https://developer.arm.com/documentation/ddi0487/latest" class="uri">https://developer.arm.com/documentation/ddi0487/latest</a></li>
+<li>Larry D. Pyeatt y William Ughetta, <em>ARM 64-Bit Assembly Language</em>: estructura de programas GNU Assembly y directivas.</li>
+</ul>
 
 
 </section>

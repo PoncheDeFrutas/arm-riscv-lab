@@ -1318,11 +1318,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#herramientas-por-función" id="toc-herramientas-por-función" class="nav-link active" data-scroll-target="#herramientas-por-función">Herramientas por función</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#herramientas-por-función" id="toc-herramientas-por-función" class="nav-link" data-scroll-target="#herramientas-por-función">Herramientas por función</a></li>
   <li><a href="#raspberry-pi-arm64-real" id="toc-raspberry-pi-arm64-real" class="nav-link" data-scroll-target="#raspberry-pi-arm64-real">Raspberry Pi ARM64 real</a></li>
-  <li><a href="#host-x86_64-con-qemu-user-mode" id="toc-host-x86_64-con-qemu-user-mode" class="nav-link" data-scroll-target="#host-x86_64-con-qemu-user-mode">Host x86_64 con QEMU user mode</a></li>
+  <li><a href="#host-x86_64-con-qemu-user-mode" id="toc-host-x86_64-con-qemu-user-mode" class="nav-link" data-scroll-target="#host-x86_64-con-qemu-user-mode">Host x86_64 con QEMU user mode</a>
+  <ul class="collapse">
+  <li><a href="#qué-es-cross-compilation" id="toc-qué-es-cross-compilation" class="nav-link" data-scroll-target="#qué-es-cross-compilation">¿Qué es cross-compilation?</a></li>
+  </ul></li>
   <li><a href="#docker-opcional" id="toc-docker-opcional" class="nav-link" data-scroll-target="#docker-opcional">Docker opcional</a></li>
   <li><a href="#extensiones-recomendadas-de-vs-code" id="toc-extensiones-recomendadas-de-vs-code" class="nav-link" data-scroll-target="#extensiones-recomendadas-de-vs-code">Extensiones recomendadas de VS Code</a></li>
+  <li><a href="#qué-hacer-si-algo-falla" id="toc-qué-hacer-si-algo-falla" class="nav-link" data-scroll-target="#qué-hacer-si-algo-falla">Qué hacer si algo falla</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#verificación-mínima-antes-de-seguir" id="toc-verificación-mínima-antes-de-seguir" class="nav-link" data-scroll-target="#verificación-mínima-antes-de-seguir">Verificación mínima antes de seguir</a></li>
   </ul>
 </nav>
@@ -1362,47 +1370,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>La instalación se divide por ruta. No memorices la lista completa de herramientas: primero instala, verifica y ejecuta el ejemplo mínimo.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué herramientas necesita cada ruta (Raspberry Pi nativa vs x86_64 con QEMU).</li>
+<li>Por qué cada herramienta existe y qué problema resuelve.</li>
+<li>Cómo verificar que todo funciona antes de continuar.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Saber tu arquitectura: ejecuta <code>uname -m</code>. Si dice <code>aarch64</code> o <code>arm64</code>, estás en ARM64 nativo. Si dice <code>x86_64</code>, necesitas cross-compilation con QEMU.</p>
+</section>
 <section id="herramientas-por-función" class="level2">
 <h2 class="anchored" data-anchor-id="herramientas-por-función">Herramientas por función</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Función</th>
 <th>Herramientas</th>
+<th>Por qué importa</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Construir</td>
 <td><code>make</code>, <code>gcc</code>, <code>as</code>, <code>ld</code>, <code>aarch64-linux-gnu-gcc</code></td>
+<td>Convierten <code>.s</code> en ejecutable</td>
 </tr>
 <tr class="even">
 <td>Ejecutar en x86_64</td>
 <td><code>qemu-aarch64</code></td>
+<td>Emula CPU ARM64 en tu host x86</td>
 </tr>
 <tr class="odd">
 <td>Inspeccionar</td>
 <td><code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code>, <code>hexdump</code>, <code>xxd</code>, <code>ldd</code>, <code>strace</code></td>
+<td>Miran el binario por dentro</td>
 </tr>
 <tr class="even">
 <td>Depurar</td>
 <td><code>gdb</code>, <code>gdb-multiarch</code></td>
+<td>Detienen y examinan el programa</td>
 </tr>
 <tr class="odd">
 <td>Rendimiento futuro</td>
 <td><code>perf</code></td>
+<td>Mide ciclos y eventos</td>
 </tr>
 <tr class="even">
 <td>Entorno opcional</td>
 <td>Docker</td>
+<td>Repetible sin instalar en host</td>
 </tr>
 <tr class="odd">
 <td>VS Code visual</td>
 <td>C/C++, Makefile Tools, ARM64 Assembly, StackScope</td>
+<td>Interfaz gráfica para debugging</td>
 </tr>
 </tbody>
 </table>
@@ -1435,7 +1464,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">file</span> <span class="at">--version</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> <span class="at">--version</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Señal esperada:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-m</span> <span class="at">-</span><span class="op">&gt;</span> aarch64 o arm64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-m</span> <span class="at">-</span><span class="op">&gt;</span> aarch64 o arm64</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">--version</span> <span class="at">-</span><span class="op">&gt;</span> gcc <span class="er">(</span><span class="ex">Debian/Raspbian</span><span class="kw">)</span> <span class="ex">X.Y.Z</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si <code>uname -m</code> dice <code>armv7l</code> o <code>armhf</code>, tu sistema es de 32 bits. Necesitas Raspberry Pi OS de 64 bits para este curso.</p>
 </section>
 <section id="host-x86_64-con-qemu-user-mode" class="level2">
 <h2 class="anchored" data-anchor-id="host-x86_64-con-qemu-user-mode">Host x86_64 con QEMU user mode</h2>
@@ -1453,7 +1484,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> <span class="at">--version</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Señal esperada:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-m</span> <span class="at">-</span><span class="op">&gt;</span> x86_64</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> <span class="at">--version</span> <span class="at">-</span><span class="op">&gt;</span> responde sin error</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-gcc</span> <span class="at">--version</span> <span class="at">-</span><span class="op">&gt;</span> gcc <span class="er">(</span><span class="ex">Ubuntu/Debian</span><span class="kw">)</span> <span class="ex">X.Y.Z</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> <span class="at">--version</span> <span class="at">-</span><span class="op">&gt;</span> QEMU emulator version X.Y.Z</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-simple callout-tip callout-titled" title="Diferencia clave">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1464,51 +1496,153 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>En x86_64 no necesitas que <code>uname -m</code> diga ARM64. El binario será ARM64; tu host seguirá siendo x86_64.</p>
+<p>En x86_64 no necesitas que <code>uname -m</code> diga ARM64. El binario será ARM64; tu host sigue siendo x86_64. QEMU traduce las instrucciones ARM64 a x86_64 en tiempo de ejecución.</p>
 </div>
 </div>
+<section id="qué-es-cross-compilation" class="level3">
+<h3 class="anchored" data-anchor-id="qué-es-cross-compilation">¿Qué es cross-compilation?</h3>
+<p>Cross-compilation significa compilar para una arquitectura distinta a la de tu máquina. El prefijo <code>aarch64-linux-gnu-</code> indica que las herramientas producen binarios para ARM64 Linux, no para x86_64.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span>           <span class="at">-</span><span class="op">&gt;</span> produce binarios x86_64 <span class="er">(</span><span class="ex">tu</span> host<span class="kw">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-gcc</span> <span class="at">-</span><span class="op">&gt;</span> produce binarios ARM64 <span class="er">(</span><span class="ex">target</span><span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ambos compiladores pueden coexistir en el mismo sistema.</p>
+</section>
 </section>
 <section id="docker-opcional" class="level2">
 <h2 class="anchored" data-anchor-id="docker-opcional">Docker opcional</h2>
 <p>Si no puedes instalar paquetes en el host:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> arm-riscv-lab <span class="at">-f</span> tooling/docker/Dockerfile .</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/workspace <span class="at">-w</span> /workspace arm-riscv-lab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> arm-riscv-lab <span class="at">-f</span> tooling/docker/Dockerfile .</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/workspace <span class="at">-w</span> /workspace arm-riscv-lab</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Dentro del contenedor:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-gcc</span> <span class="at">--version</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> <span class="at">--version</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> <span class="at">--version</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Docker es alternativa de laboratorio, no requisito principal.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-gcc</span> <span class="at">--version</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> <span class="at">--version</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> <span class="at">--version</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Docker es alternativa de laboratorio, no requisito principal. Úsalo si:</p>
+<ul>
+<li>No tienes permisos de root en tu máquina.</li>
+<li>Quieres un entorno idéntico al de tus compañeros.</li>
+<li>Tu sistema operativo no es Debian/Ubuntu.</li>
+</ul>
 </section>
 <section id="extensiones-recomendadas-de-vs-code" class="level2">
 <h2 class="anchored" data-anchor-id="extensiones-recomendadas-de-vs-code">Extensiones recomendadas de VS Code</h2>
 <p>Para depurar con interfaz visual instala estas extensiones:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Extensión</th>
 <th>ID</th>
+<th>Para qué sirve</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>C/C++</td>
 <td><code>ms-vscode.cpptools</code></td>
+<td>Debugging con interfaz gráfica</td>
 </tr>
 <tr class="even">
 <td>Makefile Tools</td>
 <td><code>ms-vscode.makefile-tools</code></td>
+<td>Ejecutar <code>make</code> desde VS Code</td>
 </tr>
 <tr class="odd">
 <td>ARM64 Assembly</td>
 <td><code>mkornelsen.vscode-arm64</code></td>
+<td>Syntax highlighting para <code>.s</code></td>
 </tr>
 <tr class="even">
 <td>StackScope</td>
 <td><code>EightLayerStudio.StackScope</code></td>
+<td>Ver stack y registros visualmente</td>
 </tr>
 </tbody>
 </table>
 <p><code>StackScope</code> ayuda a inspeccionar memoria y registros desde una sesión de debugging. No es requisito para compilar.</p>
+</section>
+<section id="qué-hacer-si-algo-falla" class="level2">
+<h2 class="anchored" data-anchor-id="qué-hacer-si-algo-falla">Qué hacer si algo falla</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Problema</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>aarch64-linux-gnu-gcc: command not found</code></td>
+<td>Reinstala <code>gcc-aarch64-linux-gnu</code></td>
+</tr>
+<tr class="even">
+<td><code>qemu-aarch64: command not found</code></td>
+<td>Instala <code>qemu-user</code> o <code>qemu-user-static</code></td>
+</tr>
+<tr class="odd">
+<td><code>gdb-multiarch: command not found</code></td>
+<td>Instala <code>gdb-multiarch</code> o usa <code>gdb</code> nativo</td>
+</tr>
+<tr class="even">
+<td><code>strace: command not found</code></td>
+<td>Instala <code>strace</code></td>
+</tr>
+<tr class="odd">
+<td><code>xxd: command not found</code></td>
+<td>Instala <code>xxd</code> o <code>vim-common</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>instalar solo <code>gcc</code> en host <code>x86_64</code></td>
+<td>también necesitas <code>gcc-aarch64-linux-gnu</code></td>
+</tr>
+<tr class="even">
+<td>instalar compiler pero no QEMU</td>
+<td>compilar no ejecuta binarios ARM64</td>
+</tr>
+<tr class="odd">
+<td>usar <code>gdb</code> normal en ruta cruzada</td>
+<td>usa <code>gdb-multiarch</code></td>
+</tr>
+<tr class="even">
+<td>olvidar herramientas de inspección</td>
+<td>instala <code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code>, <code>strace</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<ol type="1">
+<li>Clasifica <code>file</code>, <code>readelf</code>, <code>objdump</code> y <code>nm</code> como herramientas de inspección.</li>
+<li>Explica por qué <code>aarch64-linux-gnu-gcc</code> no reemplaza a <code>qemu-aarch64</code>.</li>
+<li>Explica por qué <code>gdb-multiarch</code> aparece en la ruta x86_64.</li>
+<li>Di qué paquete revisarías si falta <code>aarch64-linux-gnu-gcc</code>.</li>
+<li>Di qué herramienta usarías para ver syscalls después.</li>
+</ol>
 </section>
 <section id="verificación-mínima-antes-de-seguir" class="level2">
 <h2 class="anchored" data-anchor-id="verificación-mínima-antes-de-seguir">Verificación mínima antes de seguir</h2>
@@ -1521,6 +1655,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><label><input type="checkbox">Inspección: <code>file</code>, <code>readelf</code>, <code>objdump</code>, <code>nm</code> y <code>strace</code> responden.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/laboratorio/03-primer-programa.html">Primer programa</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>Linaro, <em>AArch64 Toolchain</em>: <code>gcc-aarch64-linux-gnu</code>, <code>binutils-aarch64-linux-gnu</code>. <a href="https://www.linaro.org/" class="uri">https://www.linaro.org/</a></li>
+<li>QEMU, <em>User-mode documentation</em>: instalación de <code>qemu-user</code> o <code>qemu-user-static</code>. <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>Sourceware, <em>GDB Documentation</em>: <code>gdb-multiarch</code> para depuración cross-arch. <a href="https://sourceware.org/gdb/documentation/" class="uri">https://sourceware.org/gdb/documentation/</a></li>
+</ul>
 
 
 </section>

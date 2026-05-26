@@ -1615,16 +1615,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Debes poder mirar una secuencia de bytes hexadecimales y reconocer si es texto ASCII, si tiene null terminator, y si algún byte podría ser parte de un carácter UTF-8 multibyte.</p>
+<p>ASCII es una tabla de bytes, no un tipo especial. El null terminator <code>0x00</code> marca el fin de strings en C pero no en todas las convenciones. UTF-8 puede usar hasta 4 bytes por carácter: contar bytes como caracteres es un error frecuente.</p>
 </section>
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo explicar ASCII como tabla de bytes.</label></li>
-<li><label><input type="checkbox">Puedo distinguir número <code>0</code> de carácter <code>'0'</code>.</label></li>
-<li><label><input type="checkbox">Puedo leer <code>0x41 0x42 0x43</code> como <code>ABC</code>.</label></li>
-<li><label><input type="checkbox">Sé que UTF-8 puede usar varios bytes por carácter.</label></li>
-<li><label><input type="checkbox">Puedo conectar <code>.ascii</code> y <code>.byte</code> con memoria.</label></li>
+<li><label><input type="checkbox">Distingo número <code>0</code> de carácter <code>'0'</code> en memoria.</label></li>
+<li><label><input type="checkbox">Reconozco <code>.ascii</code> vs <code>.asciz</code> y sé cuándo usar cada uno.</label></li>
+<li><label><input type="checkbox">Identifico si un byte es ASCII legible o parte de UTF-8 multibyte.</label></li>
 </ul>
 <p>Siguiente: <a href="../../../courses/aarch64/bases-binarias/05-endianness-alineacion.html">Endianness y alineación</a>.</p>
 </section>

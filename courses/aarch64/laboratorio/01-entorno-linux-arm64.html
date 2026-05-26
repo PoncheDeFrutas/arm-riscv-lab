@@ -1318,12 +1318,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#idea-central" id="toc-idea-central" class="nav-link active" data-scroll-target="#idea-central">Idea central</a></li>
-  <li><a href="#raspberry-pi-arm64-real" id="toc-raspberry-pi-arm64-real" class="nav-link" data-scroll-target="#raspberry-pi-arm64-real">Raspberry Pi ARM64 real</a></li>
-  <li><a href="#host-x86_64-con-qemu-user-mode" id="toc-host-x86_64-con-qemu-user-mode" class="nav-link" data-scroll-target="#host-x86_64-con-qemu-user-mode">Host x86_64 con QEMU user mode</a></li>
-  <li><a href="#qemu-system-mode" id="toc-qemu-system-mode" class="nav-link" data-scroll-target="#qemu-system-mode">QEMU system mode</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#por-qué-linux-y-no-otro-sistema" id="toc-por-qué-linux-y-no-otro-sistema" class="nav-link" data-scroll-target="#por-qué-linux-y-no-otro-sistema">¿Por qué Linux y no otro sistema?</a></li>
+  <li><a href="#raspberry-pi-arm64-real" id="toc-raspberry-pi-arm64-real" class="nav-link" data-scroll-target="#raspberry-pi-arm64-real">Raspberry Pi ARM64 real</a>
+  <ul class="collapse">
+  <li><a href="#flujo-de-trabajo-nativo" id="toc-flujo-de-trabajo-nativo" class="nav-link" data-scroll-target="#flujo-de-trabajo-nativo">Flujo de trabajo nativo</a></li>
+  </ul></li>
+  <li><a href="#host-x86_64-con-qemu-user-mode" id="toc-host-x86_64-con-qemu-user-mode" class="nav-link" data-scroll-target="#host-x86_64-con-qemu-user-mode">Host x86_64 con QEMU user mode</a>
+  <ul class="collapse">
+  <li><a href="#flujo-de-trabajo-con-qemu" id="toc-flujo-de-trabajo-con-qemu" class="nav-link" data-scroll-target="#flujo-de-trabajo-con-qemu">Flujo de trabajo con QEMU</a></li>
+  <li><a href="#qué-hace-qemu-user-mode" id="toc-qué-hace-qemu-user-mode" class="nav-link" data-scroll-target="#qué-hace-qemu-user-mode">¿Qué hace QEMU user mode?</a></li>
+  </ul></li>
+  <li><a href="#qemu-system-mode" id="toc-qemu-system-mode" class="nav-link" data-scroll-target="#qemu-system-mode">QEMU system mode</a>
+  <ul class="collapse">
+  <li><a href="#diferencia-visual" id="toc-diferencia-visual" class="nav-link" data-scroll-target="#diferencia-visual">Diferencia visual</a></li>
+  </ul></li>
   <li><a href="#docker-opcional" id="toc-docker-opcional" class="nav-link" data-scroll-target="#docker-opcional">Docker opcional</a></li>
   <li><a href="#decisión-final" id="toc-decisión-final" class="nav-link" data-scroll-target="#decisión-final">Decisión final</a></li>
+  <li><a href="#verificación-rápida" id="toc-verificación-rápida" class="nav-link" data-scroll-target="#verificación-rápida">Verificación rápida</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
+  <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
+  <li><a href="#checklist" id="toc-checklist" class="nav-link" data-scroll-target="#checklist">Checklist</a></li>
   </ul>
 </nav>
     </div>
@@ -1362,9 +1379,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Antes de instalar paquetes conviene decidir dónde correrá el programa. En esta unidad la fuente en assembly es la misma. Lo que cambia es la forma de compilar, ejecutar y depurar.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Qué ruta usar según tu hardware (ARM64 nativo vs x86_64 con QEMU).</li>
+<li>Qué es QEMU user mode y cómo se diferencia de system mode.</li>
+<li>Por qué Linux es el entorno principal de este curso.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Solo necesitas una terminal Linux. Puede ser en una Raspberry Pi, en una máquina virtual, en WSL2 o en cualquier distribución Linux.</p>
+</section>
 <section id="idea-central" class="level2">
 <h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
 <p>Linux será el entorno principal del curso porque permite estudiar AArch64 desde userland: procesos, binarios, syscalls, archivos, depuración y herramientas de inspección sin entrar todavía a bare metal.</p>
+<p>El sistema operativo actúa como una API: tu programa pide servicios al kernel mediante syscalls, el kernel responde, y tu programa continúa. Este modelo es el mismo sin importar si corres en ARM64 real o en QEMU.</p>
 <div class="callout callout-style-simple callout-note callout-titled" title="Límite de esta unidad">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1379,13 +1409,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="por-qué-linux-y-no-otro-sistema" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-linux-y-no-otro-sistema">¿Por qué Linux y no otro sistema?</h2>
+<p>Linux es ideal para estudiar assembly porque:</p>
+<ul>
+<li><strong>Syscalls documentadas</strong>: cada servicio del kernel tiene un número y un contrato claro en las man-pages.</li>
+<li><strong>Herramientas disponibles</strong>: <code>gcc</code>, <code>as</code>, <code>ld</code>, <code>gdb</code>, <code>objdump</code>, <code>readelf</code>, <code>strace</code> funcionan igual en cualquier distribución.</li>
+<li><strong>QEMU user mode</strong>: puedes ejecutar binarios ARM64 en cualquier arquitectura sin emular un sistema completo.</li>
+<li><strong>Código abierto</strong>: puedes estudiar cómo funciona el kernel si quieres ir más allá.</li>
+</ul>
+<p>Otros sistemas operativos (Windows, macOS) tienen modelos de syscall distintos y menos documentados para assembly. Linux permite enfoque en la arquitectura, no en el sistema.</p>
+</section>
 <section id="raspberry-pi-arm64-real" class="level2">
 <h2 class="anchored" data-anchor-id="raspberry-pi-arm64-real">Raspberry Pi ARM64 real</h2>
 <p>Usa esta ruta si tienes una Raspberry Pi con Linux de 64 bits.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-m</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Señal correcta:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si ves <code>armv7l</code> o <code>armhf</code>, tu sistema es de 32 bits. Necesitas Raspberry Pi OS de 64 bits (aarch64) para este curso.</p>
 <p>En esta ruta el binario AArch64 corre directo sobre el procesador. No necesitas <code>qemu-aarch64</code> para ejecutar el ejemplo básico.</p>
+<section id="flujo-de-trabajo-nativo" class="level3">
+<h3 class="anchored" data-anchor-id="flujo-de-trabajo-nativo">Flujo de trabajo nativo</h3>
 <div class="lab-flow">
 <div class="lab-step">
 <p><strong>Compila</strong> <code>gcc</code>, <code>as</code>, <code>ld</code></p>
@@ -1397,6 +1441,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Depura</strong> <code>gdb</code></p>
 </div>
 </div>
+<p>Ventajas de la ruta nativa:</p>
+<ul>
+<li>El binario corre a velocidad real del procesador.</li>
+<li><code>gdb</code> funciona directamente sin configuración extra.</li>
+<li><code>strace</code> muestra las syscalls ARM64 reales.</li>
+<li>No necesitas toolchain cruzado.</li>
+</ul>
+</section>
 </section>
 <section id="host-x86_64-con-qemu-user-mode" class="level2">
 <h2 class="anchored" data-anchor-id="host-x86_64-con-qemu-user-mode">Host x86_64 con QEMU user mode</h2>
@@ -1405,6 +1457,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Señal común:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">x86_64</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En esta ruta compilas un binario AArch64 con toolchain cruzado y lo ejecutas con <code>qemu-aarch64</code>. QEMU user mode ejecuta un programa ARM64 individual, no una máquina completa.</p>
+<section id="flujo-de-trabajo-con-qemu" class="level3">
+<h3 class="anchored" data-anchor-id="flujo-de-trabajo-con-qemu">Flujo de trabajo con QEMU</h3>
 <div class="lab-flow">
 <div class="lab-step">
 <p><strong>Compila</strong> <code>aarch64-linux-gnu-gcc</code></p>
@@ -1416,6 +1470,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Depura</strong> <code>qemu-aarch64 -g 1234</code> + <code>gdb-multiarch</code></p>
 </div>
 </div>
+</section>
+<section id="qué-hace-qemu-user-mode" class="level3">
+<h3 class="anchored" data-anchor-id="qué-hace-qemu-user-mode">¿Qué hace QEMU user mode?</h3>
+<p>QEMU user mode traduce las instrucciones ARM64 a instrucciones x86_64 en tiempo de ejecución. Tu programa ARM64 cree que corre en un procesador ARM64, pero QEMU traduce cada instrucción al vuelo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Tu</span> programa ARM64</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">QEMU</span> user mode <span class="er">(</span><span class="ex">traduce</span> instrucciones<span class="kw">)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">v</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Kernel</span> Linux x86_64 <span class="er">(</span><span class="ex">recibe</span> syscalls traducidas<span class="kw">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El kernel Linux x86_64 recibe las syscalls del programa ARM64 traducidas por QEMU. Para el kernel, es un proceso x86_64 normal.</p>
 <div class="callout callout-style-simple callout-warning callout-titled" title="No ejecutes directo en x86_64">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1430,16 +1496,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+</section>
 <section id="qemu-system-mode" class="level2">
 <h2 class="anchored" data-anchor-id="qemu-system-mode">QEMU system mode</h2>
 <p>QEMU system mode emula una máquina completa: CPU, memoria, dispositivos y arranque del sistema. Sirve para kernel, bare metal o sistemas completos.</p>
 <p>En esta unidad solo aparece como mapa mental:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Modo</th>
 <th>Qué emula</th>
 <th>Uso en esta unidad</th>
+<th>Velocidad</th>
 </tr>
 </thead>
 <tbody>
@@ -1447,11 +1521,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>QEMU user mode</td>
 <td>Un proceso AArch64</td>
 <td>Ruta principal en x86_64</td>
+<td>Rápida</td>
 </tr>
 <tr class="even">
 <td>QEMU system mode</td>
 <td>Una máquina ARM completa</td>
 <td>Solo mención</td>
+<td>Más lenta</td>
 </tr>
 </tbody>
 </table>
@@ -1468,11 +1544,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Si solo quieres correr <code>build/main</code>, usa QEMU user mode. Si necesitas arrancar un kernel o firmware, eso ya es QEMU system mode y queda para más adelante.</p>
 </div>
 </div>
+<section id="diferencia-visual" class="level3">
+<h3 class="anchored" data-anchor-id="diferencia-visual">Diferencia visual</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># QEMU user mode: ejecuta un binario</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> ./build/main</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># QEMU system mode: arranca una máquina completa</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-system-aarch64</span> <span class="at">-M</span> virt <span class="at">-kernel</span> kernel.img <span class="at">-drive</span> file=sdcard.img</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>User mode es para programas individuales. System mode es para sistemas completos.</p>
+</section>
 </section>
 <section id="docker-opcional" class="level2">
 <h2 class="anchored" data-anchor-id="docker-opcional">Docker opcional</h2>
 <p>Docker puede dar un entorno repetible en laboratorios compartidos. No reemplaza el aprendizaje del flujo: dentro del contenedor seguirás usando <code>make</code>, toolchain AArch64, QEMU y GDB.</p>
-<p>Docker no será requisito principal porque agrega otra capa antes de entender el programa. Úsalo si no puedes instalar paquetes en tu sistema.</p>
+<p>Docker no será requisito principal porque agrega otra capa antes de entender el programa. Úsalo si:</p>
+<ul>
+<li>No puedes instalar paquetes en tu sistema.</li>
+<li>Quieres un entorno idéntico al de tus compañeros.</li>
+<li>Tu sistema operativo no es Debian/Ubuntu.</li>
+<li>Estás en un laboratorio compartido.</li>
+</ul>
 </section>
 <section id="decisión-final" class="level2">
 <h2 class="anchored" data-anchor-id="decisión-final">Decisión final</h2>
@@ -1502,7 +1593,85 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
+</section>
+<section id="verificación-rápida" class="level2">
+<h2 class="anchored" data-anchor-id="verificación-rápida">Verificación rápida</h2>
+<p>Independientemente de tu ruta, deberías poder hacer esto:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Saber tu arquitectura</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-m</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Verificar que puedes compilar (nativo)</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">--version</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># o verificar cross-compilation (x86_64)</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-gcc</span> <span class="at">--version</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Verificar que puedes ejecutar (x86_64)</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">qemu-aarch64</span> <span class="at">--version</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si alguno de estos comandos falla, ve a <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html">Instalación toolchain</a> para resolverlo.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>creer que <code>x86_64</code> impide estudiar ARM64</td>
+<td>usa toolchain cruzado y QEMU user mode</td>
+</tr>
+<tr class="even">
+<td>instalar QEMU system mode para el primer programa</td>
+<td>aquí basta <code>qemu-aarch64</code></td>
+</tr>
+<tr class="odd">
+<td>ejecutar directo un binario ARM64 en host <code>x86_64</code></td>
+<td>usa <code>make run</code> o <code>qemu-aarch64</code></td>
+</tr>
+<tr class="even">
+<td>saltar a VS Code antes de validar terminal</td>
+<td>primero confirma toolchain en consola</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mini-ejercicios" class="level2">
+<h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<ol type="1">
+<li>Ejecuta <code>uname -m</code> y escribe si tu ruta es nativa o QEMU.</li>
+<li>Explica por qué un host <code>x86_64</code> necesita <code>qemu-aarch64</code>.</li>
+<li>Explica qué diferencia hay entre QEMU user mode y system mode.</li>
+<li>Di qué herramienta usarías para depurar en ARM64 nativo.</li>
+<li>Di qué dos piezas se conectan cuando depuras con QEMU y GDB.</li>
+</ol>
+</section>
+<section id="checklist" class="level2">
+<h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Sé si mi equipo es <code>aarch64</code>, <code>arm64</code> o <code>x86_64</code>.</label></li>
+<li><label><input type="checkbox">Puedo explicar por qué Linux es la base del curso.</label></li>
+<li><label><input type="checkbox">Puedo distinguir ruta nativa de ruta QEMU.</label></li>
+<li><label><input type="checkbox">Puedo explicar que QEMU user mode ejecuta un proceso, no una máquina completa.</label></li>
+<li><label><input type="checkbox">Sé qué página abrir si falta una herramienta.</label></li>
+</ul>
 <p>Siguiente: <a href="../../../courses/aarch64/laboratorio/02-instalacion-toolchain.html">Instalación toolchain</a>.</p>
+</section>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>QEMU, <em>User-mode documentation</em>: <code>qemu-aarch64</code>, <code>-g</code> para GDB server. <a href="https://www.qemu.org/docs/master/user/" class="uri">https://www.qemu.org/docs/master/user/</a></li>
+<li>QEMU, <em>System emulator documentation</em>: modo system mode vs user mode. <a href="https://www.qemu.org/docs/master/system/" class="uri">https://www.qemu.org/docs/master/system/</a></li>
+<li>Docker, <em>Get started</em>: contenedores para entornos reproducibles. <a href="https://docs.docker.com/get-started/" class="uri">https://docs.docker.com/get-started/</a></li>
+<li>Linux man-pages, <code>syscall(2)</code>: contrato de syscalls Linux. <a href="https://www.man7.org/linux/man-pages/man2/syscall.2.html" class="uri">https://www.man7.org/linux/man-pages/man2/syscall.2.html</a></li>
+</ul>
 
 
 </section>

@@ -1323,6 +1323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#registros-w0-a-w30" id="toc-registros-w0-a-w30" class="nav-link" data-scroll-target="#registros-w0-a-w30">Registros <code>W0</code> a <code>W30</code></a></li>
   <li><a href="#escribir-en-wn" id="toc-escribir-en-wn" class="nav-link" data-scroll-target="#escribir-en-wn">Escribir en <code>Wn</code></a></li>
   <li><a href="#usar-32-o-64-bits" id="toc-usar-32-o-64-bits" class="nav-link" data-scroll-target="#usar-32-o-64-bits">Usar 32 o 64 bits</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
   <li><a href="#roles-iniciales-antes-de-abi" id="toc-roles-iniciales-antes-de-abi" class="nav-link" data-scroll-target="#roles-iniciales-antes-de-abi">Roles iniciales antes de ABI</a></li>
   <li><a href="#qué-registros-puede-tocar-un-programa" id="toc-qué-registros-puede-tocar-un-programa" class="nav-link" data-scroll-target="#qué-registros-puede-tocar-un-programa">Qué registros puede tocar un programa</a></li>
   <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
@@ -1502,12 +1503,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>En Linux AArch64, las direcciones de userland se manejan como valores de 64 bits, por eso se guardan en registros <code>Xn</code>.</p>
 </section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>03_modelo_aarch64/01_registros_generales</code> deja el resultado final en <code>x0</code> para que lo veas como código de salida. Úsalo para comprobar dos ideas: <code>x0</code> puede transportar valores de 64 bits y escribir en <code>w0</code> limpia la parte alta del mismo registro.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=03_modelo_aarch64/01_registros_generales run</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Lectura sugerida:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Línea del ejemplo</th>
+<th>Qué debes observar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>escritura en <code>xN</code></td>
+<td>el registro completo queda definido</td>
+</tr>
+<tr class="even">
+<td>escritura en <code>wN</code></td>
+<td>los 32 bits altos de <code>xN</code> se limpian</td>
+</tr>
+<tr class="odd">
+<td><code>mov x8, #93</code></td>
+<td><code>x8</code> solo selecciona <code>exit</code> al final</td>
+</tr>
+</tbody>
+</table>
+<p>Si lo depuras, mira <code>x0</code> y <code>w0</code> juntos. No son dos lugares distintos; son dos vistas del mismo registro.</p>
+</section>
 <section id="roles-iniciales-antes-de-abi" class="level2">
 <h2 class="anchored" data-anchor-id="roles-iniciales-antes-de-abi">Roles iniciales antes de ABI</h2>
 <p>En syscalls Linux, <code>x0</code>-<code>x5</code> suelen llevar argumentos, <code>x8</code> lleva número de syscall y <code>x0</code> recibe retorno. En llamadas a funciones C, AAPCS64 dará otros roles específicos. No mezclaremos esas reglas todavía.</p>
 <p>Por ahora, piensa:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registro</span> = caja de bits</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">instrucción</span> + contexto = significado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">registro</span> = caja de bits</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">instrucción</span> + contexto = significado</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="qué-registros-puede-tocar-un-programa" class="level2">
 <h2 class="anchored" data-anchor-id="qué-registros-puede-tocar-un-programa">Qué registros puede tocar un programa</h2>

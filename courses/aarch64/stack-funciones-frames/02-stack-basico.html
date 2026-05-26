@@ -1328,6 +1328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#guardar-un-valor-local" id="toc-guardar-un-valor-local" class="nav-link" data-scroll-target="#guardar-un-valor-local">Guardar un valor local</a></li>
   <li><a href="#reservar-no-inicializa" id="toc-reservar-no-inicializa" class="nav-link" data-scroll-target="#reservar-no-inicializa">Reservar no inicializa</a></li>
   <li><a href="#diagnóstico-rápido-con-gdb" id="toc-diagnóstico-rápido-con-gdb" class="nav-link" data-scroll-target="#diagnóstico-rápido-con-gdb">Diagnóstico rápido con GDB</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1525,6 +1526,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 <p>No necesitas memorizar direcciones exactas. Necesitas reconocer si <code>sp</code> baja al reservar, sube al liberar y termina donde debía.</p>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>reservar con <code>sub sp</code> y no liberar</td>
+<td>usa <code>add sp</code> con el mismo tamaño</td>
+</tr>
+<tr class="even">
+<td>asumir que reservar limpia memoria</td>
+<td>stack reservado contiene bytes previos</td>
+</tr>
+<tr class="odd">
+<td>romper alineación de 16 bytes</td>
+<td>reserva múltiplos de 16 en funciones ABI</td>
+</tr>
+<tr class="even">
+<td>guardar más bytes de los reservados</td>
+<td>calcula offsets dentro del bloque</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>

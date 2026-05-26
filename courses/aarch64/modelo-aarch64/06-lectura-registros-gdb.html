@@ -1319,7 +1319,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
-  <li><a href="#preparación" id="toc-preparación" class="nav-link" data-scroll-target="#preparación">Preparación</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#lectura-del-ejemplo" id="toc-lectura-del-ejemplo" class="nav-link" data-scroll-target="#lectura-del-ejemplo">Lectura del ejemplo</a></li>
   <li><a href="#ver-registros-generales" id="toc-ver-registros-generales" class="nav-link" data-scroll-target="#ver-registros-generales">Ver registros generales</a></li>
   <li><a href="#ver-sp-y-pc" id="toc-ver-sp-y-pc" class="nav-link" data-scroll-target="#ver-sp-y-pc">Ver <code>sp</code> y <code>pc</code></a></li>
   <li><a href="#ver-fp-y-lr" id="toc-ver-fp-y-lr" class="nav-link" data-scroll-target="#ver-fp-y-lr">Ver <code>fp</code> y <code>lr</code></a></li>
@@ -1375,25 +1376,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Vas a mirar registros con GDB y hacer preguntas correctas. GDB muestra números; el trabajo del programador es interpretarlos según instrucción, tamaño y rol.</p>
 <p>Esta lección prepara debugging futuro sin entrar todavía en watchpoints, stack frames ni core dumps.</p>
 </section>
-<section id="preparación" class="level2">
-<h2 class="anchored" data-anchor-id="preparación">Preparación</h2>
-<p>Usa el ejemplo mínimo de la Unidad 01.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>Usa el ejemplo <code>03_modelo_aarch64/06_lectura_registros_gdb</code>. Está pensado para mirar registros sin distraerse con E/S, libc o estructuras de datos.</p>
+<p>Desde la raíz de ejemplos:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El binario queda en <code>03_modelo_aarch64/06_lectura_registros_gdb/src/build/main</code>. Ese es el archivo que abre GDB.</p>
 <p>Ruta x86_64 con QEMU:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En otra terminal:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gdb-multiarch</span> 03_modelo_aarch64/06_lectura_registros_gdb/src/build/main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Dentro de GDB:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> architecture aarch64</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">target</span> remote localhost:1234</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">_start</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">continue</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ruta Raspberry Pi ARM64:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gdb</span> build/main</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">_start</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.native EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gdb</span> 03_modelo_aarch64/06_lectura_registros_gdb/src/build/main</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">break</span> <span class="ex">_start</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">run</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="lectura-del-ejemplo" class="level2">
+<h2 class="anchored" data-anchor-id="lectura-del-ejemplo">Lectura del ejemplo</h2>
+<p>Antes de ejecutar cada <code>stepi</code>, predice qué registro debería cambiar. Después del paso, compara tu predicción con <code>info registers</code>. Esa rutina es más valiosa que avanzar instrucciones sin hipótesis.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Acción</th>
+<th>Pregunta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>break _start</code></td>
+<td>¿dónde inicia el código del ejemplo?</td>
+</tr>
+<tr class="even">
+<td><code>x/4i $pc</code></td>
+<td>¿qué instrucción se ejecutará ahora?</td>
+</tr>
+<tr class="odd">
+<td><code>info registers x0 x1 x2 x8</code></td>
+<td>¿qué valores visibles tiene el programa?</td>
+</tr>
+<tr class="even">
+<td><code>stepi</code></td>
+<td>¿qué cambió exactamente?</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="ver-registros-generales" class="level2">
 <h2 class="anchored" data-anchor-id="ver-registros-generales">Ver registros generales</h2>

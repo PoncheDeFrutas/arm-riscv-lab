@@ -1319,9 +1319,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
-  <li><a href="#proyecto-mínimo" id="toc-proyecto-mínimo" class="nav-link" data-scroll-target="#proyecto-mínimo">Proyecto mínimo</a></li>
-  <li><a href="#por-qué-separar-.vscode-y-src" id="toc-por-qué-separar-.vscode-y-src" class="nav-link" data-scroll-target="#por-qué-separar-.vscode-y-src">Por qué separar <code>.vscode/</code> y <code>src/</code></a></li>
-  <li><a href="#flujo-único" id="toc-flujo-único" class="nav-link" data-scroll-target="#flujo-único">Flujo único</a></li>
+  <li><a href="#workspace-de-ejemplos" id="toc-workspace-de-ejemplos" class="nav-link" data-scroll-target="#workspace-de-ejemplos">Workspace de ejemplos</a></li>
+  <li><a href="#por-qué-compartir-.vscode-y-makefiles" id="toc-por-qué-compartir-.vscode-y-makefiles" class="nav-link" data-scroll-target="#por-qué-compartir-.vscode-y-makefiles">Por qué compartir <code>.vscode/</code> y Makefiles</a></li>
+  <li><a href="#flujo-con-qemu" id="toc-flujo-con-qemu" class="nav-link" data-scroll-target="#flujo-con-qemu">Flujo con QEMU</a></li>
+  <li><a href="#flujo-en-arm64-nativo" id="toc-flujo-en-arm64-nativo" class="nav-link" data-scroll-target="#flujo-en-arm64-nativo">Flujo en ARM64 nativo</a></li>
   <li><a href="#templates-disponibles" id="toc-templates-disponibles" class="nav-link" data-scroll-target="#templates-disponibles">Templates disponibles</a></li>
   <li><a href="#cuándo-usar-examples-y-projects" id="toc-cuándo-usar-examples-y-projects" class="nav-link" data-scroll-target="#cuándo-usar-examples-y-projects">Cuándo usar <code>examples/</code> y <code>projects/</code></a></li>
   <li><a href="#qué-debe-tener-una-práctica-nueva" id="toc-qué-debe-tener-una-práctica-nueva" class="nav-link" data-scroll-target="#qué-debe-tener-una-práctica-nueva">Qué debe tener una práctica nueva</a></li>
@@ -1365,23 +1366,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Cursos &gt; AArch64 &gt; Laboratorio &gt; Estructura del repositorio</p>
 </div>
 <div class="hero-lab">
-<p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas. Cada ejemplo pequeño puede vivir como una carpeta simple con <code>.vscode/</code> y <code>src/</code>.</p>
+<p>La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas ni duplicar configuraciones. Los ejemplos AArch64 comparten <code>.vscode/</code> y Makefiles desde <code>examples/aarch64</code>; cada ejemplo solo agrega su README y <code>src/main.s</code>.</p>
 </div>
 <section id="qué-vas-a-aprender" class="level2">
 <h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
 <p>Esta lección explica cómo organizar prácticas y ejemplos. La estructura no es solo orden visual: reduce errores de ejecución, facilita depuración y permite que el mismo flujo funcione en QEMU o ARM64 nativo.</p>
 <p>El objetivo es que puedas crear una práctica nueva sin inventar rutas ni comandos cada vez.</p>
 </section>
-<section id="proyecto-mínimo" class="level2">
-<h2 class="anchored" data-anchor-id="proyecto-mínimo">Proyecto mínimo</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">00-hello-minimo/</span></span>
+<section id="workspace-de-ejemplos" class="level2">
+<h2 class="anchored" data-anchor-id="workspace-de-ejemplos">Workspace de ejemplos</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">examples/aarch64/</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> .vscode/</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">|</span><span class="ex">-</span> launch.json</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="kw">`</span><span class="ex">-</span> settings.json</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="at">-</span> src/</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">|</span><span class="ex">-</span> Makefile</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="ex">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>En <code>src/</code> solo necesitas dos archivos para empezar:</p>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.native</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> 05_primeros_programas/</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>   <span class="kw">`</span><span class="at">-</span> 01_programa_minimo_exit/</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      <span class="kw">|</span><span class="ex">-</span> README.md</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="kw">`</span><span class="ex">-</span> src/</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>         <span class="kw">`</span><span class="at">-</span> main.s</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En cada ejemplo, <code>src/</code> solo necesita un archivo para empezar:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1394,31 +1397,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><code>main.s</code></td>
 <td>Código assembly</td>
 </tr>
-<tr class="even">
-<td><code>Makefile</code></td>
-<td>Flujo activo: QEMU o ARM64 nativo</td>
-</tr>
 </tbody>
 </table>
 <p>El binario generado queda en <code>src/build/main</code> visto desde VS Code, y en <code>build/main</code> cuando ya estás dentro de <code>src/</code>.</p>
 </section>
-<section id="por-qué-separar-.vscode-y-src" class="level2">
-<h2 class="anchored" data-anchor-id="por-qué-separar-.vscode-y-src">Por qué separar <code>.vscode/</code> y <code>src/</code></h2>
-<p><code>.vscode/</code> guarda configuración de editor y debugging. <code>src/</code> guarda el programa y su flujo de construcción. Mantenerlos separados evita mezclar configuración de herramientas con código fuente.</p>
+<section id="por-qué-compartir-.vscode-y-makefiles" class="level2">
+<h2 class="anchored" data-anchor-id="por-qué-compartir-.vscode-y-makefiles">Por qué compartir <code>.vscode/</code> y Makefiles</h2>
+<p><code>.vscode/</code> guarda configuración de editor y debugging. Los Makefiles compartidos guardan el flujo de construcción para QEMU y ARM64 nativo. Compartirlos evita copiar archivos iguales en cada lección.</p>
 <p>Para un estudiante, la regla práctica es:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">abrir</span> carpeta del ejemplo en VS Code</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">trabajar</span> dentro de src/</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ejecutar</span> make desde src/</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">abrir</span> examples/aarch64 en VS Code</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">abrir</span> el src/main.s del ejemplo</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">presionar</span> F5 o ejecutar make desde examples/aarch64</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>VS Code usa <code>${fileDirname}</code>: si el archivo abierto es <code>05_primeros_programas/01_programa_minimo_exit/src/main.s</code>, entonces depura <code>05_primeros_programas/01_programa_minimo_exit/src/build/main</code>.</p>
 </section>
-<section id="flujo-único" class="level2">
-<h2 class="anchored" data-anchor-id="flujo-único">Flujo único</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 00-hello-minimo</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> src</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>QEMU y Raspberry Pi usan los mismos comandos. La diferencia está en el Makefile que copiaste como <code>src/Makefile</code>.</p>
+<section id="flujo-con-qemu" class="level2">
+<h2 class="anchored" data-anchor-id="flujo-con-qemu">Flujo con QEMU</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=05_primeros_programas/01_programa_minimo_exit run</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=05_primeros_programas/01_programa_minimo_exit gdb</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="flujo-en-arm64-nativo" class="level2">
+<h2 class="anchored" data-anchor-id="flujo-en-arm64-nativo">Flujo en ARM64 nativo</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.native EXAMPLE=05_primeros_programas/01_programa_minimo_exit run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Comando</th>
@@ -1427,32 +1433,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>make</code></td>
-<td>construir el binario</td>
+<td><code>make -f Makefile.qemu EXAMPLE=...</code></td>
+<td>construir con toolchain cruzada</td>
 </tr>
 <tr class="even">
-<td><code>make run</code></td>
-<td>ejecutar el binario</td>
+<td><code>make -f Makefile.qemu EXAMPLE=... run</code></td>
+<td>ejecutar con QEMU</td>
 </tr>
 <tr class="odd">
-<td><code>make gdb</code></td>
-<td>iniciar flujo de depuración</td>
+<td><code>make -f Makefile.qemu EXAMPLE=... gdb</code></td>
+<td>iniciar QEMU esperando GDB</td>
 </tr>
 <tr class="even">
-<td><code>make clean</code></td>
-<td>limpiar artefactos generados</td>
+<td><code>make -f Makefile.native EXAMPLE=... run</code></td>
+<td>ejecutar directo en ARM64</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="templates-disponibles" class="level2">
 <h2 class="anchored" data-anchor-id="templates-disponibles">Templates disponibles</h2>
-<p>Los templates viven en:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Los ejemplos AArch64 usan <code>examples/aarch64/Makefile.qemu</code> y <code>examples/aarch64/Makefile.native</code>. Los templates historicos viven en:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tooling/make/makefile-templates/</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.single</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.qemu.multi</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-</span> Makefile.arm64.single</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">`</span><span class="ex">-</span> Makefile.arm64.multi</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1479,7 +1485,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>Para copiar y entender cada uno, usa la guía <a href="../../../guides/setup/makefiles.html">Makefiles ARM64</a>.</p>
+<p>Para entender ambas rutas, usa la guía <a href="../../../guides/setup/makefiles.html">Makefiles ARM64</a>.</p>
 <div class="callout callout-style-simple callout-tip callout-titled" title="Regla docente">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1490,7 +1496,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>No uses banderas especiales de <code>make</code> en las prácticas iniciales. Cambia el contenido de <code>src/Makefile</code> y conserva los comandos.</p>
+<p>En ejemplos AArch64 pequeños, no copies Makefiles por lección. Usa los compartidos y pasa <code>EXAMPLE=&lt;unidad&gt;/&lt;ejemplo&gt;</code> o abre <code>src/main.s</code> en VS Code.</p>
 </div>
 </div>
 </section>
@@ -1509,7 +1515,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>examples/</code></td>
+<td><code>examples/aarch64</code></td>
 <td>programas pequeños que muestran una idea concreta</td>
 </tr>
 <tr class="even">
@@ -1530,13 +1536,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>carpeta clara con nombre numerado;</li>
 <li><code>src/main.s</code>;</li>
-<li><code>src/Makefile</code> copiado desde un template;</li>
+<li>README del ejemplo;</li>
 <li>salida esperada;</li>
-<li>instrucciones para <code>make</code>, <code>make run</code> y <code>make clean</code>;</li>
+<li>instrucciones para <code>Makefile.qemu</code> y <code>Makefile.native</code>;</li>
 <li>pasos de depuración si aplica;</li>
 <li>explicación breve del concepto que practica.</li>
 </ul>
-<p>Si la práctica necesita varios archivos <code>.s</code>, usa un template <code>multi</code>. Si solo tiene <code>main.s</code>, usa uno <code>single</code>.</p>
+<p>Si la práctica necesita varios archivos <code>.s</code>, colócalos en el mismo <code>src/</code>; el Makefile compartido los enlaza junto a <code>main.s</code>.</p>
 </section>
 <section id="carpetas-del-curso" class="level2">
 <h2 class="anchored" data-anchor-id="carpetas-del-curso">Carpetas del curso</h2>
@@ -1594,17 +1600,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>Ejecutar <code>make</code> desde carpeta equivocada</td>
 <td>Makefile no encontrado</td>
-<td>entra a <code>src/</code></td>
+<td>entra a <code>examples/aarch64</code></td>
 </tr>
 <tr class="even">
-<td>Copiar template ARM64 en host x86_64</td>
-<td>ejecución falla o no usa QEMU</td>
-<td>usa template <code>qemu</code></td>
+<td>Usar <code>Makefile.native</code> en host x86_64</td>
+<td>ejecución falla</td>
+<td>usa <code>Makefile.qemu</code></td>
 </tr>
 <tr class="odd">
-<td>Copiar template <code>single</code> para varios <code>.s</code></td>
-<td>faltan objetos en enlace</td>
-<td>usa template <code>multi</code></td>
+<td>Abrir otro archivo y presionar F5</td>
+<td>VS Code calcula otra carpeta</td>
+<td>abre el <code>src/main.s</code> del ejemplo</td>
 </tr>
 <tr class="even">
 <td>Guardar binarios fuera de <code>build/</code></td>
@@ -1617,17 +1623,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="checklist" class="level2">
 <h2 class="anchored" data-anchor-id="checklist">Checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Mi ejemplo tiene <code>.vscode/</code> y <code>src/</code>.</label></li>
-<li><label><input type="checkbox"><code>src/</code> solo necesita <code>Makefile</code> y <code>main.s</code> para empezar.</label></li>
-<li><label><input type="checkbox">Uso <code>make</code>, <code>make run</code> y <code>make gdb</code>.</label></li>
-<li><label><input type="checkbox">Si cambio de entorno, reemplazo <code>src/Makefile</code>.</label></li>
-<li><label><input type="checkbox">VS Code apunta a <code>src/build/main</code>.</label></li>
+<li><label><input type="checkbox">Mi ejemplo está bajo <code>examples/aarch64/&lt;unidad&gt;/&lt;ejemplo&gt;/</code>.</label></li>
+<li><label><input type="checkbox"><code>src/</code> tiene <code>main.s</code>.</label></li>
+<li><label><input type="checkbox">Uso <code>Makefile.qemu</code> o <code>Makefile.native</code> desde <code>examples/aarch64</code>.</label></li>
+<li><label><input type="checkbox">VS Code abre <code>examples/aarch64</code> y el archivo activo es <code>src/main.s</code>.</label></li>
+<li><label><input type="checkbox">VS Code apunta a <code>${fileDirname}/build/main</code>.</label></li>
 <li><label><input type="checkbox">Sé cuándo usar <code>examples/</code>, <code>projects/</code> y <code>tooling/</code>.</label></li>
 </ul>
 </section>
 <section id="cierre" class="level2">
 <h2 class="anchored" data-anchor-id="cierre">Cierre</h2>
-<p>Una estructura estable hace que el estudiante se concentre en el programa, no en adivinar comandos. En este repositorio, el Makefile define el entorno y la carpeta <code>src/</code> concentra el trabajo práctico.</p>
+<p>Una estructura estable hace que el estudiante se concentre en el programa, no en adivinar comandos ni copiar configuración. En este repositorio, los Makefiles compartidos definen el entorno y cada carpeta <code>src/</code> concentra el código del ejemplo.</p>
 </section>
 <section id="fuentes" class="level2 unlisted unnumbered">
 <h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>

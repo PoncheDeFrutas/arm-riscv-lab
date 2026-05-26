@@ -1318,14 +1318,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">En esta página</h2>
    
   <ul>
-  <li><a href="#archivo-completo" id="toc-archivo-completo" class="nav-link active" data-scroll-target="#archivo-completo">Archivo completo</a></li>
+  <li><a href="#qué-vas-a-aprender" id="toc-qué-vas-a-aprender" class="nav-link active" data-scroll-target="#qué-vas-a-aprender">Qué vas a aprender</a></li>
+  <li><a href="#antes-de-empezar" id="toc-antes-de-empezar" class="nav-link" data-scroll-target="#antes-de-empezar">Antes de empezar</a></li>
+  <li><a href="#idea-central" id="toc-idea-central" class="nav-link" data-scroll-target="#idea-central">Idea central</a></li>
+  <li><a href="#archivo-completo" id="toc-archivo-completo" class="nav-link" data-scroll-target="#archivo-completo">Archivo completo</a></li>
+  <li><a href="#cómo-leer-un-.s-de-arriba-a-abajo" id="toc-cómo-leer-un-.s-de-arriba-a-abajo" class="nav-link" data-scroll-target="#cómo-leer-un-.s-de-arriba-a-abajo">Cómo leer un .s de arriba a abajo</a></li>
   <li><a href="#clasificación-línea-por-línea" id="toc-clasificación-línea-por-línea" class="nav-link" data-scroll-target="#clasificación-línea-por-línea">Clasificación línea por línea</a></li>
+  <li><a href="#el-location-counter-." id="toc-el-location-counter-." class="nav-link" data-scroll-target="#el-location-counter-.">El location counter <code>.</code></a></li>
   <li><a href="#qué-ejecuta-el-cpu" id="toc-qué-ejecuta-el-cpu" class="nav-link" data-scroll-target="#qué-ejecuta-el-cpu">Qué ejecuta el CPU</a></li>
-  <li><a href="#ensamblar-e-inspeccionar" id="toc-ensamblar-e-inspeccionar" class="nav-link" data-scroll-target="#ensamblar-e-inspeccionar">Ensamblar e inspeccionar</a></li>
-  <li><a href="#error-común" id="toc-error-común" class="nav-link" data-scroll-target="#error-común">Error común</a></li>
+  <li><a href="#qué-genera-el-assembler" id="toc-qué-genera-el-assembler" class="nav-link" data-scroll-target="#qué-genera-el-assembler">Qué genera el assembler</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
-  <li><a href="#checklist-final" id="toc-checklist-final" class="nav-link" data-scroll-target="#checklist-final">Checklist final</a></li>
   <li><a href="#cierre-de-la-unidad" id="toc-cierre-de-la-unidad" class="nav-link" data-scroll-target="#cierre-de-la-unidad">Cierre de la unidad</a></li>
+  <li><a href="#checklist-final" id="toc-checklist-final" class="nav-link" data-scroll-target="#checklist-final">Checklist final</a></li>
   </ul>
 </nav>
     </div>
@@ -1364,6 +1369,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="hero-lab">
 <p>Aquí vas a leer un archivo <code>.s</code> como lo revisarías en el laboratorio: primero ubicas directivas, luego etiquetas, después datos y finalmente instrucciones. El objetivo es saber qué parte prepara el assembler y qué parte termina como código que ejecuta el procesador.</p>
 </div>
+<section id="qué-vas-a-aprender" class="level2">
+<h2 class="anchored" data-anchor-id="qué-vas-a-aprender">Qué vas a aprender</h2>
+<ul>
+<li>Leer un archivo <code>.s</code> completo y clasificar cada línea por su tipo.</li>
+<li>Entender qué procesa el assembler y qué ejecuta el CPU.</li>
+<li>Usar <code>.</code> (location counter) para calcular longitudes automáticamente.</li>
+<li>Verificar la clasificación con <code>objdump</code>.</li>
+</ul>
+</section>
+<section id="antes-de-empezar" class="level2">
+<h2 class="anchored" data-anchor-id="antes-de-empezar">Antes de empezar</h2>
+<p>Haber visto las lecciones anteriores de GNU Assembly: directivas, secciones, definición de datos y pseudo-instrucciones. Si alguna te suena nueva, revísala antes de continuar.</p>
+</section>
+<section id="idea-central" class="level2">
+<h2 class="anchored" data-anchor-id="idea-central">Idea central</h2>
+<p>Un archivo <code>.s</code> mezcla varios tipos de línea. El assembler las procesa todas pero cada tipo tiene un papel distinto: las directivas le dicen al assembler qué hacer, las etiquetas nombran direcciones, las instrucciones generan código máquina, y los datos generan bytes en el binario. El CPU solo ejecuta las instrucciones; el resto es trabajo de herramientas.</p>
+</section>
 <section id="archivo-completo" class="level2">
 <h2 class="anchored" data-anchor-id="archivo-completo">Archivo completo</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>.<span class="pp">equ</span> SYS_write<span class="op">,</span> <span class="dv">64</span></span>
@@ -1392,6 +1414,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola GNU Assembly\n"</span></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>mensaje_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Este programa escribe “Hola GNU Assembly” en stdout y termina con código 0. Es pequeño pero contiene todos los elementos que verás en programas más grandes.</p>
+</section>
+<section id="cómo-leer-un-.s-de-arriba-a-abajo" class="level2">
+<h2 class="anchored" data-anchor-id="cómo-leer-un-.s-de-arriba-a-abajo">Cómo leer un .s de arriba a abajo</h2>
+<p>Sigue este flujo mental:</p>
+<pre><code>1. Directivas de constantes (.equ)
+       ↓
+2. Visibilidad y metadatos (.global, .type)
+       ↓
+3. Sección de código (.text)
+       ↓
+4. Etiqueta de entrada (_start:)
+       ↓
+5. Instrucciones (mov, ldr, svc)
+       ↓
+6. Tamaño del bloque (.size)
+       ↓
+7. Sección de datos (.rodata)
+       ↓
+8. Datos y símbolos calculados (.ascii, =)</code></pre>
+<p>No necesitas memorizar el orden. Lo importante es reconocer qué tipo de línea estás mirando en cada momento.</p>
 </section>
 <section id="clasificación-línea-por-línea" class="level2">
 <h2 class="anchored" data-anchor-id="clasificación-línea-por-línea">Clasificación línea por línea</h2>
@@ -1478,67 +1521,105 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="el-location-counter-." class="level2">
+<h2 class="anchored" data-anchor-id="el-location-counter-.">El location counter <code>.</code></h2>
+<p>El punto <code>.</code> es un símbolo especial que el assembler mantiene mientras procesa el archivo. Representa la posición actual en la sección que se está ensamblando.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    .ascii <span class="st">"Hola GNU Assembly\n"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>mensaje_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cuando el assembler llega a <code>mensaje_len = . - mensaje</code>:</p>
+<ul>
+<li><code>.</code> apunta a la posición justo después del último byte de <code>.ascii</code>.</li>
+<li><code>mensaje</code> apunta a la posición donde empezó el string.</li>
+<li><code>. - mensaje</code> = distancia entre ambas posiciones = longitud del string.</li>
+</ul>
+<p>Esto significa que si cambias el texto, <code>mensaje_len</code> se recalcula automáticamente:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="st">"Hola GNU Assembly\n"</span>  →  18 bytes</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">"Hola\n"</span>               →  5 bytes</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>No necesitas contar caracteres a mano. El assembler lo hace por ti.</p>
+</section>
 <section id="qué-ejecuta-el-cpu" class="level2">
 <h2 class="anchored" data-anchor-id="qué-ejecuta-el-cpu">Qué ejecuta el CPU</h2>
 <p>El CPU ejecuta instrucciones como:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>STDOUT</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_write</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x0<span class="op">,</span> <span class="op">#</span>STDOUT</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">mov</span> x8<span class="op">,</span> <span class="op">#</span>SYS_write</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>svc <span class="op">#</span><span class="dv">0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <p>No ejecuta:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>mensaje_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Esas líneas sirven para construir el binario.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode asm code-with-copy"><code class="sourceCode fasm"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>.global _start</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>.<span class="bu">section</span> <span class="op">.</span>rodata</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mensaje:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>mensaje_len <span class="op">=</span> <span class="op">.</span> <span class="op">-</span> mensaje</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esas líneas sirven para construir el binario. El assembler las procesa y las convierte en metadatos, posiciones de memoria o bytes en secciones del archivo ELF.</p>
 </section>
-<section id="ensamblar-e-inspeccionar" class="level2">
-<h2 class="anchored" data-anchor-id="ensamblar-e-inspeccionar">Ensamblar e inspeccionar</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> main.s <span class="at">-o</span> main.o</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-ld</span> main.o <span class="at">-o</span> main</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-d</span> main</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-s</span> <span class="at">-j</span> .rodata main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Busca dos cosas: instrucciones en <code>.text</code> y bytes del mensaje en <code>.rodata</code>.</p>
+<section id="qué-genera-el-assembler" class="level2">
+<h2 class="anchored" data-anchor-id="qué-genera-el-assembler">Qué genera el assembler</h2>
+<p>Al ensamblar e inspeccionar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-as</span> main.s <span class="at">-o</span> main.o</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-ld</span> main.o <span class="at">-o</span> main</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-d</span> main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada de <code>objdump -d</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0000000000400080</span> <span class="op">&lt;</span>_start<span class="op">&gt;</span>:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400080:</span>   d2800020    mov x0, <span class="co">#1</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400084:</span>   580000a1    ldr x1, 400098 <span class="op">&lt;</span>_start+0x18<span class="op">&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400088:</span>   d2800242    mov x2, <span class="co">#18</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">40008c:</span>   d2800808    mov x8, <span class="co">#64</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400090:</span>   d4000001    svc <span class="co">#0x0</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400094:</span>   d2800000    mov x0, <span class="co">#0</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">400098:</span>   d2800ba8    mov x8, <span class="co">#93</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">40009c:</span>   d4000001    svc <span class="co">#0x0</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Nota que <code>ldr x1, =mensaje</code> se convirtió en una instrucción <code>ldr</code> real que carga desde una dirección cercana (<code>400098</code>). El assembler colocó la dirección de <code>mensaje</code> en un literal pool.</p>
+<p>Para ver los bytes del mensaje:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aarch64-linux-gnu-objdump</span> <span class="at">-s</span> <span class="at">-j</span> .rodata main</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salida esperada:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Contents</span> of section .rodata:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a> <span class="ex">4000a0</span> 486f6c61 20474e55 20417373 656d626c  Hola GNU Assembl</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a> <span class="ex">4000b0</span> 790a                                   y.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Los bytes <code>48 6f 6c 61 ...</code> son ASCII. El último byte <code>0a</code> es <code>\n</code> (nueva línea).</p>
 </section>
-<section id="error-común" class="level2">
-<h2 class="anchored" data-anchor-id="error-común">Error común</h2>
-<div class="callout callout-style-simple callout-warning callout-titled" title="No confundas dirección con contenido">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Advertencia</span>No confundas dirección con contenido
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>ldr x1, =mensaje</code> prepara una dirección o valor asociado al símbolo. No debes leerlo automáticamente como “cargar los bytes del mensaje”.</p>
-</div>
-</div>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<ul>
+<li><strong>Confundir dirección con contenido</strong>: <code>ldr x1, =mensaje</code> prepara una dirección o valor asociado al símbolo. No debes leerlo automáticamente como “cargar los bytes del mensaje”. Para cargar bytes usarías <code>ldr x1, [direccion]</code>.</li>
+<li><strong>Pensar que <code>.equ</code> genera código</strong>: <code>.equ</code> solo crea un nombre simbólico. No genera ninguna instrucción ni byte en el binario.</li>
+<li><strong>Olvidar que <code>.size</code> es metadato</strong>: <code>.size</code> no afecta la ejecución. Solo ayuda a herramientas como GDB y <code>readelf</code> a mostrar información del símbolo.</li>
+<li><strong>Confundir <code>mensaje:</code> con <code>mensaje</code></strong>: <code>mensaje:</code> (con dos puntos) es una etiqueta que marca una dirección. <code>mensaje</code> (sin dos puntos) es un símbolo que se refiere a esa dirección.</li>
+<li><strong>Asumir que <code>.ascii</code> agrega null terminator</strong>: <code>.ascii</code> coloca los bytes exactos. Si necesitas null terminator, usa <code>.asciz</code> o agrega <code>.byte 0</code>.</li>
+</ul>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
+<p>Practica con el archivo completo.</p>
 <ol type="1">
-<li>Marca todas las directivas del archivo.</li>
-<li>Marca todas las etiquetas.</li>
-<li>Marca todas las instrucciones A64 reales.</li>
-<li>Explica por qué <code>mensaje_len</code> no ocupa memoria como string.</li>
-<li>Explica qué bytes coloca <code>.ascii "Hola GNU Assembly\n"</code>.</li>
+<li>¿Cuántas directivas tiene el archivo? ¿Cuántas instrucciones A64 reales?</li>
+<li>¿Qué valor numérico tiene <code>mensaje_len</code>? ¿Cómo lo calcula el assembler?</li>
+<li>Si cambias <code>.ascii "Hola GNU Assembly\n"</code> por <code>.ascii "Hi\n"</code>, ¿qué cambia en <code>mensaje_len</code>? ¿Qué cambia en las instrucciones?</li>
+<li>¿Por qué <code>ldr x1, =mensaje</code> es pseudo-instrucción y no instrucción real?</li>
+<li>Escribe la clasificación (directiva, etiqueta, instrucción, dato) de cada línea del archivo sin mirar la tabla.</li>
+<li>Ensambla el archivo y verifica con <code>objdump -d</code> que las instrucciones coinciden con lo que esperabas.</li>
 </ol>
+</section>
+<section id="cierre-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="cierre-de-la-unidad">Cierre de la unidad</h2>
+<p>Si puedes leer un <code>.s</code> y decir qué procesa el assembler, qué nombra una dirección, qué declara bytes y qué ejecuta el CPU, ya estás listo para escribir programas AArch64 más grandes sin confundir sintaxis con arquitectura. La práctica más útil es ensamblar y verificar con <code>objdump</code>: así confirmas que lo que escribiste es lo que el assembler entendió.</p>
 </section>
 <section id="checklist-final" class="level2">
 <h2 class="anchored" data-anchor-id="checklist-final">Checklist final</h2>
 <ul class="task-list">
-<li><label><input type="checkbox">Puedo clasificar cada línea de un <code>.s</code>.</label></li>
-<li><label><input type="checkbox">Puedo distinguir directivas de instrucciones reales.</label></li>
-<li><label><input type="checkbox">Puedo reconocer datos declarados.</label></li>
-<li><label><input type="checkbox">Puedo reconocer pseudo-instrucciones.</label></li>
-<li><label><input type="checkbox">Puedo explicar símbolos calculados con <code>.</code>.</label></li>
-<li><label><input type="checkbox">Puedo usar <code>objdump</code> para revisar código y datos.</label></li>
+<li><label><input type="checkbox">Clasifico cada línea de un <code>.s</code> como directiva, etiqueta, instrucción o dato.</label></li>
+<li><label><input type="checkbox">Explico qué hace <code>.</code> (location counter) y cómo se usa para calcular longitudes.</label></li>
+<li><label><input type="checkbox">Verifico con <code>objdump -d</code> que las instrucciones generadas son las esperadas.</label></li>
+<li><label><input type="checkbox">Distingo <code>ldr x0, =symbol</code> (dirección) de <code>ldr x0, [symbol]</code> (contenido).</label></li>
 </ul>
+<p>Siguiente: <a href="../../../courses/aarch64/memoria-direccionamiento/01-memoria-direccion-contenido.html">Memoria, dirección y contenido</a>.</p>
 </section>
-<section id="cierre-de-la-unidad" class="level2">
-<h2 class="anchored" data-anchor-id="cierre-de-la-unidad">Cierre de la unidad</h2>
-<p>Si puedes leer un <code>.s</code> y decir qué procesa el assembler, qué nombra una dirección, qué declara bytes y qué ejecuta el CPU, ya estás listo para escribir programas AArch64 más grandes sin confundir sintaxis con arquitectura.</p>
+<section id="fuentes" class="level2 unlisted unnumbered">
+<h2 class="unlisted unnumbered anchored" data-anchor-id="fuentes">Fuentes</h2>
+<ul>
+<li>GNU Binutils, <em>GNU Assembler Manual</em>: lectura de archivo completo, clasificación de directivas e instrucciones, location counter <code>.</code>. <a href="https://sourceware.org/binutils/docs/as/" class="uri">https://sourceware.org/binutils/docs/as/</a></li>
+<li>GNU Binutils, <em>GNU Objdump Manual</em>: opciones <code>-d</code>, <code>-s</code>, <code>-j</code> para inspección de código y datos. <a href="https://sourceware.org/binutils/docs/binutils/" class="uri">https://sourceware.org/binutils/docs/binutils/</a></li>
+<li>Arm, <em>A64 Instruction Set Architecture Guide</em>: formato de instrucciones A64. <a href="https://developer.arm.com/documentation/102374/latest" class="uri">https://developer.arm.com/documentation/102374/latest</a></li>
+</ul>
 
 
 </section>

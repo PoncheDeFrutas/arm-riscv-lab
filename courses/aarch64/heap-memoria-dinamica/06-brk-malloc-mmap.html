@@ -1328,6 +1328,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#por-qué-mmap-viene-después" id="toc-por-qué-mmap-viene-después" class="nav-link" data-scroll-target="#por-qué-mmap-viene-después">Por qué <code>mmap</code> viene después</a></li>
   <li><a href="#qué-mirar-con-herramientas" id="toc-qué-mirar-con-herramientas" class="nav-link" data-scroll-target="#qué-mirar-con-herramientas">Qué mirar con herramientas</a></li>
   <li><a href="#qué-debe-quedar-claro" id="toc-qué-debe-quedar-claro" class="nav-link" data-scroll-target="#qué-debe-quedar-claro">Qué debe quedar claro</a></li>
+  <li><a href="#ejemplo-de-la-unidad" id="toc-ejemplo-de-la-unidad" class="nav-link" data-scroll-target="#ejemplo-de-la-unidad">Ejemplo de la unidad</a></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes">Errores comunes</a></li>
   <li><a href="#mini-ejercicios" id="toc-mini-ejercicios" class="nav-link" data-scroll-target="#mini-ejercicios">Mini ejercicios</a></li>
   <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre">Cierre</a></li>
   </ul>
@@ -1655,6 +1657,76 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>El CPU ejecuta instrucciones. El kernel entrega servicios. La biblioteca puede construir una abstracción como <code>malloc</code> encima de esos servicios.</p>
 </div>
 </div>
+</section>
+<section id="ejemplo-de-la-unidad" class="level2">
+<h2 class="anchored" data-anchor-id="ejemplo-de-la-unidad">Ejemplo de la unidad</h2>
+<p>El ejemplo <code>12_heap_memoria_dinamica/06_brk_malloc_mmap</code> sirve para comparar vocabulario, no para construir un allocator. La práctica es identificar qué capa participa en cada caso.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> examples/aarch64</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-f</span> Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/06_brk_malloc_mmap run</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Guía de lectura:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Si ves…</th>
+<th>Interpreta…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>brk</code></td>
+<td>syscall histórica relacionada con límite del heap</td>
+</tr>
+<tr class="even">
+<td><code>malloc</code></td>
+<td>función de biblioteca, requiere ABI/libc</td>
+</tr>
+<tr class="odd">
+<td><code>mmap</code></td>
+<td>syscall que pide región al kernel</td>
+</tr>
+<tr class="even">
+<td><code>x0</code></td>
+<td>retorno, pero su contrato depende de si llamaste syscall o función</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errores-comunes" class="level2">
+<h2 class="anchored" data-anchor-id="errores-comunes">Errores comunes</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Error</th>
+<th>Corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>pensar que <code>malloc</code> es instrucción</td>
+<td>es función de biblioteca</td>
+</tr>
+<tr class="even">
+<td>tratar <code>free</code> como simple <code>mov ptr, #0</code></td>
+<td>borrar registro no libera memoria</td>
+</tr>
+<tr class="odd">
+<td>mezclar contrato de syscall con contrato de libc</td>
+<td>revisa si entraste por <code>svc #0</code> o por <code>bl</code></td>
+</tr>
+<tr class="even">
+<td>intentar implementar allocator completo aquí</td>
+<td>primero estudiar <code>mmap</code>, páginas y permisos</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="mini-ejercicios" class="level2">
 <h2 class="anchored" data-anchor-id="mini-ejercicios">Mini ejercicios</h2>
