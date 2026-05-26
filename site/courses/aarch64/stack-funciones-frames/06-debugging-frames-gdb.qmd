@@ -191,6 +191,15 @@ Backtrace no es ejecución paso a paso. Es una reconstrucción de la cadena de
 llamadas activa cuando el programa está detenido.
 :::
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| confiar en `bt` sin mirar registros | revisa `sp`, `x29`, `x30` también |
+| interpretar stack como variables tipadas automáticamente | GDB muestra bytes/palabras; tú das contexto |
+| pisar `[sp, #8]` en frame mínimo | ese offset puede guardar `x30` |
+| depurar retorno roto mirando solo `ret` | busca daño anterior en prólogo, locales o epílogo |
+
 ## Mini ejercicios
 
 1. ¿Qué registro muestra el tope del stack?

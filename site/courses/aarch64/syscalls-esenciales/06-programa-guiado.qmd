@@ -190,6 +190,15 @@ Si el programa no crea el archivo:
 6. revisa que `write` use `x0 = x19`;
 7. revisa que el bloque de error escriba a fd `2`.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| no guardar fd después de `openat` | `x0` será sobrescrito por otras syscalls |
+| saltar a error sin cerrar recurso vivo | diferencia error antes/después de tener fd |
+| usar longitud fija incorrecta | calcula o actualiza `len` al cambiar mensaje |
+| escribir error en stdout | para diagnóstico usa fd `2` |
+
 ## Mini ejercicios
 
 1. Cambia el nombre del archivo.

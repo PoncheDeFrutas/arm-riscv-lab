@@ -190,6 +190,25 @@ mostrar direcciones y bytes, pero no puede decidir por ti quién era dueño.
 | acceso después de una etiqueta `free`/`munmap` | use-after-free |
 | `mov ptr, #0` sin liberación real antes | leak disfrazado |
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/05_errores_memoria run
+```
+
+Usa el ejemplo para nombrar fallos, no para explotarlos: leak, use-after-free y
+double free son errores de vida útil y ownership.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| buscar solo “dónde falla” | también pregunta cuándo dejó de vivir el bloque |
+| creer que GDB marca ownership | GDB muestra direcciones; ownership lo define el diseño |
+| limpiar dos rutas con el mismo recurso vivo | marca estado o estructura cleanup única |
+| invalidar una copia y olvidar otras | varias copias pueden seguir apuntando al bloque |
+
 ## Mini ejercicios
 
 1. ¿Qué error aparece si pierdes el último puntero?

@@ -220,6 +220,15 @@ Si quieres interfaz gráfica, usa:
 - [Depuración con QEMU](../../../guides/debugging/qemu-vscode.qmd)
 - [Depuración nativa ARM](../../../guides/debugging/native-vscode.qmd)
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar `run` dentro de GDB remoto | conecta con `target remote` y continúa |
+| cerrar GDB y dejar QEMU esperando | cierra o interrumpe la terminal de QEMU |
+| avanzar por líneas fuente esperando precisión perfecta | usa `stepi` para instrucciones |
+| poner breakpoint en símbolo no visible | revisa etiqueta/exportación y binario correcto |
+
 ## Checklist
 
 - [ ] Puedo iniciar GDB según mi ruta.

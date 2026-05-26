@@ -196,6 +196,25 @@ mov x19, #0         // referencia perdida
 En `.bss` todavía existe el símbolo `buffer`, pero en heap real perder el último
 puntero al bloque puede impedir liberarlo.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/02_bloques_ownership run
+```
+
+Lee el ejemplo buscando tres datos: puntero base, capacidad y bytes usados. El
+puntero no basta para entender ownership.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| confundir tener puntero con ser dueño | define si es préstamo o transferencia |
+| liberar desde una función que solo recibió préstamo | solo libera el dueño actual |
+| perder puntero principal | guarda ownership en un lugar claro |
+| guardar capacidad pero no usados | capacidad no dice cuántos bytes son válidos |
+
 ## Mini ejercicios
 
 1. ¿Qué guarda `x19` en el ejemplo?

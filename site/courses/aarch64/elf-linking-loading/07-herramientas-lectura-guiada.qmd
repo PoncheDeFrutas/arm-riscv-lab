@@ -166,7 +166,28 @@ $ qemu-aarch64 -L /usr/aarch64-linux-gnu ./hello_dyn
 Primero pregunta si el binario fue `strip`, si es PIE, si estás en host cruzado
 o si estás mezclando vista de archivo con vista de proceso.
 
-## Preguntas de cierre
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/07_herramientas_lectura_guiada readelf-header
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/07_herramientas_lectura_guiada objdump
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/07_herramientas_lectura_guiada nm
+```
+
+Usa una pregunta por herramienta. Si no sabes qué pregunta responde una salida,
+detente antes de sacar conclusiones.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar una sola herramienta para concluir todo | cruza `readelf`, `objdump`, `nm` y ejecución |
+| interpretar `ldd` fallido como binario corrupto | en host cruzado usa `readelf -d` |
+| creer que `strip` borra el programa | quita símbolos, no instrucciones ejecutables |
+| comparar GDB y `objdump` sin considerar PIE | distingue dirección de archivo y dirección cargada |
+
+## Mini ejercicios
 
 Antes de decir “ya inspeccioné el binario”, responde:
 

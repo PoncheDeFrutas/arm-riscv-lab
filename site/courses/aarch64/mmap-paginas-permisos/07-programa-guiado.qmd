@@ -272,6 +272,25 @@ nunca existió y evita perder una región que sí fue creada.
 | no usa `PROT_EXEC` | no estamos construyendo código ejecutable |
 | no implementa allocator | Unidad 12 explicó por qué queda fuera |
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/07_programa_guiado run
+```
+
+Usa este ejemplo como repaso completo: pedir región, escribir, cambiar permisos,
+liberar y separar rutas de error.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| escribir después de dejar región solo lectura | predice fallo por permisos |
+| saltar a `error_sin_region` con región viva | usa `cleanup` si `mmap` ya funcionó |
+| liberar dirección modificada | `munmap` necesita base y longitud correctas |
+| confundir `x0` retorno con base estable | guarda base antes de otra syscall |
+
 ## Mini ejercicios
 
 1. Cambia `PROT_READ` final por `PROT_READ | PROT_WRITE` y explica la diferencia.

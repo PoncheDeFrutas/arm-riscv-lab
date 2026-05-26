@@ -183,6 +183,25 @@ Antes de usar `ubfx`, `sbfx`, `bfi` o `bfxil`, define:
 Si no sabes posición y ancho, todavía no tienes un campo de bits; solo tienes un
 registro con muchos bits.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/07_bitfields run
+```
+
+Observa que posiciones como `#8` y anchos como `#4` son coordenadas dentro del
+registro. No son bytes ni offsets de memoria.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| leer `#8` como bytes | en `ubfx`, `#8` es posición de bit |
+| usar `ubfx` para campo signed | usa `sbfx` si el campo tiene signo |
+| creer que `rev` toca memoria | `rev` reordena bytes dentro de un registro |
+| insertar sin limpiar destino mentalmente | define qué bits conserva y qué bits reemplaza |
+
 ## Mini ejercicios
 
 1. Lee:

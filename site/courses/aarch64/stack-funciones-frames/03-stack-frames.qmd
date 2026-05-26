@@ -203,6 +203,15 @@ Reservar espacio y olvidar liberarlo cambia dónde `ldp` busca `x29` y `x30`.
 Eso puede destruir el retorno.
 :::
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| restaurar `x29/x30` desde offset incorrecto | libera locales antes del `ldp` final |
+| guardar variable local sobre retorno | calcula layout del frame antes de escribir |
+| creer que `x29` es obligatorio en todo código | aquí se usa para aprender y depurar frames |
+| cambiar prólogo sin ajustar epílogo | ambos deben ser simétricos |
+
 ## Mini ejercicios {#sec-stack-frame-ejercicios}
 
 1. ¿Qué dos registros guarda el prólogo mínimo?

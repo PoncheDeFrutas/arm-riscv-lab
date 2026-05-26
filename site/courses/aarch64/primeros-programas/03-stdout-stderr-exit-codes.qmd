@@ -143,6 +143,26 @@ programa elige ese código.
 Los códigos de salida son importantes porque otros programas pueden leerlos. Un
 script, `make` o un sistema de CI decide qué hacer según ese resultado.
 
+## Ejemplo de la unidad
+
+El ejemplo `05_primeros_programas/03_stdout_stderr_exit_codes` muestra los tres
+conceptos juntos: salida normal, salida de error y código final del proceso.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=05_primeros_programas/03_stdout_stderr_exit_codes run
+echo $?
+```
+
+Qué observar:
+
+| Elemento | Cómo comprobarlo |
+|---|---|
+| stdout | redirige con `>` |
+| stderr | redirige con `2>` |
+| exit code | ejecuta `echo $?` inmediatamente después |
+| `x0` | interpreta según `x8`: fd para `write`, código para `exit` |
+
 ## Errores comunes
 
 | Error | Por qué confunde |

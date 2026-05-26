@@ -178,6 +178,15 @@ funcion_a:
 El `add` usa el `x0` que dejó `funcion_b`, no necesariamente el original. Si el
 valor anterior importaba, debió guardarse antes del `bl`.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| olvidar que cada `bl` sobrescribe `x30` | guarda `LR` en funciones no hoja |
+| asumir que `x0` sobrevive a una llamada | guarda temporales que necesitarás después |
+| mezclar caller-saved y callee-saved sin regla | si dudas, consulta ABI o guarda explícitamente |
+| retornar sin restaurar frame | epílogo debe deshacer prólogo |
+
 ## Mini ejercicios
 
 1. ¿Qué diferencia una función hoja de una no hoja?

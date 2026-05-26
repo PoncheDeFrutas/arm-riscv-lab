@@ -172,6 +172,25 @@ Antes de elegir región, pregunta:
 La decisión no es “stack rápido, heap lento”. La decisión correcta empieza por
 vida útil y ownership.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/01_stack_vs_heap run
+```
+
+Observa qué datos viven por llamada y qué datos necesitan vida más larga. No
+elijas región por costumbre; elige por duración y dueño.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| elegir heap solo porque “es más grande” | decide por vida útil y tamaño dinámico |
+| devolver dirección de stack | el frame deja de existir al retornar |
+| usar `.bss` para dato por llamada | `.bss` vive todo el proceso |
+| creer que heap se limpia solo | necesita ownership y cleanup |
+
 ## Mini ejercicios
 
 1. ¿Qué región usarías para un mensaje constante?

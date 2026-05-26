@@ -161,12 +161,24 @@ assembler antes de generar el objeto.
 | `mov x8, #SYS_exit` | Instrucción A64 con símbolo resuelto por assembler |
 | `svc #0` | Instrucción A64 |
 
-## Error común
+## Ejemplo de la unidad
 
-::: {.callout-warning title="Directiva no se ejecuta"}
-`.global`, `.type`, `.size` y `.equ` no son instrucciones que el CPU ejecuta. El
-assembler las usa antes de crear el objeto.
-:::
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=04_gnu_assembly/03_directivas_basicas run
+```
+
+Observa qué líneas empiezan con punto y cuáles son instrucciones reales. Las
+directivas preparan el objeto; la CPU solo ejecuta instrucciones A64.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| creer que `.global` se ejecuta | es información para assembler/linker |
+| usar `.size` en ejemplos que no enseñan funciones | reservarlo para páginas donde aporta a herramientas/ABI |
+| escribir números mágicos sin nombre | usar `.equ` para syscalls, flags y tamaños |
+| confundir `.balign` con una instrucción | alinea datos/código al ensamblar |
 
 ## Mini ejercicios
 

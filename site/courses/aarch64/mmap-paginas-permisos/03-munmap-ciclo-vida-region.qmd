@@ -202,6 +202,25 @@ Un fallo de `munmap` suele indicar que el rango no era válido: dirección
 incorrecta, longitud incoherente o región ya no existente. La solución no es
 ignorar el retorno; es revisar qué rango estás entregando al kernel.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/03_munmap_ciclo_vida run
+```
+
+Lee el ejemplo como ciclo de vida: `mmap` crea región, el programa la usa y
+`munmap` la cierra. Después de cerrar, la base ya no debe usarse como puntero.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| llamar `munmap` si `mmap` falló | no hay región que liberar |
+| perder la base original | guarda base en registro estable antes de usar cursor |
+| usar región después de `munmap` | la dirección ya no pertenece al proceso |
+| ignorar retorno de `munmap` | retorno negativo indica rango inválido o problema real |
+
 ## Relación con Unidad 12
 
 | Unidad 12 | En esta unidad |

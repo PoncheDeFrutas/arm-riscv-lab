@@ -280,6 +280,15 @@ necesitas ahora, pero es bueno saber que existe.
 | ¿Qué syscalls ejecuta? | `strace` |
 | ¿Cuántos ciclos usa? | `perf stat` |
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar `ldd` como prueba universal | binarios mínimos pueden no ser dinámicos |
+| leer `objdump` sin confirmar arquitectura | primero usa `file` |
+| confundir símbolo con instrucción | `nm` lista nombres; `objdump` muestra código |
+| usar `strace` con QEMU sin cuidado | puedes estar viendo capa del emulador |
+
 ## Checklist
 
 - [ ] `file` confirma AArch64.

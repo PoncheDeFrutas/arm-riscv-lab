@@ -182,7 +182,18 @@ kernel/loader = producen proceso
 
 Unidad 04 ya mostró directivas. Ahora vemos qué archivo sale de ellas.
 
-## Error común
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable run
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable readelf-header
+```
+
+Compara `src/main.s`, `src/build/main.o` y `src/build/main`. El `.o` es pieza
+intermedia; el ejecutable final tiene contrato para el loader.
+
+## Errores comunes
 
 ```bash
 $ qemu-aarch64 ./min.o
@@ -190,8 +201,6 @@ $ qemu-aarch64 ./min.o
 
 Eso falla porque `min.o` no es el contrato que Linux espera para ejecutar. Es
 una pieza de construcción, no el edificio terminado.
-
-## Lectura rápida de fallos
 
 | Mensaje o situación | Lectura probable |
 |---|---|

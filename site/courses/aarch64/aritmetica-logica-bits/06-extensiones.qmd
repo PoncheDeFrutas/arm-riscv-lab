@@ -156,6 +156,25 @@ interpretación.
 La extensión no cambia los bits originales de bajo ancho. Cambia cómo llenas los
 bits nuevos y, por lo tanto, cómo leerás el resultado.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/06_extensiones run
+```
+
+Compara `uxtb`, `sxtb`, `uxtw` y `sxtw`. El mismo patrón de bits puede producir
+lecturas distintas si llenas bits altos con ceros o con signo.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| extender con ceros un dato signed | usa `sxtb`, `sxth` o `sxtw` |
+| extender con signo una longitud | usa extensión unsigned |
+| olvidar que `Wn` limpia parte alta | si escribes en `wN`, `xN` queda zero-extended |
+| mirar solo hexadecimal | decide si el dato representa signed o unsigned |
+
 ## Mini ejercicios
 
 1. Lee:

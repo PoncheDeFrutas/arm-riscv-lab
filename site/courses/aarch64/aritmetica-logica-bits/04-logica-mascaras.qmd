@@ -182,6 +182,25 @@ si empiezas a contar en 1; es la posición con valor `8`.
 `tst` no conserva el valor filtrado. Solo actualiza flags. Si necesitas usar el
 resultado después, usa `and`.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/04_logica_mascaras run
+```
+
+Lee cada máscara como intención: conservar, encender, apagar, alternar o probar
+bits. `tst` debe explicarse por los flags que deja.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar `tst` esperando guardar el resultado | usa `and` si necesitas conservar bits filtrados |
+| contar bits desde uno | bit 0 es el primer bit |
+| confundir `orr` y `eor` | `orr` enciende; `eor` alterna |
+| usar máscara sin explicar intención | escribe qué bits quieres conservar, encender o apagar |
+
 ## Mini ejercicios
 
 Partiendo de:

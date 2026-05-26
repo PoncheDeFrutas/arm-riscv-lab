@@ -186,16 +186,22 @@ Después de enlazar, repite parte de la lectura en el ejecutable. Muchas
 relocations del `.o` deben desaparecer porque el linker ya conoce el layout
 final.
 
-## Error común
+## Ejemplo de la unidad
 
-Confundir símbolo con variable. Una variable puede tener un símbolo, pero símbolo
-es más general: puede nombrar función, etiqueta, objeto, sección o referencia
-externa.
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/03_secciones_simbolos_relocations readelf-sections
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/03_secciones_simbolos_relocations nm
+```
 
-## Errores de diagnóstico
+Observa qué nombres pertenecen a secciones, cuáles son símbolos definidos y qué
+queda pendiente antes del link final.
+
+## Errores comunes
 
 | Error | Mejor lectura |
 |---|---|
+| confundir símbolo con variable | símbolo puede nombrar función, etiqueta, objeto, sección o referencia externa |
 | creer que `.bss` ocupa todos sus ceros en disco | comparar tamaño de sección y tamaño de archivo |
 | leer `U printf` como bug inmediato | puede ser normal antes de enlazar con `libc` |
 | creer que relocation es instrucción | verla como trabajo pendiente del linker |

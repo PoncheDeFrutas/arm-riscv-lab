@@ -201,6 +201,25 @@ La multiplicación simple conserva la parte baja del producto del ancho usado.
 Si necesitas extender operandos de 32 a 64 bits con intención signed o unsigned,
 usa familias como `smaddl` o `umaddl`.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/03_multiplicacion_division run
+```
+
+Observa diferencia entre producto simple, producto acumulado, división signed y
+división unsigned. Si aparece residuo, búscalo como cálculo aparte.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| esperar residuo de `udiv` o `sdiv` | calcula residuo con `msub` |
+| usar `udiv` para números signed | usa `sdiv` cuando el valor representa signed |
+| olvidar revisar divisor cero | decide antes qué debe hacer tu programa |
+| asumir que todo producto cabe | revisa ancho y parte conservada del resultado |
+
 ## Mini ejercicios
 
 1. Lee:

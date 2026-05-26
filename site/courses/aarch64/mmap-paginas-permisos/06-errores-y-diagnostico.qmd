@@ -239,6 +239,25 @@ mostrar la capa del emulador. Úsalo como pista, no como única verdad.
 | falla `openat` antes de `mmap` | no | cerrar nada, salir |
 | falla `mmap` con fd abierto | no hay región, sí hay fd | cerrar fd antes de salir |
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/06_errores_diagnostico run
+```
+
+Observa cada fallo como pregunta concreta: retorno negativo, permisos, base
+perdida, región ya liberada o cleanup incompleto.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| diagnosticar permisos sin mirar retorno de `mmap` | primero confirma base válida |
+| usar cursor como base para `munmap` | conserva base original |
+| confiar solo en `strace` bajo QEMU | combina con GDB y registros |
+| tratar retorno negativo como puntero | revisa `x0` antes de guardar dirección |
+
 ## Mini ejercicios
 
 1. ¿Por qué no debes usar `x0` como puntero si es negativo?

@@ -171,6 +171,25 @@ Para offsets de arrays, `lsl #3` suele ser correcto cuando cada elemento mide 8
 bytes. Para valores signed, decide primero si el desplazamiento representa
 aritmética o manipulación de bits.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/05_shifts_rotates run
+```
+
+Observa cuándo un shift se usa como escala y cuándo solo mueve bits. Distingue
+`lsr` de `asr` antes de interpretar valores signed.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar `lsr` para signed negativo | usa `asr` si necesitas conservar signo |
+| asumir que `lsl` nunca pierde información | bits altos pueden salir del registro |
+| confundir rotate con shift | rotate reintroduce bits; shift rellena |
+| usar `lsl #3` sin justificar tamaño | `#3` equivale a multiplicar por 8 bytes |
+
 ## Mini ejercicios
 
 1. Lee:

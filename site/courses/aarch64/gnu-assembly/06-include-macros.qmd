@@ -289,13 +289,25 @@ _start:
 La macro duplica código pero evita la sobrecarga de `bl`/`ret`. La función usa
 menos espacio pero requiere llamada y retorno.
 
-## Error común
+## Ejemplo de la unidad
 
-::: {.callout-warning title="Macro no es función"}
-Una macro no se ejecuta como subrutina. Se expande en el lugar donde aparece.
-Eso puede duplicar código. Si usas una macro 10 veces, las instrucciones aparecen
-10 veces en el binario.
-:::
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=04_gnu_assembly/06_include_macros run
+make -f Makefile.qemu EXAMPLE=04_gnu_assembly/06_include_macros objdump
+```
+
+Usa `objdump` para confirmar la expansión. Si una macro aparece dos veces, sus
+instrucciones también aparecen dos veces.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| creer que macro es función | macro se expande al ensamblar; función se llama al ejecutar |
+| ocultar demasiadas instrucciones en macro | deja visible lo que el alumno aún está aprendiendo |
+| olvidar que macro duplica código | cada uso genera instrucciones nuevas |
+| usar `.include` para tapar dependencias | explica qué símbolos vienen del archivo incluido |
 
 ## Mini ejercicios
 

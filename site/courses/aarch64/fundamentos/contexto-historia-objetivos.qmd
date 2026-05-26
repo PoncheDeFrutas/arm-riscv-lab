@@ -259,6 +259,15 @@ mapa: ARM64 es una arquitectura moderna, AArch64 es su estado de ejecución de 6
 bits, A64 es su conjunto de instrucciones, y assembly será la herramienta para
 estudiar cómo se conectan software, sistema operativo y hardware.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| confundir ARM64, AArch64 y A64 | ARM64 es nombre común, AArch64 es estado de 64 bits, A64 es ISA |
+| pensar que assembly es solo memorizar instrucciones | aquí se usa para observar sistema y hardware |
+| mezclar ISA con microarquitectura | ISA define contrato; implementación define cómo se ejecuta |
+| esperar bare metal desde el inicio | primero se trabaja en Linux userland |
+
 ## Checklist
 
 - [ ] Puedo explicar qué es assembly.

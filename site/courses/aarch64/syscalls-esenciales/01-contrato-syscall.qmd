@@ -156,6 +156,35 @@ Cuando algo falla, pregunta:
 
 Este orden ayuda a depurar sin adivinar.
 
+## Ejemplo de la unidad
+
+El ejemplo `09_syscalls_esenciales/01_contrato_syscall` practica el contrato
+mínimo: argumentos en registros, número en `x8`, entrada con `svc #0` y retorno
+en `x0`.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/01_contrato_syscall run
+```
+
+Qué observar:
+
+| Punto | Pregunta |
+|---|---|
+| antes de `svc #0` | ¿qué syscall selecciona `x8`? |
+| argumentos | ¿cuáles registros usa esta syscall? |
+| después de volver | ¿qué significa ahora `x0`? |
+| rama de error | ¿el programa revisa retorno negativo antes de seguir? |
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| poner número de syscall en `x0` | Linux espera número en `x8` |
+| leer `x0` igual antes y después | antes es argumento; después es retorno |
+| sobrescribir retorno antes de revisarlo | compara `x0` justo después de `svc #0` |
+| confundir syscall con función C | syscall entra con `svc #0`; función usa `bl` y ABI |
+
 ## Mini ejercicios
 
 1. ¿Qué registro contiene número de syscall?

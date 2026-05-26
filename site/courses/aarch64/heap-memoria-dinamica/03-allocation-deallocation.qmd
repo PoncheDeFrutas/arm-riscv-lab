@@ -181,6 +181,25 @@ correcto; después puedes borrar la copia.
 
 Ambos requieren ownership y cleanup. No se liberan igual.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/03_allocation_deallocation run
+```
+
+Observa rutas de éxito y error. La pregunta clave es si el bloque existe en esa
+ruta; de eso depende si debe liberarse.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| reservar sin plan de salida | dibuja rutas `ok`, `error_sin_bloque`, `cleanup_con_bloque` |
+| liberar si la reserva falló | solo libera recursos adquiridos |
+| poner puntero en cero como si liberara | primero llama mecanismo correcto de liberación |
+| mezclar `close` y `free` | cada recurso tiene su propia liberación |
+
 ## Mini ejercicios
 
 1. ¿Qué devuelve una reserva de memoria si funciona?

@@ -235,6 +235,25 @@ b.eq iguales
 La siguiente unidad estudiará `b.eq` y demás condiciones. Aquí solo debes
 entender que `cmp` prepara `NZCV` y el branch consulta esos flags.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/02_aritmetica_flags run
+```
+
+Depura el ejemplo y mira `cpsr`/`NZCV` después de `adds`, `subs`, `cmp` y
+`cset`. La salida final no reemplaza la lectura de flags.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| esperar flags después de `add` | usa `adds` si necesitas actualizar `NZCV` |
+| creer que `cmp` guarda resultado | `cmp` solo actualiza flags |
+| leer `C` como overflow signed | `C` pertenece a lectura unsigned; `V` a overflow signed |
+| poner otra instrucción con flags antes del branch | el branch verá los flags más recientes |
+
 ## Mini ejercicios
 
 1. Lee:

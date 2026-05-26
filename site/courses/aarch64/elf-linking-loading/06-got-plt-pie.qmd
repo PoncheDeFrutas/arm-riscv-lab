@@ -170,11 +170,25 @@ sumar la base de carga.
 Ninguna señal aislada cuenta toda la historia. La lectura correcta cruza header,
 program headers, dynamic section y desensamblado.
 
-## Error común
+## Ejemplo de la unidad
 
-Intentar explicar GOT/PLT como si ya estuviéramos escribiendo dynamic linker.
-No hace falta. En esta unidad basta con entender que son estructuras para
-conectar código propio con direcciones que pueden resolverse al cargar.
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/06_got_plt_pie readelf-header
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/06_got_plt_pie objdump
+```
+
+Busca `Type: DYN`, referencias a `@plt` y dependencias dinámicas. La meta es
+reconocer el modelo, no implementar el loader.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| explicar GOT/PLT como si escribieras el dynamic linker | aquí basta el modelo mental de tablas y stubs |
+| creer que `printf@plt` es la función final | es un puente hacia resolución dinámica |
+| leer `Type: DYN` sin contexto | puede ser PIE o shared object |
+| comparar direcciones de PIE como absolutas eternas | piensa en base de carga + offset |
 
 ## Límites de esta lección
 

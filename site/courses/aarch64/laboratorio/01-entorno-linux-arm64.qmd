@@ -237,6 +237,31 @@ qemu-aarch64 --version
 Si alguno de estos comandos falla, ve a
 [Instalación toolchain](02-instalacion-toolchain.qmd) para resolverlo.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| creer que `x86_64` impide estudiar ARM64 | usa toolchain cruzado y QEMU user mode |
+| instalar QEMU system mode para el primer programa | aquí basta `qemu-aarch64` |
+| ejecutar directo un binario ARM64 en host `x86_64` | usa `make run` o `qemu-aarch64` |
+| saltar a VS Code antes de validar terminal | primero confirma toolchain en consola |
+
+## Mini ejercicios
+
+1. Ejecuta `uname -m` y escribe si tu ruta es nativa o QEMU.
+2. Explica por qué un host `x86_64` necesita `qemu-aarch64`.
+3. Explica qué diferencia hay entre QEMU user mode y system mode.
+4. Di qué herramienta usarías para depurar en ARM64 nativo.
+5. Di qué dos piezas se conectan cuando depuras con QEMU y GDB.
+
+## Checklist
+
+- [ ] Sé si mi equipo es `aarch64`, `arm64` o `x86_64`.
+- [ ] Puedo explicar por qué Linux es la base del curso.
+- [ ] Puedo distinguir ruta nativa de ruta QEMU.
+- [ ] Puedo explicar que QEMU user mode ejecuta un proceso, no una máquina completa.
+- [ ] Sé qué página abrir si falta una herramienta.
+
 Siguiente: [Instalación toolchain](02-instalacion-toolchain.qmd).
 
 ## Fuentes {.unlisted .unnumbered}

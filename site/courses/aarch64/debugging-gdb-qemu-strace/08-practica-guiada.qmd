@@ -166,6 +166,15 @@ Luego formula una hipótesis pequeña:
 Usa esta tabla como punto de partida. Si una respuesta no coincide con tu
 hipótesis, reduce el paso: una instrucción, un registro, una dirección.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| ejecutar muchos `stepi` sin hipótesis | predice un cambio antes de avanzar |
+| mirar todos los registros sin objetivo | elige registros usados por la instrucción actual |
+| mezclar fallo de syscall con fallo de memoria | separa retorno negativo de acceso inválido |
+| asumir que core dump permite continuar | core dump solo permite inspección post-mortem |
+
 ## Método visual
 
 ```{mermaid}

@@ -157,6 +157,26 @@ por otras syscalls como `fork` o `clone`, que no estudiaremos todavía.
 | `x8` | `113` | sin cambio |
 | retorno `x0` | - | `0` = éxito, negativo = error |
 
+## Ejemplo de la unidad
+
+El ejemplo `10_linux_api_kernel/05_procesos_tiempo` permite ver que el mismo
+contrato sirve para syscalls sin argumentos y para syscalls con punteros a
+estructuras.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/05_procesos_tiempo run
+```
+
+Qué observar:
+
+| Syscall | Lectura |
+|---|---|
+| `getpid` | no necesita argumentos y devuelve PID en `x0` |
+| `clock_gettime` | recibe puntero a `timespec` escribible |
+| `nanosleep` | lee una estructura `timespec` preparada por el programa |
+| error | se detecta como retorno negativo en `x0` |
+
 ## Mini ejercicios
 
 Predice el resultado antes de verificar.

@@ -172,6 +172,23 @@ debugging. No es requisito para compilar.
 | `strace: command not found` | Instala `strace` |
 | `xxd: command not found` | Instala `xxd` o `vim-common` |
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| instalar solo `gcc` en host `x86_64` | también necesitas `gcc-aarch64-linux-gnu` |
+| instalar compiler pero no QEMU | compilar no ejecuta binarios ARM64 |
+| usar `gdb` normal en ruta cruzada | usa `gdb-multiarch` |
+| olvidar herramientas de inspección | instala `file`, `readelf`, `objdump`, `nm`, `strace` |
+
+## Mini ejercicios
+
+1. Clasifica `file`, `readelf`, `objdump` y `nm` como herramientas de inspección.
+2. Explica por qué `aarch64-linux-gnu-gcc` no reemplaza a `qemu-aarch64`.
+3. Explica por qué `gdb-multiarch` aparece en la ruta x86_64.
+4. Di qué paquete revisarías si falta `aarch64-linux-gnu-gcc`.
+5. Di qué herramienta usarías para ver syscalls después.
+
 ## Verificación mínima antes de seguir
 
 Marca la ruta que aplica:

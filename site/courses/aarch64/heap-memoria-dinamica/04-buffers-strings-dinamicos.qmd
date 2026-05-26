@@ -216,6 +216,25 @@ No escribas en `buffer[capacidad]`. Índices válidos van de `0` a
 `capacidad - 1`.
 :::
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/04_buffer_dinamico run
+```
+
+Observa que un buffer dinámico necesita puntero, capacidad y longitud usada.
+Para string, reserva también espacio para terminador cero.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| no reservar espacio para `\\0` | string C necesita byte extra de terminación |
+| actualizar `usados` antes de escribir | actualiza estado después de operación exitosa |
+| copiar capacidad completa al crecer | copia bytes usados salvo que tengas razón explícita |
+| olvidar comparar unsigned | tamaños y capacidades no son signed |
+
 ## Mini ejercicios
 
 1. ¿Qué representa `x20`?

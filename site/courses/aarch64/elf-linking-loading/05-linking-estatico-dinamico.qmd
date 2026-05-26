@@ -173,6 +173,17 @@ en el sistema destino. En laboratorios cruzados esto puede simplificar algunas
 ejecuciones, pero también oculta el comportamiento real de dynamic loader que
 queremos estudiar en esta unidad.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/05_linking_estatico_dinamico run
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/05_linking_estatico_dinamico readelf-dynamic
+```
+
+Busca `INTERP` y `NEEDED`. Si aparecen, hay trabajo para dynamic loader; si no,
+pregunta si estás viendo un binario estático o un ejemplo mínimo.
+
 ## Errores comunes
 
 | Error | Corrección |

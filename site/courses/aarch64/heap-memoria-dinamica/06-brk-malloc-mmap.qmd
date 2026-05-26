@@ -165,6 +165,35 @@ El CPU ejecuta instrucciones. El kernel entrega servicios. La biblioteca puede
 construir una abstracción como `malloc` encima de esos servicios.
 :::
 
+## Ejemplo de la unidad
+
+El ejemplo `12_heap_memoria_dinamica/06_brk_malloc_mmap` sirve para comparar
+vocabulario, no para construir un allocator. La práctica es identificar qué
+capa participa en cada caso.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/06_brk_malloc_mmap run
+```
+
+Guía de lectura:
+
+| Si ves... | Interpreta... |
+|---|---|
+| `brk` | syscall histórica relacionada con límite del heap |
+| `malloc` | función de biblioteca, requiere ABI/libc |
+| `mmap` | syscall que pide región al kernel |
+| `x0` | retorno, pero su contrato depende de si llamaste syscall o función |
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| pensar que `malloc` es instrucción | es función de biblioteca |
+| tratar `free` como simple `mov ptr, #0` | borrar registro no libera memoria |
+| mezclar contrato de syscall con contrato de libc | revisa si entraste por `svc #0` o por `bl` |
+| intentar implementar allocator completo aquí | primero estudiar `mmap`, páginas y permisos |
+
 ## Mini ejercicios
 
 1. ¿Por qué `malloc` no es instrucción del procesador?

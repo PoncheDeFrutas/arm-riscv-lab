@@ -148,6 +148,26 @@ Importante: revisa `x0` antes de usarlo como longitud si quieres detectar error.
 En el eco básico se omite para mantener el ejemplo corto, pero un programa más
 cuidadoso debe comprobarlo.
 
+## Ejemplo de la unidad
+
+El ejemplo `09_syscalls_esenciales/03_read_buffers` usa el mismo patrón con los
+Makefiles compartidos. La práctica correcta es escribir entrada por `stdin` y
+ver que `write` usa exactamente el número de bytes devuelto por `read`.
+
+```bash
+cd examples/aarch64
+printf 'abc\n' | make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/03_read_buffers run
+```
+
+Lectura guiada:
+
+| Momento | Qué cambia |
+|---|---|
+| antes de `read` | `x0 = 0` significa stdin |
+| después de `read` | `x0 = n` significa bytes leídos |
+| antes de `write` | `x2` debe tomar `n`, no el tamaño total del buffer |
+| salida | solo deben imprimirse bytes válidos |
+
 ## Errores comunes
 
 | Error | Consecuencia |

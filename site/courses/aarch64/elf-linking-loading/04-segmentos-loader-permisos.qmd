@@ -153,17 +153,21 @@ conecta con permisos de memoria: rangos legibles, ejecutables o escribibles.
 Cuando `MemSiz` es mayor que `FileSiz`, el espacio adicional pertenece al
 proceso aunque no esté almacenado byte por byte en el archivo.
 
-## Error común
+## Ejemplo de la unidad
 
-Creer que section headers son el mapa principal de ejecución. Para cargar el
-proceso, los program headers son el mapa crítico. Las secciones siguen siendo
-útiles para herramientas, linker y debugging, pero no son la guía principal del
-loader.
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/04_segmentos_loader_permisos readelf-programs
+```
 
-## Errores de lectura
+Lee los segmentos `LOAD` como mapa de carga: origen en archivo, destino virtual,
+tamaño en archivo, tamaño en memoria y permisos.
+
+## Errores comunes
 
 | Error | Corrección |
 |---|---|
+| creer que section headers son el mapa principal de ejecución | para cargar el proceso, los program headers son críticos |
 | buscar permisos en `readelf -S` primero | usar `readelf -l` para mapa de carga |
 | creer que cada sección se mapea sola | un segmento puede agrupar varias secciones |
 | interpretar `FileSiz < MemSiz` como corrupción | suele indicar memoria cero como `.bss` |

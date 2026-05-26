@@ -180,6 +180,15 @@ Si estás detenido dentro de una función, estas preguntas ayudan:
 No necesitas memorizar direcciones exactas. Necesitas reconocer si `sp` baja al
 reservar, sube al liberar y termina donde debía.
 
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| reservar con `sub sp` y no liberar | usa `add sp` con el mismo tamaño |
+| asumir que reservar limpia memoria | stack reservado contiene bytes previos |
+| romper alineación de 16 bytes | reserva múltiplos de 16 en funciones ABI |
+| guardar más bytes de los reservados | calcula offsets dentro del bloque |
+
 ## Mini ejercicios
 
 1. ¿Hacia qué lado crece el stack en AArch64?

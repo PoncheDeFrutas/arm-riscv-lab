@@ -228,6 +228,25 @@ Esto viene de Unidad 03: `Wn` no es otro registro separado; es la vista baja de
 Antes de culpar al assembler, escribe la constante en bloques de 16 bits. Ese
 paso casi siempre muestra qué parte falta o qué bloque fue reemplazado.
 
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/01_movimiento_constantes run
+```
+
+Observa qué registros reciben constantes inmediatas, cuáles se construyen por
+bloques y cuándo una dirección no es lo mismo que contenido.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| usar `mov` para cualquier constante grande | construir por bloques con `movz`/`movk` |
+| confundir dirección con contenido | `ldr x0, =simbolo` carga dirección; `ldr x1, [x0]` lee memoria |
+| escribir en `wN` esperando conservar bits altos | escritura en `Wn` limpia la mitad alta de `Xn` |
+| olvidar el `lsl` en `movk` | cada bloque ocupa 16 bits |
+
 ## Mini ejercicios
 
 1. Construye mentalmente:

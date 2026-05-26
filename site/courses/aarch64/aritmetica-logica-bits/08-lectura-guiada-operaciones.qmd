@@ -230,7 +230,27 @@ memoria = no se toca
 El último consumidor de flags verá el estado dejado por `tst`, no por `cmp` ni
 por `subs`.
 
-## Preguntas de cierre
+## Ejemplo de la unidad
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/08_lectura_guiada run
+```
+
+Usa este ejemplo como repaso integrado. Antes de cada instrucción, predice si
+cambia registro, flags o solo interpreta bits existentes.
+
+## Errores comunes
+
+| Error | Corrección |
+|---|---|
+| Leer el archivo como lista suelta | agrupa por constantes, flags, máscaras, shifts y extensiones |
+| Creer que `add` actualiza flags | solo las variantes con `s` o instrucciones como `cmp`/`tst` cambian `NZCV` |
+| Confundir extensión con cambio del byte original | la extensión decide cómo llenar bits nuevos |
+| Leer `ubfx` como acceso a memoria | `ubfx` extrae bits dentro de un registro |
+| Olvidar qué instrucción dejó los flags finales | busca la última que actualizó `NZCV` |
+
+## Mini ejercicios
 
 - ¿Qué instrucciones construyen una constante grande?
 - ¿Cuál operación actualiza flags: `add` o `subs`?
@@ -239,6 +259,14 @@ por `subs`.
 - ¿Qué diferencia hay entre `uxtb` y `sxtb`?
 - ¿Por qué `ubfx` no usa offset de memoria?
 - ¿Qué instrucción dejó los flags más recientes antes de `svc #0`?
+
+## Checklist
+
+- [ ] Puedo separar el archivo por bloques de intención.
+- [ ] Puedo predecir qué registro cambia en cada bloque.
+- [ ] Puedo decir qué instrucciones actualizan `NZCV`.
+- [ ] Puedo explicar una máscara sin convertirla en dirección.
+- [ ] Puedo distinguir `uxtb`, `sxtb` y `ubfx`.
 
 ## Cierre
 

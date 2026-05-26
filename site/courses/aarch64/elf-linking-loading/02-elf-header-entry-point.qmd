@@ -147,11 +147,14 @@ tablas, tamaños de entradas y dirección de entrada. Las instrucciones reales
 están en otra parte; los segmentos y secciones se describen mediante tablas
 separadas.
 
-## Error común
+## Errores comunes
 
-Ver `Entry point address` y asumir que es dirección fija en todos los sistemas.
-Con PIE y ASLR, la dirección efectiva de carga puede cambiar. Esta unidad lo
-prepara; la lección de PIE lo explica sin entrar todavía en hardening profundo.
+| Error | Corrección |
+|---|---|
+| asumir que `Entry point address` es dirección fija universal | PIE y ASLR pueden cambiar dirección efectiva |
+| creer que entry point siempre es `main` | `main` pertenece al runtime C; ELF usa dirección de entrada |
+| analizar instrucciones antes de confirmar arquitectura | primero revisa `Machine` |
+| leer `Type: DYN` como “solo librería” | puede ser shared object o ejecutable PIE |
 
 ## Lectura rápida del header
 
