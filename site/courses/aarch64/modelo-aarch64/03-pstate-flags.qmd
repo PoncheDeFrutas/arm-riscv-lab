@@ -56,6 +56,29 @@ Lectura mínima:
 | `cmp x0, x1` | Actualiza flags como si restara `x0 - x1` |
 | `b.eq iguales` | Salta si la comparación indicó igualdad |
 
+## Primeros sufijos de condición
+
+Los sufijos como `eq`, `ne`, `cs` o `lt` no son etiquetas ni variables. Son
+condiciones que leen `NZCV`. El mismo sufijo puede aparecer en una rama
+(`b.eq`), en `cset` o en `csel`.
+
+| Condición | Lectura práctica | Flags consultados |
+|---|---|---|
+| `eq` | equal / igual | `Z = 1` |
+| `ne` | not equal / distinto | `Z = 0` |
+| `cs` | carry set | `C = 1` |
+| `lt` | menor signed | `N != V` |
+
+```asm
+cmp  x0, x1
+cset x2, eq      // x2 = 1 si Z = 1; si no, x2 = 0
+```
+
+::: {.callout-note title="Regla de lectura"}
+Cuando veas una condición, busca hacia arriba qué instrucción preparó `NZCV`.
+Sin esa instrucción anterior, el sufijo no se puede interpretar correctamente.
+:::
+
 ## Flag `Z`
 
 `Z` se activa cuando el resultado de una operación o comparación es cero.

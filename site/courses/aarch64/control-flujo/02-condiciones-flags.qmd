@@ -172,18 +172,30 @@ instrucción que no cambie flags.
 
 ## Tabla rápida de condiciones de esta unidad
 
-| Branch | Significado práctico |
-|---|---|
-| `b.eq` | igual |
-| `b.ne` | distinto |
-| `b.gt` | mayor signed |
-| `b.ge` | mayor o igual signed |
-| `b.lt` | menor signed |
-| `b.le` | menor o igual signed |
-| `b.hi` | mayor unsigned |
-| `b.hs` | mayor o igual unsigned |
-| `b.lo` | menor unsigned |
-| `b.ls` | menor o igual unsigned |
+Los nombres de condición son los mismos para `b.cond`, `cset`, `csel` y otras
+instrucciones condicionales. Cambia la instrucción, pero el sufijo consulta los
+mismos flags.
+
+| Condición | Significado práctico | Flags |
+|---|---|---|
+| `eq` | igual | `Z = 1` |
+| `ne` | distinto | `Z = 0` |
+| `gt` | mayor signed | `Z = 0` y `N = V` |
+| `ge` | mayor o igual signed | `N = V` |
+| `lt` | menor signed | `N != V` |
+| `le` | menor o igual signed | `Z = 1` o `N != V` |
+| `hi` | mayor unsigned | `C = 1` y `Z = 0` |
+| `hs` / `cs` | mayor o igual unsigned / carry set | `C = 1` |
+| `lo` / `cc` | menor unsigned / carry clear | `C = 0` |
+| `ls` | menor o igual unsigned | `C = 0` o `Z = 1` |
+
+Ejemplos de lectura:
+
+```asm
+b.lt menor       // salta si la comparación signed indicó menor que
+cset x0, eq      // x0 = 1 si la comparación indicó igualdad
+csel x0, x1, x2, hi // x0 = x1 si la comparación unsigned indicó mayor que
+```
 
 ## Errores comunes
 

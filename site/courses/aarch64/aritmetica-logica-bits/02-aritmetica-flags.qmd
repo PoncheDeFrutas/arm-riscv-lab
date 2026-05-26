@@ -176,6 +176,33 @@ eso representa overflow signed
 aritmética unsigned. `V` ayuda en aritmética signed.
 :::
 
+## `cset`: convertir condición en valor
+
+`cset` no compara por sí solo. Lee los flags que ya dejó una instrucción como
+`adds`, `subs`, `cmp`, `cmn` o `tst`, y escribe `1` si la condición se cumple o
+`0` si no.
+
+```asm
+adds x0, x1, x2
+cset x3, cs      // cs = carry set: x3 = 1 si C = 1
+
+cmp  x4, x5
+cset x6, eq      // eq = equal: x6 = 1 si Z = 1
+```
+
+| Condición | Lectura | Flags |
+|---|---|---|
+| `eq` | igualdad | `Z = 1` |
+| `ne` | distinto | `Z = 0` |
+| `cs` | carry set / unsigned >= | `C = 1` |
+| `cc` | carry clear / unsigned < | `C = 0` |
+
+::: {.callout-note title="Idea clave"}
+La instrucción que aparece antes de `cset` importa tanto como el sufijo. `cset
+x0, cs` después de `adds` suele leerse como "hubo carry unsigned"; después de
+otra instrucción, la historia puede ser distinta.
+:::
+
 ## Flags se reemplazan
 
 `NZCV` describe la última instrucción que actualizó flags. No guarda historial.

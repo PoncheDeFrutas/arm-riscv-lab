@@ -113,6 +113,18 @@ si no, x2 = x1
 Esto sirve para decisiones pequeñas, como elegir un valor, sin abrir bloques
 `if/else`.
 
+`gt` aquí es el mismo sufijo de condición que usarías en `b.gt`: mayor que
+signed. Para que tenga sentido, antes debe existir una instrucción que preparó
+`NZCV`, normalmente `cmp` o `subs`.
+
+| Sufijo | Lectura | Flags |
+|---|---|---|
+| `eq` | igual | `Z = 1` |
+| `ne` | distinto | `Z = 0` |
+| `gt` | mayor signed | `Z = 0` y `N = V` |
+| `lt` | menor signed | `N != V` |
+| `hi` | mayor unsigned | `C = 1` y `Z = 0` |
+
 ## Variantes útiles
 
 | Instrucción | Lectura práctica |
@@ -140,6 +152,7 @@ si no, x2 = 0
 ```
 
 `cset` es útil cuando quieres guardar el resultado de una condición como valor.
+Igual que `csel`, no compara por sí solo: usa los flags previos.
 
 ## `cinc` y `cneg`
 
