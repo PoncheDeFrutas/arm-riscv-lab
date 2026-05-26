@@ -8,7 +8,15 @@
 
 AS      = aarch64-linux-gnu-as
 LD      = aarch64-linux-gnu-ld
+CC      = aarch64-linux-gnu-gcc
+AR      = aarch64-linux-gnu-ar
+READELF = aarch64-linux-gnu-readelf
+OBJDUMP = aarch64-linux-gnu-objdump
+NM      = aarch64-linux-gnu-nm
+STRIP   = aarch64-linux-gnu-strip
 QEMU    ?= qemu-aarch64
+GDB     ?= gdb-multiarch
+SYSROOT ?= /usr/aarch64-linux-gnu
 PORT    ?= 1234
 
 ifndef SRC_DIR
@@ -31,52 +39,137 @@ SRC_DIR := $(patsubst %/,%,$(SRC_DIR))
 BUILD   ?= $(SRC_DIR)/build
 TARGET  ?= $(BUILD)/main
 
-MAIN_SRC ?= $(SRC_DIR)/main.s
+MAIN_SRC ?= $(firstword $(wildcard $(SRC_DIR)/main.s) $(wildcard $(SRC_DIR)/main.c))
+S_SRCS   ?= $(wildcard $(SRC_DIR)/*.s)
+C_SRCS   ?= $(wildcard $(SRC_DIR)/*.c)
+SRCS     ?= $(S_SRCS) $(C_SRCS)
+USE_LIBC ?= $(if $(C_SRCS),1,0)
 ASFLAGS  ?= -g
+CFLAGS   ?= -g -O0 -Wall -Wextra
 LDFLAGS  ?=
-SRCS     ?= $(MAIN_SRC) $(filter-out $(MAIN_SRC),$(wildcard $(SRC_DIR)/*.s))
+LDLIBS   ?=
+EXTRA_DEPS ?=
+EXTRA_TARGETS ?=
+FAULT_SRC ?= $(firstword $(wildcard $(SRC_DIR)/fault.s))
+FAULT_TARGET ?= $(BUILD)/fault
+FAULT_USE_LIBC ?= 0
 
 -include $(SRC_DIR)/example.mk
 
-OBJS := $(patsubst $(SRC_DIR)/%.s,$(BUILD)/%.o,$(SRCS))
+S_OBJS := $(patsubst $(SRC_DIR)/%.s,$(BUILD)/%.o,$(S_SRCS))
+C_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD)/%.o,$(C_SRCS))
+OBJS   ?= $(S_OBJS) $(C_OBJS)
 
-.PHONY: all run gdb gdb-vscode clean info check
+.PHONY: all run strace gdb gdb-batch gdb-vscode fault run-fault clean info check readelf-header readelf-sections readelf-programs readelf-dynamic objdump nm strip-copy
 
-all: $(TARGET)
+all: $(TARGET) $(EXTRA_TARGETS)
 
 check:
-	@test -f "$(MAIN_SRC)" || { echo "ERROR: no existe $(MAIN_SRC)"; exit 1; }
+	@test -n "$(strip $(SRCS))" || { echo "ERROR: no hay fuentes en $(SRC_DIR)"; exit 1; }
 
 $(BUILD):
 	mkdir -p "$(BUILD)"
 
 $(BUILD)/%.o: $(SRC_DIR)/%.s | $(BUILD)
-	$(AS) $(ASFLAGS) -o "$@" "$<"
+ifeq ($(USE_LIBC),1)
+	$(CC) $(ASFLAGS) -I"$(SRC_DIR)" -c -o "$@" "$<"
+else
+	$(AS) $(ASFLAGS) -I"$(SRC_DIR)" -o "$@" "$<"
+endif
 
-$(TARGET): check $(OBJS)
+$(BUILD)/%.o: $(SRC_DIR)/%.c | $(BUILD)
+	$(CC) $(CFLAGS) -I"$(SRC_DIR)" -c -o "$@" "$<"
+
+$(TARGET): check $(OBJS) $(EXTRA_DEPS)
+ifeq ($(USE_LIBC),1)
+	$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LDLIBS)
+else
 	$(LD) $(LDFLAGS) -o "$@" $(OBJS)
+endif
 
 run: $(TARGET)
+ifeq ($(USE_LIBC),1)
+	$(QEMU) -L "$(SYSROOT)" "$(TARGET)"
+else
 	$(QEMU) "$(TARGET)"
+endif
+
+strace: $(TARGET)
+ifeq ($(USE_LIBC),1)
+	$(QEMU) -L "$(SYSROOT)" -strace "$(TARGET)"
+else
+	$(QEMU) -strace "$(TARGET)"
+endif
 
 gdb: $(TARGET)
 	@echo "Starting QEMU and waiting for GDB on port $(PORT)..."
+ifeq ($(USE_LIBC),1)
+	$(QEMU) -L "$(SYSROOT)" -g $(PORT) -singlestep "$(TARGET)"
+else
 	$(QEMU) -g $(PORT) -singlestep "$(TARGET)"
+endif
+
+gdb-batch: $(TARGET)
+	$(GDB) -q -batch -ex "file $(TARGET)" -ex "info files" -ex "info functions"
 
 gdb-vscode: $(TARGET)
 	@echo "Starting QEMU and waiting for VS Code on port $(PORT)..."
+ifeq ($(USE_LIBC),1)
+	@$(QEMU) -L "$(SYSROOT)" -g $(PORT) -singlestep "$(TARGET)" & \
+	pid=$$!; \
+	sleep 0.2; \
+	echo "QEMU_GDB_READY"; \
+	wait $$pid
+else
 	@$(QEMU) -g $(PORT) -singlestep "$(TARGET)" & \
 	pid=$$!; \
 	sleep 0.2; \
 	echo "QEMU_GDB_READY"; \
 	wait $$pid
+endif
+
+fault:
+	@test -n "$(FAULT_SRC)" || { echo "ERROR: este ejemplo no define fault.s"; exit 1; }
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) SRC_DIR="$(SRC_DIR)" MAIN_SRC="$(FAULT_SRC)" S_SRCS="$(FAULT_SRC)" C_SRCS= SRCS="$(FAULT_SRC)" TARGET="$(FAULT_TARGET)" USE_LIBC="$(FAULT_USE_LIBC)" all
+
+run-fault: fault
+ifeq ($(FAULT_USE_LIBC),1)
+	-$(QEMU) -L "$(SYSROOT)" "$(FAULT_TARGET)"
+else
+	-$(QEMU) "$(FAULT_TARGET)"
+endif
 
 clean:
 	rm -rf "$(BUILD)"
+
+readelf-header: $(TARGET)
+	$(READELF) -h "$(TARGET)"
+
+readelf-sections: $(TARGET)
+	$(READELF) -S "$(TARGET)"
+
+readelf-programs: $(TARGET)
+	$(READELF) -l "$(TARGET)"
+
+readelf-dynamic: $(TARGET)
+	$(READELF) -d "$(TARGET)"
+
+objdump: $(TARGET)
+	$(OBJDUMP) -d "$(TARGET)"
+
+nm: $(TARGET)
+	$(NM) "$(TARGET)"
+
+strip-copy: $(TARGET)
+	cp "$(TARGET)" "$(BUILD)/main.stripped"
+	$(STRIP) "$(BUILD)/main.stripped"
+	@echo "$(BUILD)/main.stripped"
 
 info:
 	@echo "SRC_DIR  = $(SRC_DIR)"
 	@echo "MAIN_SRC = $(MAIN_SRC)"
 	@echo "TARGET   = $(TARGET)"
 	@echo "SRCS     = $(SRCS)"
-	@echo "Targets: all, run, gdb, gdb-vscode, clean, info"
+	@echo "USE_LIBC = $(USE_LIBC)"
+	@echo "FAULT_SRC = $(FAULT_SRC)"
+	@echo "Targets: all, run, strace, gdb, gdb-batch, gdb-vscode, fault, run-fault, clean, info, readelf-header, readelf-sections, readelf-programs, readelf-dynamic, objdump, nm, strip-copy"
