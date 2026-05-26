@@ -119,6 +119,36 @@ dependencias del binario AArch64.
 Si cambias de puerto, cámbialo en ambos lados. `qemu-aarch64 -g 2345` requiere
 `target remote :2345`.
 
+## Ejemplo de la unidad
+
+El ejemplo `17_debugging_gdb_qemu_strace/05_qemu_gdbserver` está hecho para
+practicar el flujo remoto sin mezclarlo con otros temas.
+
+Terminal 1:
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/05_qemu_gdbserver gdb
+```
+
+Terminal 2:
+
+```bash
+gdb-multiarch 17_debugging_gdb_qemu_strace/05_qemu_gdbserver/src/build/main
+target remote :1234
+break _start
+continue
+```
+
+Lectura del flujo:
+
+| Paso | Quién trabaja |
+|---|---|
+| `make ... gdb` | inicia QEMU y deja el binario esperando |
+| `target remote :1234` | GDB se conecta al servidor de QEMU |
+| `continue` | QEMU ejecuta instrucciones controladas por GDB |
+| `run` | no corresponde aquí porque GDB no creó el proceso |
+
 ## Diagrama
 
 ```{mermaid}

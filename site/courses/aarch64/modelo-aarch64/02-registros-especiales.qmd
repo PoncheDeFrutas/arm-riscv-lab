@@ -113,6 +113,29 @@ Más adelante, `ret` usará `lr` para volver. Aquí solo necesitas reconocerlo.
 | `pc` | Sí | No como general normal |
 | `xzr` / `wzr` | Conceptual | No almacena |
 
+## Ejemplo de la unidad
+
+El ejemplo `03_modelo_aarch64/02_registros_especiales` usa nombres especiales
+sin construir todavía funciones completas. La meta no es memorizar sintaxis,
+sino reconocer qué nombre tiene regla propia.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=03_modelo_aarch64/02_registros_especiales run
+```
+
+Guía de lectura:
+
+| Nombre | Qué comprobar |
+|---|---|
+| `xzr` | leer produce cero |
+| `sp` | contiene una dirección de stack, no un temporal cualquiera |
+| `pc` | GDB lo muestra como posición actual de ejecución |
+| `x30` | aparecerá como registro de retorno cuando uses `bl` |
+
+Cuando avances con GDB, no preguntes solo “qué valor tiene”. Pregunta “qué rol
+tiene este nombre en esta instrucción”.
+
 ## Errores comunes
 
 | Error | Corrección |

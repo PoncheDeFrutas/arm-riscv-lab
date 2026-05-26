@@ -243,6 +243,26 @@ Programa completo con `mmap`, escritura, `mprotect`, `munmap` y errores.
 :::
 :::
 
+## Programas de práctica
+
+Aquí la unidad de razonamiento es página/región: dirección base, tamaño,
+permisos y ciclo de vida.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Páginas y memoria virtual | `examples/aarch64/13_mmap_paginas_permisos/01_paginas_memoria_virtual` | región y tamaño de página |
+| `mmap` anónimo privado | `examples/aarch64/13_mmap_paginas_permisos/02_mmap_anonimo_privado` | dirección retornada y permisos |
+| `munmap` | `examples/aarch64/13_mmap_paginas_permisos/03_munmap_ciclo_vida` | liberar región completa |
+| `mprotect` | `examples/aarch64/13_mmap_paginas_permisos/04_mprotect_permisos` | cambiar permisos |
+| `mmap` con archivo | `examples/aarch64/13_mmap_paginas_permisos/05_mmap_con_archivo` | archivo como respaldo |
+| Errores y diagnóstico | `examples/aarch64/13_mmap_paginas_permisos/06_errores_diagnostico` | `MAP_FAILED`, `errno` conceptual |
+| Programa guiado | `examples/aarch64/13_mmap_paginas_permisos/07_programa_guiado` | ciclo completo de región |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=13_mmap_paginas_permisos/07_programa_guiado run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

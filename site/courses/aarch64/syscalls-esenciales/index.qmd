@@ -181,6 +181,25 @@ Si una syscall no funciona, revisa en este orden:
 
 Esta lista será más útil que buscar errores al azar.
 
+## Programas de práctica
+
+Cada ejemplo debe leerse como contrato con Linux: registros antes de `svc #0`,
+retorno en `x0` y ruta de error si aplica.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Contrato syscall | `examples/aarch64/09_syscalls_esenciales/01_contrato_syscall` | `x8`, argumentos y retorno |
+| `exit` y `write` | `examples/aarch64/09_syscalls_esenciales/02_exit_write` | fd, buffer, longitud |
+| `read` y buffers | `examples/aarch64/09_syscalls_esenciales/03_read_buffers` | bytes leídos y tamaño real |
+| `openat` y `close` | `examples/aarch64/09_syscalls_esenciales/04_openat_close` | fd válido y cleanup |
+| Errores mínimos | `examples/aarch64/09_syscalls_esenciales/05_errores_minimos` | retorno negativo |
+| Programa guiado | `examples/aarch64/09_syscalls_esenciales/06_programa_guiado` | flujo completo con archivo |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/06_programa_guiado run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

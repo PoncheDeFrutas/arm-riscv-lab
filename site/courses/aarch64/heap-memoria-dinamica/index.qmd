@@ -239,6 +239,25 @@ Leaks, use-after-free, double free y pérdida de punteros.
 :::
 :::
 
+## Programas de práctica
+
+Lee cada ejemplo preguntando quién posee el bloque, cuándo se libera y qué pasa
+si el puntero o tamaño deja de ser válido.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Stack vs heap | `examples/aarch64/12_heap_memoria_dinamica/01_stack_vs_heap` | vida automática contra vida dinámica |
+| Bloques y ownership | `examples/aarch64/12_heap_memoria_dinamica/02_bloques_ownership` | dueño, préstamo y transferencia |
+| Allocation/deallocation | `examples/aarch64/12_heap_memoria_dinamica/03_allocation_deallocation` | pedir y liberar memoria |
+| Buffer dinámico | `examples/aarch64/12_heap_memoria_dinamica/04_buffer_dinamico` | capacidad, longitud y crecimiento |
+| Errores de memoria | `examples/aarch64/12_heap_memoria_dinamica/05_errores_memoria` | use-after-free conceptual, leak, doble liberación |
+| `brk`, `malloc`, `mmap` | `examples/aarch64/12_heap_memoria_dinamica/06_brk_malloc_mmap` | tres formas de obtener memoria |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=12_heap_memoria_dinamica/04_buffer_dinamico run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

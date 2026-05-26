@@ -143,6 +143,29 @@ b.lt error
 Revisa retorno antes de sobrescribir `x0`. Si haces `mov x0, #0` para preparar
 `exit`, ya perdiste la información devuelta por `write`.
 
+## Ejemplo de la unidad
+
+El ejemplo `09_syscalls_esenciales/02_exit_write` es la versión de práctica para
+esta página. Debes leerlo como dos bloques: primero `write`, después `exit`.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=09_syscalls_esenciales/02_exit_write run
+```
+
+Lectura guiada:
+
+| Bloque | Regla |
+|---|---|
+| `write(stdout, msg, len)` | `x0`, `x1`, `x2` son argumentos; `x8 = 64` |
+| retorno de `write` | `x0` cambia y ya no es fd |
+| `exit(0)` | `x0` vuelve a prepararse, ahora como código de salida |
+| `svc #0` | entra al kernel con el contrato actual de registros |
+
+Esta separación evita una confusión frecuente: `x0` no “siempre es stdout”.
+Antes de `write` es fd; después de `write` es retorno; antes de `exit` es código
+de salida.
+
 ## Errores comunes
 
 | Error | Resultado |

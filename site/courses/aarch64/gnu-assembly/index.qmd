@@ -164,6 +164,26 @@ digraph G {
 }
 ```
 
+## Programas de práctica
+
+Cada ejemplo muestra una pieza del archivo `.s`. Lee primero la estructura y
+luego cambia un dato pequeño para confirmar qué parte controla cada directiva.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Estructura de archivo | `examples/aarch64/04_gnu_assembly/01_estructura_archivo_s` | secciones, símbolo global y `_start` |
+| Secciones | `examples/aarch64/04_gnu_assembly/02_secciones` | `.text`, `.data`, `.rodata`, `.bss` |
+| Directivas básicas | `examples/aarch64/04_gnu_assembly/03_directivas_basicas` | `.global`, `.equ`, etiquetas y tamaños |
+| Definición de datos | `examples/aarch64/04_gnu_assembly/04_definicion_datos` | `.byte`, `.word`, `.quad`, `.ascii` |
+| Pseudo-instrucciones | `examples/aarch64/04_gnu_assembly/05_pseudo_instrucciones` | carga de constantes y direcciones |
+| Include y macros | `examples/aarch64/04_gnu_assembly/06_include_macros` | reutilización controlada |
+| Archivo completo | `examples/aarch64/04_gnu_assembly/07_archivo_completo` | lectura de programa pequeño completo |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=04_gnu_assembly/07_archivo_completo run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

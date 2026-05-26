@@ -203,6 +203,27 @@ campos de bits.
 :::
 :::
 
+## Programas de práctica
+
+En esta unidad conviene depurar con GDB y mirar registros antes/después de cada
+instrucción. El resultado final no basta; importa explicar qué cambió.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Constantes | `examples/aarch64/07_aritmetica_logica_bits/01_movimiento_constantes` | construcción de valores |
+| Aritmética y flags | `examples/aarch64/07_aritmetica_logica_bits/02_aritmetica_flags` | `N`, `Z`, `C`, `V` |
+| Multiplicación/división | `examples/aarch64/07_aritmetica_logica_bits/03_multiplicacion_division` | resultados y restos conceptuales |
+| Lógica y máscaras | `examples/aarch64/07_aritmetica_logica_bits/04_logica_mascaras` | bits encendidos/apagados |
+| Shifts y rotates | `examples/aarch64/07_aritmetica_logica_bits/05_shifts_rotates` | desplazamiento contra rotación |
+| Extensiones | `examples/aarch64/07_aritmetica_logica_bits/06_extensiones` | signo contra ceros |
+| Bitfields | `examples/aarch64/07_aritmetica_logica_bits/07_bitfields` | extracción e inserción |
+| Lectura guiada | `examples/aarch64/07_aritmetica_logica_bits/08_lectura_guiada` | combinación de operaciones |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/02_aritmetica_flags run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

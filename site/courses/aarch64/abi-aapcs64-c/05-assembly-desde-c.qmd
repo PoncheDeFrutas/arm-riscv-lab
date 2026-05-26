@@ -178,10 +178,9 @@ $ echo $?
 Práctica completa:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src
-$ make
-$ make run
-resultado = 5
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/05_assembly_desde_c run
+resultado = 42
 $ echo $?
 0
 ```

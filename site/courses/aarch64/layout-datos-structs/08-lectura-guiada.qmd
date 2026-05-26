@@ -50,7 +50,7 @@ buffer_desc.cap  -> capacidad
 ## Programa completo
 
 Guarda como `buffer-adt.s`. También queda como práctica en
-`examples/aarch64/14-layout-datos-structs/01-buffer-adt/src/main.s`.
+`examples/aarch64/14_layout_datos_structs/08_lectura_guiada_buffer_adt/src/main.s`.
 
 ```asm
 .equ BUF_DATA, 0
@@ -135,9 +135,8 @@ $ echo $?
 Ruta práctica:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/01-buffer-adt/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/08_lectura_guiada_buffer_adt run
 $ echo $?
 0
 ```

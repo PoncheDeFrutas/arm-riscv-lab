@@ -174,6 +174,25 @@ Introducción a `bl`, `br`, `blr`, `ret` y `LR/X30`.
 :::
 :::
 
+## Programas de práctica
+
+Antes de leer cada salto, identifica qué instrucción preparó los flags o qué
+registro/bit se está probando.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Branching y etiquetas | `examples/aarch64/08_control_flujo/01_branching_etiquetas` | salto directo y caída de flujo |
+| Condiciones y flags | `examples/aarch64/08_control_flujo/02_condiciones_flags` | `eq`, `ne`, signed y unsigned |
+| `if` / `else` | `examples/aarch64/08_control_flujo/03_if_else` | etiqueta de rama y salida común |
+| Loops | `examples/aarch64/08_control_flujo/04_loops_recorrido` | salto hacia atrás |
+| `csel` y branches especializados | `examples/aarch64/08_control_flujo/05_csel_branches` | `cbz`, `tbz`, `csel`, `cset` |
+| Link y registro | `examples/aarch64/08_control_flujo/06_branch_link_register` | `bl`, `x30/LR`, `ret` |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=08_control_flujo/05_csel_branches run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

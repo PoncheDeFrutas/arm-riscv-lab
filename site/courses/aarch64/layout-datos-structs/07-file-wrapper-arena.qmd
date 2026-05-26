@@ -222,9 +222,8 @@ $ echo $?
 Ruta práctica:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/04-file-wrapper/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/07_file_wrapper_arena run
 $ echo $?
 0
 ```
@@ -467,9 +466,8 @@ $ echo $?
 Ruta práctica:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/05-arena-simple/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/07_file_wrapper_arena run
 $ echo $?
 0
 ```

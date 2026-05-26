@@ -94,6 +94,27 @@ Esto reduce comodidad, pero aumenta claridad. En vez de pedir “imprime este
 texto” a `printf`, preparamos directamente `write`: file descriptor, dirección,
 longitud y número de syscall.
 
+## Ejemplo de la unidad
+
+El ejemplo `05_primeros_programas/04_start_main_libc` contrasta el programa de
+entrada directa con la idea de `main`. La lectura correcta es comparar capas:
+en `_start` tú preparas `exit`; con `main`, el runtime de C prepara y termina
+parte del proceso.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=05_primeros_programas/04_start_main_libc run
+```
+
+Lee el ejemplo con esta tabla:
+
+| Elemento | Pregunta |
+|---|---|
+| `_start` | ¿quién llama a esta etiqueta? |
+| `main` | ¿quién prepara la llamada a esta función? |
+| `printf` o libc | ¿qué capa se está agregando? |
+| `svc #0` | ¿qué contrato directo con Linux queda visible? |
+
 ## Por qué no usamos `printf`
 
 `printf` no es syscall. Es función de biblioteca. Para llegar a pantalla,

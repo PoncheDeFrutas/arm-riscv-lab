@@ -183,6 +183,25 @@ Ver `sp`, `x29`, `x30`, frames, backtrace y corrupción conceptual.
 :::
 :::
 
+## Programas de práctica
+
+La regla de lectura es seguir `bl`, `x30/LR`, `sp`, `x29/FP` y el epílogo.
+Si una función llama a otra, revisa dónde guarda su retorno.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Llamadas y retorno | `examples/aarch64/11_stack_funciones_frames/01_llamadas_retorno` | `bl`, `ret`, `x30` |
+| Stack básico | `examples/aarch64/11_stack_funciones_frames/02_stack_basico` | reserva y liberación |
+| Stack frames | `examples/aarch64/11_stack_funciones_frames/03_stack_frames` | `x29`, `x30`, variable local |
+| Funciones no hoja | `examples/aarch64/11_stack_funciones_frames/04_funciones_no_hoja` | guardar `LR` antes de otro `bl` |
+| Recursión básica | `examples/aarch64/11_stack_funciones_frames/05_recursion_basica` | frame por llamada |
+| Debugging de frames | `examples/aarch64/11_stack_funciones_frames/06_debugging_frames_gdb` | `bt`, `info registers`, stack |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=11_stack_funciones_frames/06_debugging_frames_gdb gdb
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

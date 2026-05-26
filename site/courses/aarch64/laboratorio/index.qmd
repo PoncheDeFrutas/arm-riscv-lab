@@ -168,6 +168,22 @@ Hola ARM64
 Y debes poder explicar, en una frase corta, qué herramienta genera el binario,
 qué herramienta lo ejecuta y qué herramienta permite mirarlo por dentro.
 
+## Programas de práctica
+
+La unidad tiene tres ejemplos reales. Los dos primeros temas son instalación y
+entorno, por eso no tienen `main.s` propio.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Primer programa | `examples/aarch64/01_laboratorio/03_primer_programa` | `write`, `exit`, Makefile y salida |
+| Inspección del binario | `examples/aarch64/01_laboratorio/04_inspeccion_binario` | `file`, `readelf`, `objdump`, `nm` |
+| Debugging mínimo | `examples/aarch64/01_laboratorio/05_debugging_minimo` | QEMU/GDB, `_start`, registros |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=01_laboratorio/04_inspeccion_binario objdump
+```
+
 ## Checklist de cierre
 
 - [ ] Sé si mi ruta es Raspberry Pi nativa o x86_64 con QEMU.

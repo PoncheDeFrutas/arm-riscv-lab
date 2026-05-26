@@ -151,8 +151,9 @@ Si empiezas la ruta, no avances por el roadmap completo. Entra por la unidad 00.
 ::: {.resource-card}
 ### Ejemplo
 
-El primer programa público vive en la página de laboratorio, con código copiable.
+El primer programa público vive en `examples/aarch64/01_laboratorio/03_primer_programa`
+y la página de laboratorio explica cómo compilarlo, ejecutarlo y depurarlo.
 
-[Ver `00-hello-minimo`](laboratorio/03-primer-programa.qmd){.resource-action}
+[Ver primer programa](laboratorio/03-primer-programa.qmd){.resource-action}
 :::
 :::

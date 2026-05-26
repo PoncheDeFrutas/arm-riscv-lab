@@ -102,12 +102,15 @@ suma ambos, compara con `30` y sale con `0` si el layout fue leído bien.
 También queda como práctica en:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/00-point/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/02_acceso_campos_punteros run
 $ echo $?
-0
+27
 ```
+
+Ese ejemplo usa dos puntos. La suma se hace sobre el segundo elemento para que
+veas que `POINT_SIZE` no es decoración: es la distancia entre objetos del mismo
+array.
 
 ## Dirección del objeto vs contenido
 

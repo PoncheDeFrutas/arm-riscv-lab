@@ -182,6 +182,23 @@ Cuando mires estado del procesador, pregunta:
 5. ¿`sp`, `pc`, `fp` o `lr` tienen un rol especial aquí?
 6. ¿estoy mirando estado de userland (`EL0`) o pensando en kernel (`EL1`)?
 
+## Programas de práctica
+
+Los ejemplos de esta unidad son cortos para que puedas depurarlos instrucción
+por instrucción.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Registros generales | `examples/aarch64/03_modelo_aarch64/01_registros_generales` | diferencia entre `xN` y `wN` |
+| Registros especiales | `examples/aarch64/03_modelo_aarch64/02_registros_especiales` | `xzr`, `sp`, `pc`, `x29`, `x30` |
+| Flags NZCV | `examples/aarch64/03_modelo_aarch64/03_flags_nzcv` | flags después de `cmp`/`subs` |
+| Lectura con GDB | `examples/aarch64/03_modelo_aarch64/06_lectura_registros_gdb` | `info registers`, `pc`, `sp` |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb gdb
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

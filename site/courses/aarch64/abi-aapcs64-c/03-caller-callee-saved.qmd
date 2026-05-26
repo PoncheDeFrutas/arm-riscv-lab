@@ -156,16 +156,14 @@ caller original debe guardar `LR`.
 ## Práctica completa
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/01-preservar-x19/src
-$ make
-$ make run
-usar_x19 = 42
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/03_caller_callee_saved run
 $ echo $?
-0
+42
 ```
 
-El programa C llama la función assembly. La función assembly usa `x19`, lo
-restaura y retorna `42`.
+El programa no imprime. El código `42` confirma que la función retornó el valor
+esperado y que `x19` fue restaurado antes de volver al caller.
 
 ## Errores comunes
 

@@ -234,11 +234,9 @@ $ echo $?
 Ruta práctica:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/02-string-dinamico/src
-$ make
-$ make run
-Hola
-Hola!
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/06_buffer_string_matrix run
+OK
 ```
 
 ## Matrix
@@ -411,9 +409,8 @@ $ echo $?
 Ruta práctica:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/03-matrix/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/06_buffer_string_matrix run
 $ echo $?
 0
 ```

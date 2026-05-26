@@ -155,6 +155,25 @@ flowchart TB
 El depurador y las herramientas muestran registros, direcciones y memoria. El
 programador debe saber qué tamaño leer y qué interpretación aplicar.
 
+## Programas de práctica
+
+Usa estos ejemplos desde `examples/aarch64` para convertir la teoría en
+observación concreta.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Bits, bytes y bases | `examples/aarch64/02_bases_binarias/01_bits_bytes_bases` | valores escritos en registros |
+| Signo y rangos | `examples/aarch64/02_bases_binarias/02_enteros_signo_rangos` | misma secuencia de bits leída como signed/unsigned |
+| Overflow y extensiones | `examples/aarch64/02_bases_binarias/03_overflow_extensiones` | carry, overflow, sign-extension y zero-extension |
+| Bytes y texto | `examples/aarch64/02_bases_binarias/04_bytes_texto` | bytes ASCII/UTF-8 y longitud explícita |
+| Endianness y alineación | `examples/aarch64/02_bases_binarias/05_endianness_alineacion` | orden de bytes en memoria |
+| Direcciones y punteros | `examples/aarch64/02_bases_binarias/06_direcciones_punteros_memoria` | dirección, contenido y valor interpretado |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=02_bases_binarias/05_endianness_alineacion run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

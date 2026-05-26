@@ -21,26 +21,31 @@ el trabajo del programador es interpretarlos según instrucción, tamaño y rol.
 Esta lección prepara debugging futuro sin entrar todavía en watchpoints, stack
 frames ni core dumps.
 
-## Preparación
+## Ejemplo de la unidad
 
-Usa el ejemplo mínimo de la Unidad 01.
+Usa el ejemplo `03_modelo_aarch64/06_lectura_registros_gdb`. Está pensado para
+mirar registros sin distraerse con E/S, libc o estructuras de datos.
+
+Desde la raíz de ejemplos:
 
 ```bash
-cd 00-hello-minimo
-cd src
-make
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb
 ```
+
+El binario queda en `03_modelo_aarch64/06_lectura_registros_gdb/src/build/main`.
+Ese es el archivo que abre GDB.
 
 Ruta x86_64 con QEMU:
 
 ```bash
-make gdb
+make -f Makefile.qemu EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb gdb
 ```
 
 En otra terminal:
 
 ```bash
-gdb-multiarch build/main
+gdb-multiarch 03_modelo_aarch64/06_lectura_registros_gdb/src/build/main
 ```
 
 Dentro de GDB:
@@ -55,10 +60,24 @@ continue
 Ruta Raspberry Pi ARM64:
 
 ```bash
-gdb build/main
+make -f Makefile.native EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb
+gdb 03_modelo_aarch64/06_lectura_registros_gdb/src/build/main
 break _start
 run
 ```
+
+## Lectura del ejemplo
+
+Antes de ejecutar cada `stepi`, predice qué registro debería cambiar. Después
+del paso, compara tu predicción con `info registers`. Esa rutina es más valiosa
+que avanzar instrucciones sin hipótesis.
+
+| Acción | Pregunta |
+|---|---|
+| `break _start` | ¿dónde inicia el código del ejemplo? |
+| `x/4i $pc` | ¿qué instrucción se ejecutará ahora? |
+| `info registers x0 x1 x2 x8` | ¿qué valores visibles tiene el programa? |
+| `stepi` | ¿qué cambió exactamente? |
 
 ## Ver registros generales
 

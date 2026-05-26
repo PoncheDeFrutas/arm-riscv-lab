@@ -143,6 +143,27 @@ ARM64 nativo, `strace ./programa` es más directo. En laboratorio cruzado, usa
 | `munmap` | dirección, tamaño, éxito o error |
 | `mprotect` | región, permisos nuevos, error por alineación o permisos |
 
+## Ejemplo de la unidad
+
+El ejemplo `17_debugging_gdb_qemu_strace/06_strace_syscalls` produce una traza
+pequeña para leer syscalls de archivos y errores esperados.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/06_strace_syscalls run
+make -f Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/06_strace_syscalls strace
+```
+
+Condiciones que verás en el código:
+
+| Condición | Lectura |
+|---|---|
+| `b.lt error` | salto si retorno signed fue negativo |
+| `b.lt error_esperado` | un fallo de syscall era parte de la prueba |
+
+Esto enseña una regla importante: un retorno negativo no siempre significa que
+la práctica falló. A veces el programa prueba que el error esperado se detecta.
+
 ## Método de lectura
 
 1. Filtra por el grupo de syscalls que estás estudiando.

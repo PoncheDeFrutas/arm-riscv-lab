@@ -204,11 +204,24 @@ Un recorrido completo de registros, memoria, stack y syscalls.
 
 | Caso | Ruta | Qué valida |
 |---|---|---|
-| debugging mínimo | `examples/aarch64/17-debugging-gdb-qemu-strace/00-debug-minimo/src` | breakpoints, `stepi`, registros |
-| memoria | `examples/aarch64/17-debugging-gdb-qemu-strace/01-memoria/src` | `.rodata`, `.data`, `.bss`, `x/s`, `x/x` |
-| stack frames | `examples/aarch64/17-debugging-gdb-qemu-strace/02-stack/src` | `sp`, `x29`, `x30`, `bt` |
-| syscalls | `examples/aarch64/17-debugging-gdb-qemu-strace/03-syscalls/src` | `strace`, errores y recursos |
-| core dump | `examples/aarch64/17-debugging-gdb-qemu-strace/04-core-dump/src` | fallo controlado y GDB post-mortem |
+| Flujo básico de GDB | `examples/aarch64/17_debugging_gdb_qemu_strace/01_gdb_flujo_basico` | breakpoints, `stepi`, registros |
+| Registros e instrucciones | `examples/aarch64/17_debugging_gdb_qemu_strace/02_registros_instrucciones` | `pc`, `objdump`, cambios por instrucción |
+| Lectura de memoria | `examples/aarch64/17_debugging_gdb_qemu_strace/03_lectura_memoria` | `.rodata`, `.data`, `.bss`, `x/s`, `x/x` |
+| Stack frames | `examples/aarch64/17_debugging_gdb_qemu_strace/04_stack_frames_gdb` | `sp`, `x29`, `x30`, `bt` |
+| QEMU y gdbserver | `examples/aarch64/17_debugging_gdb_qemu_strace/05_qemu_gdbserver` | puerto remoto, dos terminales |
+| strace y syscalls | `examples/aarch64/17_debugging_gdb_qemu_strace/06_strace_syscalls` | `openat`, `read`, `write`, errores |
+| Core dumps | `examples/aarch64/17_debugging_gdb_qemu_strace/07_core_dumps` | fallo controlado y GDB post-mortem |
+| Práctica guiada | `examples/aarch64/17_debugging_gdb_qemu_strace/08_practica_guiada` | recorrido completo |
+
+Flujo recomendado:
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/01_gdb_flujo_basico gdb
+```
+
+Cuando depures en QEMU, recuerda el modelo: el proceso ya vive dentro de QEMU.
+GDB se conecta con `target remote`; no crea el proceso con `run`.
 
 ## Qué no estudiaremos todavía
 

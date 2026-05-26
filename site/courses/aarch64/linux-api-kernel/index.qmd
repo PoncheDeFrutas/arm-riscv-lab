@@ -158,6 +158,25 @@ Programa que abre un archivo, lee un bloque, escribe en stdout y limpia.
 :::
 :::
 
+## Programas de práctica
+
+Estos ejemplos tratan Linux como API: cada recurso obtenido debe tener regla de
+uso, error y cierre.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| File descriptors | `examples/aarch64/10_linux_api_kernel/01_file_descriptors` | fd como recurso |
+| Archivos | `examples/aarch64/10_linux_api_kernel/02_archivos_open_read_write_close` | abrir, leer, escribir, cerrar |
+| Errores y cleanup | `examples/aarch64/10_linux_api_kernel/03_errores_cleanup` | salida ordenada ante fallo |
+| Posición y metadatos | `examples/aarch64/10_linux_api_kernel/04_posicion_metadatos` | posición de archivo y datos asociados |
+| Procesos y tiempo | `examples/aarch64/10_linux_api_kernel/05_procesos_tiempo` | llamadas de proceso/tiempo |
+| Programa de recursos | `examples/aarch64/10_linux_api_kernel/06_programa_recursos` | recurso vivo, uso, cleanup |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=10_linux_api_kernel/03_errores_cleanup run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

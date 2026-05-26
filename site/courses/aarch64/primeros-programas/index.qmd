@@ -130,6 +130,24 @@ Clasifica registros usados por `exit` y `write`.
 :::
 :::
 
+## Programas de práctica
+
+Estos ejemplos repiten pocas instrucciones a propósito. La meta es que el
+estudiante pueda explicar cada registro antes de avanzar a memoria y control.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Programa mínimo | `examples/aarch64/05_primeros_programas/01_programa_minimo_exit` | `exit` y código de salida |
+| Hello World | `examples/aarch64/05_primeros_programas/02_hello_world_write` | `write` con dirección y longitud |
+| stdout/stderr/exit codes | `examples/aarch64/05_primeros_programas/03_stdout_stderr_exit_codes` | fd `1`, fd `2` y retorno del proceso |
+| `_start`, `main`, libc | `examples/aarch64/05_primeros_programas/04_start_main_libc` | capas entre entrada ELF y C |
+| Lectura guiada | `examples/aarch64/05_primeros_programas/05_lectura_guiada_syscalls` | flujo completo de syscalls |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=05_primeros_programas/02_hello_world_write run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

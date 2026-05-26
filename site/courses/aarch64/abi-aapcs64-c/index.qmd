@@ -224,23 +224,33 @@ Static library, shared library y programa integrado C + assembly.
 
 | Caso | Ruta | Qué valida |
 |---|---|---|
-| C llama assembly | `examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src` | argumentos en `x0`, `x1` y retorno en `x0` |
-| Preservar `x19` | `examples/aarch64/15-abi-aapcs64/01-preservar-x19/src` | callee-saved restaurado |
-| `printf` desde assembly | `examples/aarch64/15-abi-aapcs64/02-printf-desde-assembly/src` | `main` assembly llama `libc` |
-| C desde assembly | `examples/aarch64/15-abi-aapcs64/03-c-desde-assembly/src` | `bl funcion_c` desde assembly |
-| Argumentos por stack | `examples/aarch64/15-abi-aapcs64/04-argumentos-stack/src` | noveno argumento fuera de `x0`-`x7` |
-| Librería estática | `examples/aarch64/15-abi-aapcs64/05-libreria-estatica/src` | `.a` con función assembly |
-| Librería compartida | `examples/aarch64/15-abi-aapcs64/06-libreria-compartida/src` | `.so` con función assembly |
+| Mapa de registros ABI | `examples/aarch64/15_abi_aapcs64/01_abi_aapcs64_registros` | argumentos en `x0`, `x1` y retorno en `x0` |
+| Argumentos y stack | `examples/aarch64/15_abi_aapcs64/02_argumentos_retornos_stack` | argumentos extras fuera de `x0`-`x7` |
+| Caller/callee-saved | `examples/aarch64/15_abi_aapcs64/03_caller_callee_saved` | preservar `x19` antes de retornar |
+| `main`, `_start` y libc | `examples/aarch64/15_abi_aapcs64/04_main_start_libc_runtime` | runtime de C llama `main` |
+| Assembly desde C | `examples/aarch64/15_abi_aapcs64/05_assembly_desde_c` | C llama símbolo assembly exportado |
+| C desde assembly y `printf` | `examples/aarch64/15_abi_aapcs64/06_c_desde_assembly_printf` | `main` assembly llama `libc` |
+| Librerías y lectura guiada | `examples/aarch64/15_abi_aapcs64/07_librerias_lectura_guiada` | función assembly empaquetada como librería |
 
 Flujo común:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/00-sumar-desde-c/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/05_assembly_desde_c run
 $ echo $?
 0
 ```
+
+Guía de lectura:
+
+| Si ves... | Significa... |
+|---|---|
+| `x0`-`x7` antes de `bl` | argumentos de función normal según AAPCS64 |
+| `x0` después de `ret` | retorno entero o puntero |
+| `x19`-`x28` | registros callee-saved: si los usas, restáuralos |
+| `stp x29, x30, [sp, #-16]!` | prólogo que guarda frame pointer y link register |
+| `.type nombre, %function` | marca el símbolo como función para herramientas |
+| `.size nombre, . - nombre` | tamaño de función; útil aquí por interoperabilidad y debugging |
 
 ## Checklist de cierre
 

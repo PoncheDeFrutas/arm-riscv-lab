@@ -86,9 +86,9 @@ main:
 Práctica:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/03-c-desde-assembly/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/06_c_desde_assembly_printf run
+printf desde assembly: 42
 $ echo $?
 0
 ```
@@ -133,10 +133,9 @@ valor = 42
 Práctica:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/02-printf-desde-assembly/src
-$ make
-$ make run
-valor = 42
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/06_c_desde_assembly_printf run
+printf desde assembly: 42
 ```
 
 ## Por qué `printf` necesita cuidado

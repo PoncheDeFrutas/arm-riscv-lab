@@ -231,9 +231,25 @@ Método completo con `readelf`, `objdump`, `nm`, `ldd` y `strip`.
 
 | Caso | Ruta | Qué valida |
 |---|---|---|
-| mínimo ELF | `examples/aarch64/16-elf-linking-loading/00-minimo-elf/src` | `.s -> .o -> ELF`, header, segmentos |
-| secciones y símbolos | `examples/aarch64/16-elf-linking-loading/01-secciones-simbolos/src` | `.text`, `.rodata`, `.data`, `.bss`, `nm` |
-| `printf` dinámico | `examples/aarch64/16-elf-linking-loading/02-dynamic-printf/src` | `libc`, dynamic loader, dependencias |
+| Flujo fuente-objeto-ejecutable | `examples/aarch64/16_elf_linking_loading/01_flujo_assembly_objeto_ejecutable` | `.s -> .o -> ELF` |
+| ELF header y entry point | `examples/aarch64/16_elf_linking_loading/02_elf_header_entry_point` | `readelf -h`, `_start`, punto de entrada |
+| Secciones, símbolos y relocations | `examples/aarch64/16_elf_linking_loading/03_secciones_simbolos_relocations` | `.text`, `.rodata`, `.data`, `.bss`, `nm` |
+| Segmentos, loader y permisos | `examples/aarch64/16_elf_linking_loading/04_segmentos_loader_permisos` | program headers, permisos `R/W/E` |
+| Linking estático y dinámico | `examples/aarch64/16_elf_linking_loading/05_linking_estatico_dinamico` | `INTERP`, `NEEDED`, dynamic loader |
+| GOT, PLT y PIE | `examples/aarch64/16_elf_linking_loading/06_got_plt_pie` | `Type: DYN`, llamadas a `printf`, direcciones variables |
+| Herramientas y lectura guiada | `examples/aarch64/16_elf_linking_loading/07_herramientas_lectura_guiada` | `readelf`, `objdump`, `nm`, `strip` |
+
+Flujo recomendado:
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point readelf-header
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point nm
+```
+
+Lee primero el header. Después compara con símbolos. Si inviertes el orden,
+puedes terminar interpretando nombres sin saber si el archivo es `REL`, `EXEC`
+o `DYN`.
 
 ## Qué no estudiaremos todavía
 

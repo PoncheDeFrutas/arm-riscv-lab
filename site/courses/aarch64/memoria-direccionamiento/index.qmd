@@ -170,6 +170,25 @@ Cuando un acceso a memoria no hace lo esperado, revisa:
 5. si el puntero cambia con pre-index o post-index;
 6. si la sección permite el uso esperado del dato.
 
+## Programas de práctica
+
+La lectura recomendada siempre separa tres cosas: dirección, tamaño de acceso y
+valor interpretado.
+
+| Tema | Ruta | Qué mirar |
+|---|---|---|
+| Dirección y contenido | `examples/aarch64/06_memoria_direccionamiento/01_direccion_contenido` | puntero base y dato cargado |
+| Secciones y mapa | `examples/aarch64/06_memoria_direccionamiento/02_secciones_mapa` | dónde vive cada dato |
+| Load/store básico | `examples/aarch64/06_memoria_direccionamiento/03_load_store_basico` | `ldr` y `str` |
+| Tamaños de acceso | `examples/aarch64/06_memoria_direccionamiento/04_tamanos_acceso` | `ldrb`, `ldrh`, `ldr` |
+| Modos de direccionamiento | `examples/aarch64/06_memoria_direccionamiento/05_modos_direccionamiento` | offset, pre-index y post-index |
+| Arrays y recorrido | `examples/aarch64/06_memoria_direccionamiento/06_arrays_recorrido` | índice, puntero y suma |
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=06_memoria_direccionamiento/06_arrays_recorrido run
+```
+
 ## Qué no estudiaremos todavía
 
 | Tema | Por qué queda fuera |

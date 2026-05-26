@@ -261,8 +261,9 @@ Empieza por la unidad 00 para fijar vocabulario: ARM, ARMv8-A, AArch64 y A64.
 ::: {.resource-card}
 ### Ejemplo
 
-Cuando llegues al laboratorio, compila y ejecuta el ejemplo `00-hello-minimo`
-desde la página.
+Cuando llegues al laboratorio, compila y ejecuta el ejemplo
+`01_laboratorio/03_primer_programa`. Esa carpeta es la referencia común para
+validar toolchain, QEMU, Makefiles y debugging mínimo.
 
 [Ver primer programa](laboratorio/03-primer-programa.qmd){.resource-action}
 :::

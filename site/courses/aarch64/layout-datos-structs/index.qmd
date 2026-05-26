@@ -283,25 +283,37 @@ ADT `Buffer` completo con `push_byte`, `clear` y error por capacidad.
 ## Programas de práctica
 
 Estos programas están completos. Puedes leerlos en la página y también correrlos
-desde `examples/`.
+desde `examples/aarch64`. La unidad avanza de “un struct es bytes con offsets”
+hasta “un objeto manual es descriptor + funciones + reglas de vida”.
 
 | Caso | Qué practica | Ruta |
 |---|---|---|
-| `Point` | struct básico y campos `x`, `y` | `examples/aarch64/14-layout-datos-structs/00-point/src` |
-| `Buffer ADT` | descriptor, `push_byte`, `clear` | `examples/aarch64/14-layout-datos-structs/01-buffer-adt/src` |
-| `String` | `data`, `len`, `cap` y `write` | `examples/aarch64/14-layout-datos-structs/02-string-dinamico/src` |
-| `Matrix` | row-major, límites y elemento `u64` | `examples/aarch64/14-layout-datos-structs/03-matrix/src` |
-| `File wrapper` | fd, wrapper, `openat`, `write`, `close` | `examples/aarch64/14-layout-datos-structs/04-file-wrapper/src` |
-| `Arena` | `base`, `used`, `cap`, alloc simple | `examples/aarch64/14-layout-datos-structs/05-arena-simple/src` |
+| Struct layout | offsets, tamaño total y suma de campos | `examples/aarch64/14_layout_datos_structs/01_structs_layout` |
+| Campos con punteros | puntero base, `POINT_SIZE` y segundo elemento | `examples/aarch64/14_layout_datos_structs/02_acceso_campos_punteros` |
+| ADT e invariantes | `len`, `cap`, `push_byte`, error por capacidad | `examples/aarch64/14_layout_datos_structs/03_adts_invariantes` |
+| Objetos manuales | `self`, constructor, método y destructor | `examples/aarch64/14_layout_datos_structs/04_objetos_manuales` |
+| Descriptores | descriptor propio con fd, puntero y longitud | `examples/aarch64/14_layout_datos_structs/05_descriptores` |
+| Buffer, String y Matrix | layouts concretos, límites e índices | `examples/aarch64/14_layout_datos_structs/06_buffer_string_matrix` |
+| File wrapper y arena | recursos, cleanup y asignación lineal | `examples/aarch64/14_layout_datos_structs/07_file_wrapper_arena` |
+| Lectura guiada Buffer ADT | programa completo con validaciones | `examples/aarch64/14_layout_datos_structs/08_lectura_guiada_buffer_adt` |
 
 Flujo recomendado:
 
 ```bash
-$ cd examples/aarch64/14-layout-datos-structs/00-point/src
-$ make
-$ make run
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=14_layout_datos_structs/01_structs_layout run
 $ echo $?
 ```
+
+Guía de lectura:
+
+| Si ves... | Interpreta... |
+|---|---|
+| `.equ POINT_X, 0` | nombre simbólico para un offset |
+| `ldr xN, [x0, #POINT_X]` | carga campo desde dirección base + offset |
+| `cmp len, cap` seguido de `b.cs` | comparación unsigned: si `len >= cap`, no hay espacio |
+| `b.lt error` | salto si resultado signed fue negativo, común para errores de syscall |
+| descriptor con punteros | el struct describe datos; no necesariamente contiene todos los bytes |
 
 ## Qué no estudiaremos todavía
 

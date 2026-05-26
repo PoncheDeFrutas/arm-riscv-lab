@@ -102,6 +102,30 @@ No queda `0xFFFFFFFF00000001`. Los bits altos se limpian.
 En Linux AArch64, las direcciones de userland se manejan como valores de 64
 bits, por eso se guardan en registros `Xn`.
 
+## Ejemplo de la unidad
+
+El ejemplo `03_modelo_aarch64/01_registros_generales` deja el resultado final en
+`x0` para que lo veas como código de salida. Úsalo para comprobar dos ideas:
+`x0` puede transportar valores de 64 bits y escribir en `w0` limpia la parte
+alta del mismo registro.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=03_modelo_aarch64/01_registros_generales run
+echo $?
+```
+
+Lectura sugerida:
+
+| Línea del ejemplo | Qué debes observar |
+|---|---|
+| escritura en `xN` | el registro completo queda definido |
+| escritura en `wN` | los 32 bits altos de `xN` se limpian |
+| `mov x8, #93` | `x8` solo selecciona `exit` al final |
+
+Si lo depuras, mira `x0` y `w0` juntos. No son dos lugares distintos; son dos
+vistas del mismo registro.
+
 ## Roles iniciales antes de ABI
 
 En syscalls Linux, `x0`-`x5` suelen llevar argumentos, `x8` lleva número de

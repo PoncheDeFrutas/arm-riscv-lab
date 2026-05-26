@@ -131,12 +131,10 @@ stack = i
 Práctica completa:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/04-argumentos-stack/src
-$ make
-$ make run
-sum9 = 45
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/02_argumentos_retornos_stack run
 $ echo $?
-0
+55
 ```
 
 La lección debe explicar este caso con diagrama antes de pedir al estudiante que

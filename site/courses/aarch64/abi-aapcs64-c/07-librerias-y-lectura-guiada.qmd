@@ -67,10 +67,9 @@ main.c + libu15.a -> app
 Práctica:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/05-libreria-estatica/src
-$ make
-$ make run
-mul = 42
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/07_librerias_lectura_guiada run
+lib = 42
 $ echo $?
 0
 ```
@@ -96,10 +95,9 @@ main.c + libu15shared.so -> app
 Práctica:
 
 ```bash
-$ cd examples/aarch64/15-abi-aapcs64/06-libreria-compartida/src
-$ make
-$ make run
-triple = 21
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=15_abi_aapcs64/07_librerias_lectura_guiada run
+lib = 42
 $ echo $?
 0
 ```

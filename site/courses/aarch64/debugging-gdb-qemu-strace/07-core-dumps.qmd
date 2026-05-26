@@ -100,6 +100,27 @@ Al abrir el core, no empieces cambiando cosas. Lee:
 Con eso separas tres preguntas: dónde falló, con qué estado falló y qué había
 en la pila alrededor del fallo.
 
+## Ejemplo de la unidad
+
+El ejemplo `17_debugging_gdb_qemu_strace/07_core_dumps` separa ejecución normal
+y fallo controlado. La ejecución normal termina bien; el objetivo del fallo es
+generar material para GDB post-mortem.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/07_core_dumps run
+make -f Makefile.qemu EXAMPLE=17_debugging_gdb_qemu_strace/07_core_dumps run-fault
+```
+
+Si el sistema genera core, abre binario y core juntos:
+
+```bash
+gdb-multiarch 17_debugging_gdb_qemu_strace/07_core_dumps/src/build/fault core
+```
+
+Lee primero `bt`, `info registers` y `x/i $pc`. No intentes avanzar: un core
+dump no es una sesión viva.
+
 ## Qué esperar
 
 Un fallo por puntero nulo suele apuntar a una instrucción de store o load sobre

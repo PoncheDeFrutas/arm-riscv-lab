@@ -163,6 +163,28 @@ Cuando revises una salida de `readelf -h`, usa este orden:
 4. `Entry point address` solo si el tipo puede ejecutarse.
 5. offsets de program/section headers para saber qué otras tablas existen.
 
+## Ejemplo de la unidad
+
+El ejemplo `16_elf_linking_loading/02_elf_header_entry_point` imprime una marca
+pequeña y luego permite inspeccionar el mismo binario con herramientas. No lo
+leas solo como programa que corre; léelo como archivo que el loader puede
+interpretar.
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point run
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point readelf-header
+make -f Makefile.qemu EXAMPLE=16_elf_linking_loading/02_elf_header_entry_point nm
+```
+
+Guía de lectura:
+
+| Salida | Qué buscar |
+|---|---|
+| `readelf -h` | `Class`, `Machine`, `Type`, `Entry point address` |
+| `nm` | símbolo `_start` y dirección asociada |
+| ejecución | confirma que el archivo no solo enlazó, también carga y corre |
+
 ## Checklist
 
 - [ ] Puedo usar `readelf -h`.
