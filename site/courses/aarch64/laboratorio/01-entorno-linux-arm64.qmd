@@ -161,7 +161,8 @@ QEMU. Para el kernel, es un proceso x86_64 normal.
 
 ::: {.callout-warning title="No ejecutes directo en x86_64"}
 Si tu host es `x86_64`, `./build/main` no es el comando correcto para el
-binario AArch64. Entra a `src/` y usa `make run`.
+binario AArch64. Entra a `examples/aarch64` y usa `Makefile.qemu` con
+`EXAMPLE=<unidad>/<ejemplo>`.
 :::
 
 ## QEMU system mode
@@ -243,7 +244,7 @@ Si alguno de estos comandos falla, ve a
 |---|---|
 | creer que `x86_64` impide estudiar ARM64 | usa toolchain cruzado y QEMU user mode |
 | instalar QEMU system mode para el primer programa | aquí basta `qemu-aarch64` |
-| ejecutar directo un binario ARM64 en host `x86_64` | usa `make run` o `qemu-aarch64` |
+| ejecutar directo un binario ARM64 en host `x86_64` | usa `make -f Makefile.qemu EXAMPLE=... run` |
 | saltar a VS Code antes de validar terminal | primero confirma toolchain en consola |
 
 ## Mini ejercicios

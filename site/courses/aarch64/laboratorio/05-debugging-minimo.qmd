@@ -118,8 +118,10 @@ Para usar debugging visual instala:
 | StackScope | `EightLayerStudio.StackScope` |
 
 Para los ejemplos del curso, abre `examples/aarch64` como workspace y abre el
-`src/main.s` que quieres depurar. La configuración usa `${fileDirname}`, por lo
-que no hay que escoger una carpeta en una lista.
+archivo fuente principal que quieres depurar. En la mayoria será `src/main.s`;
+en lecciones mixtas puede ser `src/main.c`, `src/sumar.s` u otro archivo dentro
+de `src/`. La configuración usa `${fileDirname}`, por lo que VS Code toma esa
+carpeta como base y apunta a `${fileDirname}/build/main`.
 
 ```json
 {
@@ -168,8 +170,9 @@ que no hay que escoger una carpeta en una lista.
 ```
 
 ::: {.callout-note title="Archivo activo"}
-Antes de presionar F5, el archivo activo debe ser el `src/main.s` del ejemplo.
-VS Code calcula el binario como `${fileDirname}/build/main`.
+Antes de presionar F5, el archivo activo debe estar dentro del `src/` del
+ejemplo. Si abres un README, una página Quarto o un archivo fuera de `src/`, VS
+Code calculará otra carpeta y no encontrará el binario correcto.
 :::
 
 ## Errores visuales al avanzar
@@ -184,8 +187,8 @@ significa necesariamente que el programa esté mal.
 | `svc #0` | Entra al kernel; no se depura por dentro como tu código | Observa registros antes y después |
 | Funciones auxiliares | Puedes saltar a otra etiqueta o volver después | Pon breakpoints por etiqueta |
 
-En esta unidad, el Makefile de QEMU ya usa `-singlestep` cuando corres
-`make gdb`.
+En esta unidad, `Makefile.qemu` ya usa `-singlestep` cuando corres el target
+`gdb` o cuando VS Code lanza `gdb-vscode`.
 
 ## Debug Console de VS Code
 

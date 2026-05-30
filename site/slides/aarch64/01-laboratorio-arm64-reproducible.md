@@ -93,7 +93,7 @@ Permite al estudiante analizar cómo se representan y almacenan los datos dentro
 <StepList :steps="[
   'Elegir ruta de ejecución — Saber si usaremos Raspberry Pi real o x86_64 con QEMU user mode',
   'Instalar el toolchain — Tener las herramientas mínimas listas para compilar AArch64',
-  'Ejecutar el primer binario — Correr make y make run y ver la salida esperada',
+  'Ejecutar el primer binario — Usar Makefile.qemu o Makefile.native con EXAMPLE=...',
   'Inspeccionar y depurar — Usar herramientas básicas para mirar el binario y detenernos en _start'
 ]" />
 
@@ -188,7 +188,7 @@ layout: aarch64-two-cols
 
 <InfoBox type="note" title="Regla práctica">
 
-Si solo quieres correr `build/main`, usa QEMU user mode.
+Si solo quieres correr un binario AArch64 desde x86_64, usa QEMU user mode.
 
 </InfoBox>
 
@@ -207,7 +207,7 @@ Solo lo necesario para compilar, ejecutar e inspeccionar
 <v-clicks>
 
 - **Construir** — `make`, `gcc` / `aarch64-linux-gnu-gcc`, `as`, `ld`
-- **Ejecutar** — `./build/main` (nativo), `qemu-aarch64` (cross)
+- **Ejecutar** — `Makefile.native` (nativo), `Makefile.qemu` (cross)
 - **Inspeccionar** — `file`, `readelf`, `objdump`, `nm`, `strace`
 - **Depurar** — `gdb` (nativo), `gdb-multiarch` (cross)
 
@@ -382,13 +382,13 @@ rectangle "Código fuente" as SRC_DIR {
 }
 
 rectangle "Construcción" as BUILD {
-  component "make" as MAKE
+  component "Makefile.qemu\nEXAMPLE=..." as MAKE
 }
 
 artifact "build/main\nbinario ejecutable" as BIN
 
 rectangle "Ejecución" as EXEC {
-  component "make run" as RUN
+  component "target run" as RUN
   component "QEMU o nativo" as ENV
 }
 
@@ -409,15 +409,15 @@ ENV --> OUT : imprime
 
 <div v-click class="mt-4 text-lg leading-relaxed">
 
-Flujo completo: el archivo `src/main.s` se compila con `make`, se genera el binario `build/main` y luego se ejecuta con `make run`, ya sea en **QEMU** o en una máquina **ARM64 nativa**.
+Flujo completo: desde `examples/aarch64`, el Makefile compartido recibe `EXAMPLE=...`, compila el fuente del ejemplo, genera `src/build/main` y lo ejecuta con QEMU o en ARM64 nativo.
 
 </div>
 
 <v-clicks>
 
-- `make` — Genera `build/main`
-- `make run` — Ejecuta el binario usando QEMU o ejecución nativa
-- `make clean` — Borra `build/` para reconstruir desde cero
+- `make -f Makefile.qemu EXAMPLE=...` — Genera `src/build/main`
+- `make -f Makefile.qemu EXAMPLE=... run` — Ejecuta con QEMU
+- `make -f Makefile.native EXAMPLE=... run` — Ejecuta en ARM64 nativo
 
 </v-clicks>
 
@@ -448,7 +448,7 @@ El binario no es una caja negra: herramientas para mirarlo por dentro
 
 <v-clicks>
 
-- `file build/main` → ELF 64-bit, AArch64
+- `file .../src/build/main` → ELF 64-bit, AArch64
 - `readelf -h` → Class: ELF64, Machine: AArch64, Entry point
 - `objdump -d` → `_start`, instrucciones `mov`, `adr`, `svc`
 - `nm` → símbolos y sus direcciones
@@ -471,7 +471,7 @@ Detenerse en `_start`, mirar registros y avanzar instrucción por instrucción
 ::code-group
 
 ```bash [Raspberry Pi]
-make gdb
+make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa gdb
 # Dentro de GDB:
 break _start
 run
@@ -481,9 +481,9 @@ stepi
 
 ```bash [x86_64 + QEMU]
 # Terminal 1:
-make gdb
+make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa gdb
 # Terminal 2:
-gdb-multiarch build/main
+gdb-multiarch 01_laboratorio/03_primer_programa/src/build/main
 target remote localhost:1234
 break _start
 continue
@@ -662,9 +662,9 @@ layout: aarch64-checklist
 
 - <span class="check-icon">✓</span> Sé si mi ruta es Raspberry Pi o x86_64 con QEMU
 - <span class="check-icon">✓</span> Instalé las herramientas mínimas de mi ruta
-- <span class="check-icon">✓</span> `make` genera `build/main`
-- <span class="check-icon">✓</span> `make run` imprime `Hola ARM64`
-- <span class="check-icon">✓</span> `file build/main` identifica un binario AArch64
+- <span class="check-icon">✓</span> `Makefile.qemu` o `Makefile.native` genera `src/build/main`
+- <span class="check-icon">✓</span> `make -f Makefile.qemu EXAMPLE=... run` imprime `Hola ARM64`
+- <span class="check-icon">✓</span> `file .../src/build/main` identifica un binario AArch64
 - <span class="check-icon">✓</span> Puedo detenerme en `_start` con GDB
 
 </div>

@@ -44,15 +44,17 @@ Entra al workspace de ejemplos:
 cd examples/aarch64
 ```
 
-Durante las primeras prácticas, cada ejemplo tendrá su propio `src/main.s`. Los
-Makefiles se comparten desde `examples/aarch64` para no duplicar configuración.
+Durante las primeras prácticas, el archivo principal suele ser `src/main.s`.
+Más adelante algunas lecciones usan `src/main.c` o funciones assembly auxiliares.
+Los Makefiles se comparten desde `examples/aarch64` para no duplicar
+configuración.
 
 ## Flujo de construcción
 
 El flujo general es:
 
 ```bash
-main.s -> main.o -> build/main -> make run
+src/main.s -> src/build/main -> make -f Makefile.qemu EXAMPLE=... run
 ```
 
 | Paso | Qué produce | Para qué sirve |
@@ -174,18 +176,17 @@ desde el código actual, no desde un resultado anterior.
 1. Cambia `Hola ARM64` por tu nombre.
 2. Quita el salto de línea `\n` y observa cómo queda la terminal.
 3. Explica qué archivo se genera dentro de `build/`.
-4. Explica por qué el mismo `make run` puede funcionar en QEMU y ARM64 nativo.
+4. Explica por qué cambia el Makefile entre QEMU y ARM64 nativo.
 5. Explica qué parte del programa escribe y qué parte termina.
 
 ## Checklist
 
-- [ ] Entré a la carpeta del ejemplo.
-- [ ] Entré a `src/`.
-- [ ] `make` generó `build/main`.
-- [ ] `make run` imprimió `Hola ARM64`.
+- [ ] Entré a `examples/aarch64`.
+- [ ] `make` generó `src/build/main`.
+- [ ] `make -f Makefile.qemu EXAMPLE=... run` imprimió `Hola ARM64`.
 - [ ] Puedo limpiar con `make clean`.
 - [ ] Entiendo que todavía no estamos estudiando syscalls a fondo.
-- [ ] Puedo explicar el flujo `main.s -> build/main -> make run`.
+- [ ] Puedo explicar el flujo `src/main.s -> src/build/main -> run`.
 
 ## Cierre
 

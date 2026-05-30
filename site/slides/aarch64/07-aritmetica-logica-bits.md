@@ -418,6 +418,123 @@ En bitfield, posiciones mueven la mirada dentro de un registro. No son offsets d
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada de operaciones
+
+Cada ejemplo aísla una familia de instrucciones. El objetivo es predecir estado antes de ejecutar.
+
+---
+layout: aarch64-two-cols
+---
+
+# Constantes y aritmética
+
+::left::
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/01_movimiento_constantes run
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/02_aritmetica_flags run
+```
+
+::right::
+
+Preguntas:
+
+- ¿La constante cabe en un `mov`?
+- ¿Hace falta `movz`/`movk`?
+- ¿La instrucción actualiza flags?
+- ¿`C` y `V` significan lo mismo? No.
+
+---
+layout: aarch64-two-cols
+---
+
+# Multiplicación y división
+
+::left::
+
+```bash
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/03_multiplicacion_division run
+```
+
+::right::
+
+Qué cuidar:
+
+- Multiplicar puede necesitar más bits que el operando original.
+- División entera descarta residuo.
+- Signed y unsigned cambian interpretación.
+
+---
+layout: aarch64-two-cols
+---
+
+# Máscaras y shifts
+
+::left::
+
+```bash
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/04_logica_mascaras run
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/05_shifts_rotates run
+```
+
+::right::
+
+Modelo:
+
+- Máscara conserva, limpia o prueba bits.
+- `tst` prueba bits y actualiza flags.
+- `lsl` mueve hacia bits más significativos.
+- `asr` conserva signo; `lsr` rellena ceros.
+
+---
+layout: aarch64-two-cols
+---
+
+# Extensiones y bitfields
+
+::left::
+
+```bash
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/06_extensiones run
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/07_bitfields run
+```
+
+::right::
+
+Regla:
+
+- `uxt*` interpreta sin signo.
+- `sxt*` interpreta con signo.
+- `ubfx` extrae campo y rellena ceros.
+- `bfi` inserta sin destruir todo el registro.
+
+---
+layout: aarch64-two-cols
+---
+
+# Lectura guiada final
+
+::left::
+
+```bash
+make -f Makefile.qemu EXAMPLE=07_aritmetica_logica_bits/08_lectura_guiada run
+```
+
+::right::
+
+Orden de lectura:
+
+1. Construir valor.
+2. Aplicar máscara.
+3. Desplazar.
+4. Extender.
+5. Extraer o insertar campo.
+
+---
 layout: aarch64-checklist
 ---
 

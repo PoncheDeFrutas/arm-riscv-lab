@@ -11,7 +11,8 @@ Cursos > AArch64 > Laboratorio > Estructura del repositorio
 ::: {.hero-lab}
 La estructura debe ayudar al estudiante, no obligarlo a recordar rutas largas ni
 duplicar configuraciones. Los ejemplos AArch64 comparten `.vscode/` y Makefiles
-desde `examples/aarch64`; cada ejemplo solo agrega su README y `src/main.s`.
+desde `examples/aarch64`; cada ejemplo solo agrega su README y sus fuentes en
+`src/`.
 :::
 
 ## Qué vas a aprender
@@ -42,6 +43,9 @@ En cada ejemplo, `src/` solo necesita un archivo para empezar:
 | Archivo | Uso |
 |---|---|
 | `main.s` | Código assembly |
+| `main.c` | Código C cuando la lección necesita runtime o libc |
+| `*.s` auxiliares | Funciones assembly llamadas desde otro archivo |
+| `example.mk` | Reglas especiales para ejemplos mixtos o librerías |
 
 El binario generado queda en `src/build/main` visto desde VS Code, y en
 `build/main` cuando ya estás dentro de `src/`.
@@ -56,13 +60,17 @@ Para un estudiante, la regla práctica es:
 
 ```bash
 abrir examples/aarch64 en VS Code
-abrir el src/main.s del ejemplo
+abrir el archivo fuente dentro de src/ del ejemplo
 presionar F5 o ejecutar make desde examples/aarch64
 ```
 
 VS Code usa `${fileDirname}`: si el archivo abierto es
 `05_primeros_programas/01_programa_minimo_exit/src/main.s`, entonces depura
 `05_primeros_programas/01_programa_minimo_exit/src/build/main`.
+
+La regla importante no es que el archivo se llame siempre `main.s`; la regla es
+que el archivo activo esté dentro del `src/` del ejemplo. En ABI y ELF puede ser
+`main.c`, `sumar.s` u otro fuente auxiliar.
 
 ## Flujo con QEMU
 
@@ -110,7 +118,8 @@ Para entender ambas rutas, usa la guía [Makefiles ARM64](../../../guides/setup/
 
 ::: {.callout-tip title="Regla docente"}
 En ejemplos AArch64 pequeños, no copies Makefiles por lección. Usa los
-compartidos y pasa `EXAMPLE=<unidad>/<ejemplo>` o abre `src/main.s` en VS Code.
+compartidos y pasa `EXAMPLE=<unidad>/<ejemplo>` o abre un fuente dentro de
+`src/` en VS Code.
 :::
 
 ## Cuándo usar `examples/` y `projects/`
@@ -130,15 +139,16 @@ depuración y entregables.
 Una práctica mínima debería incluir:
 
 - carpeta clara con nombre numerado;
-- `src/main.s`;
+- al menos un fuente dentro de `src/`;
 - README del ejemplo;
 - salida esperada;
 - instrucciones para `Makefile.qemu` y `Makefile.native`;
 - pasos de depuración si aplica;
 - explicación breve del concepto que practica.
 
-Si la práctica necesita varios archivos `.s`, colócalos en el mismo `src/`; el
-Makefile compartido los enlaza junto a `main.s`.
+Si la práctica necesita varios archivos `.s` o mezcla C y assembly, colócalos en
+el mismo `src/`; el Makefile compartido detecta fuentes comunes y `example.mk`
+puede ajustar casos especiales.
 
 ## Carpetas del curso
 
@@ -157,15 +167,15 @@ Makefile compartido los enlaza junto a `main.s`.
 |---|---|---|
 | Ejecutar `make` desde carpeta equivocada | Makefile no encontrado | entra a `examples/aarch64` |
 | Usar `Makefile.native` en host x86_64 | ejecución falla | usa `Makefile.qemu` |
-| Abrir otro archivo y presionar F5 | VS Code calcula otra carpeta | abre el `src/main.s` del ejemplo |
+| Abrir otro archivo y presionar F5 | VS Code calcula otra carpeta | abre un fuente dentro del `src/` del ejemplo |
 | Guardar binarios fuera de `build/` | repo queda desordenado | mantener artefactos en `build/` |
 
 ## Checklist
 
 - [ ] Mi ejemplo está bajo `examples/aarch64/<unidad>/<ejemplo>/`.
-- [ ] `src/` tiene `main.s`.
+- [ ] `src/` tiene al menos un fuente principal.
 - [ ] Uso `Makefile.qemu` o `Makefile.native` desde `examples/aarch64`.
-- [ ] VS Code abre `examples/aarch64` y el archivo activo es `src/main.s`.
+- [ ] VS Code abre `examples/aarch64` y el archivo activo está dentro de `src/`.
 - [ ] VS Code apunta a `${fileDirname}/build/main`.
 - [ ] Sé cuándo usar `examples/`, `projects/` y `tooling/`.
 

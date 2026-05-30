@@ -48,7 +48,7 @@ Toolchain, binutils, Make, QEMU o GDB según tu máquina.
 
 ::: {.lab-step}
 **3. Ejecuta**
-Entra a `src`, compila con `make` y corre con `make run`.
+Entra a `examples/aarch64` y ejecuta con `Makefile.qemu` o `Makefile.native`.
 :::
 
 ::: {.lab-step}
@@ -97,7 +97,7 @@ Paquetes por ruta, verificación mínima y Docker como alternativa.
 ::: {.resource-card}
 ### Primer programa
 
-Assembly AArch64 mínimo, Makefile, `make`, `make run` y salida esperada.
+Assembly AArch64 mínimo, Makefiles compartidos, `EXAMPLE=...` y salida esperada.
 
 [Abrir](03-primer-programa.qmd){.resource-action}
 :::
@@ -190,7 +190,7 @@ make -f Makefile.qemu EXAMPLE=01_laboratorio/04_inspeccion_binario objdump
 - [ ] Instalé las herramientas mínimas de mi ruta.
 - [ ] `Makefile.qemu` o `Makefile.native` genera `src/build/main`.
 - [ ] Puedo ejecutar un ejemplo desde `examples/aarch64`.
-- [ ] `file src/build/main` identifica un binario AArch64.
+- [ ] `file .../src/build/main` identifica un binario AArch64.
 - [ ] Puedo ver símbolos con `nm` o instrucciones con `objdump`.
 - [ ] Puedo detenerme en `_start` con GDB.
 - [ ] Sé dónde van teoría, ejemplo, ejercicio y presentación.

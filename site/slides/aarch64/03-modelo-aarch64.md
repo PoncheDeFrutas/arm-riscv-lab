@@ -400,6 +400,105 @@ GDB muestra valores. El curso te enseña a interpretarlos con contexto: registro
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada con registros
+
+Conectar modelo mental con ejemplos ejecutables: registro, instrucción y valor observado.
+
+---
+layout: aarch64-two-cols
+---
+
+# Registros generales
+
+::left::
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu \
+  EXAMPLE=03_modelo_aarch64/01_registros_generales \
+  run
+```
+
+::right::
+
+Qué observar:
+
+- `x0` devuelve el resultado visible al sistema.
+- Escribir en `wN` limpia parte alta de `xN`.
+- El mismo registro puede representar entero, dirección o argumento.
+
+---
+layout: aarch64-two-cols
+---
+
+# Registros especiales
+
+::left::
+
+```bash
+make -f Makefile.qemu \
+  EXAMPLE=03_modelo_aarch64/02_registros_especiales \
+  gdb-batch
+```
+
+::right::
+
+Mapa mínimo:
+
+- `pc` apunta a instrucción actual.
+- `sp` apunta al stack.
+- `x30` guarda retorno después de `bl`.
+- `x29` se vuelve importante con stack frames.
+
+---
+layout: aarch64-two-cols
+---
+
+# Flags NZCV
+
+::left::
+
+```bash
+make -f Makefile.qemu \
+  EXAMPLE=03_modelo_aarch64/03_flags_nzcv \
+  run
+```
+
+::right::
+
+Lectura:
+
+- `cmp` no guarda resultado: actualiza flags.
+- `cset x0, eq` convierte `Z = 1` en `1`.
+- `eq` significa equal; depende de flags, no de magia.
+
+---
+layout: aarch64-two-cols
+---
+
+# Leer estado en GDB
+
+::left::
+
+```bash
+make -f Makefile.qemu \
+  EXAMPLE=03_modelo_aarch64/06_lectura_registros_gdb \
+  gdb
+```
+
+::right::
+
+Preguntas correctas:
+
+- ¿Qué instrucción estoy por ejecutar?
+- ¿Qué registros lee?
+- ¿Qué registros escribe?
+- ¿Qué cambia después de `stepi`?
+
+---
 layout: aarch64-checklist
 ---
 
