@@ -1710,7 +1710,7 @@ Importar código directamente desde archivos del repositorio
 
 # Import: código desde archivo real
 
-```asm src/00-hello-minimo/src/main.s{lineNumbers: true, maxHeight: '350px'}
+```asm ../../../examples/aarch64/01_laboratorio/03_primer_programa/src/main.s{lineNumbers: true, maxHeight: '350px'}
 ```
 
 **Ventaja:** si el código del laboratorio cambia, la slide se actualiza automáticamente.
@@ -1734,7 +1734,7 @@ Opciones disponibles:
 
 **Ejemplo:**
 ```md
-```asm src/00-hello-minimo/src/main.s{1-10, lineNumbers: true, title: 'main.s'}
+```asm ../../../examples/aarch64/01_laboratorio/03_primer_programa/src/main.s{1-10, lineNumbers: true, title: 'main.s'}
 ```
 
 ---

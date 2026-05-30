@@ -1,5 +1,8 @@
 // 02.1 - Bits, bytes y bases
 //
+// Objetivo:
+//   Mostrar que binario, hexadecimal y decimal son notaciones del mismo valor.
+//
 // Registros usados:
 //   x0 = resultado final y codigo de salida.
 //   x1 = valor escrito en binario.

@@ -266,16 +266,19 @@ Compilar, ejecutar y confirmar que el laboratorio funciona
 
 # Estructura del ejemplo
 
-<CodeBlock title="00-hello-minimo/" lang="bash">
+<CodeBlock title="examples/aarch64/" lang="bash">
 
 ```bash
-00-hello-minimo/
+examples/aarch64/
 |- .vscode/
 |  |- launch.json
-|  `- settings.json
-`- src/
-   |- Makefile
-   `- main.s
+|  `- tasks.json
+|- Makefile.qemu
+|- Makefile.native
+`- 01_laboratorio/
+   `- 03_primer_programa/
+      `- src/
+         `- main.s
 ```
 
 </CodeBlock>
@@ -283,8 +286,9 @@ Compilar, ejecutar y confirmar que el laboratorio funciona
 <v-clicks>
 
 - `main.s` — Código assembly AArch64
-- `Makefile` — Flujo de compilación según la ruta
-- `.vscode/` — Configuración para debugging visual
+- `Makefile.qemu` — Compilación cruzada y ejecución con QEMU
+- `Makefile.native` — Ejecución en Linux ARM64 nativo
+- `.vscode/` — Configuración compartida para debugging visual
 
 </v-clicks>
 
@@ -586,23 +590,31 @@ skinparam arrow {
   Thickness 2
 }
 
-folder "00-hello-minimo/" as ROOT
+folder "examples/aarch64/" as ROOT
 
 folder ".vscode/\nconfiguración" as VSCODE {
   file "launch.json\ndebug" as LAUNCH
-  file "settings.json\najustes" as SETTINGS
+  file "tasks.json\nbuild + qemu" as TASKS
 }
 
-folder "src/\ncódigo y build" as SRC {
-  file "Makefile\nreglas" as MAKEFILE
-  file "main.s\nARM64" as MAIN
-  artifact "build/main\nbinario generado" as BUILD
+folder "Makefiles\ncompartidos" as MAKEFILES {
+  file "Makefile.qemu\nx86_64 + QEMU" as MQ
+  file "Makefile.native\nARM64 nativo" as MN
+}
+
+folder "01_laboratorio/\n03_primer_programa" as EXAMPLE {
+  folder "src/\ncódigo y build" as SRC {
+    file "main.s\nARM64" as MAIN
+    artifact "build/main\nbinario generado" as BUILD
+  }
 }
 
 ROOT --> VSCODE
-ROOT --> SRC
+ROOT --> MAKEFILES
+ROOT --> EXAMPLE
 
-MAKEFILE --> MAIN : compila
+MQ --> MAIN : EXAMPLE=...
+MN --> MAIN : EXAMPLE=...
 MAIN --> BUILD : genera
 
 @enduml
@@ -614,7 +626,7 @@ MAIN --> BUILD : genera
 
 <div v-click class="mt-4 text-lg leading-relaxed">
 
-Cada ejemplo mantiene la misma estructura: una carpeta principal con `.vscode/` para configuración del entorno y `src/` para el código ensamblador, el `Makefile` y el binario generado.
+La carpeta `examples/aarch64` funciona como workspace principal: `.vscode/` y los Makefiles viven una sola vez, mientras cada ejemplo aporta su `README.md` y sus fuentes dentro de `src/`.
 
 </div>
 
@@ -626,8 +638,9 @@ No hace falta aprender un flujo distinto para cada ejemplo. La estructura cambia
 
 <v-clicks>
 
-- **Flujo único:** `make` · `make run` · `make gdb`
-- **Cambiar ruta:** Solo reemplazas `src/Makefile`
+- **Flujo QEMU:** `make -f Makefile.qemu EXAMPLE=... run`
+- **Flujo nativo:** `make -f Makefile.native EXAMPLE=... run`
+- **Cambiar ejemplo:** Solo cambias el valor de `EXAMPLE`
 
 </v-clicks>
 
@@ -699,10 +712,10 @@ layout: aarch64-question
 Abrir terminal, entrar al ejemplo, compilar, ejecutar e inspeccionar.
 
 <StepList :steps="[
-  'Compilar — cd 00-hello-minimo/src && make',
-  'Ejecutar — make run → debe imprimir Hola ARM64',
-  'Inspeccionar — file build/main y objdump -d build/main',
-  'Depurar — make gdb, breakpoint en _start, stepi'
+  'Entrar — cd examples/aarch64',
+  'Compilar y ejecutar — make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa run',
+  'Inspeccionar — make -f Makefile.qemu EXAMPLE=01_laboratorio/03_primer_programa objdump',
+  'Depurar — abrir src/main.s, F5, breakpoint en _start, stepi'
 ]" />
 
 ---

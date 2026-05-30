@@ -1,5 +1,8 @@
 // 02.3 - Overflow, carry y extensiones
 //
+// Objetivo:
+//   Provocar wraparound en 32 bits y convertir el flag C en un valor visible.
+//
 // Registros usados:
 //   w1, w2 = operandos de 32 bits.
 //   w3 = resultado truncado a 32 bits.

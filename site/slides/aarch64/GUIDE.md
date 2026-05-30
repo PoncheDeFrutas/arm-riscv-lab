@@ -991,12 +991,12 @@ Importar código desde archivos del repositorio.
 
 **Uso básico:**
 ```md
-```asm src/00-hello-minimo/src/main.s```
+```asm ../../../examples/aarch64/01_laboratorio/03_primer_programa/src/main.s```
 ```
 
 **Con opciones:**
 ```md
-```asm src/00-hello-minimo/src/main.s{1-10, lineNumbers: true, title: 'main.s'}```
+```asm ../../../examples/aarch64/01_laboratorio/03_primer_programa/src/main.s{1-10, lineNumbers: true, title: 'main.s'}```
 ```
 
 **Opciones:**

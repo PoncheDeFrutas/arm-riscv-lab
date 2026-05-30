@@ -16,8 +16,10 @@ En ARM64 nativo:
 make -f Makefile.native EXAMPLE=01_laboratorio/03_primer_programa run
 ```
 
-Para depurar, abre el `src/main.s` del ejemplo y usa `Debug ARM64 QEMU - archivo
-activo` o `Debug ARM64 nativo - archivo activo`.
+Para depurar, abre el archivo fuente principal del ejemplo (`src/main.s` en la
+mayoria de casos, o `src/main.c`/otro `.s` cuando la leccion mezcla C y
+assembly) y usa `Debug ARM64 QEMU - archivo activo` o `Debug ARM64 nativo -
+archivo activo`.
 
 ## Unidades
 
@@ -44,9 +46,11 @@ activo` o `Debug ARM64 nativo - archivo activo`.
 ## Convenciones
 
 - Las carpetas principales son unidades numeradas: `01_laboratorio`, `02_bases_binarias`, etc.
-- Cada ejemplo tiene `README.md` y `src/main.s`.
+- Cada ejemplo tiene `README.md` y al menos un fuente dentro de `src/`.
+- La mayoria usa `src/main.s`; algunas lecciones de ABI/ELF usan `src/main.c`,
+  funciones assembly auxiliares (`sumar.s`, `operaciones.s`) o `src/example.mk`.
 - Los artefactos generados viven en `src/build/`.
 - Si un ejemplo necesita reglas especiales, puede agregar `src/example.mk`.
 - Los bloques pedagogicos aparecen en tablas y README, no como carpetas.
-- Los comentarios de `src/main.s` son parte obligatoria del material; revisa
+- Los comentarios del codigo fuente son parte obligatoria del material; revisa
   [COMMENTING_GUIDE.md](COMMENTING_GUIDE.md).

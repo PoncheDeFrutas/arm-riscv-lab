@@ -1,5 +1,8 @@
 // 02.2 - Enteros, signo y rangos
 //
+// Objetivo:
+//   Mostrar que un mismo patron de bits cambia al interpretarse con signo.
+//
 // Registros usados:
 //   w1 = patron de 32 bits.
 //   x0 = valor extendido con signo.

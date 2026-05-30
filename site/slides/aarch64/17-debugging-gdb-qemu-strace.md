@@ -343,6 +343,157 @@ Al usar `strace qemu-aarch64 ./prog`, pueden mezclarse syscalls del emulador con
 </InfoBox>
 
 ---
+layout: aarch64-section
+---
+
+# Práctica guiada de debugging
+
+Herramientas distintas, misma idea: observar estado real del programa antes de decidir qué está mal.
+
+---
+layout: aarch64-two-cols
+---
+
+# GDB: flujo, registros y memoria
+
+::left::
+
+```bash
+cd examples/aarch64
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/01_gdb_flujo_basico \
+  gdb
+
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/02_registros_instrucciones \
+  gdb-batch
+
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/03_lectura_memoria \
+  run
+```
+
+::right::
+
+Usar para practicar:
+
+- `break _start` — detener al inicio
+- `stepi` — ejecutar una instrucción
+- `info registers` — estado vivo
+- `x/s direccion` — ver string.
+- `x/16xb direccion` — ver bytes.
+
+La memoria no se interpreta sola: el formato del comando decide cómo se muestra.
+
+---
+layout: aarch64-two-cols
+---
+
+# Stack frames y QEMU gdbserver
+
+::left::
+
+```bash
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/04_stack_frames_gdb \
+  run
+
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/05_qemu_gdbserver \
+  gdb
+```
+
+::right::
+
+Stack:
+
+- `sp` — tope actual del stack.
+- `x29` — frame pointer, si la función lo mantiene.
+- `x30` — link register, dirección de retorno.
+- `bt` — backtrace, si hay símbolos y frames legibles.
+
+QEMU:
+
+1. QEMU ejecuta el binario AArch64.
+2. `-g 1234` deja QEMU pausado.
+3. `gdb-multiarch` se conecta con `target remote :1234`.
+
+---
+layout: aarch64-two-cols
+---
+
+# `strace` y core dumps
+
+::left::
+
+```bash
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/06_strace_syscalls \
+  strace
+
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/07_core_dumps \
+  run-fault
+```
+
+::right::
+
+`strace` muestra contrato con kernel:
+
+- syscall llamada
+- argumentos enviados
+- retorno recibido
+- error simbólico, si falló
+
+Si `openat` devuelve `ENOENT`, el problema no está en `write`: el archivo no abrió.
+
+Core dump:
+
+- Ejecutar una falla controlada.
+- Abrir estado post-mortem con GDB.
+
+Depende de configuración del sistema; por eso el fallo es opt-in.
+
+---
+layout: aarch64-two-cols
+---
+
+# Práctica guiada completa
+
+::left::
+
+```bash
+make -f Makefile.qemu \
+  EXAMPLE=17_debugging_gdb_qemu_strace/08_practica_guiada \
+  run
+```
+
+::right::
+
+Ruta recomendada:
+
+1. Ejecutar normal.
+2. Depurar con GDB.
+3. Comparar registros antes de `svc`.
+4. Confirmar syscalls con `strace`.
+5. Corregir usando evidencia, no suposición.
+
+---
+layout: aarch64-statement
+---
+
+# Método de trabajo
+
+```mermaid
+flowchart LR
+  A[Hipótesis] --> B[Breakpoint]
+  B --> C[Registros]
+  C --> D[Memoria]
+  D --> E[Syscall o frame]
+  E --> F[Conclusión]
+```
+
+---
 layout: aarch64-checklist
 ---
 
